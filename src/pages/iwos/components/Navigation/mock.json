@@ -1,0 +1,428 @@
+[
+  {
+    "name": "Index",
+    "path": "Index",
+    "hidden": false,
+    "component": "Layout",
+    "meta": {
+      "title": "工作台",
+      "icon": "icon-yemian_page",
+      "noCache": false,
+      "link": ""
+    }
+  },
+  {
+    "name": "Test",
+    "path": "",
+    "hidden": false,
+    "redirect": "noRedirect",
+    "component": "Layout",
+    "alwaysShow": true,
+    "meta": {
+      "title": "样例",
+      "icon": "icon-yemian_page",
+      "noCache": false,
+      "link": null
+    },
+    "children": [
+      {
+        "name": "Demo2",
+        "path": "demo2",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "设计器样例",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "Demo3",
+        "path": "demo3",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "列表样例",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      }
+    ]
+  },
+  {
+    "name": "Order",
+    "path": "",
+    "hidden": false,
+    "redirect": "noRedirect",
+    "component": "Layout",
+    "alwaysShow": true,
+    "meta": {
+      "title": "工单",
+      "icon": "icon-jianqieban_clipboard",
+      "noCache": false,
+      "link": null
+    },
+    "children": [
+      {
+        "name": "OrderCreate",
+        "path": "",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "工单建单",
+          "icon": "icon-gongdanjiandan",
+          "noCache": false,
+          "link": null
+        },
+        "children": [
+          {
+            "name": "ComplaintForm",
+            "path": "ComplaintForm",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "投诉单",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "QueryForm",
+            "path": "QueryForm",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "查询单",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "OrderOnFile",
+        "path": "OrderOnFile",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "工单归档",
+          "icon": "icon-gongdanjiandan",
+          "noCache": false,
+          "link": null
+        }
+      }
+    ]
+  },
+  {
+    "name": "System",
+    "path": "",
+    "hidden": false,
+    "redirect": "noRedirect",
+    "component": "Layout",
+    "alwaysShow": true,
+    "meta": {
+      "title": "配置",
+      "icon": "icon-shezhi_setting-one",
+      "noCache": false,
+      "link": null
+    },
+    "children": [
+      {
+        "name": "TemplateConfig",
+        "path": "",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "模板管理",
+          "icon": "icon-moban1",
+          "noCache": false,
+          "link": null
+        },
+        "children": [
+          {
+            "name": "TemplateIndex",
+            "path": "TemplateIndex",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "模板列表",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "FieldIndex",
+            "path": "FieldIndex",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "字段列表",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "AuditIndex",
+            "path": "AuditIndex",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "待审核列表",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "ReleaseIndex",
+            "path": "ReleaseIndex",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "待发布列表",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "UserIndex",
+        "path": "UserIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "用户管理",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "RoleIndex",
+        "path": "RoleIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "角色管理",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "MenuIndex",
+        "path": "MenuIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "菜单管理",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "DeptIndex",
+        "path": "DeptIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "部门管理",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "PostIndex",
+        "path": "PostIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "岗位管理",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "DictConfig",
+        "path": "",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "字典管理",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        },
+        "children": [
+          {
+            "name": "ComplaintPhenomenon",
+            "path": "ComplaintPhenomenon",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "投诉现象",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "ComplaintSource",
+            "path": "ComplaintSource",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "投诉来源",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "ComplaintReason",
+            "path": "ComplaintReason",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "投诉原因",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "ProductClassification",
+            "path": "ProductClassification",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "产品分类",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "ChannelClassification",
+            "path": "ChannelClassification",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "渠道分类",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "LabelDictionary",
+            "path": "LabelDictionary",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "标签字典",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "CustomDictionary",
+            "path": "CustomDictionary",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "自定义字典",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          },
+          {
+            "name": "DictIndex",
+            "path": "DictIndex",
+            "hidden": false,
+            "component": "",
+            "meta": {
+              "title": "通用字典管理",
+              "icon": "",
+              "noCache": false,
+              "link": null
+            }
+          }
+        ]
+      },
+      {
+        "name": "NoticeIndex",
+        "path": "NoticeIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "通知公告",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "OnlineIndex",
+        "path": "OnlineIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "在线用户",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "JobIndex",
+        "path": "JobIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "定时任务",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "LoginInfoIndex",
+        "path": "LoginInfoIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "登录日志",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      },
+      {
+        "name": "OperLogIndex",
+        "path": "OperLogIndex",
+        "hidden": false,
+        "component": "",
+        "meta": {
+          "title": "操作日志",
+          "icon": "icon-yemian_page",
+          "noCache": false,
+          "link": null
+        }
+      }
+    ]
+  }
+]

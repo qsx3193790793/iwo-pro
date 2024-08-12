@@ -1,0 +1,453 @@
+<template>
+  <div class="app-container">
+    <el-row :gutter="20">
+      <!--部门数据-->
+      <el-col :span="4" :xs="24">
+        <div class="head-container">
+          <el-input
+              v-model="deptName"
+              placeholder="请输入部门名称"
+              clearable
+              size="small"
+              prefix-icon="el-icon-search"
+              style="margin-bottom: 20px"
+          />
+        </div>
+        <div class="head-container">
+          <el-tree
+              :data="deptOptions"
+              :props="defaultProps"
+              :expand-on-click-node="false"
+              :filter-node-method="filterNode"
+              ref="tree"
+              node-key="id"
+              default-expand-all
+              highlight-current
+              @node-click="handleNodeClick"
+          />
+        </div>
+      </el-col>
+       <el-col :span="20" :xs="24">
+          <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
+            <el-form-item label="班组名称" prop="teamName">
+              <el-input
+                v-model="queryParams.teamName"
+                placeholder="请输入班组名称"
+                clearable
+                @keyup.enter.native="handleQuery"
+              />
+            </el-form-item>
+            <!-- <el-form-item label="机构" prop="deptId">
+              <treeselect v-model="queryParams.deptId" :options="deptOptions" :show-count="true" placeholder="请选择机构"  class="queryItem"/>
+            </el-form-item> -->
+            <el-form-item label="状态" prop="status">
+                  <el-select
+                      v-model="queryParams.status"
+                      placeholder="用户状态"
+                      clearable
+                      style="width: 240px"
+                  >
+                    <el-option
+                        v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
+                        v-bind="dict" :key="dict.value"
+                    />
+                  </el-select>
+                </el-form-item>
+            <el-form-item>
+              <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            </el-form-item>
+          </el-form>
+          <el-row :gutter="10" class="mb8">
+            <el-col :span="1.5">
+              <el-button
+                type="primary"
+                plain
+                icon="el-icon-plus"
+                size="mini"
+                @click="handleAdd"
+                v-hasPermi="['system:team:add']"
+              >新增</el-button>
+            </el-col>
+            <el-col :span="1.5">
+              <el-button
+                  type="info"
+                  plain
+                  icon="el-icon-sort"
+                  size="small"
+                  @click="toggleExpandAll"
+              >展开/折叠
+              </el-button>
+            </el-col>
+          </el-row>
+          <el-table  v-if="refreshTable"
+              v-loading="loading"
+              ref="table"
+              :data="teamList"
+              row-key="teamId"
+              :default-expand-all="isExpandAll"
+              :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+              border>
+            <el-table-column label="机构名称" align="center" prop="dept.deptName"/>
+            <el-table-column label="班组名称" align="center" prop="teamName" />
+            <el-table-column label="显示顺序" align="center" prop="teamSort" />
+            <el-table-column label="状态" align="center" prop="status" >
+              <template slot-scope="{row}">
+                {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable',row.status) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+              <template slot-scope="scope">
+                <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-edit"
+                  @click="handleUpdate(scope.row)"
+                  v-hasPermi="['system:team:edit']"
+                >修改</el-button>
+                <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-plus"
+                  @click="handleAdd(scope.row)"
+                  v-hasPermi="['system:team:edit']"
+                >新增</el-button>
+                <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-delete"
+                  @click="handleDelete(scope.row)"
+                  v-hasPermi="['system:team:remove']"
+                >删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+
+      </el-row>
+      
+  
+
+    
+
+    <!-- 添加或修改班组对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="机构" prop="deptId">
+          <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" @select="handelDeptIdChange"/>
+        </el-form-item>
+        <el-form-item label="上级班组">
+          <treeselect v-model="form.parentId" :options="teamOptions" :normalizer="normalizer" placeholder="选择上级班组" @select="handelparentIdChange"/>
+        </el-form-item>
+        <el-form-item label="班组名称" prop="teamName">
+          <el-input v-model="form.teamName" placeholder="请输入班组名称" />
+        </el-form-item>
+        <el-form-item label="角色" prop="roleIds">
+          <el-select v-model="form.roleIds" placeholder="请选择角色" style="width:100%" clearable multiple>
+          <el-option
+              v-for="role in roleOptions"
+              :key="role.roleId"
+              :label="role.roleName"
+              :value="role.roleId"
+          />
+        </el-select>
+        </el-form-item>
+        <el-form-item label="显示顺序" prop="teamSort">
+          <el-input-number v-model="form.teamSort" controls-position="right" :min="0"/>
+        </el-form-item>
+        <el-form-item label="部门状态">
+              <el-radio-group v-model="form.status">
+                <el-radio
+                    v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
+                    :key="dict.value"
+                    :label="dict.value"
+                >{{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+// import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
+import Treeselect from "@riophae/vue-treeselect";
+export default {
+  name: "Team",
+  components: {Treeselect},
+  dicts: ['sys_normal_disable'],
+  data() {
+    return {
+      // 遮罩层
+      loading: true,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 是否展开，默认全部展开
+      isExpandAll: true,
+      // 重新渲染表格状态
+      refreshTable: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 班组表格数据
+      teamList: [],
+      // 班组树选项
+      teamOptions: [],
+      // 角色选项
+      roleOptions:[],
+      // 部门树选项
+      deptOptions: undefined,
+      // el-tree的转换
+      defaultProps: {
+        children: "children",
+        label: "label"
+      },
+      // 部门名称
+      deptName: undefined,
+      // 弹出层标题
+      title: "",
+      // 是否显示弹出层
+      open: false,
+      // 查询参数
+      queryParams: {
+        // pageNum: 1,
+        // pageSize: 10,
+        teamName: null,
+        deptId: null,
+        parentId: null,
+        teamSort: null,
+        status: null,
+      },
+      // 表单参数
+      form: {},
+      // 表单校验
+      rules: {
+        deptId: [
+          { required: true, message: "机构不能为空", trigger: "change" }
+        ],
+        teamName: [
+          { required: true, message: "班组名称不能为空", trigger: "blur" }
+        ],
+      }
+    };
+  },
+  watch: {
+    // 根据名称筛选部门树
+    deptName(val) {
+      this.$refs.tree.filter(val);
+    }
+  },
+  created() {
+    this.getList();
+    this.getDeptTree()
+    this.loading = false;
+    this.$nextTick(() => this.$refs.table?.doLayout());
+  },
+  methods: {
+    // 筛选节点
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1;
+    },
+    // 节点单击事件
+    handleNodeClick(data) {
+      this.queryParams.deptId = data.id;
+      this.handleQuery();
+    },
+    // 机构变动时清除选择的班组，班组名，角色，获取班组数据
+    handelDeptIdChange(val){
+      this.form.parentId=undefined
+      this.form.teamName=null
+      this.form.roleIds=[]
+      this.roleOptions=[]
+      this.getTeamTreeInfo(val.id)
+      this.getDeptRoleInfo(val.id)
+    },
+    getTeamTreeInfo(deptId){
+      this.$$api.team.getDeptTeamTree({deptId:deptId}).then(({res: response, err}) => {
+        if (err) return
+        this.teamOptions = this.$$handleTree(response.rows, "teamId");
+      });
+    },
+    getTeamRoleInfo(teamId){
+      this.$$api.team.getTeamRoleTree({orgId:teamId}).then(({res: response, err}) => {
+        if (err) return
+        // 只有数据为空时，才进行赋值
+        if(this.roleOptions.length==0){
+          this.roleOptions = response.rows
+        }
+      });
+    },
+    getDeptRoleInfo(deptId){
+      this.$$api.team.getDeptRoleTree({deptId:deptId}).then(({res: response, err}) => {
+        if (err) return
+        // 只有数据为空时，才进行赋值
+        if(this.roleOptions.length==0){
+          this.roleOptions = response.rows
+        }
+      });
+    },
+    
+    // 班组变动时，角色也动态获取
+    handelparentIdChange(val){
+      this.roleOptions=[]
+      this.form.roleIds=[]
+      this.getTeamRoleInfo(val.teamId)
+    },
+    /** 查询部门下拉树结构 */
+    getDeptTree() {
+      this.$$api.user.deptTreeSelect().then(({res, err}) => {
+        if (err) return;
+        this.deptOptions = res?.list || [];
+      });
+    },
+    /** 展开/折叠操作 */
+    toggleExpandAll() {
+      this.refreshTable = false;
+      this.isExpandAll = !this.isExpandAll;
+      this.$nextTick(() => {
+        this.refreshTable = true;
+      });
+    },
+    /** 查询班组列表 */
+    getList() {
+      this.loading = true;
+      this.$$api.team.listTeam({params:this.queryParams}).then(({res: response, err}) => {
+        if (err) return this.loading = false;
+        this.teamList = this.$$handleTree(response.rows, "teamId");
+        this.total = response.total;
+        this.loading = false;
+      });
+    },
+    /** 转换班组数据结构 */
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children;
+      }
+      return {
+        id: node.teamId,
+        label: node.teamName,
+        children: node.children
+      };
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        teamId: null,
+        teamName: null,
+        deptId: null,
+        parentId: null,
+        teamSort: null,
+        status: "0",
+        roleIds:[]
+      };
+      this.$$resetForm("form", this.$refs);
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      // this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.$$resetForm("queryForm", this.$refs);
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    // handleSelectionChange(selection) {
+    //   this.ids = selection.map(item => item.teamId)
+    //   this.single = selection.length!==1
+    //   this.multiple = !selection.length
+    // },
+    /** 新增按钮操作 */
+   async handleAdd(row) {
+      this.reset();
+      if (row != undefined && row.deptId) {
+        this.form.deptId = row.deptId;
+        this.form.parentId = row.teamId;
+        this.getTeamTreeInfo(row.deptId)
+        await this.getDeptRoleInfo(row.deptId)
+        await this.getTeamRoleInfo(row.teamId)
+      }
+      this.open = true;
+      this.title = "添加班组";
+      this.getDeptTree()
+
+     
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const teamId = row.teamId || this.ids
+      this.getDeptTree()
+      this.$$api.team.getTeam({teamId:teamId}).then(({res: response, err})  => {
+        if (err) return
+        // this.form = response.data;
+        let {parentId,deptId,teamName,teamId,status,teamSort,roleIds}={...response}
+        if(deptId){
+          this.getTeamTreeInfo(deptId)
+        }
+        this.form={parentId,deptId,teamName,teamId,status,teamSort,roleIds}
+        this.roleOptions=response.roles
+        console.log(response,'---999')
+        this.open = true;
+        this.title = "修改班组";
+      });
+    },
+  
+    /** 提交按钮 */
+    submitForm() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+          if (this.form.teamId != null) {
+            this.$$api.team.updateTeam({data:this.form}).then(({res: response, err}) => {
+              if (err) return
+              this.$$Toast.success("修改成功");
+              this.open = false;
+              this.getList();
+            });
+          } else {
+            this.$$api.team.addTeam({data:this.form}).then(({res: response, err}) => {
+              if (err) return
+              this.$$Toast.success("新增成功");
+              this.open = false;
+              this.getList();
+            });
+          }
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      this.$$Dialog.confirm('是否确认删除班组名称为"' + row.teamName + '"的数据项？').then(() => {
+        return this.$$api.team.delTeam({teamId:row.teamId});
+      }).then(({res: response, err}) => {
+        if (err) return
+        this.getList();
+        this.$$Toast.success("删除成功");
+      }).catch(() => {
+      });
+    },
+  }
+};
+</script>
+<style scoped>
+.queryItem {
+  width: 240px;
+}
+</style>

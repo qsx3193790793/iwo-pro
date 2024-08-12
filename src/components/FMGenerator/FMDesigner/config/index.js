@@ -1,0 +1,91 @@
+//通用配置
+import Vue from "vue";
+import {compsMap} from "./comps";
+import useEvents from "./events";
+import {buttonCompiler, buttonsCompiler, cascaderCompiler, customizationCompsCompiler, datePickerCompiler, inputCompiler, selectCompiler, showConditionCompiler} from "./compiler";
+
+//配置列表转换值模型
+export const getProps = (props_arr) => {
+  return props_arr?.reduce((t, c) => (t[c.key] = c.value, t), {});
+};
+
+//组件转json
+function compsStageJson(stage) {
+  return stage.map(st => {
+    const z_props = getProps(st.z_props);
+    //OptionSelector 过滤
+    if (z_props.optionsStaticValue?.length) z_props.optionsStaticValue = z_props.optionsStaticValue.filter(op => !Vue.prototype.$$isEmpty(op.label) && !Vue.prototype.$$isEmpty(op.value))
+    //ConditionSelector 过滤
+    if (z_props.showCondition?.length) z_props.showCondition = z_props.showCondition.filter(op => !Vue.prototype.$$isEmpty(op.key))
+    return {cId: st.cId, name: st.name, compType: st.compType, z_props, children: st.children ? compsStageJson(st.children) : null}
+  })
+}
+
+//舞台转json
+export const parseJson = (stage, formConfigs) => {
+  return {
+    form: formConfigs ? getProps(formConfigs) : {},
+    stage: compsStageJson(stage)
+  }
+};
+
+//json配置转舞台  传入json.stage
+export const parseStage = (json, isNewCID = false) => {
+  return json.map(j => Object.assign({}, compsMap[j.name], {
+    cId: isNewCID ? `${j.name}_ID_${Vue.prototype.$$getUUID()}` : j.cId,
+    z_props: compsMap[j.name].z_props.map(zp => Object.assign({}, zp, {value: j.z_props[zp.key] ?? zp.value})),
+    children: j.children ? parseStage(j.children, isNewCID) : null
+  }))
+};
+
+//json表单配置 转 表单真实配置 传入json.form
+export const parseStageFormConfig = (formConfig, json) => {
+  return formConfig.map(c => Object.assign(c, {value: json[c.key]}));
+};
+
+//json配置转表单渲染 isView预览？
+export const parseFormModel = (json, isView = false) => {
+  return {
+    formName: '',
+    loading: false,
+    onLoad: async function ({vm}) {
+      console.log('parseFormModel onLoad...', vm, json)
+      if (isView) return;//预览跳过
+      const events = useEvents();
+      json.form?.events?.forEach(evk => events[evk]?.fn?.({vm, eventsFields: json.form?.eventsFields || []}));
+    },
+    appendItems: null,
+    hiddenFields: json.form.hiddenFields?.map(hf => ({key: hf.label, value: hf.value})) || [],
+    items: [].concat(
+      json.stage?.filter(it => it.z_props.isBtnBlock !== '是').map(it => ({
+        name: it.z_props.name, subName: it.z_props.subName,
+        items: it.children.map(j => {
+          return Object.assign(
+            j?.z_props || {},
+            {type: j.compType, key: j?.z_props?.key},
+            selectCompiler(j, isView), // 选择框类型编译
+            inputCompiler(j, isView), // 输入框类型编译
+            buttonsCompiler(j, isView), // 按钮组型编译
+            datePickerCompiler(j, isView), //日期选择编译
+            cascaderCompiler(j, isView), //级联编译
+            customizationCompsCompiler(j, isView), //自定义组件编译
+            showConditionCompiler(j, isView), //显示条件编译
+          );
+        })
+      })),
+    ),
+    bottomButtons: (function () {
+      // 只能存在一个 其他忽略
+      const FMButtons = json.stage?.filter(it => it.z_props.isBtnBlock === '是')?.[0]?.children?.[0];
+      if (!FMButtons) return {items: []}
+      return {
+        align: FMButtons.z_props.align,
+        items: FMButtons.children.map(btn => Object.assign(
+          btn?.z_props || {},
+          {type: btn.compType},
+          buttonCompiler(btn, isView), // 按钮组型编译
+        ))
+      }
+    })()
+  }
+};

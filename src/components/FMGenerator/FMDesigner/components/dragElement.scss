@@ -1,0 +1,99 @@
+.DragElement {
+  position: relative;
+  cursor: pointer;
+  padding-left: 8px;
+  padding-right: 8px;
+
+  &.FMBlock {
+    width: 100%;
+  }
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1;
+    border: 1PX dashed rgba($main-color, 0.5);
+    pointer-events: none;
+  }
+
+
+  & > .drag-element-handler {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: none;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    cursor: move;
+    font-size: 14px;
+    color: #fff;
+    background-color: $main-color;
+    opacity: 0.8;
+    border: 1px solid rgba(255, 255, 255, 1);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  & > .drag-element-bottom-tools {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 2;
+    display: none;
+
+    & > span {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: #fff;
+      background-color: $main-color;
+      opacity: 0.8;
+
+      &.del {
+        background-color: $main-error;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  &:hover:before {
+    border: 1PX solid $main-color;
+  }
+
+  &.active {
+
+    &:before {
+      border: 1PX solid $main-color;
+    }
+
+    & > .drag-element-handler, & > .drag-element-bottom-tools {
+      display: inline-block;
+    }
+  }
+}

@@ -1,0 +1,376 @@
+$main-color-5: rgba($main-color, 0.5);
+
+:root {
+  --el-color-primary: #{$main-color} !important;
+  --el-color-danger: #{$main-error} !important;
+  --el-color-warning: #{$main-warn} !important;
+  --el-color-success: #{$main-success} !important;
+}
+
+.el-button {
+  letter-spacing: 2px;
+}
+
+.el-button + .el-button {
+  margin-left: 6px;
+}
+
+.el-loading-mask.is-fullscreen {
+  z-index: 9999 !important;
+}
+
+.el-button.el-button--primary {
+  --el-button-text-color: #fff !important;
+  --el-button-hover-text-color: #fff !important;
+}
+
+.el-button--primary.is-link, .el-button--primary.is-plain, .el-button--primary.is-text {
+  --el-button-bg-color: #fff !important;
+  --el-button-border-color: #{$main-color-5} !important;
+  --el-button-text-color: #{$main-color} !important;
+}
+
+.el-checkbox-button.is-disabled.is-checked .el-checkbox-button__inner {
+  background-color: var(--el-border-color-extra-light);
+}
+
+.el-checkbox__input.is-disabled.is-checked .el-checkbox__inner::after {
+  border-color: #232323;
+}
+
+.el-radio__input.is-disabled.is-checked .el-radio__inner::after {
+  background-color: #232323;
+}
+
+.el-button--small:not(.el-button--text) {
+  --el-button-size: 28px !important;
+  padding: 6px 14px !important;
+}
+
+.el-button--small.el-button--text {
+  padding: 6px 0 !important;
+}
+
+.el-table {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  background-color: transparent;
+
+  th.el-table__cell > .cell {
+    font-size: 14px;
+    font-weight: bold;
+    color: rgb(13, 13, 15);
+  }
+
+  td.el-table__cell > .cell {
+    font-size: 14px;
+  }
+
+  .el-table__expanded-cell {
+    background-color: transparent;
+  }
+
+  th.el-table__cell {
+    background-color: rgb(246, 246, 248);
+  }
+}
+
+.one-screen .el-table {
+  height: 100%;
+}
+
+.el-pagination {
+  --el-text-color-regular: #7a7a7a !important;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 14px 0;
+}
+
+.el-menu {
+  border-right: none;
+  background-color: transparent;
+}
+
+.el-menu--popup {
+  background-color: rgba(237, 244, 254, 1);
+}
+
+.el-menu-item-group__title {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 21px;
+}
+
+.el-submenu__title {
+  font-size: 16px;
+  color: $main-text;
+}
+
+.el-menu-item, .el-submenu__title {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 16px;
+  color: $main-text;
+
+  * {
+    line-height: 1;
+  }
+
+  &.is-active {
+    color: #fff;
+    background: $main-color;
+  }
+}
+
+.el-submenu__title i {
+  font-size: 16px;
+  color: $main-text;
+}
+
+.el-breadcrumb__inner {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.demo-form-inline .el-input {
+  width: 320px;
+  // height: 46px;
+}
+
+.el-date-editor.el-input {
+  width: 320px;
+  margin-right: 12px;
+}
+
+.el-drawer__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #151F30;
+}
+
+.el-drawer.rtl {
+  width: 48vw;
+}
+
+.el-drawer__header {
+  position: relative;
+  padding: 17px 20px;
+  margin-bottom: 5px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-bottom: 1PX solid #E8EAEC;
+  }
+}
+
+.el-drawer__body {
+  padding: 0 0 0 0;
+}
+
+.el-drawer__body:has(+ .el-drawer__footer) {
+  padding: 0 0 0 0;
+}
+
+.el-drawer__footer {
+  margin-top: 5px;
+  position: relative;
+  padding-bottom: 12px;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-bottom: 1PX solid #E8EAEC;
+  }
+}
+
+.el-form-item__label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #21242B;
+  //margin-bottom: 10px;
+}
+
+.el-form-item__content {
+
+  .input {
+    width: 336px;
+    margin-right: 8px;
+  }
+
+  i.iconfont {
+    color: #B4B4B4;
+
+    &.link {
+      cursor: pointer;
+    }
+  }
+}
+
+.el-form--label-left {
+  .el-form-item__label {
+    justify-content: flex-end;
+  }
+}
+
+.mForm {
+
+  .el-form-item__label {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 500;
+    color: #353535;
+    margin-bottom: 10px;
+  }
+
+  .el-form-item__content {
+    .el-input {
+      width: 336px;
+
+      & + i.iconfont {
+        margin-left: 8px;
+      }
+    }
+
+    .el-color-picker__trigger {
+      width: 336px;
+    }
+
+    .el-date-editor.el-input__wrapper {
+      width: 336px;
+      flex-grow: 0;
+
+      & + i.iconfont {
+        margin-left: 8px;
+      }
+    }
+
+    .el-select + i.iconfont {
+      margin-left: 8px;
+    }
+
+    i.iconfont {
+      color: #B4B4B4;
+
+      &.link {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.self-adaption-transfer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  & > .el-transfer-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex-grow: 1;
+
+    & > .el-transfer-panel__header {
+      flex-shrink: 0;
+      flex-grow: 0;
+    }
+
+    & > .el-transfer-panel__body {
+      flex-grow: 1;
+    }
+  }
+
+  & > .el-transfer__buttons {
+    display: flex;
+    flex-direction: column;
+    width: 46px;
+    flex-basis: 46px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding: 0 20px;
+    box-sizing: content-box;
+
+    & > button {
+      margin: 0 0 10px 0;
+
+      &:last-child {
+        margin: 0;
+      }
+    }
+
+  }
+}
+
+.el-button.is-text {
+  color: #898989;
+}
+
+.el-tabs__item {
+  font-size: 16px;
+}
+
+.el-tab-pane {
+  padding: 0 10px;
+}
+
+.el-tabs__nav-wrap::after, .el-tabs__active-bar {
+  height: 1PX;
+}
+
+.el-tab-one-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+  overflow: hidden;
+
+  .el-tabs__header {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  .el-tabs__content {
+    flex-grow: 1;
+    overflow: hidden;
+
+    & > .el-tab-pane {
+      height: 100%;
+      overflow: auto;
+    }
+  }
+}
+
+.el-input.is-disabled .el-input__inner {
+  color: #5b5b5b;
+  -webkit-text-fill-color: #5b5b5b;
+}
+
+.el-overlay, .el-loading-mask.is-fullscreen {
+  background-color: rgba(255, 255, 255, .1);
+  backdrop-filter: blur(3PX);
+}
+
+.el-scrollbar__bar {
+  z-index: 6;
+}
+
+.el-tree {
+  background: transparent;
+}
+
+.el-card__header {
+  padding: 12px 20px;
+}

@@ -1,0 +1,724 @@
+<template>
+  <div class="app-container one-screen">
+    <el-row :gutter="20">
+      <!--部门数据-->
+      <el-col :span="4" :xs="24">
+        <div class="head-container">
+          <el-input
+            v-model="tree_channelName"
+            placeholder="请输入渠道名称"
+            clearable
+            size="small"
+            prefix-icon="el-icon-search"
+            style="margin-bottom: 20px"
+          />
+        </div>
+        <div class="head-container nodeTree">
+          <el-tree
+            :data="deptOptions"
+            :props="defaultProps"
+            :expand-on-click-node="false"
+            :filter-node-method="filterNode"
+            ref="tree"
+            node-key="id"
+            default-expand-all
+            highlight-current
+            @node-click="handleNodeClick"
+          />
+        </div>
+      </el-col>
+      <!--用户数据-->
+      <el-col :span="20" :xs="24">
+        <el-form
+          :model="queryParams"
+          ref="queryForm"
+          size="small"
+          :inline="true"
+          v-show="showSearch"
+          label-width="auto"
+        >
+          <el-form-item label="渠道编码" prop="channelCode">
+            <el-input
+              v-model="queryParams.channelCode"
+              placeholder="请输入渠道编码"
+              clearable
+              class="queryItem"
+              @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item label="渠道名称" prop="channelName">
+            <el-input
+              v-model="queryParams.channelName"
+              placeholder="请输入渠道名称"
+              clearable
+              class="queryItem"
+              @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item label="是否省自定义" >
+            <el-select
+              v-model="queryParams.isProvinceCustom"
+              placeholder="请选择是否省自定义"
+              clearable
+              class="queryItem"
+            >
+            <el-option
+              v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
+              :key=" dict.value"
+              :label="dict.label"
+              :value="dict.value"
+          />
+            </el-select>
+          </el-form-item>
+            <el-form-item label="状态" prop="status">
+            <el-select
+              v-model="queryParams.status"
+              placeholder="请选择状态"
+              clearable
+              class="queryItem"
+            >
+            <el-option
+              v-for="dict in $store.getters['dictionaries/GET_DICT']('start_stop')"
+              :key=" dict.value"
+              :label="dict.label"
+              :value="dict.value"
+          />
+            </el-select>
+          </el-form-item>
+          <!-- <el-form-item label="省" prop="status">
+            <el-select
+              v-model="queryParams.status"
+              placeholder="用户省"
+              clearable
+              class="queryItem"
+            >
+              <el-option
+                v-for="dict in $$dictionaries.get('sys_normal_disable')"
+                v-bind="dict"
+                :key="dict.value"
+              />
+            </el-select>
+          </el-form-item> -->
+          <el-form-item>
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              size="mini"
+              @click="handleQuery"
+              >搜索</el-button
+            >
+            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+              >重置</el-button
+            >
+          </el-form-item>
+        </el-form>
+
+        <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button
+              type="primary"
+              plain
+              icon="el-icon-plus"
+              size="mini"
+              @click="handleAdd"
+              v-hasPermission="['system:user:add']"
+              >新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="danger"
+              plain
+              icon="el-icon-delete"
+              size="mini"
+              :disabled="multiple"
+              @click="handleDelete"
+              v-hasPermission="['system:user:remove']"
+              >删除
+            </el-button>
+          </el-col>
+        </el-row>
+        <div style="height: 70vh;"> 
+          <div class="one-screen" >
+            <div class="one-screen-fg1">
+              <JsTable :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
+                <template #isProvinceCustom="{row}">
+                  <div >{{ row.isProvinceCustom?'自定义':'否' }}</div>
+                </template>
+                <template #status="{ row }">
+                  <div v-show="row.status == 0"><el-tag type="danger">停用</el-tag></div>
+                  <div v-show="row.status == 1"><el-tag>启用</el-tag></div>
+                  <div v-show="row.status == 2"><el-tag type="danger">删除</el-tag></div>
+                </template>
+              </JsTable>
+            </div>
+          </div>
+        </div>
+        <el-pagination
+          :current-page.sync="queryParams.pageNum"
+          :page-size.sync="queryParams.pageSize"
+          :page-sizes="[15, 30, 40, 50]"
+          background
+          layout=" ->,total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="getList"
+          @current-change="getList"
+        />
+      </el-col>
+    </el-row>
+
+    <!-- 添加或修改用户配置对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="auto">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="渠道一级" prop="oneChannelName" >
+              <el-input
+                :disabled="!!form.oneChannelEdit"
+                v-model="form.oneChannelName"
+                placeholder="请输入"
+                maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="渠道一级编码">
+              <el-input
+               :disabled="!!form.oneChannelCode"
+                v-model="form.oneChannelCode"
+                placeholder="请输入"
+                maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <div v-if="currentNode.channelLevel!=0">
+          <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="渠道二级" prop="twoChannelName">
+              <el-input
+                :disabled="!!form.twoChannelEdit"
+                v-model="form.twoChannelName"
+                placeholder="请输入"
+                maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="渠道二级编码">
+              <el-input
+                :disabled="!!form.twoChannelCode"
+                v-model="form.twoChannelCode"
+                placeholder="请输入"
+                maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" v-if="currentNode.channelLevel!=1">
+          <el-col :span="12">
+            <el-form-item label="渠道名称"  prop="channelName">
+              <el-input
+                v-model="form.channelName"
+                placeholder="请输入"
+                maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="渠道三级编码">
+              <el-input
+                :disabled="!!form.channelCode"
+                v-model="form.channelCode"
+                placeholder="请输入"
+                maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        </div>
+      
+        <el-row>
+          <el-col :span="12">
+            <el-checkbox v-model="form.customProvince">是否省自定义</el-checkbox>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import Treeselect from "@riophae/vue-treeselect";
+import JsTable from "@/components/js-table/index.vue";
+export default {
+  name: "UserIndex",
+  cusDicts: ['start_stop','yes_no'],
+  components: { Treeselect ,JsTable},
+  data() {
+    return {
+      // 遮罩层
+      loading: false,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 用户表格数据
+      userList: null,
+      // 弹出层标题
+      title: "",
+      // 部门树选项
+      deptOptions: undefined,
+      // 是否显示弹出层
+      open: false,
+      // 部门名称
+      deptName: undefined,
+      // 默认密码
+      initPassword: "123456",
+      // 日期范围
+      dateRange: [],
+      // 岗位选项
+      postOptions: [],
+      // 角色选项
+      roleOptions: [],
+      // 树搜索项
+      tree_channelName:"",
+      // 表单参数
+      form: {},
+      defaultProps: {
+        children: "children",
+        label: "channelName",
+      },
+      columns: {
+        selection: true,
+        props: [
+          {
+            name: "渠道编码",
+            key: "channelCode",
+          },
+          {
+            name: "渠道名称",
+            key: "channelName",
+          },
+          {
+            name: "是否省自定义",
+            key: "isProvinceCustom",
+          },
+          {
+            name: "省",
+            key: "provinceCode",
+          },
+          {
+            name: "状态",
+            key: "status",
+          },
+          {
+            name: "更新人",
+            key: "updatedBy",
+          },
+          {
+            name: "更新时间",
+            width:130,
+            key: "updatedTime",
+          },
+        ],
+        options: {
+          btns: [
+            {
+              label: "编辑",
+              key: "edit",
+              event: this.handleUpdate,
+            },
+            {
+              label: "删除",
+              key: "del",
+              type: "danger",
+              event: this.handleDelete,
+            },
+            {
+              label: "启动",
+              key: "start",
+              type: "primary",
+              autoHidden: this.autoStartHidden,
+              event: this.handleStart,
+            },
+            {
+              label: "停用",
+              key: "end",
+              type: "danger",
+              autoHidden: this.autoEndHidden,
+              event: this.handleEnd,
+            },
+          ],
+        },
+      },
+      dataSource: [],
+      currentNode:{},
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 15,
+        channelCode: undefined,
+        channelLevel: undefined,
+        pcode: undefined,
+        channelName: undefined,
+        isProvinceCustom: undefined,
+        status: undefined,
+      },
+      // 表单校验
+      rules: {
+        // userName: [
+        //   { required: true, message: "用户名称不能为空", trigger: "blur" },
+        //   {
+        //     min: 2,
+        //     max: 20,
+        //     message: "用户名称长度必须介于 2 和 20 之间",
+        //     trigger: "blur",
+        //   },
+        // ],
+        channelName: [
+          { required: true, message: "渠道名称不能为空", trigger: "blur" },
+        ],
+        twoChannelName: [
+          { required: true, message: "二级渠道名称不能为空", trigger: "blur" },
+        ],
+        oneChannelName: [
+          { required: true, message: "一级渠道名称不能为空", trigger: "blur" },
+        ],
+      },
+    };
+  },
+  watch: {
+    // 根据名称筛选部门树
+    tree_channelName(val) {
+      this.$refs.tree.filter(val);
+    },
+  },
+  created() {
+    this.getList();
+    this.getChannelTree();
+    this.$nextTick(() => this.$refs.table?.doLayout());
+    // this.getConfigKey("sys.user.initPassword").then(response => {
+    //   this.initPassword = response.msg;
+    // });
+  },
+  methods: {
+    autoStartHidden(val){
+      if (val.row) {
+          return val.row.status == '0' ? true : false
+        } else {
+          return false
+        }
+    },
+    autoEndHidden(val){
+      if (val.row) {
+          return val.row.status == '1' ? true : false
+        } else {
+          return false
+        }
+    },
+    /** 查询用户列表 */
+    getList() {
+      this.loading = true;
+      this.$$api.channelClassification
+        .listChannel({
+          params: this.queryParams
+        })
+        .then(({ res: response, err }) => {
+          if (err) return;
+          this.dataSource = response.rows;
+          this.total =  response.total;
+          this.loading = false;
+        });
+    },
+    /** 查询部门下拉树结构 */
+    getChannelTree() {
+      this.$$api.channelClassification.listChannelTree().then(({res: response, err}) => {
+        if(err) return
+        this.deptOptions = response.list;
+      });
+    },
+    // 筛选节点
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.channelName.indexOf(value) !== -1;
+    },
+    // 节点单击事件
+    handleNodeClick(data) {
+      if(data.channelLevel==3) return
+      this.$refs["queryForm"]?.resetFields();
+      console.log(data,'----889')
+      this.currentNode=data
+      this.queryParams.pcode = data.channelCode;
+      this.handleQuery();
+    },
+    // // 用户状态修改
+    // handleStatusChange(row) {
+    //   let text = row.status === "0" ? "启用" : "停用";
+    //   this.$$Dialog
+    //     .confirm('确认要"' + text + '""' + row.userName + '"用户吗？')
+    //     .then(function () {
+    //       return this.$$api.user.changeUserStatus({
+    //         data: { channelCode: row.channelCode, status: row.status },
+    //       });
+    //     })
+    //     .then(({ res, err }) => {
+    //       if (err) return;
+    //       this.$$Toast.success(text + "成功");
+    //     })
+    //     .catch(function () {
+    //       row.status = row.status === "0" ? "1" : "0";
+    //     });
+    // },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        oneChannelCode: undefined,
+        oneChannelName: undefined,
+        twoChannelCode: undefined,
+        twoChannelName: undefined,
+        channelName: undefined,
+        channelId: undefined,
+        channelCode: undefined,
+        customProvince:true,
+        oneChannelEdit:true,
+        twoChannelEdit:true,
+        threeChannelEdit:true,
+        handleType:''
+      };
+      this.$refs["form"]?.resetFields();
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = [];
+      this.$refs["queryForm"]?.resetFields();
+      this.queryParams.channelCode = undefined;
+      this.queryParams.isProvinceCustom = undefined;
+      this.$refs.tree.setCurrentKey(null);
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.ids = selection.map((item) => item.channelId);
+      this.single = selection.length != 1;
+      this.multiple = !selection.length;
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.reset();
+      this.form.handleType='add'
+      this.getchannelCode(this.currentNode.channelCode)
+      // 为0表示根路径，不需要回显一级、二级节点
+      if(this.currentNode.channelLevel!=0){
+        this.getCurrentTreeNodeInfo(this.currentNode.channelId)
+      }
+      this.title = "渠道维护";
+      this.open = true;
+    },
+    getchannelCode(Code){
+      let data={
+        pcode:Code
+      }
+      this.$$api.channelClassification.getchannelCode({data}).then(({res: response, err}) => {
+        if (err) return 
+        if(this.currentNode.channelLevel==0){
+          this.form.oneChannelCode=response.channelCode
+          this.form.oneChannelEdit=false
+        }
+        if(this.currentNode.channelLevel==1){
+          this.form.twoChannelCode=response.channelCode
+          
+        }
+        if(this.currentNode.channelLevel==2){
+          this.form.channelCode=response.channelCode
+          
+        }
+      });
+    },
+    getCurrentTreeNodeInfo(ID){
+      this.$$api.channelClassification.getChannelDetail({channelId:ID}).then(({res: response, err}) => {
+        if (err) return 
+        let {oneChannelCode,oneChannelName,channelName,twoChannelName,channelId,twoChannelCode,channelCode,channelLevel}={...response}
+        this.form.oneChannelCode=oneChannelCode
+        this.form.oneChannelName=oneChannelName
+        this.form.channelId=channelId
+        if(channelLevel==1){
+          this.form.oneChannelCode=channelCode
+          this.form.oneChannelName=channelName
+          this.form.twoChannelEdit=false
+        }
+        if(channelLevel==2){
+          this.form.twoChannelCode=channelCode
+          this.form.twoChannelName=channelName
+        }
+        if(channelLevel==3){
+          this.form.twoChannelCode=twoChannelCode
+          this.form.twoChannelName=twoChannelName
+          this.form.channelName=channelName
+          this.form.channelCode=channelCode
+        }
+      });
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const channelCode = row.channelId;
+      this.form.handleType='edit'
+      this.getCurrentTreeNodeInfo(channelCode)
+      if(row.channelLevel==1){
+        this.form.oneChannelEdit=false
+      }if(row.channelLevel==2){
+        this.form.twoChannelEdit=false
+      }
+      if(row.channelLevel==1){
+        this.form.threeChannelEdit=false
+      }
+      this.title = "渠道维护";
+      this.open = true;
+    },
+    /** 提交按钮 */
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
+        if (valid) {
+
+          if (this.form.handleType == 'edit') {
+            let data={
+              channelId:this.form.channelId,
+            }
+            // 不同层级取值逻辑不同
+            if(this.currentNode.channelLevel==0){
+              data.channelName=this.form.oneChannelName
+            }
+            if(this.currentNode.channelLevel==1){
+              data.channelName=this.form.twoChannelName
+            }
+            if(this.currentNode.channelLevel==2){
+              data.channelName=this.form.channelName
+            }
+            this.$$api.channelClassification
+              .updateChannel({ data: data})
+              .then(({ res, err }) => {
+                if (err) return;
+                this.$$Toast.success("修改成功");
+                this.open = false;
+                this.getList();
+                this.getChannelTree();
+              });
+          } else {
+            let data={
+              pcode:this.currentNode.channelCode,
+            }
+            // 不同层级取值逻辑不同
+            if(this.currentNode.channelLevel==0){
+              data.channelCode=this.form.oneChannelCode,
+              data.channelName=this.form.oneChannelName
+            }
+            if(this.currentNode.channelLevel==1){
+              data.channelCode=this.form.twoChannelCode,
+              data.channelName=this.form.twoChannelName
+            }
+            if(this.currentNode.channelLevel==2){
+              data.channelCode=this.form.channelCode,
+              data.channelName=this.form.channelName
+            }
+            this.$$api.channelClassification
+              .addChannel({ data: data })
+              .then(({ res, err }) => {
+                if (err) return;
+                this.$$Toast.success("新增成功");
+                this.open = false;
+                this.getList();
+                this.getChannelTree();
+              });
+          }
+        }
+      });
+    },
+    // 启用
+    handleStart(row){
+      this.$$Dialog
+        .confirm('是否确认启动渠道编码为"' + row.channelId + '"的数据项？')
+        .then(() => {
+          let data={
+            channelId:row.channelId,
+            status:1,
+          }
+          return this.$$api.channelClassification.updStatus({data:data});
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("启动成功");
+        })
+        .catch(() => {});
+    },
+     // 停用
+    handleEnd(row){
+      this.$$Dialog
+        .confirm('是否确认停用渠道编码为"' + row.channelId + '"的数据项？')
+        .then(() => {
+          let data={
+            channelId:row.channelId,
+            status:0, 
+          }
+          return this.$$api.channelClassification.updStatus({data:data});
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("停用成功");
+        })
+        .catch(() => {});
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const channelCodes = row.channelId || this.ids;
+      this.$$Dialog
+        .confirm('是否确认删除渠道编码为"' + channelCodes + '"的数据项？')
+        .then(() => {
+          
+          let data={
+            channelIds:Array.isArray(channelCodes)?channelCodes.join(','):channelCodes
+          }
+          return this.$$api.channelClassification.delChannel(data);
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.getChannelTree();
+          this.$$Toast.success("删除成功");
+        })
+        .catch(() => {});
+    },
+  },
+};
+</script>
+<style scoped lang="scss">
+  .nodeTree{
+    overflow: scroll;
+    height: 74vh;
+  }
+  .queryItem {
+  width: 240px;
+}
+</style>

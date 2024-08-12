@@ -1,0 +1,25 @@
+$main-color: rgba(50, 151, 255, 1);
+$main-success: #13ce66;
+$main-warn: #FFBE00;
+$main-error: #FF5759;
+$main-disabled: #898989;
+$main-primary: #ffffff;
+$main-text: rgba(85, 92, 98, 1);
+
+$inner-width: 1700px;
+$header-height: 56px;
+$main-nav-width: 74px;
+$tab-height: 38px;
+
+$default-drawer-header-height: 64px;
+$default-drawer-footer-height: 59px;
+
+:export {
+  mainColor: $main-color;
+  mainSuccess: $main-success;
+  primaryColor: $main-primary;
+  mainWarn: $main-warn;
+  mainError: $main-error;
+  mainDisabled: $main-disabled;
+  mainText: $main-text;
+}

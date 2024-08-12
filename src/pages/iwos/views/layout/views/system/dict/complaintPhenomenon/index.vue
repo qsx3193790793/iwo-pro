@@ -1,0 +1,611 @@
+<template>
+  <div class="app-container">
+    <el-row :gutter="20">
+      <!--部门数据-->
+      <el-col :span="4" :xs="24">
+        <div class="head-container">
+          <el-input
+              v-model="treePhenomName"
+              placeholder="请输入现象名称"
+              clearable
+              size="small"
+              prefix-icon="el-icon-search"
+              style="margin-bottom: 20px"
+          />
+        </div>
+        <div class="head-container nodeTree">
+          <el-tree
+              :data="complaintPhenomenonTreeOptions"
+              :props="defaultProps"
+              :expand-on-click-node="false"
+              :filter-node-method="filterNode"
+              ref="tree"
+              node-key="id"
+              default-expand-all
+              highlight-current
+              @node-click="handleNodeClick"
+          />
+        </div>
+      </el-col>
+      <!--用户数据-->
+      <el-col :span="20" :xs="24">
+        <el-form
+            :model="queryParams"
+            ref="queryForm"
+            size="small"
+            :inline="true"
+            v-show="showSearch"
+            label-width="auto"
+        >
+          <el-form-item label="投诉现象编码" prop="phenomCode">
+            <el-input
+                v-model="queryParams.phenomCode"
+                placeholder="请输入投诉现象编码"
+                clearable
+                style="width: 240px"
+                @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item label="投诉现象名称" prop="phenomName">
+            <el-input
+                v-model="queryParams.phenomName"
+                placeholder="请输入投诉现象名称"
+                clearable
+                style="width: 240px"
+                @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item label="是否省自定义" prop="isProvinceCustom">
+            <el-select
+                v-model="queryParams.isProvinceCustom"
+                placeholder="请选择是否省自定义"
+                clearable
+                style="width: 240px"
+            >
+              <el-option
+                  v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
+                  v-bind="dict"
+                  :key="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="状态" prop="status">
+            <el-select
+                v-model="queryParams.status"
+                placeholder="请输入状态"
+                clearable
+                style="width: 240px"
+            >
+              <el-option
+                  v-for="dict in $store.getters['dictionaries/GET_DICT']('reason_status_name')"
+                  v-bind="dict"
+                  :key="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                type="primary"
+                icon="el-icon-search"
+                size="mini"
+                @click="handleQuery"
+            >搜索
+            </el-button
+            >
+            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            >重置
+            </el-button
+            >
+          </el-form-item>
+        </el-form>
+
+        <el-row :gutter="10" class="mb8">
+          <!-- <el-col :span="1.5">
+            <el-button
+              type="primary"
+              plain
+              icon="el-icon-plus"
+              size="mini"
+              :disabled="isAllowAdd"
+              @click="handleAdd"
+              v-hasPermission="['system:user:add']"
+              >新增
+            </el-button>
+          </el-col> -->
+          <!-- <el-col :span="1.5">
+            <el-button
+              type="danger"
+              plain
+              icon="el-icon-delete"
+              size="mini"
+              :disabled="multiple"
+              @click="handleDelete"
+              v-hasPermission="['system:user:remove']"
+              >删除
+            </el-button>
+          </el-col> -->
+        </el-row>
+        <div style="height: 70vh">
+          <JsTable :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
+            <template #isProvinceCustom="{row}">
+              {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
+            </template>
+            <template #status="{row}">
+              {{ $store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status) }}
+            </template>
+          </JsTable>
+        </div>
+        <el-pagination
+            :current-page.sync="queryParams.pageNum"
+            :page-size.sync="queryParams.pageSize"
+            :page-sizes="[15, 30, 40, 50]"
+            background
+            layout=" ->,total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="getList"
+            @current-change="getList"
+        />
+        <!--        <el-pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList"/>-->
+      </el-col>
+    </el-row>
+
+    <!-- 添加或修改用户配置对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px" label-position='left'>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="投诉现象一级名称">
+              <el-input
+                  v-model="form.firstPhenomName"
+                  placeholder="请输入"
+                  maxlength="30"
+                  disabled
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="投诉现象一级编码">
+              <el-input
+                  v-model="form.firstPhenomCode"
+                  placeholder="请输入"
+                  maxlength="30"
+                  disabled
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="投诉现象二级名称">
+              <el-input
+                  v-model="form.secondPhenomName"
+                  placeholder="请输入"
+                  disabled
+                  maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="投诉现象二级编码">
+              <el-input
+                  v-model="form.secondPhenomCode"
+                  placeholder="请输入"
+                  disabled
+                  maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="投诉现象名称" prop='phenomName'>
+              <el-input
+                  v-model="form.phenomName"
+                  placeholder="请输入"
+                  maxlength="30"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="投诉现象编码">
+              <el-input
+                  v-model="form.phenomCode"
+                  placeholder="请输入"
+                  maxlength="30"
+                  disabled
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="是否省自定义">
+              <el-select v-model="form.isProvinceCustom" placeholder="请选择是否省自定义" clearable disabled>
+                <el-option
+                    v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
+                    v-bind="dict"
+                    :key="dict.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if="this.form.userId">
+            <el-form-item label="用户状态" prop="status">
+              <el-radio-group v-model="form.status">
+                <el-radio :label="1">启用</el-radio>
+                <el-radio :label="0">停用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import Treeselect from "@riophae/vue-treeselect";
+import JsTable from "@/components/js-table/index.vue";
+import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
+
+export default {
+  name: "complaintPhenomenon",
+  // dicts: ["sys_normal_disable", "sys_user_sex"],
+  cusDicts: ["reason_status_name", "yes_no"],
+  components: {Treeselect, PageSearchPanel, JsTable},
+  data() {
+    return {
+      // 遮罩层
+      loading: false,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      //是否可以新增
+      isAllowAdd: true,
+      // 显示搜索条件
+      showSearch: true,
+      // 总条数
+      total: 0,
+      // 用户表格数据
+      dataSource: [],
+      // 弹出层标题
+      title: "",
+      //投诉现象树形列表
+      complaintPhenomenonTreeOptions: undefined,
+      // 部门树选项
+      deptOptions: undefined,
+      // 是否显示弹出层
+      open: false,
+      // 部门名称
+      deptName: undefined,
+      // 默认密码
+      initPassword: "123456",
+      // 日期范围
+      dateRange: [],
+      // 岗位选项
+      postOptions: [],
+      // 角色选项
+      roleOptions: [],
+      //现象列表关键字查询
+      treePhenomName: undefined,
+      //上级现象编码
+      // superiorCode:undefined,
+      //上级现象名称
+      superiorName: undefined,
+      // 表单参数
+      form: {},
+      defaultProps: {
+        children: "phenomList",
+        label: "phenomName",
+      },
+      // 查询参数
+      queryParams: {
+        pageNum: 1,
+        pageSize: 15,
+        phenomCode: undefined,
+        phenomName: undefined,
+        isProvinceCustom: undefined,
+        status: undefined,
+        pcode: undefined
+      },
+      columns: {
+        selection: true,
+        props: [
+          {
+            name: "投诉现象编码",
+            key: "phenomCode",
+          },
+          {
+            name: "投诉现象名称",
+            key: "phenomName",
+          },
+          {
+            name: "是否省自定义",
+            key: "isProvinceCustom",
+          },
+          {
+            name: "状态",
+            key: "status",
+          },
+          {
+            name: "更新人",
+            key: "updatedBy",
+          },
+          {
+            name: "更新时间",
+            key: "updatedTime",
+          },
+        ],
+        options: {
+          btns: [
+            {
+              label: "新增",
+              key: "add",
+              autoHidden: ({row}) => {
+                return row.level === 2 && row.isProvinceCustom === 1
+              },
+              event: this.handleAdd,
+            },
+            {
+              label: "编辑",
+              key: "edit",
+              autoHidden: ({row}) => {
+                return row.level === 3 && row.isProvinceCustom === 1
+              },
+              event: this.handleUpdate,
+            },
+            {
+              label: "删除",
+              key: "del",
+              type: "danger",
+              autoHidden: ({row}) => {
+                return row.level === 3 && row.isProvinceCustom === 1
+              },
+              event: this.handleDelete,
+            },
+          ],
+        },
+      },
+      dataSource: [],
+      // 表单校验
+      rules: {
+        phenomName: [
+          {required: true, message: "投诉现象名称不能为空", trigger: "blur"},
+          {
+            min: 1,
+            max: 20,
+            message: "投诉现象名称长度必须介于 1 和 20 之间",
+            trigger: "blur",
+          },
+        ],
+        status: [
+          {required: true, message: "用户状态不能为空", trigger: "change"},
+        ],
+      },
+    };
+  },
+  watch: {
+    // 根据名称筛选部门树
+    treePhenomName(val) {
+      this.$refs.tree.filter(val);
+    },
+  },
+  created() {
+    // console.log('diguijieguo', this.findAncestorsInMultipleTrees(this.reasonList,'11010101','reasonCode','reasonName','reasonList'));
+    this.getList();
+    this.getComplaintPhenomenonTree();
+  },
+  methods: {
+    /** 查询用户列表 */
+    getList() {
+      this.loading = true;
+      this.$$api.complaintPhenomenon
+          .listComplaintPhenomenon({
+            params: this.$$addDateRange(this.queryParams, this.dateRange),
+          })
+          .then(({res: response, err}) => {
+            if (err) return;
+            this.dataSource = response.phenomList;
+            this.total = response.totalSize;
+            this.loading = false;
+          });
+    },
+    /** 查询投诉现象树形列表 */
+    getComplaintPhenomenonTree() {
+      this.$$api.complaintPhenomenon
+          .listComplaintPhenomenonTree({params: {phenomName: this.phenomName}}).then(({res: response, err}) => {
+        if (err) return;
+        this.complaintPhenomenonTreeOptions = response.phenomList
+      }).catch((error) => {
+      });
+    },
+    //递归树形数据查询对应的上级元素
+    findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {
+      // 如果找到了目标节点，则返回祖先列表（逆序）
+      if (node[idKey] === targetId) {
+        return ancestors.reverse().map(anc => ({[idKey]: anc[idKey], [nameKey]: anc[nameKey]}));
+      }
+      // 将当前节点添加到祖先列表中
+      ancestors.push({[idKey]: node[idKey], [nameKey]: node[nameKey]});
+      // 如果当前节点有子节点，则递归查找
+      if (node[childName] && node[childName].length > 0) {
+        for (let childNode of node[childName]) {
+          let result = this.findAncestors(childNode, targetId, idKey, nameKey, childName, ancestors.slice());
+          if (result.length > 0) {
+            return result;
+          }
+        }
+      }
+      return [];
+    },
+    findAncestorsInMultipleTrees(trees, targetId, idKey, nameKey, childName) {
+      for (let tree of trees) {
+        let result = this.findAncestors(tree, targetId, idKey, nameKey, childName);
+        if (result.length > 0) {
+          // 如果在任何一棵树中找到了目标节点的祖先，就返回这些祖先
+          return result;
+        }
+      }
+      // 如果没有在任何树中找到目标节点，则返回空数组
+      return [];
+    },
+    // 筛选节点
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.phenomName.indexOf(value) !== -1;
+    },
+    // 节点单击事件
+    handleNodeClick(data, node) {
+      if (node.childNodes.length <= 0) return
+      console.log('nodeData', node);
+      this.queryParams.pcode = data.phenomCode
+      this.handleQuery();
+    },
+    // 取消按钮
+    cancel() {
+      this.open = false;
+      this.reset();
+    },
+    // 表单重置
+    reset() {
+      this.form = {
+        isProvinceCustom: undefined,
+        phenomName: undefined,
+        userId: undefined
+      };
+      this.$refs["form"]?.resetFields();
+    },
+    /** 搜索按钮操作 */
+    handleQuery() {
+      this.queryParams.pageNum = 1;
+      this.getList();
+    },
+    /** 重置按钮操作 */
+    resetQuery() {
+      this.dateRange = [];
+      this.$refs["queryForm"]?.resetFields();
+      this.queryParams.pcode = undefined;
+      this.$refs.tree.setCurrentKey(null);
+      this.handleQuery();
+    },
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      this.single = selection.length != 1;
+    },
+    /** 新增按钮操作 */
+    handleAdd(row) {
+      this.reset();
+      this.title = "新增投诉现象";
+      this.$$api.complaintPhenomenon
+          .getComplaintPhenomenonCode({params: {pcode: row.phenomCode}}).then(({res: response, err}) => {
+        if (err) return;
+        const treeData = this.findAncestorsInMultipleTrees(this.complaintPhenomenonTreeOptions, row.phenomCode, 'phenomCode', 'phenomName', 'phenomList')
+        const formData = {
+          phenomCode: response.phenomCode,
+          isProvinceCustom: '1',
+          secondPhenomCode: row.phenomCode,
+          secondPhenomName: row.phenomName,
+          firstPhenomCode: treeData[0].phenomCode,
+          firstPhenomName: treeData[0].phenomName
+        }
+        this.form = formData
+        this.open = true;
+      });
+    },
+    /** 修改按钮操作 */
+    handleUpdate(row) {
+      this.reset();
+      const treeData = this.findAncestorsInMultipleTrees(this.complaintPhenomenonTreeOptions, row.phenomCode, 'phenomCode', 'phenomName', 'phenomList')
+      const formData = {
+        phenomCode: row.phenomCode,
+        phenomName: row.phenomName,
+        userId: row.phenomId,
+        status: row.status,
+        isProvinceCustom: '1',
+        firstPhenomCode: treeData[1].phenomCode,
+        firstPhenomName: treeData[1].phenomName,
+        secondPhenomCode: treeData[0].phenomCode,
+        secondPhenomName: treeData[0].phenomName
+      }
+      this.form = formData
+      this.open = true;
+      this.title = "修改";
+    },
+    /** 提交按钮 */
+    submitForm: function () {
+      this.$refs["form"].validate((valid) => {
+        if (valid) {
+          if (this.form.userId != undefined) {
+            this.$$api.complaintPhenomenon
+                .updateComplaintPhenomenon({
+                  data: {
+                    phenomId: this.form.userId,
+                    phenomName: this.form.phenomName,
+                    status: this.form.status
+                  }
+                })
+                .then(({res, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("修改成功");
+                  this.open = false;
+                  this.getList();
+                  this.getComplaintPhenomenonTree();
+                });
+          } else {
+            this.$$api.complaintPhenomenon
+                .addComplaintPhenomenon({
+                  data: {
+                    pcode: this.form.secondPhenomCode,
+                    phenomName: this.form.phenomName,
+                    phenomCode: this.form.phenomCode
+                  }
+                })
+                .then(({res, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("新增成功");
+                  this.open = false;
+                  this.getList();
+                  this.getComplaintPhenomenonTree();
+                });
+          }
+        }
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const userIds = row.phenomId;
+      this.$$Dialog
+          .confirm('是否确认删除投诉现象编码为"' + row.phenomCode + '"的数据项？')
+          .then(() => {
+            return this.$$api.complaintPhenomenon.updateComplaintPhenomenon({data: {phenomId: userIds, status: 2}});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.getComplaintPhenomenonTree();
+            this.$$Toast.success("删除成功");
+          })
+          .catch(() => {
+          });
+    },
+  },
+};
+</script>
+<style scoped>
+.nodeTree {
+  overflow: scroll;
+  height: 74vh;
+}
+
+::v-deep .component {
+  display: flex;
+  align-items: center;
+}
+</style>
