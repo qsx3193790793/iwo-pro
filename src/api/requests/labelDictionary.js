@@ -10,6 +10,8 @@ const apis = {
   addDictTag: {url: `${apiPrefix('config')}/tDictTag`, method: 'post'},
   // 修改标签字典
   updateDictTag: {url: `${apiPrefix('config')}/tDictTag`, method: 'put'},
+  // 修改投诉来源状态（启用/停用）
+  updStatus: {url: `${apiPrefix('config')}/tDictTag/updateStats`, method: 'post'},
   // 删除标签字典
   delChannel: {url: (args) => `${apiPrefix('config')}/tDictTag/${args?.tDictTagIds || ''}`, method: 'put'},
 };

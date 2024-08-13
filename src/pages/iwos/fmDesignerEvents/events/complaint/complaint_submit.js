@@ -1,4 +1,5 @@
 //测试
+
 export const key = 'complaint_submit';
 export const label = '投诉单_提交';
 
@@ -35,10 +36,13 @@ export default ({vm, item}) => {
   const {path: askSourceSrlPath, pathLabels: askSourceSrlPathLabels} = vm.$refs.complaint$dot$askSourceSrl?.[0]?.getCheckedNodes()?.[0] || {};
   vm.$$lodash.set(formData, 'complaint.askSourceSrl', '1');
 
-  vm.$$lodash.set(formData, 'complaintAssistList', [
-    {fieldTitle: '1', fieldName: '2', fieldValue: '3'},
-    {fieldTitle: '2', fieldName: '3', fieldValue: '4'},
-  ]);
+  //省内建单时间
+  vm.$$lodash.set(formData, 'complaint.provinceOrderCreateTimeStr', vm.$$dateFormatterYMDHMS(vm.$$dayjs()));
+
+  //场景字段
+  vm.$$lodash.set(formData, 'complaintAssistList', vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$template$')).map(efci => ({
+    fieldTitle: efci.name, fieldName: efci.key.replace('$template$', ''), fieldValue: vm.formData[efci.key] ?? null
+  })));
 
   console.log('complaint_submit', formData, askSourceSrlPath, askSourceSrlPathLabels)
   vm.validator(

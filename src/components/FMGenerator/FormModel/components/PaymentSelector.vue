@@ -54,29 +54,33 @@ function confirm(row) {
   modelIsShow.value = false;
   console.log(PageSearchPanelRef.value.getFormData())
   tableData.value = []
-  pageInfo.value.rowCount = 0;
-  pageInfo.value.offset = 1;
+  // pageInfo.value.rowCount = 0;
+  // pageInfo.value.offset = 1;
 }
 
 // 列表请求
 const getList = async () => {
   const formData = PageSearchPanelRef.value.getFormData();
   const {res, err} = await proxy.$$api.crm.ECQryPayment({
-    params: {provinceId: '8130000'},
+    // params: {provinceId: '8130000'},
     data: {
       "billingCycleId": formData.billingCycleId || proxy.$$dayjs().format('YYYYMM'),
-      "operAttrStruct": {
-        "operOrgId": -1,
-        "staffId": 30033969337
-      },
-      "svcObjectStruct": {
-        "objValue": formData.accNum,
-        "objType": "3",
-        // accType 移动手机12  宽带11  固话10
-        // objAttr 移动手机2   宽带3   固话0
-        "objAttr": ({'12': '2', '11': '3', '10': '0'})[formData.prodClass],
-        "dataArea": "1"
-      }
+      "lanId": formData.lanId,
+      "objValue": formData.accNum,
+      "objAttr": ({'12': '2', '11': '3', '10': '0'})[formData.prodClass],
+      // "billingCycleId": formData.billingCycleId || proxy.$$dayjs().format('YYYYMM'),
+      // "operAttrStruct": {
+      //   "operOrgId": -1,
+      //   "staffId": 30033969337
+      // },
+      // "svcObjectStruct": {
+      //   "objValue": formData.accNum,
+      //   "objType": "3",
+      //   // accType 移动手机12  宽带11  固话10
+      //   // objAttr 移动手机2   宽带3   固话0
+      //   "objAttr": ({'12': '2', '11': '3', '10': '0'})[formData.prodClass],
+      //   "dataArea": "1"
+      // }
     }
   });
   if (err) return;
@@ -89,6 +93,7 @@ const StaffSelectorSearchFormItems = [
   {name: '设备号', key: 'accNum', value: '', type: 'input', col: 6},
   {name: '月份', key: 'billingCycleId', placeholder: 'YYYYMM,如：202406', value: '', type: 'input', col: 6},
   {name: 'prodClass', key: 'prodClass', value: '', type: 'input', isHidden: !0, col: 9},
+  {name: 'lanId', key: 'lanId', value: '', type: 'input', isHidden: !0, col: 9},
   {
     type: 'buttons', align: 'left', verticalAlign: 'top', col: 12, items: [
       {
@@ -116,7 +121,7 @@ function init() {
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   console.log(PageSearchPanelRef.value)
   PageSearchPanelRef.value.initFormData({
-    accNum, prodClass: accType
+    accNum, prodClass: accType, lanId: lanIdInfo.lanid
   });
   getList(1);
 }

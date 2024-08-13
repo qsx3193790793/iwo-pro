@@ -55,8 +55,8 @@ function confirm(row) {
   modelIsShow.value = false;
   console.log(PageSearchPanelRef.value.getFormData())
   tableData.value = []
-  pageInfo.value.rowCount = 0;
-  pageInfo.value.offset = 1;
+  // pageInfo.value.rowCount = 0;
+  // pageInfo.value.offset = 1;
 }
 
 // 列表请求

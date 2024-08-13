@@ -13,15 +13,15 @@ export default {
       "hiddenFields": [
         {
           "label": "complaint.provinceOrderCreateTimeStr",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.settlementTimeStr",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.workArchivesTimeStr",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.workorderType",
@@ -29,187 +29,191 @@ export default {
         },
         {
           "label": "complaint.recmplntTimes30days",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.croscmplntTimes30days",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.refundRecords90days",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.satisfactionEstima30days",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.dissatisfactionEstima30days",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.governmentEnterprisekeyPerson",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.custType",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.userStarLevel",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.netAge",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.custAge",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.importantCustomer",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.cityFlag",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.replyRecordingNum",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.replyAudio",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.replyTimeStr",
-          "value": "2"
+          "value": null
         },
         {
           "label": "complaint.replyStaffId",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.problemReason",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.checkSituation",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.timeoutFlag",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.demandTimeLimit",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.nodeCode",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.opStaffName",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.opGropName",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.assistStaffId",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.assistStaffName",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.assistGroupName",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.urgencyCount",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.contactName",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.timeoutReason",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.settleFlag",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.unsettleReason",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.raiseDealFlag",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.valetFlag",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.valetScene",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel1",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel1Code",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel2",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel2Code",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel3",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel3Code",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel4",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel4Code",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel5",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.reasonLevel5Code",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.appealResult",
-          "value": ""
+          "value": null,
         },
         {
           "label": "complaint.statusCd",
-          "value": ""
+          "value": "C006000"
+        },
+        {
+          "label": "complaint.developChannelCode",
+          "value": null,
         }
       ]
     },
@@ -233,7 +237,7 @@ export default {
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "投诉来源",
               "placeholder": "",
               "showCondition": [],
@@ -279,7 +283,7 @@ export default {
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "业务号码",
               "placeholder": "",
               "showCondition": [],
@@ -301,7 +305,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "客户名称",
               "placeholder": "",
               "showCondition": [],
@@ -323,7 +327,7 @@ export default {
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "申诉用户姓名",
               "placeholder": "",
               "showCondition": [],
@@ -345,7 +349,7 @@ export default {
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "联系电话1",
               "placeholder": "",
               "showCondition": [],
@@ -367,7 +371,7 @@ export default {
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "联系电话2",
               "placeholder": "",
               "showCondition": [],
@@ -411,7 +415,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "申诉工单编号",
               "placeholder": "",
               "showCondition": [],
@@ -433,7 +437,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": "11",
               "name": "集团工单编号",
               "placeholder": "",
               "showCondition": [],
@@ -455,7 +459,7 @@ export default {
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "申诉日期",
               "placeholder": "",
               "showCondition": [],
@@ -464,8 +468,8 @@ export default {
               "events": [],
               "eventsFields": [],
               "type": "FMDatePicker",
-              "format": "yyyy-MM-dd",
-              "dateType": "FMDatePicker"
+              "format": "yyyy-MM-dd HH:mm:ss",
+              "dateType": "FMDateTimePicker"
             },
             "children": null
           },
@@ -479,7 +483,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "主叫号码",
               "placeholder": "",
               "showCondition": [],
@@ -501,7 +505,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "工单受理渠道",
               "placeholder": "",
               "showCondition": [],
@@ -523,7 +527,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "工单受理工号",
               "placeholder": "",
               "showCondition": [],
@@ -545,7 +549,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "号码归属地",
               "placeholder": "",
               "showCondition": [],
@@ -567,7 +571,7 @@ export default {
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "呼叫流水号",
               "placeholder": "",
               "showCondition": [],
@@ -589,7 +593,7 @@ export default {
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "录音流水号",
               "placeholder": "",
               "showCondition": [],
@@ -611,7 +615,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "省内工单编号",
               "placeholder": "",
               "showCondition": [],
@@ -656,7 +660,7 @@ export default {
               "optionsStaticValue": [
                 {
                   "label": "是",
-                  "value": ""
+                  "value": null,
                 },
                 {
                   "label": "否",
@@ -679,7 +683,7 @@ export default {
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "市场最严工单场景",
               "placeholder": "",
               "showCondition": [],
@@ -705,7 +709,7 @@ export default {
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "责任管控渠道",
               "placeholder": "",
               "showCondition": [],
@@ -730,7 +734,7 @@ export default {
               "optionsEvent": "complaint_listComplaintPhenomenonTree",
               "checkStrictly": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "投诉现象",
               "placeholder": "",
               "showCondition": [],
@@ -751,12 +755,12 @@ export default {
               "type": "FMCascader",
               "col": 8,
               "key": "complaint.productLevel",
-              "isRequire": true,
+              "isRequire": false,
               "isDisable": false,
               "optionsEvent": "complaint_listProductTree",
               "checkStrictly": true,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "产品",
               "placeholder": "",
               "showCondition": [],
@@ -779,7 +783,7 @@ export default {
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "发展渠道",
               "placeholder": "",
               "showCondition": [],
@@ -803,7 +807,7 @@ export default {
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "投诉描述备注",
               "placeholder": "",
               "showCondition": [],
@@ -828,7 +832,7 @@ export default {
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "value": "",
+              "value": null,
               "name": "投/申诉内容",
               "placeholder": "",
               "showCondition": [],

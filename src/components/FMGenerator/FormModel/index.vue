@@ -26,7 +26,7 @@
                 <!-- 一行5列 无法整除 前后去掉1-->
                 <template v-for="(v,i) in item.items">
                   <Col v-if="(!v.isShow)||v.isShow({vm})" :class="{'is-hidden':v.isHidden,[v.type]:!0,[(!v.resize||v.resize==='none')&&`mine-row-${v.type==='textarea'?v.row:1}`]:!['divider-line','divider-empty'].includes(v.type),[`mine-row-divider-empty`]:['divider-empty'].includes(v.type)}" :key="`${v.key}`+v.name+`${i}`" :span="(v.col||8)">
-                    <FormItem :key="v.key+v.name" :prop="v.key" :b-key="v.key" :dprops="v.key" :class="v.class" :style="v.style" :rules="getRules(v)" :required="v.isRequire">
+                    <FormItem :key="v.key+v.name" :prop="v.key" :key-value="v.key" :class="v.class" :style="v.style" :rules="getRules(v)" :required="v.isRequire">
                       <template v-if="v.name" #label>
                         <div class="slot-label">
                           <div v-html="getName(v.name)" :class="{require:v.isRequire}"></div>
@@ -90,9 +90,9 @@
                         <CheckboxButton v-for="ev in getSelectOptions(v)" :key="ev.value+i" :label="ev.value" :style="{width: `calc(100% / ${v.options?.length||2})`}" border>{{ ev.label }}</CheckboxButton>
                       </CheckboxGroup>
                       <Slider v-else-if="['slider','FMSlider'].includes(v.type)" v-model="formData[v.key]" :min="v.min??0" :max="v.max??100" :disabled="v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"></Slider>
-                      <MonacoEditor v-else-if="['monacoEditor','FMMonacoEditor'].includes(v.type)" v-model="formData[v.key]" :height="v.height||'1.2rem'" :disabled="v.disabled"  @change="v.onChange&&v.onChange({vm,item:v})"></MonacoEditor>
+                      <MonacoEditor v-else-if="['monacoEditor','FMMonacoEditor'].includes(v.type)" v-model="formData[v.key]" :height="v.height||'1.2rem'" @change="v.onChange&&v.onChange({vm,item:v})" :disabled="v.isDisable"></MonacoEditor>
                       <!-- v.component可以为字符串使用components导入的组件，或直接为组件对象-->
-                      <component v-else-if="['component','FMComponent'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" v-on="v.emitter?.({vm,item:v})" v-bind="v.attrs||{}" :ref="v.key" :root="{vm}" :is="v.component" :disabled="disabled||v.isDisable"></component>
+                      <component v-else-if="['component','FMComponent'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" v-on="v.emitter?.({vm,item:v})" v-bind="v.attrs||{}" :ref="v.key" :root="{vm,item:v}" :is="v.component" :disabled="disabled||v.isDisable"></component>
                       <template v-else-if="['button','FMButton'].includes(v.type)">
                         <div v-if="v.verticalAlign!=='top'" style="height: 0.28rem;"></div>
                         <Button v-bind="v.attrs" :loading="v.loading" :disabled="$$getVariableType(v.attrs?.disabled)==='[object Function]'?v.attrs.disabled({vm}):v.attrs?.disabled" @click="v.onClick&&v.onClick({vm})">{{ v.btnName }}</Button>
@@ -138,11 +138,19 @@ import MonacoEditor from "@/components/MonacoEditor";
 import AddressSelector from "./components/AddressSelector";
 import DingDanSelector from "./components/DingDanSelector";
 import SalesSelector from "./components/SalesSelector";
+import BalanceSelector from "./components/BalanceSelector";
 import PaymentSelector from "./components/PaymentSelector";
+import OrderSalesSelector from "./components/OrderSalesSelector";
 
 export default {
   name: "FormModel",
-  components: {Cascader, Slider, Alert, DingDanSelector, MonacoEditor, PaymentSelector, SalesSelector, AddressSelector, TimePicker, OptionSelector, ConditionSelector, TimerSelector, Modal, InputNumber, Checkbox, RadioButton, CheckboxGroup, CheckboxButton, Icon, Input, Button, Collapse, CollapseItem, Form, FormItem, Col, Row, RadioGroup, Radio, DatePicker, Select, OptionGroup, Option, Autocomplete},
+  components: {
+    DingDanSelector, BalanceSelector, MonacoEditor,
+    PaymentSelector, SalesSelector, AddressSelector,
+    TimePicker, OptionSelector, ConditionSelector, OrderSalesSelector,
+    TimerSelector, Modal,
+    Cascader, Slider, Alert, InputNumber, Checkbox, RadioButton, CheckboxGroup, CheckboxButton, Icon, Input, Button, Collapse, CollapseItem, Form, FormItem, Col, Row, RadioGroup, Radio, DatePicker, Select, OptionGroup, Option, Autocomplete
+  },
   props: {
     formConfig: {type: Object, default: () => ({})},
     fixedWidth: {type: String, default: '45%'},
@@ -192,19 +200,32 @@ export default {
     }
   },
   methods: {
+    //将数字值转为字符串
+    getStringValue(value) {
+      if (this.$$getVariableType(value) === '[object Array]') return value.map(v => this.getStringValue(v));
+      if (this.$$getVariableType(value) === '[object Number]') return value.toString();
+      return value;
+    },
     //赋值数据
     initFormData(res) {
       const formDataKeys = Object.keys(this.formData), resDataKeys = Object.keys(this.$$object2pathObject(res || {}));
-      this.expandFormConfigItems?.find(efci => {
-        this.formData[efci.key] = this.$$lodash.get(res || {}, efci.key) ?? (this.formData[efci.key] ?? null)
+      this.expandFormConfigItems?.forEach(efci => {
+        if (!efci.key) return;
+        let v = this.$$lodash.get(res || {}, efci.key?.replace(/\$dot\$/g, '.'));
+        // 选择器类型的讲值转为字符串 不然element无法匹配 数字
+        if (['radio', 'FMRadio', 'checkbox', 'FMCheckbox', 'select', 'FMSelect', 'groupSelect', 'FMGroupSelect', 'multipleSelect', 'FMMultipleSelect', 'cascader', 'FMCascader'].includes(efci.type)) {
+          if (this.$$isEmpty(v)) return this.formData[efci.key] = efci.value ?? null;
+          return this.formData[efci.key] = this.getStringValue(v);
+        }
+        this.formData[efci.key] = v ?? efci.value ?? null;
       });
       //然后再把resData里没用到的去插到formdata里
-      resDataKeys.forEach(key => !formDataKeys.includes(key) && (this.formData[key] = res[key] ?? null));
-      console.log('initFormData', res, formDataKeys, resDataKeys);
+      resDataKeys.forEach(key => !(formDataKeys.includes(key) || formDataKeys.includes(key.replace(/\./g, '$dot$'))) && (this.formData[key] = res[key] ?? null));
+      console.log('initFormData', res, formDataKeys, resDataKeys, this.formData);
     },
     //封装多级数据 填写时 key为 a.b.c 转换成 a：{b：{c}}
     getFormData() {
-      return Object.keys(this.formData).reduce((t, k) => (this.$$lodash.set(t, k.replace(/\$dot\$/g, '.'), this.formData[k]), t), {});
+      return Object.keys(this.formData).reduce((t, k) => (this.$$lodash.set(t, k?.replace(/\$dot\$/g, '.'), this.formData[k]), t), {});
     },
     appendFormData(formData) {
       Object.assign(this.formData, formData);
@@ -266,7 +287,7 @@ export default {
       // 模式mode为collapse可伸缩展开，collapsed是否默认展开 ，默认使用name||否则使用index
       this.collapseActive = this.formConfig.items?.map((fci, i) => fci.mode === 'collapse' ? (fci.collapsed ? (fci.name || `${i}`) : null) : (fci.name || `${i}`)).filter(f => f);
       this.loadExpandFormConfigItems();//展开
-      // this.formData = this.expandFormConfigItems?.reduce((t, c) => (c.key && (c.key && (this.$$lodash.set(t, c.key, c.value ?? null))), t), {});//初始化formData把数据key对应
+      // this.formData = this.expandFormConfigItems?.reduce((t, c) => (c.key && (this.$$lodash.set(t, c.key, c.value ?? null)), t), {});//初始化formData把数据key对应
       this.formData = [].concat(this.expandFormConfigItems, this.formConfig.hiddenFields || [])?.reduce((t, c) => (c.key && (t[c.key] = c.value ?? null), t), {});//初始化formData把数据key对应
 
       this.formConfig.onLoad && this.formConfig.onLoad({$store: this.$store, vm: this});

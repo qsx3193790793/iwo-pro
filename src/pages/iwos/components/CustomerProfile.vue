@@ -7,7 +7,7 @@
             <div class="searchParams">
               <span class="searchParams_text">用户视图</span>
               <div>
-                <el-input v-model="accNum" clearable placeholder="请输入" @click.stop.native @keyup.enter.space.stop.native="getInfo()">
+                <el-input v-model="accNum" clearable placeholder="请输入设备号" @click.stop.native @keyup.enter.space.stop.native="getInfo()">
                   <el-select v-model="accType" slot="prepend">
                     <el-option label="移动手机" value="12"></el-option>
                     <el-option label="宽带" value="11"></el-option>

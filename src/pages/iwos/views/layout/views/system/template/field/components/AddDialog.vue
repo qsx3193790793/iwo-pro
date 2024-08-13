@@ -58,7 +58,7 @@ const formConfig = ref({
       name: '',
       items: [
         {
-          name: '字段类型', key: 'type', value: '', col: 8, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_field_type'), isDisable: !1, isRequire: !1,
+          name: '字段类型', key: 'type', value: '', col: 8, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_field_type'), isDisable: !1, isRequire: !0,
           async onChange({vm}) {
             vm.formData.title = '', vm.formData.name = '';
             if (vm.formData.type == '0') {

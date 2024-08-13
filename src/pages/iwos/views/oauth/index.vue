@@ -18,7 +18,7 @@ async function ssoAuth() {
   const token = proxy.$store.getters['user/GET_TOKEN'];
   const p = proxy.$route.query.p, json = JSON.parse(proxy.$route.query.p ? decodeURIComponent(proxy.$route.query.p) : 'null');
   if (token) return proxy.$router.push({name: redirectUrlMap[json?.para?.redirectUrl || '1000'] || 'Index'});
-  if (!p) return text.value = '认证失败', proxy.$$Toast({message: `认证失败`, type: 'error'});
+  if (!p) return text.value = '认证失败', proxy.$$Toast({message: `认证失败`, type: 'error'}), proxy.$router.replace({name: 'Login'});
   proxy.$store.dispatch("user/DO_LOGIN", {isSsoAuth: !0, p})
       .then(redirectUrl => {
         proxy.$store.dispatch("user/DO_GET_USERINFO").then(() => {
@@ -26,6 +26,7 @@ async function ssoAuth() {
         })
       }).catch(() => {
     text.value = '认证失败', proxy.$$Toast({message: `认证失败`, type: 'error'});
+    proxy.$router.replace({name: 'Login'});
   });
 }
 

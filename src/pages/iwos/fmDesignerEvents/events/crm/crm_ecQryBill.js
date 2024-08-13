@@ -1,7 +1,7 @@
 //测试
 export const key = 'crm_ecQryBill';
 export const label = '服务一致性_欠费查询';
-
+export const resFields =[];
 export default async ({vm, item}) => {
   const {res, err} = await vm.$$api.crm.ecQryBill({
     params: {provinceId: '8310000'},

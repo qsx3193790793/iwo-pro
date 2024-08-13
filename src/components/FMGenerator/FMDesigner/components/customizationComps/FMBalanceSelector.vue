@@ -22,16 +22,16 @@ import {getProps} from "../../config";
 import {commonProps} from "../../config/defaultConfigProps";
 
 export default {
-  name: 'FMSalesSelector',
+  name: 'FMBalanceSelector',
   compType: 'FMComponent',
-  title: '销售品选择',
+  title: '余额选择',
   cId: '',
   type: 'comp',
   z_props: [].concat(
       commonProps(['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields']),
       [
-        {sort: -1, name: '组件类型', key: 'typeName', value: 'FMSalesSelector', type: 'input', isDisable: !0, isRequire: !1, col: 24},
-        {isHidden: !0, key: 'component', value: 'SalesSelector'},
+        {sort: -1, name: '组件类型', key: 'typeName', value: 'FMBalanceSelector', type: 'input', isDisable: !0, isRequire: !1, col: 24},
+        {isHidden: !0, key: 'component', value: 'BalanceSelector'},
       ]
   )
 }

@@ -32,7 +32,7 @@ const $$dateFormatter = (date, formatStr = 'YYYY-MM-DD HH:mm:ss') => {
   return dayjs(date || null).format(formatStr);
 }
 const $$dateFormatterYMDHMS = date => date ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : '-';
-const $$dateFormatterYMD = date => date ? dayjs(date || null).format('YYYY-MM-DD') : '-';
+const $$dateFormatterYMD = date => date ? dayjs(date).format('YYYY-MM-DD') : '-';
 
 // 事件bus
 const $$emitter = mitt();
@@ -434,12 +434,10 @@ const $$resetFormFields = ({fields, filterKeys = [], excludeKeys = [], parentRou
 
 // //封装多级数据 填写时 {a：{b：{c:xxx}}} 转换成 {a.b.c:xxx}
 const $$object2pathObject = (object, parentKey = '') => {
-  console.log('$$object2pathObject', parentKey, object);
   const pathObject = Object.keys(object).reduce((t, key) => {
     if ($$getVariableType(object[key]) === '[object Object]') return Object.assign(t, $$object2pathObject(object[key], parentKey ? `${parentKey}.${key}` : key));
     return (t[parentKey ? `${parentKey}.${key}` : key] = object[key], t);
   }, {});
-  console.log('$$object2pathObject', pathObject);
   return pathObject;
 };
 

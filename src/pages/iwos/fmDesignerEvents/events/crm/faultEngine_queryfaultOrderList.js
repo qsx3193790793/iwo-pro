@@ -1,6 +1,7 @@
 //测试
 export const key = 'faultEngine_queryfaultOrderList';
 export const label = '省内接口_故障单信息查询';
+export const resFields =[];
 // todo 没有地方使用
 export default async ({vm, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');

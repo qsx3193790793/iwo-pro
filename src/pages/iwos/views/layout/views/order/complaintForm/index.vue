@@ -6,11 +6,7 @@
     ></PageSearchPanel>
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
-        <JsTable
-            :dataSource="state.dataSource"
-            :columns="state.columns"
-            @selectionChange="selectionChange"
-        >
+        <JsTable :dataSource="list" :columns="columns">
           <template #unifiedComplaintCode="scope">
             <!-- @click="Todetail(scope.row)" -->
             <div style="color: rgb(50, 151, 255); cursor: pointer">
@@ -18,18 +14,14 @@
             </div>
           </template>
           <template #workorderType="scope">
-            <div>
-              {{
-                $store.getters["dictionaries/MATCH_LABEL"](
-                  "search_order_type",
-                  scope.row.workorderType
-                )
-              }}
-            </div>
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", scope.row.workorderType) }}
           </template>
-          <!-- <template #state="scope">
-            {{ scope.row.state == 0 ? '激活' : '未激活' }}
-          </template> -->
+          <template #provinceCode="scope">
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}
+          </template>
+          <template #statusCd="scope">
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("complaint_status_cd", scope.row.statusCd) }}
+          </template>
         </JsTable>
         <div class="pagination-area">
           <el-pagination
@@ -53,19 +45,20 @@
 
 <script setup>
 import dayjs from "dayjs";
-import {getCurrentInstance, ref, onBeforeMount} from "vue";
+import {getCurrentInstance, ref, onBeforeMount, onMounted} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
-import {onMounted} from "vue";
 
 const {proxy} = getCurrentInstance();
 const selectionChange = (val) => {
   console.log(val);
 };
+
 const Todetail = (val) => {
   console.log(val);
   proxy.$$router.push({name: "ComplaintDetail", query: {ID: val.id}});
 };
+
 const FormRef = ref();
 const submitForm = () => {
   FormRef.value.validate((valid) => {
@@ -74,96 +67,79 @@ const submitForm = () => {
     }
   });
 };
-const cancel = () => {
-  console.log("---77");
-};
-let state = ref({
-  open: false,
-  form: {
-    reviewComments: "",
-  },
-  rules: {
-    reviewComments: [
-      {required: true, message: "审核意见不能为空", trigger: "blur"},
-    ],
-  },
-  columns: {
-    selection: true,
-    props: [
-      {
-        name: "投诉编号",
-        key: "unifiedComplaintCode",
-      },
-      {
-        name: "申诉工单编号",
-        key: "appealWorksheetId",
-      },
 
-      {
-        name: "客户名称",
-        key: "appealUserName",
-      },
-      {
-        name: "省",
-        key: "provinceCode",
-      },
-      {
-        name: "投诉来源",
-        key: "askSourceSrl",
-      },
-      {
-        name: "工单类型",
-        key: "workorderType",
-      },
-      {
-        name: "工单状态",
-        key: "statusCd",
-      },
-      // {
-      //   name: "派单单位",
-      //   key: "orderType",
-      // },
-      {
-        name: "创建人",
-        key: "createdBy",
-      },
-      {
-        name: "创建时间",
-        key: "createdTime",
-        el: "format",
-        format: "default",
-      },
-      // {
-      //   name: '状态',
-      //   key: 'state',
-      //   format: 'default',
-      // },
-    ],
-    // options: {
-    //   width:120,
-    //   btns: [
-    //     {
-    //       label: '开启路由',
-    //       key: 'change',
-    //       event: change,
-    //     },
-    //     {
-    //       label: '编辑',
-    //       key: 'eidt',
-    //       event: edit,
-    //     },
-    //   ],
+const columns = ref({
+  props: [
+    {
+      name: "投诉编号",
+      key: "unifiedComplaintCode",
+    },
+    {
+      name: "申诉工单编号",
+      key: "appealWorksheetId",
+    },
+
+    {
+      name: "客户名称",
+      key: "appealUserName",
+    },
+    {
+      name: "省",
+      key: "provinceCode",
+    },
+    {
+      name: "投诉来源",
+      key: "askSourceSrl",
+    },
+    {
+      name: "工单类型",
+      key: "workorderType",
+    },
+    {
+      name: "工单状态",
+      key: "statusCd",
+    },
+    // {
+    //   name: "派单单位",
+    //   key: "orderType",
     // },
-  },
-  dataSource: [],
+    {
+      name: "创建人",
+      key: "createdBy",
+    },
+    {
+      name: "创建时间",
+      key: "createdTime",
+      el: "format",
+      format: "default",
+    },
+    // {
+    //   name: '状态',
+    //   key: 'state',
+    //   format: 'default',
+    // },
+  ],
+  // options: {
+  //   width:120,
+  //   btns: [
+  //     {
+  //       label: '开启路由',
+  //       key: 'change',
+  //       event: change,
+  //     },
+  //     {
+  //       label: '编辑',
+  //       key: 'eidt',
+  //       event: edit,
+  //     },
+  //   ],
+  // },
 });
-onMounted(() => {
-  getList(1);
-});
+
 const PageSearchPanelRef = ref();
-const pageInfo = ref({ pageNum: 1, pageSize: 15, rowCount: 0 });
-   
-const list = ref(Array.from({ length: 88 }).map((v, i) => ({ roleName: i })));
+const pageInfo = ref({pageNum: 1, pageSize: 15, rowCount: 0});
+
+const list = ref([]);
 
 // 列表请求
 const getList = async (pageNum = pageInfo.value.pageNum) => {
@@ -206,7 +182,7 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   });
   if (res) {
     pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
-    state.value.dataSource = res.rows;
+    list.value = res.rows;
   }
 };
 
@@ -301,9 +277,12 @@ const formConfigItems = ref([
     isRequire: !1,
   },
   {col: 6, type: "divider-empty"},
+  {col: 6, type: "divider-empty"},
+  {col: 6, type: "divider-empty"},
   {
     type: "buttons",
     align: "right",
+    verticalAlign: 'top',
     col: 6,
     items: [
       {
@@ -359,8 +338,9 @@ async function listComplaintSourceTree() {
   });
 }
 
-onBeforeMount(() => {
+onMounted(() => {
   listComplaintSourceTree();
+  getList(1);
 });
 </script>
 
@@ -372,6 +352,7 @@ export default {
     "search_order_type",
     "complaint_source_tree",
     "base_province_code",
+    "complaint_status_cd",
   ],
 };
 </script>

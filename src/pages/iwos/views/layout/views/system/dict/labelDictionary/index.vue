@@ -1,6 +1,10 @@
 <template>
   <div class="app-container one-screen">
-    <el-form
+    <PageSearchPanel
+          ref="PageSearchPanelRef"
+          :formConfigItems="formConfigItems"
+        ></PageSearchPanel>
+    <!-- <el-form
       :model="queryParams"
       ref="queryForm"
       size="small"
@@ -24,12 +28,6 @@
           clearable
           class="queryItem"
         >
-          <!-- <el-option
-            v-for="dict in statusList"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          /> -->
           <el-option
             v-for="dict in $store.getters['dictionaries/GET_DICT'](
               'start_stop'
@@ -40,21 +38,6 @@
           />
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="省" prop="provinceCode">
-        <el-select
-          v-model="queryParams.provinceCode"
-          placeholder="省"
-          clearable
-          class="queryItem"
-        >
-          <el-option
-            v-for="dict in $$dictionaries.get('sys_normal_disable')"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item> -->
       <el-form-item>
         <el-button
           type="primary"
@@ -67,9 +50,9 @@
           >重置</el-button
         >
       </el-form-item>
-    </el-form>
+    </el-form> -->
     <div class="one-screen-fg1"></div>
-    <el-row :gutter="10" class="mb8">
+    <!-- <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -94,8 +77,7 @@
           >删除
         </el-button>
       </el-col>
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
+    </el-row> -->
     <JsTable
       :dataSource="dataSource"
       :columns="columns"
@@ -147,16 +129,19 @@
 </template>
 <script>
 import JsTable from "@/components/js-table/index.vue";
+import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 export default {
   name: "Dict",
   cusDicts: ["start_stop"],
-  components: { JsTable },
+  components: { JsTable,PageSearchPanel },
   data() {
     return {
       // 遮罩层
       loading: true,
       // 选中数组
       ids: [],
+      // 删除时显示的标签编码
+      tagcodeList:[],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -224,7 +209,25 @@ export default {
               label: "删除",
               key: "del",
               type: "danger",
-              event: this.handleDelete,
+              event: (val)=>{
+                this.ids=[]
+                this.tagcodeList=[]
+                this.handleDelete(val)
+              },
+            },
+            {
+              label: "启动",
+              key: "start",
+              type: "primary",
+              autoHidden: this.autoStartHidden,
+              event: this.handleStart,
+            },
+            {
+              label: "停用",
+              key: "end",
+              type: "danger",
+              autoHidden: this.autoEndHidden,
+              event: this.handleEnd,
             },
           ],
         },
@@ -242,6 +245,71 @@ export default {
       },
       // 表单参数
       form: {},
+      formConfigItems: [
+        {
+          name: "标签名称",
+          key: "tagName",
+          value: "",
+          type: "input",
+          placeholder: "标签名称",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "状态",
+          key: "status",
+          value: "",
+          col: 6,
+          type: "select",
+          options: () =>
+          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          type: "buttons",
+          align: "right",
+          verticalAlign: "top",
+          col: 6,
+          items: [
+            {
+              btnName: "重置",
+              type: "button",
+              attrs: { type: "" },
+              col: 1,
+              onClick:({vm})=>{
+                vm.resetFormData();
+                this.resetQuery();
+              }
+            },
+            {
+              btnName: "查询",
+              type: "button",
+              attrs: { type: "primary" },
+              col: 1,
+              onClick:({ vm }) =>{
+                this.getList();
+              },
+            },
+            {
+              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
+              onClick:({vm})=> {
+                this.handleDelete();
+              }
+            },
+            {
+              btnName: "新增",
+              type: "button",
+              attrs: { type: "success"},
+              col: 1,
+              onClick:({ vm })=> {
+                this.handleAdd()
+              },
+            },
+          ],
+        },
+      ],
       // 表单校验
       rules: {
         tagColor: [
@@ -254,10 +322,62 @@ export default {
     };
   },
   created() {
-    this.getList();
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
+  mounted(){
+    this.getList();
+  },
   methods: {
+    autoStartHidden(val){
+      if (val.row) {
+          return val.row.status == '0' ? true : false
+        } else {
+          return false
+        }
+    },
+    autoEndHidden(val){
+      if (val.row) {
+          return val.row.status == '1' ? true : false
+        } else {
+          return false
+        }
+    },
+        // 启用
+    handleStart(row){
+      this.$$Dialog
+        .confirm('是否确认启动标签编码为"' + row.tagCode + '"的数据项？')
+        .then(() => {
+          let data={
+            tagId:row.tagId,
+            status:1,
+          }
+          return this.$$api.labelDictionary.updStatus({data:data});
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("启动成功");
+        })
+        .catch(() => {});
+    },
+     // 停用
+    handleEnd(row){
+      this.$$Dialog
+        .confirm('是否确认停用标签编码为"' + row.tagCode + '"的数据项？')
+        .then(() => {
+          let data={
+            tagId:row.tagId,
+            status:0, 
+          }
+          return this.$$api.labelDictionary.updStatus({data:data});
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("停用成功");
+        })
+        .catch(() => {});
+    },
     ToDictData(row) {
       this.$router.push({ name: "DictData", params: { dictId: row.dictId } });
     },
@@ -308,6 +428,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.tagId);
+      this.tagcodeList=selection.map((item) => item.tagCode)
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -359,9 +480,15 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const tagId = row.tagId || this.ids;
+      const tagId = row?.tagId || this.ids; 
+      let showText=''
+      if(this.ids.length>0){
+        showText=this.tagcodeList.join(',')
+      }else{
+        showText=row?.tagCode
+      }
       this.$$Dialog
-        .confirm('是否确认删除渠道编码为"' + tagId + '"的数据项？')
+        .confirm('是否确认删除标签编码为"' + showText + '"的数据项？')
         .then(() => {
           let data = {
             tDictTagIds: Array.isArray(tagId) ? tagId.join(",") : tagId,

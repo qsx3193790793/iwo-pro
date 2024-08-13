@@ -126,7 +126,7 @@
         @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="角色编号" prop="roleId" width="120"/>
+      <el-table-column label="角色编号" prop="roleId" width="180"/>
       <el-table-column
           label="角色名称"
           prop="roleName"
@@ -217,7 +217,7 @@
 
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px"  label-position="left">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称"/>
         </el-form-item>
@@ -301,7 +301,7 @@
         width="500px"
         append-to-body
     >
-      <el-form :model="form" label-width="80px"  label-position="left">
+      <el-form :model="form" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName" :disabled="true"/>
         </el-form-item>
@@ -422,15 +422,10 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 15,
         roleName: undefined,
         roleKey: undefined,
         status: undefined,
-      },
-      pageInfo: {
-        pageNo: 1,
-        pageSize: 15,
-        rowCount: 0,
       },
       list: [],
       // 表单参数
@@ -455,7 +450,7 @@ export default {
   },
   created() {
     this.getList();
-    this.$nextTick(()=>this.$refs.table?.doLayout());
+    this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
     /** 查询角色列表 */
@@ -463,8 +458,6 @@ export default {
       // this.roleList = Array.from({length: 20}).map((r, i) => ({roleId: i}));
       // return this.total = 100;
       this.loading = true;
-      this.queryParams.pageNum = this.pageInfo.pageNo
-      this.queryParams.pageSize = this.pageInfo.pageSize
       this.$$api.role
           .listRole({params: this.$$addDateRange(this.queryParams, this.dateRange)})
           .then(({res: response, err, total}) => {
@@ -524,7 +517,7 @@ export default {
             return this.$$api.role.changeRoleStatus({data: {roleId: row.roleId, status: row.status}});
           })
           .then(({res, err}) => {
-            if (err) return row.status = row.status === "0" ? "1" : "0";;
+            if (err) return row.status = row.status === "0" ? "1" : "0";
             this.$$Toast.success(text + "成功");
           })
           .catch(function () {
@@ -736,7 +729,7 @@ export default {
     },
     /** 导出按钮操作 */
     async handleExport() {
-       const {res, err} = await this.$$api.role.export({data: this.queryParams});
+      const {res, err} = await this.$$api.role.export({data: this.queryParams});
       if (res.blob) this.$$fileSaveAs(res.blob, `role_${new Date().getTime()}.xlsx`);
       // this.download(
       //   "system/role/export",

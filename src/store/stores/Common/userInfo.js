@@ -47,7 +47,7 @@ let store = {
   },
   actions: {
     CHECK_STORAGE({state, commit}, payload) {
-      commit("SET_TOKEN", localStorage.getItem('token'));
+      commit("SET_TOKEN", localStorage.getItem('token') || '');
       commit("SET_URL_PARAMS", JSON.parse(sessionStorage.getItem('urlParams') || '{}'));
       commit("SET_EXPIRES_IN", sessionStorage.getItem('expiresIn'));
       commit("SET_USER_INFO", JSON.parse(sessionStorage.getItem('userInfo') || 'null'));
@@ -65,7 +65,7 @@ let store = {
             commit('SET_BIZ_DATA', res.bizData);
             return resolve(res.redirectUrl);
           }
-          reject(err);
+          return reject(err);
         }
         const username = Vue.prototype.$$encrypt(userInfo.username.trim());
         const password = Vue.prototype.$$encrypt(userInfo.password.trim());

@@ -1,6 +1,10 @@
 <template>
   <div class="app-container one-screen">
-    <el-form
+    <PageSearchPanel
+          ref="PageSearchPanelRef"
+          :formConfigItems="formConfigItems"
+        ></PageSearchPanel>
+    <!-- <el-form
         :model="queryParams"
         ref="queryForm"
         size="small"
@@ -26,7 +30,6 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-checkbox v-model="queryParams.phonenumber">是否默认</el-checkbox> -->
       <el-form-item label="状态" prop="status">
         <el-select
             v-model="queryParams.status"
@@ -45,7 +48,7 @@
       <el-form-item label="创建时间">
         <el-date-picker
             class="queryItem"
-            v-model="queryParams.rangeDate"
+            v-model="queryParams.timeRange"
             type="daterange"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -66,9 +69,9 @@
         </el-button
         >
       </el-form-item>
-    </el-form>
+    </el-form> -->
 
-    <el-row :gutter="10" class="mb8">
+    <!-- <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -80,19 +83,6 @@
         >新增
         </el-button>
       </el-col>
-
-      <!-- <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermission="['system:dict:remove']"
-          >删除
-        </el-button>
-      </el-col> -->
       <el-col :span="1.5">
         <el-button
             type="danger"
@@ -104,8 +94,7 @@
         >刷新缓存
         </el-button>
       </el-col>
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
+    </el-row> -->
     <JsTable
         :dataSource="dataSource"
         :columns="columns"
@@ -194,11 +183,12 @@
 <script>
 import dayjs from 'dayjs'
 import JsTable from "@/components/js-table/index.vue";
-
+import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 export default {
-  name: "Dict",
+  name: "Dict",    
   // dicts: ["sys_normal_disable"],
-  components: {JsTable},
+  cusDicts: ['start_stop'],
+  components: {JsTable,PageSearchPanel},
   data() {
     return {
       // 遮罩层
@@ -286,26 +276,101 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 15,
-        dictName: undefined,
-        dictType: undefined,
-        status: undefined,
       },
       // 表单参数
       form: {},
+      formConfigItems: [
+        {
+          name: "字典名称",
+          key: "dictName",
+          value: "",
+          type: "input",
+          placeholder: "字典名称",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "字典类型",
+          key: "dictType",
+          value: "",
+          type: "input",
+          placeholder: "字典类型",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "状态",
+          key: "status",
+          value: "",
+          col: 6,
+          type: "select",
+          options: () =>
+          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
+        {
+          type: "buttons",
+          align: "right",
+          verticalAlign: "top",
+          col: 6,
+          items: [
+            {
+              btnName: "重置",
+              type: "button",
+              attrs: { type: "" },
+              col: 1,
+              onClick:({vm})=>{
+                vm.resetFormData();
+                this.resetQuery();
+              }
+            },
+            {
+              btnName: "查询",
+              type: "button",
+              attrs: { type: "primary" },
+              col: 1,
+              onClick:({ vm }) =>{
+                this.getList();
+              },
+            },
+            {
+              btnName: '刷新缓存', type: 'button', attrs: {type: 'danger'}, col: 1,
+              onClick:({vm})=> {
+                this.handleCache();
+              }
+            },
+            {
+              btnName: "新增",
+              type: "button",
+              attrs: { type: "success"},
+              col: 1,
+              onClick:({ vm })=> {
+                this.handleAdd()
+              },
+            },
+          ],
+        },
+      ],
       // 表单校验
       rules: {
         dictName: [
-          {required: true, message: "标签名称不能为空", trigger: "blur"},
+          {required: true, message: "字典标签不能为空", trigger: "blur"},
         ],
         dictType: [
-          {required: true, message: "标签类型不能为空", trigger: "blur"},
+          {required: true, message: "字典类型不能为空", trigger: "blur"},
         ],
       },
     };
   },
   created() {
-    this.getList();
     this.$nextTick(() => this.$refs.table?.doLayout());
+  },
+  mounted(){
+    this.getList();
   },
   methods: {
     handleCache() {
@@ -331,15 +396,20 @@ export default {
     /** 查询标签类型列表 */
     getList() {
       this.loading = true;
+      const formData =this.$refs.PageSearchPanelRef.getFormData();
       let data = {
+        ...formData,
         ...this.queryParams
       }
-      if (data.rangeDate && data.rangeDate.length > 0) {
-        data.beginTime = dayjs(new Date(data.rangeDate[0]).getTime()).format('YYYY-MM-DD HH:mm:ss')
-        data.endTime = dayjs(new Date(data.rangeDate[1]).getTime()).format('YYYY-MM-DD HH:mm:ss')
-        delete data.rangeDate
+      if (data.timeRange && data.timeRange.length > 0) {
+        data.beginTime = dayjs(new Date(data.timeRange[0]).getTime()).format('YYYY-MM-DD HH:mm:ss')
+        if(new Date(data.timeRange[0]).getTime()==new Date(data.timeRange[1]).getTime()){
+          data.endTime = dayjs(new Date(data.timeRange[1]).getTime()+24*60*60*1000-1).format('YYYY-MM-DD HH:mm:ss')
+        }else{
+          data.endTime = dayjs(new Date(data.timeRange[1]).getTime()).format('YYYY-MM-DD HH:mm:ss')
+        }
+        delete data.timeRange
       }
-      console.log(data, '---888')
       this.$$api.customDict
           .listDictionary({params: data})
           .then(({res: response, err, total}) => {
@@ -373,7 +443,6 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.$refs["queryForm"]?.resetFields();
-      this.queryParams.rangeDate = []
       this.handleQuery();
     },
     /** 新增按钮操作 */
@@ -426,8 +495,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const dictIds = row.dictId || this.ids;
+      // 启动状态的不能删除
+      if(row.status==1){
+        this.$$Toast.warning("当前字段状态为启用，不可以删除");
+        return
+      }
       this.$$Dialog
-          .confirm('是否确认删除标签编号为"' + dictIds + '"的数据项？')
+          .confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？')
           .then(() => {
             let data = {
               dictId: Array.isArray(dictIds) ? dictIds.join(",") : dictIds,

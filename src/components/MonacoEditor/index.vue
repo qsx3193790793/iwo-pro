@@ -19,7 +19,7 @@ const props = defineProps({
 });
 
 // 当他进入时值为空情况 在监听变化赋值
-watch(() => props.value, (n,o) =>{
+watch(() => props.value, (n, o) => {
   !o && MonacoEditorInstant.value?.setValue(props.value)
 });
 

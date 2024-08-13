@@ -24,12 +24,13 @@ import {commonProps} from "../../config/defaultConfigProps";
 export default {
   name: 'FMAddressSelector',
   compType: 'FMComponent',
-  title: 'GIS地址',
+  title: 'GIS地址选择',
   cId: '',
   type: 'comp',
   z_props: [].concat(
       commonProps(['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields']),
       [
+        {sort: -1, name: '组件类型', key: 'typeName', value: 'FMAddressSelector', type: 'input', isDisable: !0, isRequire: !1, col: 24},
         {isHidden: !0, key: 'component', value: 'AddressSelector'},
       ]
   )

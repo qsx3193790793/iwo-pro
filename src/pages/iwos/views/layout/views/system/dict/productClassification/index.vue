@@ -30,108 +30,12 @@
       <!--用户数据-->
       <div class="one-screen-fg1">
         <el-col :span="20" :xs="24" style="width: 100%; height: 100%">
-          <el-form
-            :model="queryParams"
-            ref="queryForm"
-            size="small"
-            :inline="true"
-            v-show="showSearch"
-            label-width="auto"
-          >
-            <el-form-item label="投诉产品编码" prop="productCode">
-              <el-input
-                v-model="queryParams.productCode"
-                placeholder="请输入投诉产品编码"
-                clearable
-                class="queryItem"
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-            <el-form-item label="投诉产品名称" prop="productName ">
-              <el-input
-                v-model="queryParams.productName"
-                placeholder="请输入投诉产品名称"
-                clearable
-                 class="queryItem"
-                @keyup.enter.native="handleQuery"
-              />
-            </el-form-item>
-            <el-form-item label="是否省自定义" >
-            <el-select
-              v-model="queryParams.isProvinceCustom"
-              placeholder="请选择是否省自定义"
-              clearable
-              class="queryItem"
-            >
-            <el-option
-              v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
-              :key=" dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-            </el-select>
-          </el-form-item>
-            <el-form-item label="状态" prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="请选择状态"
-              clearable
-              class="queryItem"
-            >
-            <el-option
-              v-for="dict in $store.getters['dictionaries/GET_DICT']('start_stop')"
-              :key=" dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-            </el-select>
-          </el-form-item>
-            <!-- <el-form-item label="投诉产品类型" prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="请输入投诉产品类型"
-              clearable
-               class="queryItem"
-            >
-              <el-option
-                v-for="dict in productTypeList"
-                v-bind="dict"
-                :key="dict.value"
-              />
-            </el-select>
-          </el-form-item> -->
-
-            <!-- <el-form-item label="省" prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="用户省"
-              clearable
-               class="queryItem"
-            >
-              <el-option
-                v-for="dict in $$dictionaries.get('sys_normal_disable')"
-                v-bind="dict"
-                :key="dict.value"
-              />
-            </el-select>
-          </el-form-item> -->
-            <el-form-item>
-              <el-button
-                type="primary"
-                icon="el-icon-search"
-                size="mini"
-                @click="handleQuery"
-                >搜索</el-button
-              >
-              <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-                >重置</el-button
-              >
-            </el-form-item>
-          </el-form>
-
-          <el-row :gutter="10" class="mb8"   v-show="currentNode.productLevel === 1">
+          <PageSearchPanel
+          ref="PageSearchPanelRef"
+          :formConfigItems="formConfigItems"
+        ></PageSearchPanel>
+          <!-- <el-row :gutter="10" class="mb8"   v-show="currentNode.productLevel === 1">
             <el-col :span="1.5">
-              <!--   v-show="currentNode." -->
               <el-button
                 type="primary"
                 plain
@@ -154,7 +58,7 @@
                 >删除
               </el-button>
             </el-col>
-          </el-row>
+          </el-row> -->
           <div style="height: 70vh">
             <div class="one-screen">
               <div class="one-screen-fg1">
@@ -254,16 +158,19 @@
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
+import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 export default {
   name: "UserIndex",
   cusDicts: ['start_stop','yes_no'],
-  components: { Treeselect, JsTable },
+  components: { Treeselect, JsTable ,PageSearchPanel},
   data() {
     return {
       // 遮罩层
       loading: false,
       // 选中数组
       ids: [],
+      // 产品编码
+      productCodeList:[],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -296,6 +203,94 @@ export default {
       addFlag:false,
       // 表单参数
       form: {},
+      formConfigItems: [
+        {
+          name: "投诉产品编码",
+          key: "productCode",
+          value: "",
+          type: "input",
+          placeholder: "投诉产品编码",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "投诉产品名称",
+          key: "productName",
+          value: "",
+          type: "input",
+          placeholder: "投诉产品名称",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "是否省自定义",
+          key: "isProvinceCustom",
+          value: "",
+          col: 6,
+          type: "select",
+          options: () =>
+            this.$store.getters["dictionaries/GET_DICT"]("yes_no"),
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "状态",
+          key: "status",
+          value: "",
+          col: 6,
+          type: "select",
+          options: () =>
+          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          type: "buttons",
+          align: "right",
+          verticalAlign: "top",
+          col: 6,
+          items: [
+            {
+              btnName: "重置",
+              type: "button",
+              attrs: { type: "" },
+              col: 1,
+              onClick:({vm})=>{
+                vm.resetFormData();
+                this.resetQuery();
+              }
+            },
+            {
+              btnName: "查询",
+              type: "button",
+              attrs: { type: "primary" },
+              col: 1,
+              onClick:({ vm }) =>{
+                this.handleQuery();
+              },
+            },
+            {
+              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length || this.currentNode.productLevel !== 1}, col: 1,
+              onClick:({vm})=> {
+                this.handleDelete();
+              }
+            },
+            {
+              btnName: "新增",
+              type: "button",
+              attrs: { type: "success",disabled:()=>{
+                return this.currentNode.productLevel !== 1;
+              }},
+              col: 1,
+              onClick:({ vm })=> {
+                this.handleAdd()
+              },
+            },
+          ],
+        },
+      ],
       defaultProps: {
         children: "children",
         label: "productName",
@@ -345,7 +340,11 @@ export default {
               label: "删除",
               key: "del",
               type: "danger",
-              event: this.handleDelete,
+              event:(val)=>{
+                this.ids=[]
+                this.productCodeList=[]
+                this.handleDelete(val)
+              }
             },
             {
               label: "启动",
@@ -370,10 +369,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 15,
-        pcode: undefined,
-        productCode: undefined,
-        productName: undefined,
-        status: undefined,
+        pcode: undefined, 
       },
       // 表单校验
       rules: {
@@ -427,13 +423,15 @@ export default {
     },
   },
   created() {
-    this.getList();
-    this.getProductTree();
     this.$nextTick(() => this.$refs.table?.doLayout());
     // this.getConfigKey("sys.user.initPassword").then(response => {
     //   this.initPassword = response.msg;
     // });
   },
+  mounted(){
+    this.getList();
+    this.getProductTree();
+  },    
   methods: {
     autoStartHidden(val) {
       if (val.row) {
@@ -494,41 +492,14 @@ export default {
     // },
     /** 查询用户列表 */
     getList() {
-      // this.userList = Array.from({ length: 20 }).map((r, i) => ({ userId: i }));
-      // this.dataSource=[
-      //   {
-      //     productCode: '63421',
-      //     productName: '产品1',
-      //     type: 'A',
-      //     isProvince: true,
-      //     province: '北京',
-      //     updateName: '张三',
-      //     updataTime: '2020-12-11',
-      //   },
-      //   {
-      //     productCode: '78965',
-      //     productName: '产品2',
-      //     type: 'B',
-      //     isProvince: false,
-      //     province: '上海',
-      //     updateName: '李四',
-      //     updataTime: '2021-01-11',
-      //     },
-      //     {
-      //       productCode: '54879',
-      //       productName: '产品3',
-      //       type: 'A',
-      //       isProvince: true,
-      //       province: '广东',
-      //       updateName: '王五',
-      //       updataTime: '2021-02-11',
-      //       },
-      // ]
-      // return (this.total = this.dataSource.length);
       this.loading = true;
+      const formData =this.$refs.PageSearchPanelRef.getFormData();
       this.$$api.productClassification
         .listProduct({
-          params: this.queryParams,
+          params: {
+            ...formData,
+            ...this.queryParams
+          },
         })
         .then(({ res: response, err }) => {
           if (err) return;
@@ -604,13 +575,13 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.$refs["queryForm"]?.resetFields();
-      this.queryParams.isProvinceCustom = undefined;
       this.$refs.tree.setCurrentKey(null);
       this.handleQuery();
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.productId);
+      this.productCodeList= selection.map((item) => item.productCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -706,9 +677,15 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const productIds = row.productId || this.ids;
+      const productIds = row?.productId || this.ids;
+      let showText=''
+      if(this.ids.length>0){
+        showText=this.productCodeList.join(',')
+      }else{
+        showText=row?.productCode
+      }
       this.$$Dialog
-        .confirm('是否确认删除投诉产品编号为"' + productIds + '"的数据项？')
+        .confirm('是否确认删除投诉产品编号为"' + showText + '"的数据项？')
         .then(() => {
           let data = {
             productIds: Array.isArray(productIds)

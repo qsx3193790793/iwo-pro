@@ -1,7 +1,15 @@
 //测试
 export const key = 'cust_deviceStatusInfo';
 export const label = '省内接口_设备状态信息查询';
-
+export const resFields = [
+  {"label": "产品实例状态", "value": "statusCd"},
+  {"label": "产品实例状态名称", "value": "statusName"},
+  {"label": "停机类型", "value": "stopType"},
+  {"label": "停机类型名称", "value": "stopTypeName"},
+  {"label": "停机时间", "value": "stopDate"},
+  {"label": "停机原因", "value": "stopReason"},
+  {"label": "复机时间", "value": "recoveryTime"}
+];
 export default async ({vm, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning)

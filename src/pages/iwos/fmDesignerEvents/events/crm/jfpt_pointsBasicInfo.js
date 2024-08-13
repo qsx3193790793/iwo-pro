@@ -1,7 +1,15 @@
 //测试
 export const key = 'jfpt_pointsBasicInfo';
 export const label = '省内接口_积分基本信息查询';
-
+export const resFields = [
+  {"label": "当前积分", "value": "useablePoints"},
+  {"label": "总积分", "value": "sumPoints"},
+  {"label": "可用积分", "value": "usedPoints"},
+  {"label": "即将到期积分", "value": "expiredPoints"},
+  {"label": "已兑换积分", "value": "exchangePoints"},
+  {"label": "累计清零积分", "value": "accumulatedZero"},
+  {"label": "当月积分", "value": "currMonthPoints"},
+];
 export default async ({vm, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning)

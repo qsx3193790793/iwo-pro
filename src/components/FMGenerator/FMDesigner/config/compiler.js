@@ -148,7 +148,11 @@ export const buttonsCompiler = (j, isView) => {
 
 //自定义编译
 export const customizationCompsCompiler = (j, isView) => {
-  if (!['FMAddressSelector', 'FMDingDanSelector', 'FMSalesSelector', 'FMPaymentSelector'].includes(j.name)) return {};
+  if (![
+    'FMAddressSelector', 'FMBalanceSelector',
+    'FMSalesSelector', 'FMPaymentSelector',
+    'FMDingDanSelector', 'FMOrderSalesSelector'
+  ].includes(j.name)) return {};
   const events = useEvents();
   return {
     emitter({vm, item}) {

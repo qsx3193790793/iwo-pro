@@ -112,7 +112,7 @@ const select_pkid = ref(null);
 
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
-  {name: '工单类型', key: 'workorderType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('work_order_type'), isDisable: !1, isRequire: !1},
+  {name: '工单类型', key: 'workorderType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_work_order_type'), isDisable: !1, isRequire: !1},
   {name: '模板名称', key: 'templateName', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '模板大类', key: 'bigType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !1},
   {name: '模板小类', key: 'smallType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !1},
@@ -146,7 +146,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'AuditIndex',
-  cusDicts: ['work_order_type', 'template_status_name', 'template_big_type', 'template_small_type', 'base_province_code']
+  cusDicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type', 'base_province_code']
 }
 </script>
 <style lang="scss" scoped>

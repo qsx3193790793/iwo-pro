@@ -1,5 +1,5 @@
 <template>
-  <div class="PageSearchPanel query-form one-screen-fg0">
+  <div class="PageSearchPanel query-form one-screen-fg0" :class="{noBackground}">
     <FormModel ref="FormModelRef" :formConfig="formConfig"></FormModel>
     <div v-if="hasExpand&&props.formConfigItems.length > 8" class="expand" @click="isExpand=!isExpand">
       <i :class="isExpand?'el-icon-arrow-up':'el-icon-arrow-down'"></i>
@@ -16,6 +16,7 @@ const props = defineProps({
   hasExpand: {type: Boolean, default: true},//是否有收起展开
   formConfigItems: {type: Array, default: () => []},// 表单配置项目
   labelWidth: {type: String, default: '1rem'},// 表单label宽度
+  noBackground: {type: Boolean, default: false},// 表单label宽度
 });
 
 const isExpand = ref(!1);

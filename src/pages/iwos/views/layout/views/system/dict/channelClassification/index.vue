@@ -29,7 +29,11 @@
       </el-col>
       <!--用户数据-->
       <el-col :span="20" :xs="24">
-        <el-form
+        <PageSearchPanel
+          ref="PageSearchPanelRef"
+          :formConfigItems="formConfigItems"
+        ></PageSearchPanel>
+        <!-- <el-form
           :model="queryParams"
           ref="queryForm"
           size="small"
@@ -85,20 +89,6 @@
           />
             </el-select>
           </el-form-item>
-          <!-- <el-form-item label="省" prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="用户省"
-              clearable
-              class="queryItem"
-            >
-              <el-option
-                v-for="dict in $$dictionaries.get('sys_normal_disable')"
-                v-bind="dict"
-                :key="dict.value"
-              />
-            </el-select>
-          </el-form-item> -->
           <el-form-item>
             <el-button
               type="primary"
@@ -111,9 +101,9 @@
               >重置</el-button
             >
           </el-form-item>
-        </el-form>
+        </el-form> -->
 
-        <el-row :gutter="10" class="mb8">
+        <!-- <el-row :gutter="10" class="mb8">
           <el-col :span="1.5">
             <el-button
               type="primary"
@@ -137,7 +127,7 @@
               >删除
             </el-button>
           </el-col>
-        </el-row>
+        </el-row> -->
         <div style="height: 70vh;"> 
           <div class="one-screen" >
             <div class="one-screen-fg1">
@@ -255,16 +245,19 @@
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
+import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 export default {
   name: "UserIndex",
   cusDicts: ['start_stop','yes_no'],
-  components: { Treeselect ,JsTable},
+  components: { Treeselect ,JsTable,PageSearchPanel},
   data() {
     return {
       // 遮罩层
       loading: false,
       // 选中数组
       ids: [],
+      // 渠道编码
+      channelCodeList:[],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -295,6 +288,92 @@ export default {
       tree_channelName:"",
       // 表单参数
       form: {},
+      formConfigItems: [
+        {
+          name: "渠道编码",
+          key: "channelCode",
+          value: "",
+          type: "input",
+          placeholder: "渠道编码",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "渠道名称",
+          key: "channelName",
+          value: "",
+          type: "input",
+          placeholder: "渠道名称",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "是否省自定义",
+          key: "isProvinceCustom",
+          value: "",
+          col: 6,
+          type: "select",
+          options: () =>
+            this.$store.getters["dictionaries/GET_DICT"]("yes_no"),
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "状态",
+          key: "status",
+          value: "",
+          col: 6,
+          type: "select",
+          options: () =>
+          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          type: "buttons",
+          align: "right",
+          verticalAlign: "top",
+          col: 6,
+          items: [
+            {
+              btnName: "重置",
+              type: "button",
+              attrs: { type: "" },
+              col: 1,
+              onClick:({vm})=>{
+                vm.resetFormData();
+                this.resetQuery();
+              }
+            },
+            {
+              btnName: "查询",
+              type: "button",
+              attrs: { type: "primary" },
+              col: 1,
+              onClick:({ vm }) =>{
+                this.getList();
+              },
+            },
+            {
+              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
+              onClick:({vm})=> {
+                this.handleDelete();
+              }
+            },
+            {
+              btnName: "新增",
+              type: "button",
+              attrs: { type: "success"},
+              col: 1,
+              onClick:({ vm })=> {
+                this.handleAdd()
+              },
+            },
+          ],
+        },
+      ],
       defaultProps: {
         children: "children",
         label: "channelName",
@@ -343,7 +422,11 @@ export default {
               label: "删除",
               key: "del",
               type: "danger",
-              event: this.handleDelete,
+              event:(val)=>{
+                this.ids=[]
+                this.channelCodeList=[]
+                this.handleDelete(val)
+              },
             },
             {
               label: "启动",
@@ -368,12 +451,8 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 15,
-        channelCode: undefined,
         channelLevel: undefined,
         pcode: undefined,
-        channelName: undefined,
-        isProvinceCustom: undefined,
-        status: undefined,
       },
       // 表单校验
       rules: {
@@ -405,12 +484,14 @@ export default {
     },
   },
   created() {
-    this.getList();
-    this.getChannelTree();
     this.$nextTick(() => this.$refs.table?.doLayout());
     // this.getConfigKey("sys.user.initPassword").then(response => {
     //   this.initPassword = response.msg;
     // });
+  },
+  mounted(){
+    this.getList();
+    this.getChannelTree();
   },
   methods: {
     autoStartHidden(val){
@@ -430,9 +511,13 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
+      const formData =this.$refs.PageSearchPanelRef.getFormData();
       this.$$api.channelClassification
         .listChannel({
-          params: this.queryParams
+          params:{ 
+            ...formData,
+            ...this.queryParams
+          }
         })
         .then(({ res: response, err }) => {
           if (err) return;
@@ -520,6 +605,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.channelId);
+      this.channelCodeList=selection.map((item) => item.channelCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -692,9 +778,15 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const channelCodes = row.channelId || this.ids;
+      const channelCodes = row?.channelId || this.ids;
+      let showText=''
+      if(this.ids.length>0){
+        showText=this.channelCodeList.join(',')
+      }else{
+        showText=row?.channelCode
+      }
       this.$$Dialog
-        .confirm('是否确认删除渠道编码为"' + channelCodes + '"的数据项？')
+        .confirm('是否确认删除渠道编码为"' + showText + '"的数据项？')
         .then(() => {
           
           let data={

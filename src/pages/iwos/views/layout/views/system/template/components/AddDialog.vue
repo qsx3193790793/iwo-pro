@@ -190,7 +190,7 @@ const formConfig = ref({
     {
       name: '',
       items: [
-        {name: '工单类型', key: 'workorderType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('work_order_type'), isDisable: !1, isRequire: !0},
+        {name: '工单类型', key: 'workorderType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_work_order_type'), isDisable: !1, isRequire: !0},
         {name: '模板大类', key: 'bigType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !0},
         {
           name: '模板小类', key: 'smallType', value: '0', type: 'radio', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !0,
@@ -265,7 +265,7 @@ onBeforeMount(() => {
 <script>
 export default {
   name: 'TemplateAddDialog',
-  cusDicts: ['work_order_type', 'template_status_name', 'template_big_type', 'template_small_type']
+  cusDicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type']
 }
 </script>
 <style lang="scss" scoped>

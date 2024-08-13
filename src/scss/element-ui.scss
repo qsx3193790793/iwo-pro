@@ -225,6 +225,10 @@ $main-color-5: rgba($main-color, 0.5);
   }
 }
 
+.el-cascader .el-input {
+  width: 100%;
+}
+
 .mForm {
 
   .el-form-item__label {

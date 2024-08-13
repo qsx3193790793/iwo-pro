@@ -1,7 +1,14 @@
 //测试
 export const key = 'packageUsage_packageUsage';
 export const label = '省内接口_套餐使用情况查询';
-
+export const resFields = [
+  {"label": "套内流量总量", "value": "initValFlow"},
+  {"label": "套内流量剩余量", "value": "accuValFlow"},
+  {"label": "套内流量使用量", "value": "usageValFlow"},
+  {"label": "套内语音总量", "value": "initValVoice"},
+  {"label": "套内语音剩余量", "value": "accuValVoice"},
+  {"label": "套内语音使用量", "value": "usageValVoice"}
+];
 export default async ({vm, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning)

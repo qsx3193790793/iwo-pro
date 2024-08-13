@@ -2,6 +2,7 @@
 import {getProps} from "@/components/FMGenerator/FMDesigner/config/index";
 import useEvents from "@/components/FMGenerator/FMDesigner/config/events";
 import Vue from "vue";
+import {resFields} from "@/pages/iwos/fmDesignerEvents/events/crm/order_installationInfo";
 
 // 查询所有key
 export const keysFinder = (arr, filter = []) => {
@@ -67,9 +68,15 @@ export const formConfigProps = () => [
         const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
         return keysFinder(stage[stage.length - 1], []).map(rk => {
           const [label, key] = rk.split('||');
-          return {label: rk, value: key};
+          return {label: `${label}(${key})`, value: key};
         });
-      }
+      },
+      handleValueKeys({vm}) {
+        const events = useEvents();
+        return vm.formData.events?.map(evLabel => ({
+          label: events[evLabel].label, options: (events[evLabel].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
+        }));
+      },
     }
   },
   // {
@@ -102,7 +109,7 @@ const commonPropsMap = {
         const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
         return keysFinder(stage[stage.length - 1], [vm.root.vm.formData.key]).map(rk => {
           const [label, key] = rk.split('||');
-          return {label: rk, value: key};
+          return {label: `${label}(${key})`, value: key};
         });
       }
     }
@@ -113,8 +120,31 @@ const commonPropsMap = {
       const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
       return keysFinder(stage[stage.length - 1], [vm.formData.key]).map(rk => {
         const [label, key] = rk.split('||');
-        return {label: rk, value: key};
+        return {label: `${label}(${key})`, value: key};
       });
+    }
+  },
+  reqFields: {
+    sort: 10.1, name: '绑定入参', key: 'reqFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+    attrs: {
+      formPlaceholder: '选择字段', toPlaceholder: '绑定字段',
+      handleValueKeys({vm}) {
+        const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
+        return [
+          {
+            label: '当前表单',
+            options: keysFinder(stage[stage.length - 1], []).map(rk => {
+              const [label, key] = rk.split('||');
+              return {label: `${label}(${key})`, value: key};
+            })
+          }
+        ]
+      },
+      handleKeys({vm}) {
+        return [
+          {label: '订单编号(orderId)', value: 'orderId'}
+        ]
+      }
     }
   },
   eventsType: {sort: 11, name: '事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
@@ -132,11 +162,17 @@ const commonPropsMap = {
     sort: 13, name: '绑定事件字段', key: 'eventsFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
     attrs: {
       formPlaceholder: '选择字段', toPlaceholder: '绑定字段',
+      handleValueKeys({vm}) {
+        const events = useEvents();
+        return vm.formData.events?.map(evLabel => ({
+          label: events[evLabel].label, options: (events[evLabel].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
+        }));
+      },
       handleKeys({vm}) {
         const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
         return keysFinder(stage[stage.length - 1], []).map(rk => {
           const [label, key] = rk.split('||');
-          return {label: rk, value: key};
+          return {label: `${label}(${key})`, value: key};
         });
       }
     }
