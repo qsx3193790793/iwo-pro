@@ -1,6 +1,6 @@
 <template>
   <div class="one-screen">
-    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
+    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems" noBackground></PageSearchPanel>
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
         <JsTable :dataSource="list" :columns="columns" @selectionChange="handleSelectionChange">

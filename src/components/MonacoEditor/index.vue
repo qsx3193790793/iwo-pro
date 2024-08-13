@@ -14,11 +14,14 @@ const MonacoEditorInstant = ref();
 const props = defineProps({
   value: {type: String, default: null},
   language: {type: String, default: 'json'},
-  height: {type: String, default: '1.2rem'}
+  height: {type: String, default: '1.2rem'},
+  disabled: {type: Boolean, default: false}
 });
 
 // 当他进入时值为空情况 在监听变化赋值
-watch(() => props.value, () => !props.value && MonacoEditorInstant.value?.setValue(props.value));
+watch(() => props.value, (n,o) =>{
+  !o && MonacoEditorInstant.value?.setValue(props.value)
+});
 
 function init() {
   MonacoEditorInstant.value = monaco.editor.create(MonacoEditorRef.value, {
@@ -40,7 +43,7 @@ function init() {
     lineNumbers: "on", // 行号 取值： "on" | "off" | "relative" | "interval" | function
     lineNumbersMinChars: 4, // 行号最小字符   number
     enableSplitViewResizing: false,
-    readOnly: false, //是否只读  取值 true | false
+    readOnly: props.disabled, //是否只读  取值 true | false
     fontSize: 14,
     scrollbar: {
       horizontalScrollbarSize: 6,

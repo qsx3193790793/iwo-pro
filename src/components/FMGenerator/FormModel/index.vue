@@ -90,7 +90,7 @@
                         <CheckboxButton v-for="ev in getSelectOptions(v)" :key="ev.value+i" :label="ev.value" :style="{width: `calc(100% / ${v.options?.length||2})`}" border>{{ ev.label }}</CheckboxButton>
                       </CheckboxGroup>
                       <Slider v-else-if="['slider','FMSlider'].includes(v.type)" v-model="formData[v.key]" :min="v.min??0" :max="v.max??100" :disabled="v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"></Slider>
-                      <MonacoEditor v-else-if="['monacoEditor','FMMonacoEditor'].includes(v.type)" v-model="formData[v.key]" :height="v.height||'1.2rem'" @change="v.onChange&&v.onChange({vm,item:v})"></MonacoEditor>
+                      <MonacoEditor v-else-if="['monacoEditor','FMMonacoEditor'].includes(v.type)" v-model="formData[v.key]" :height="v.height||'1.2rem'" :disabled="v.disabled"  @change="v.onChange&&v.onChange({vm,item:v})"></MonacoEditor>
                       <!-- v.component可以为字符串使用components导入的组件，或直接为组件对象-->
                       <component v-else-if="['component','FMComponent'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" v-on="v.emitter?.({vm,item:v})" v-bind="v.attrs||{}" :ref="v.key" :root="{vm}" :is="v.component" :disabled="disabled||v.isDisable"></component>
                       <template v-else-if="['button','FMButton'].includes(v.type)">

@@ -95,7 +95,7 @@ const formConfig = ref({
         {name: '请求方式', key: 'interfaceMethod', value: '',col: 6, type: 'select',options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !0},
         {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: !1, isRequire: !0},
         {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 6, type: 'input',  isDisable: !1, isRequire: !0},
-        {name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !1, isRequire: !0, col: 24 , },
+        {name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'monacoEditor', height: '2rem',  isRequire: !0, col: 24 , },
         {name: '入参列表', key: 'requestParam', value: [], placeholder: '', col: 24, type: 'component', component: requstFieldSelector, isDisable: !1, isRequire: !1 , emitter({vm}) {
           return {
             requstHasEdit(val){
@@ -104,7 +104,7 @@ const formConfig = ref({
           }
         }},
         {name: '出参json', key: 'responseJsonStr', value: '', type: 'monacoEditor', height: '2rem', readOnly: !0, isRequire: !0, col: 24 },
-        {name: '出参列表', key: 'responseParam', value: [], placeholder: '', col: 24, type: 'component', component: responseFieldSelector, isDisable: !1, isRequire: !1 , emitter({vm}) {
+        {name: '出参列表', key: 'responseParam', value: [], placeholder: '', col: 24, type: 'component', component: responseFieldSelector, isRequire: !1 , disabled:!0, emitter({vm}) {
           return {
             responseHasEdit(val){
                  isResponseEdit.value = val

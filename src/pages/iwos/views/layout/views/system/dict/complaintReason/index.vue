@@ -383,6 +383,18 @@ export default {
             key: "isProvinceCustom",
           },
           {
+            name: "原因层级",
+            key: "level",
+          },
+          {
+            name: "上级原因",
+            key: "reasonChain",
+          },
+          {
+            name: "省份",
+            key: "provinceName",
+          },
+          {
             name: "状态",
             key: "status",
           },
