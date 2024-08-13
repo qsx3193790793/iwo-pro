@@ -77,7 +77,7 @@
                 style="width: 240px"
             >
               <el-option
-                  v-for="dict in $store.getters['dictionaries/GET_DICT']('phenom_status_name')"
+                  v-for="dict in $store.getters['dictionaries/GET_DICT']('reason_status_name')"
                   v-bind="dict"
                   :key="dict.value"
               />
@@ -91,13 +91,13 @@
           <el-form-item>
             <el-button
                 type="primary"
-                icon="el-icon-search"
+               
                 size="mini"
                 @click="handleQuery"
             >搜索
             </el-button
             >
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            <el-button size="mini" @click="resetQuery"
             >重置
             </el-button
             >
@@ -136,7 +136,9 @@
               {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
             </template>
             <template #status="{row}">
-              {{ $store.getters['dictionaries/MATCH_LABEL']('phenom_status_name', row.status) }}
+              <el-tag :type="row.status == 0?'danger':''">
+                {{$store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status)}}
+              </el-tag>
             </template>
           </JsTable>
         </div>
@@ -249,6 +251,7 @@
           <el-col :span="12">
             <el-form-item label="投诉原因名称" prop='reasonName'>
               <el-input
+                  :disabled="detailDisabled"
                   v-model="form.reasonName"
                   placeholder="请输入"
                   maxlength="30"
@@ -280,7 +283,7 @@
           </el-col>
           <el-col :span="12" v-if="this.form.userId">
             <el-form-item label="用户状态" prop="status">
-              <el-radio-group v-model="form.status">
+              <el-radio-group v-model="form.status" :disabled="detailDisabled">
                 <el-radio :label="1">启用</el-radio>
                 <el-radio :label="0">停用</el-radio>
               </el-radio-group>
@@ -288,7 +291,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" v-show="!detailDisabled">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -303,7 +306,7 @@ import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 
 export default {
   name: "complaintReason",
-  cusDicts: ["phenom_status_name", "yes_no"],
+  cusDicts: ["reason_status_name", "yes_no"],
   components: {Treeselect, PageSearchPanel, JsTable},
   data() {
     return {
@@ -411,6 +414,10 @@ export default {
               event: this.handleUpdate,
             },
             {
+              label: "更多",
+              key: "more",
+              children:[
+              {
               label: "删除",
               key: "del",
               type: "danger",
@@ -418,6 +425,30 @@ export default {
                 return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
               },
               event: this.handleDelete,
+            },
+            {
+              label: "启用",
+              key: "start",
+              type: "primary",
+              autoHidden: this.autoStartHidden,
+              event: this.handleStart,
+            },
+            {
+              label: "停用",
+              key: "end",
+              type: "danger",
+              autoHidden: this.autoEndHidden,
+              event: this.handleEnd,
+            },
+            {
+              label: "详情",
+              key: "detail",
+              autoHidden: ({row}) => {
+                return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+              },
+              event: this.handleDetail,
+            },
+              ]
             },
           ],
         },
@@ -446,11 +477,66 @@ export default {
       this.$refs.tree.filter(val);
     },
   },
+  computed:{
+     detailDisabled(){
+       return this.title==='详情' ? true :false
+     }    
+  },
   created() {
     this.getList();
     this.getComplaintReasonTree();
   },
   methods: {
+    autoStartHidden(val) {
+      if (val.row) {
+        return (val.row.status == "0" ? true : false) && val.row.isProvinceCustom === 1;
+      } else {
+        return false;
+      }
+    },
+    autoEndHidden(val) {
+      if (val.row) {
+        return (val.row.status == "1" ? true : false) && val.row.isProvinceCustom === 1;
+      } else {
+        return false;
+      }
+    },
+    //启用
+    handleStart(row){
+      this.$$Dialog
+        .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？')
+        .then(() => {
+          let data = {
+            reasonId:  row.reasonId,
+            status: 1
+          };  
+          return this.$$api.complaintReason.updateComplaintReason({ data: data });
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("启动成功");
+        })
+        .catch(() => {});
+    },
+    //停用
+    handleEnd(row){
+      this.$$Dialog
+        .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？')
+        .then(() => {
+          let data = {
+            reasonId: row.reasonId,
+            status: 0
+          };
+          return this.$$api.complaintreasonenon.updateComplaintReason({ data: data });
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("停用成功");
+        })
+        .catch(() => {});
+    },
     /** 查询用户列表 */
     getList() {
       this.loading = true;
@@ -481,7 +567,7 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data, node) {
-      if (node.childNodes.length <= 0) return
+      if (node.childNodes.length <= 0) return this.dataSource=[]
       this.queryParams.pcode = data.reasonCode
       this.handleQuery();
     },
@@ -626,6 +712,46 @@ export default {
       }
       this.open = true;
       this.title = "修改";
+    },
+    handleDetail(row) {
+      this.reset();
+      this.showForthItem = row.level === 4 ? false : true
+      const treeData = this.findAncestorsInMultipleTrees(this.complaintReasonTreeOptions, row.reasonCode, 'reasonCode', 'reasonName', 'reasonList')
+      if (row.level === 4) {
+        const formData = {
+          reasonCode: row.reasonCode,
+          reasonName: row.reasonName,
+          userId: row.reasonId,
+          status: row.status,
+          isProvinceCustom: '1',
+          firstReasonCode: treeData[2].reasonCode,
+          firstReasonName: treeData[2].reasonName,
+          secondReasonCode: treeData[1].reasonCode,
+          secondReasonName: treeData[1].reasonName,
+          thirdReasonCode: treeData[0].reasonCode,
+          thirdReasonName: treeData[0].reasonName,
+        }
+        this.form = formData
+      } else if (row.level === 5) {
+        const formData = {
+          reasonCode: row.reasonCode,
+          reasonName: row.reasonName,
+          userId: row.reasonId,
+          status: row.status,
+          isProvinceCustom: '1',
+          firstReasonCode: treeData[3].reasonCode,
+          firstReasonName: treeData[3].reasonName,
+          secondReasonCode: treeData[2].reasonCode,
+          secondReasonName: treeData[2].reasonName,
+          thirdReasonCode: treeData[1].reasonCode,
+          thirdReasonName: treeData[1].reasonName,
+          fourthReasonCode: treeData[0].reasonCode,
+          fourthReasonName: treeData[0].reasonName,
+        }
+        this.form = formData
+      }
+      this.open = true;
+      this.title = "详情";
     },
     /** 提交按钮 */
     submitForm: function () {

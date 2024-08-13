@@ -4,6 +4,15 @@
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
         <JsTable :dataSource="list" :columns="columns" @selectionChange="handleSelectionChange">
+          <template #interfaceMethod="{row}">
+            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_request_method', row.interfaceMethod) }}
+          </template>
+          <template #interfaceNormType="{row}">
+            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_specification_type', row.interfaceNormType) }}
+          </template>
+          <template #interfaceType="{row}">
+            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_type', row.interfaceType) }}
+          </template>
           <template #status="{row}">
             <el-switch  v-model="row.status" :inactive-value="0" :active-value="1"  @change="handleStatusChange(row)"></el-switch>
           </template>
@@ -29,14 +38,10 @@ const {proxy} = getCurrentInstance();
 let columns = ref({
   selection: true,
   props: [
-    // {
-    //   name: '主键',
-    //   key: 'interfaceId',
-    // },
     {
       name: '接口编码',
       key: 'interfaceCode',
-      width: 200
+    
     },
     {
       name: '接口名称',
@@ -46,15 +51,6 @@ let columns = ref({
       name: '接口地址',
       key: 'interfaceUrl',
     },
-    // {
-    //   name: '业务入参List',
-    //   key: 'requestParam',
-    //   width: 200
-    // },
-    // {
-    //   name: '业务出参List',
-    //   key: 'responseParam',
-    // },
     {
       name: '接口描述',
       key: 'interfaceDesc',
@@ -66,6 +62,7 @@ let columns = ref({
     {
       name: '接口规范类型',
       key: 'interfaceNormType',
+      width: 160
     },
     {
       name: '接口类型',
@@ -74,6 +71,7 @@ let columns = ref({
     {
       name: '接口联系信息',
       key: 'interfaceInfo',
+      width: 120
     },
     {
       name: '省编码',
@@ -86,6 +84,7 @@ let columns = ref({
     {
       name: '创建时间',
       key: 'createdTime',
+      width: 160
     },
     {
       name: '更新人',
@@ -99,7 +98,6 @@ let columns = ref({
   options: {
     btns:   [{
           label: '编辑',
-          // autoHidden: ({row}) => !['待审核', '待发布', '上架'].includes(row.statusName),
           key: 'edit',
           event: (row) => {
             select_pkid.value = {interfaceId: row.interfaceId};
@@ -144,9 +142,10 @@ function handleStatusChange(row){
         return proxy.$$api.interface.changeStatus({data:{status:row.status,interfaceId:row.interfaceId}});
       }).then(({res, err}) => {
         if (err)  return ; 
+        getList(1);
         proxy.$$Toast.success(text + "成功");
       }).catch(function () {
-        row.status = row.status === "0" ? "1" : "0";
+        row.status = row.status === 0 ? 1 : 0;
       });
 }
 //弹窗
@@ -155,16 +154,13 @@ const select_pkid = ref(null);
 
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
-  // {name: '主键', key: 'interfaceId', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '接口编码', key: 'interfaceCode', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '接口名称', key: 'interfaceName', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
-  // {name: '接口地址', key: 'interfaceUrl', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
-  {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: [{label:'GET',value:'GET'},{label:'POST',value:'POST'}], isDisable: !1, isRequire: !1},
-  {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options:[{label:'CRM一致性接口',value: 1},{label:'计费一致性接口',value: 2},{label:'省内统一接口',value: 3}], isDisable: !1, isRequire: !1},
-  {name: '接口类型', key: 'interfaceType', value: '', col: 6, type: 'select', options: [{label:'统一接口',value: 1},{label:'省内自定义',value: 2}], isDisable: !1, isRequire: !1},
+  {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !1},
+  {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: !1, isRequire: !1},
+  {name: '接口类型', key: 'interfaceType', value: '', col: 6, type: 'select',  options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_type'),isDisable: !1, isRequire: !1},
   {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 6, type: 'input',  isDisable: !1, isRequire: !1},
-  // {name: '省编码', key: 'provinceCode', value: '', col: 6, type: 'input',isDisable: !1, isRequire: !1},
-  {name: '状态', key: 'status', value: '', col: 6, type: 'select', options: [{label:'删除',value:'2'},{label:'启用',value:'1'},{label:'停用',value:'0'}], isDisable: !1, isRequire: !1},
+  {name: '状态', key: 'status', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('start_stop'), isDisable: !1, isRequire: !1},
   {
     type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, items: [
       {
@@ -207,7 +203,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'InterfaceIndex',
-  cusDicts: []
+  cusDicts: ['interface_request_method','interface_specification_type','interface_type','start_stop']
 }
 </script>
 <style lang="scss" scoped>

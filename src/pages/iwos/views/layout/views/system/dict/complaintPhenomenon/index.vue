@@ -77,7 +77,7 @@
                 style="width: 240px"
             >
               <el-option
-                  v-for="dict in $store.getters['dictionaries/GET_DICT']('reason_status_name')"
+                  v-for="dict in $store.getters['dictionaries/GET_DICT']('phenom_status_name')"
                   v-bind="dict"
                   :key="dict.value"
               />
@@ -86,13 +86,12 @@
           <el-form-item>
             <el-button
                 type="primary"
-                icon="el-icon-search"
                 size="mini"
                 @click="handleQuery"
             >搜索
             </el-button
             >
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            <el-button  size="mini" @click="resetQuery"
             >重置
             </el-button
             >
@@ -130,9 +129,15 @@
             <template #isProvinceCustom="{row}">
               {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
             </template>
-            <template #status="{row}">
-              {{ $store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status) }}
+            <template #level="{row}">
+              {{  row.level }}
             </template>
+            <template #status="{ row }">
+              <el-tag :type="row.status == 0?'danger':''">
+                {{$store.getters['dictionaries/MATCH_LABEL']('phenom_status_name', row.status)}}
+              </el-tag>
+            </template>
+         
           </JsTable>
         </div>
         <el-pagination
@@ -203,6 +208,7 @@
                   v-model="form.phenomName"
                   placeholder="请输入"
                   maxlength="30"
+                  :disabled="detailDisabled"
               />
             </el-form-item>
           </el-col>
@@ -231,7 +237,7 @@
           </el-col>
           <el-col :span="12" v-if="this.form.userId">
             <el-form-item label="用户状态" prop="status">
-              <el-radio-group v-model="form.status">
+              <el-radio-group v-model="form.status" :disabled="detailDisabled">
                 <el-radio :label="1">启用</el-radio>
                 <el-radio :label="0">停用</el-radio>
               </el-radio-group>
@@ -239,7 +245,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer"  v-show="!detailDisabled">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -255,7 +261,7 @@ import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 export default {
   name: "complaintPhenomenon",
   // dicts: ["sys_normal_disable", "sys_user_sex"],
-  cusDicts: ["reason_status_name", "yes_no"],
+  cusDicts: ["phenom_status_name", "yes_no"],
   components: {Treeselect, PageSearchPanel, JsTable},
   data() {
     return {
@@ -331,6 +337,18 @@ export default {
             key: "isProvinceCustom",
           },
           {
+            name: "现象层级",
+            key: "level",
+          },
+          {
+            name: "上级现象",
+            key: "phenomChain",
+          },
+          {
+            name: "省份",
+            key: "provinceName",
+          },
+          {
             name: "状态",
             key: "status",
           },
@@ -361,14 +379,43 @@ export default {
               },
               event: this.handleUpdate,
             },
+            
             {
-              label: "删除",
-              key: "del",
-              type: "danger",
-              autoHidden: ({row}) => {
-                return row.level === 3 && row.isProvinceCustom === 1
-              },
-              event: this.handleDelete,
+              label: "更多",
+              key: "more",
+              children:[
+                 {
+                 label: "删除",
+                 key: "del",
+                 type: "danger",
+                 autoHidden: ({row}) => {
+                   return row.level === 3 && row.isProvinceCustom === 1
+                 },
+                 event: this.handleDelete,
+               },
+                {
+                  label: "启用",
+                  key: "start",
+                  type: "primary",
+                  autoHidden: this.autoStartHidden,
+                  event: this.handleStart,
+                },
+                {
+                 label: "停用",
+                 key: "end",
+                 type: "danger",
+                 autoHidden: this.autoEndHidden,
+                 event: this.handleEnd,
+                },
+                {
+                 label: "详情",
+                 key: "detail",
+                 event: this.handleDetail,
+                 autoHidden: ({row}) => {
+                   return  row.isProvinceCustom === 1
+                 },
+               },
+              ]
             },
           ],
         },
@@ -397,12 +444,68 @@ export default {
       this.$refs.tree.filter(val);
     },
   },
+  computed:{
+     detailDisabled(){
+       return this.title==='详情' ? true :false
+     }    
+  },
   created() {
     // console.log('diguijieguo', this.findAncestorsInMultipleTrees(this.reasonList,'11010101','reasonCode','reasonName','reasonList'));
     this.getList();
     this.getComplaintPhenomenonTree();
   },
   methods: {
+    //停用启用
+    autoStartHidden(val) {
+      if (val.row) {
+        return (val.row.status == "0" ? true : false) && val.row.isProvinceCustom == 1;
+      } else {
+        return false;
+      }
+    },
+    autoEndHidden(val) {
+      if (val.row) {
+        return (val.row.status == "1" ? true : false) && val.row.isProvinceCustom == 1;
+      } else {
+        return false;
+      }
+    },
+    //启用
+    handleStart(row){
+      this.$$Dialog
+        .confirm('是否确认启用投诉现象名称为"' + row.phenomName + '"的数据项？')
+        .then(() => {
+          let data = {
+            phenomId:  row.phenomId,
+            status: 1
+          };
+          return this.$$api.complaintPhenomenon.updateComplaintPhenomenon({ data: data });
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("启用成功");
+        })
+        .catch(() => {});
+    },
+    //停用
+    handleEnd(row){
+      this.$$Dialog
+        .confirm('是否确认启用投诉现象名称为"' + row.phenomName + '"的数据项？')
+        .then(() => {
+          let data = {
+            phenomId: row.phenomId,
+            status: 0
+          };
+          return this.$$api.complaintPhenomenon.updateComplaintPhenomenon({ data: data });
+        })
+        .then(({ res, err }) => {
+          if (err) return;
+          this.getList();
+          this.$$Toast.success("停用成功");
+        })
+        .catch(() => {});
+    },
     /** 查询用户列表 */
     getList() {
       this.loading = true;
@@ -463,7 +566,7 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data, node) {
-      if (node.childNodes.length <= 0) return
+      if (node.childNodes.length <= 0) return  this.dataSource=[]
       console.log('nodeData', node);
       this.queryParams.pcode = data.phenomCode
       this.handleQuery();
@@ -502,7 +605,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd(row) {
       this.reset();
-      this.title = "新增投诉现象";
+      this.title = "新增";
       this.$$api.complaintPhenomenon
           .getComplaintPhenomenonCode({params: {pcode: row.phenomCode}}).then(({res: response, err}) => {
         if (err) return;
@@ -595,6 +698,25 @@ export default {
           .catch(() => {
           });
     },
+    //详情按钮
+    handleDetail(row){
+      this.reset();
+      const treeData = this.findAncestorsInMultipleTrees(this.complaintPhenomenonTreeOptions, row.phenomCode, 'phenomCode', 'phenomName', 'phenomList')
+      const formData = {
+        phenomCode: row.phenomCode,
+        phenomName: row.phenomName,
+        userId: row.phenomId,
+        status: row.status,
+        isProvinceCustom: '1',
+        firstPhenomCode: treeData[1].phenomCode,
+        firstPhenomName: treeData[1].phenomName,
+        secondPhenomCode: treeData[0].phenomCode,
+        secondPhenomName: treeData[0].phenomName
+      }
+      this.form = formData
+      this.open = true;
+      this.title = "详情";
+    }
   },
 };
 </script>

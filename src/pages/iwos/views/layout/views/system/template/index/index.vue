@@ -77,6 +77,11 @@ let columns = ref({
       name: '状态',
       key: 'statusName',
     },
+    {
+      name: '驳回/回退原因',
+      key: 'unsanctionedDesc',
+      width: 140
+    },
     // {
     //   name: '模板ID',
     //   key: 'templateId',

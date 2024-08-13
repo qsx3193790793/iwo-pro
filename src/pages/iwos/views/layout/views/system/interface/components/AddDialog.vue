@@ -92,8 +92,8 @@ const formConfig = ref({
         {name: 'appId', key: 'appId', value: '', placeholder: '',col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: 'appKey', key: 'appKey', value: '', placeholder: '',col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: '接口描述', key: 'interfaceDesc', value: '',col: 6, type: 'input',isDisable: !1, isRequire: !0},
-        {name: '请求方式', key: 'interfaceMethod', value: '',col: 6, type: 'select',options: [{label:'GET',value:'GET'},{label:'POST',value:'POST'}], isDisable: !1, isRequire: !0},
-        {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options:[{label:'CRM一致性接口',value:1},{label:'计费一致性接口',value:2},{label:'省内统一接口',value:3}], isDisable: !1, isRequire: !0},
+        {name: '请求方式', key: 'interfaceMethod', value: '',col: 6, type: 'select',options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !0},
+        {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: !1, isRequire: !0},
         {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 6, type: 'input',  isDisable: !1, isRequire: !0},
         {name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !1, isRequire: !0, col: 24 , },
         {name: '入参列表', key: 'requestParam', value: [], placeholder: '', col: 24, type: 'component', component: requstFieldSelector, isDisable: !1, isRequire: !1 , emitter({vm}) {
@@ -121,6 +121,11 @@ const formConfig = ref({
 onBeforeMount(() => {
 });
 
+</script>
+<script>
+export default {
+  cusDicts: ['interface_request_method','interface_specification_type','interface_type','start_stop']
+}
 </script>
 <style lang="scss" scoped>
 ::v-deep(.el-scrollbar__view) {
