@@ -412,6 +412,7 @@ export default {
             {
               label: "新增",
               key: "add",
+              type: "success",
               autoHidden: ({row}) => {
                 return (row.level === 3 || row.level === 4) && row.isProvinceCustom === 1
               },
@@ -534,7 +535,7 @@ export default {
     //停用
     handleEnd(row){
       this.$$Dialog
-        .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？')
+        .confirm('是否确认停用用投诉原因名称为"' + row.reasonName + '"的数据项？')
         .then(() => {
           let data = {
             reasonId: row.reasonId,
@@ -568,7 +569,11 @@ export default {
       this.$$api.complaintReason
           .listComplaintReasonTree({params: {reasonName: this.reasonName}}).then(({res: response, err}) => {
         if (err) return;
-        this.complaintReasonTreeOptions = response.reasonList
+        this.complaintReasonTreeOptions = [{
+          reasonCode:'0',
+          reasonName:'投诉原因',
+          reasonList: response.reasonList
+        }]   
       }).catch((error) => {
       });
     },

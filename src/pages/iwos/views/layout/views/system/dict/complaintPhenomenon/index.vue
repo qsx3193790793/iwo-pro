@@ -366,6 +366,7 @@ export default {
             {
               label: "新增",
               key: "add",
+              type: "success",
               autoHidden: ({row}) => {
                 return row.level === 2 && row.isProvinceCustom === 1
               },
@@ -450,7 +451,6 @@ export default {
      }    
   },
   created() {
-    // console.log('diguijieguo', this.findAncestorsInMultipleTrees(this.reasonList,'11010101','reasonCode','reasonName','reasonList'));
     this.getList();
     this.getComplaintPhenomenonTree();
   },
@@ -491,7 +491,7 @@ export default {
     //停用
     handleEnd(row){
       this.$$Dialog
-        .confirm('是否确认启用投诉现象名称为"' + row.phenomName + '"的数据项？')
+        .confirm('是否确认停用投诉现象名称为"' + row.phenomName + '"的数据项？')
         .then(() => {
           let data = {
             phenomId: row.phenomId,
@@ -525,7 +525,11 @@ export default {
       this.$$api.complaintPhenomenon
           .listComplaintPhenomenonTree({params: {phenomName: this.phenomName}}).then(({res: response, err}) => {
         if (err) return;
-        this.complaintPhenomenonTreeOptions = response.phenomList
+        this.complaintPhenomenonTreeOptions = [{
+          phenomCode:'0',
+          phenomName:'投诉现象',
+          phenomList: response.phenomList
+        }]  
       }).catch((error) => {
       });
     },
@@ -567,7 +571,6 @@ export default {
     // 节点单击事件
     handleNodeClick(data, node) {
       if (node.childNodes.length <= 0) return  this.dataSource=[]
-      console.log('nodeData', node);
       this.queryParams.pcode = data.phenomCode
       this.handleQuery();
     },
