@@ -71,14 +71,14 @@ const formConfig = ref({
         },
         {name: '字段标题', key: 'title', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0},
         {
-          name: '字段名称', key: 'name', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0,
+          name: '字段名称', key: 'name', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0, 
           rules: [{validator: (rule, value, cb) => Vue.prototype.$$validator.isVariable(value) ? cb() : cb(new Error('不符合变量规范[A~Z、a~z、0~9、_]不允许数字开头）')), trigger: 'blur'}],
           isShow({vm}) {
             return vm.formData.type == '1'
           }
         },
         {
-          name: '字段名称', key: 'name', value: '', type: 'select', options: [], col: 8, isDisable: !1, isRequire: !0,
+          name: '字段名称', key: 'name', value: '', type: 'select', options: [], col: 8, isDisable: !1, isRequire: !0,placeholder:'请从下拉表中选择',
           isShow({vm}) {
             return vm.formData.type == '0'
           }

@@ -7,6 +7,12 @@
           <template #updatedTime="{row}">
             {{ $$dateFormatter(row.updatedTime) }}
           </template>
+          <template #bigType="{row}">
+            {{ $store.getters['dictionaries/MATCH_LABEL']('template_big_type', row.bigType) }}
+          </template>
+          <template #smallType="{row}">
+            {{ $store.getters['dictionaries/MATCH_LABEL']('template_small_type', row.smallType) }}
+          </template>
         </JsTable>
         <div class="pagination-area">
           <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>

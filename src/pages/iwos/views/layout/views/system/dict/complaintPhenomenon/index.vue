@@ -295,6 +295,10 @@ export default {
         selection: true,
         props: [
           {
+            name: "上级节点",
+            key: "phenomChain",
+          },
+          {
             name: "投诉现象编码",
             key: "phenomCode",
           },
@@ -309,10 +313,6 @@ export default {
           {
             name: "现象层级",
             key: "level",
-          },
-          {
-            name: "上级现象",
-            key: "phenomChain",
           },
           {
             name: "省份",

@@ -311,6 +311,10 @@ export default {
         selection: true,
         props: [
           {
+            name: "上级节点",
+            key: "reasonChain",
+          },
+          {
             name: "投诉原因编码",
             key: "reasonCode",
           },
@@ -325,10 +329,6 @@ export default {
           {
             name: "原因层级",
             key: "level",
-          },
-          {
-            name: "上级原因",
-            key: "reasonChain",
           },
           {
             name: "省份",
