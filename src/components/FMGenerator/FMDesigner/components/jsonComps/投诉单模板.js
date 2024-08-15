@@ -816,8 +816,7 @@ export default {
               "events": [],
               "eventsFields": [],
               "type": "FMTextarea",
-              "rows": 3,
-              "maxlength": 100,
+              "rows": 4,
               "resize": "none"
             },
             "children": []
@@ -841,8 +840,7 @@ export default {
               "events": [],
               "eventsFields": [],
               "type": "FMTextarea",
-              "rows": 3,
-              "maxlength": 100,
+              "rows": 4,
               "resize": "none"
             },
             "children": []
@@ -865,7 +863,7 @@ export default {
                   "isDisable": false,
                   "showCondition": [],
                   "eventsType": "事件",
-                  "events": [],
+                  "events": ['complaint_btn_formatVerbalTrickContent'],
                   "eventsFields": [],
                   "type": "FMButton",
                   "btnName": "投诉内容模板化",

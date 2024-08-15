@@ -138,15 +138,15 @@ import MonacoEditor from "@/components/MonacoEditor";
 import AddressSelector from "./components/AddressSelector";
 import DingDanSelector from "./components/DingDanSelector";
 import SalesSelector from "./components/SalesSelector";
-import BalanceSelector from "./components/BalanceSelector";
 import PaymentSelector from "./components/PaymentSelector";
 import OrderSalesSelector from "./components/OrderSalesSelector";
+import PointCosHisSelector from "./components/PointCosHisSelector";
 
 export default {
   name: "FormModel",
   components: {
-    DingDanSelector, BalanceSelector, MonacoEditor,
-    PaymentSelector, SalesSelector, AddressSelector,
+    DingDanSelector, MonacoEditor,
+    PaymentSelector, SalesSelector, AddressSelector, PointCosHisSelector,
     TimePicker, OptionSelector, ConditionSelector, OrderSalesSelector,
     TimerSelector, Modal,
     Cascader, Slider, Alert, InputNumber, Checkbox, RadioButton, CheckboxGroup, CheckboxButton, Icon, Input, Button, Collapse, CollapseItem, Form, FormItem, Col, Row, RadioGroup, Radio, DatePicker, Select, OptionGroup, Option, Autocomplete

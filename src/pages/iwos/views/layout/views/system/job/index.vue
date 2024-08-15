@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container one-screen">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
@@ -36,7 +36,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -96,7 +96,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" ref="table" :data="jobList" border @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="jobList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="任务编号" width="100" align="center" prop="jobId"/>
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true"/>
@@ -153,7 +153,7 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改定时任务对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>

@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+  <div class="app-container one-screen">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
             v-model="queryParams.jobName"
@@ -57,7 +57,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
         <el-button
             type="danger"
@@ -104,7 +104,7 @@
       <!--      </el-col>-->
     </el-row>
 
-    <el-table v-loading="loading" ref="table" :data="jobLogList" border @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="jobLogList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="日志编号" width="80" align="center" prop="jobLogId"/>
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true"/>
@@ -139,7 +139,7 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 调度日志详细 -->
     <el-dialog title="调度日志详细" :visible.sync="open" width="700px" append-to-body>

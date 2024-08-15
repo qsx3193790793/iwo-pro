@@ -10,6 +10,22 @@ function dictReqCompiler(dictName) {
   }
 }
 
+function baseOnChange (j,isView){
+  const events = useEvents();
+  return function({vm, item}) {
+    //处理关联字段
+    if (j.z_props.relevance?.length) {
+      // 如果清空了 则清空他关联字段
+      if (!vm.formData[j.z_props.key]) return vm.resetFormData(j.z_props.relevance || []);
+    }
+    //触发关联事件
+    if (isView) return;
+    (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item}));
+    // //值变化时 是否调用接口
+    // j.z_props.apiName && console.log('FMInput onChange 调用接口', j.z_props.key, vm);
+  }
+}
+
 //级联选择类型编译FMCascader.vue
 export const cascaderCompiler = (j, isView) => {
   if (!['FMCascader', 'cascader'].includes(j.name)) return {};
@@ -20,18 +36,7 @@ export const cascaderCompiler = (j, isView) => {
     value: j.z_props['value']?.split(','),
     //值变化时触发
     attrs: {props: {checkStrictly: j.z_props['checkStrictly']}},
-    onChange: function ({vm, item}) {
-      //处理关联字段
-      if (j.z_props.relevance?.length) {
-        // 如果清空了 则清空他关联字段
-        if (!vm.formData[j.z_props.key]) return vm.resetFormData(j.z_props.relevance || []);
-      }
-      //触发关联事件
-      if (isView) return;
-      (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item}));
-      // //值变化时 是否调用接口
-      // j.z_props.apiName && console.log('FMInput onChange 调用接口', j.z_props.key, vm);
-    }
+    onChange: baseOnChange(j,isView)
   }
 };
 
@@ -77,43 +82,19 @@ export const selectCompiler = (j, isView) => {
 //输入框类型编译
 export const inputCompiler = (j, isView) => {
   if (!['FMInput'].includes(j.name)) return {};
-  const events = useEvents();
   return {
     //值变化时触发
-    onChange: function ({vm, item}) {
-      //处理关联字段
-      if (j.z_props.relevance?.length) {
-        // 如果清空了 则清空他关联字段
-        if (!vm.formData[j.z_props.key]) return vm.resetFormData(j.z_props.relevance || []);
-      }
-      //触发关联事件
-      if (isView) return;
-      (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item}));
-      // //值变化时 是否调用接口
-      // j.z_props.apiName && console.log('FMInput onChange 调用接口', j.z_props.key, vm);
-    }
+    onChange:  baseOnChange(j,isView)
   }
 };
 
 //日期类型编译
 export const datePickerCompiler = (j, isView) => {
   if (!['FMDatePicker'].includes(j.name)) return {};
-  const events = useEvents();
   return {
     type: j.z_props.dateType,
     //值变化时触发
-    onChange: function ({vm, item}) {
-      //处理关联字段
-      if (j.z_props.relevance?.length) {
-        // 如果清空了 则清空他关联字段
-        if (!vm.formData[j.z_props.key]) return vm.resetFormData(j.z_props.relevance || []);
-      }
-      //触发关联事件
-      if (isView) return;
-      (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item}));
-      // //值变化时 是否调用接口
-      // j.z_props.apiName && console.log('FMInput onChange 调用接口', j.z_props.key, vm);
-    }
+    onChange:  baseOnChange(j,isView)
   }
 };
 
@@ -131,7 +112,6 @@ export const buttonCompiler = (j, isView) => {
     btnName: j.z_props.btnName,
     onClick: function ({vm}) {
       //触发关联事件
-      console.log(isView, j.z_props)
       if (isView) return;
       (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm}));
     }
@@ -149,9 +129,8 @@ export const buttonsCompiler = (j, isView) => {
 //自定义编译
 export const customizationCompsCompiler = (j, isView) => {
   if (![
-    'FMAddressSelector', 'FMBalanceSelector',
-    'FMSalesSelector', 'FMPaymentSelector',
-    'FMDingDanSelector', 'FMOrderSalesSelector'
+    'FMAddressSelector', 'FMSalesSelector', 'FMPaymentSelector',
+    'FMDingDanSelector', 'FMOrderSalesSelector', 'FMPointCosHisSelector'
   ].includes(j.name)) return {};
   const events = useEvents();
   return {
@@ -165,7 +144,7 @@ export const customizationCompsCompiler = (j, isView) => {
             if (!vm.formData[j.z_props.key]) return vm.resetFormData(j.z_props.relevance || []);
           }
           //触发关联事件
-          if (isView) return;
+          // if (isView) return;
           (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item, value}));
         }
       }

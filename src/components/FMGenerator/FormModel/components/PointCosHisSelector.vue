@@ -5,20 +5,18 @@
         <el-button icon="el-icon-search" @click="modelIsShow=!0"/>
       </template>
     </el-input>
-    <MDialog v-model="modelIsShow" title="充值缴费查询" width="86%" @opened="init">
+    <MDialog v-model="modelIsShow" title="积分消费历史查询" width="86%" @opened="init">
       <div class="search-bar">
         <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="StaffSelectorSearchFormItems"></PageSearchPanel>
       </div>
       <el-table v-loading="loading" :data="tableData" border style="width: 100%" max-height="320">
         <el-table-column type="index" label="序号" width="60"></el-table-column>
-        <el-table-column prop="acctId" label="帐户编号" width="120"></el-table-column>
-        <el-table-column prop="paymentId" label="付款流水号" width="120"></el-table-column>
-        <el-table-column prop="paymentChannelName" label="缴费渠道"></el-table-column>
-        <el-table-column prop="paymentMethod" label="付款方式"></el-table-column>
-        <el-table-column prop="amount" label="缴费金额"></el-table-column>
-        <el-table-column prop="paymentDate" label="缴费时间" width="160"></el-table-column>
-        <el-table-column prop="balance" label="缴费预存余额"></el-table-column>
-        <el-table-column prop="accNbrDetail" label="余额使用范围" width="240"></el-table-column>
+        <el-table-column prop="exchangeID" label="兑换流水号" width="160"></el-table-column>
+        <el-table-column prop="point" label="消费数额"></el-table-column>
+        <el-table-column prop="pointCosumeTime" label="消费时间" width="160"></el-table-column>
+        <el-table-column prop="storeName" label="商家名称" width="200"></el-table-column>
+        <el-table-column prop="giftAmount" label="礼品的数量"></el-table-column>
+        <el-table-column prop="giftDes" label="礼品描述" width="420"></el-table-column>
         <el-table-column label="操作" width="120" align="center">
           <template #default="{row}">
             <el-button type="text" size="mini" @click="confirm(row)">选择</el-button>
@@ -33,6 +31,7 @@
 import MDialog from '@/components/MDialog';
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 import {nextTick, getCurrentInstance, onBeforeMount, ref} from "vue";
+import {$$dateFormatter} from "@/utils";
 
 const {proxy} = getCurrentInstance();
 
@@ -61,41 +60,21 @@ function confirm(row) {
 // 列表请求
 const getList = async () => {
   const formData = PageSearchPanelRef.value.getFormData();
-  const {res, err} = await proxy.$$api.crm.ECQryPayment({
-    // params: {provinceId: '8130000'},
-    data: {
-      "billingCycleId": formData.billingCycleId || proxy.$$dayjs().format('YYYYMM'),
-      "lanId": formData.lanId,
-      "objValue": formData.accNum,
-      "objAttr": formData.prodClass,
-      // "billingCycleId": formData.billingCycleId || proxy.$$dayjs().format('YYYYMM'),
-      // "operAttrStruct": {
-      //   "operOrgId": -1,
-      //   "staffId": 30033969337
-      // },
-      // "svcObjectStruct": {
-      //   "objValue": formData.accNum,
-      //   "objType": "3",
-      //   // accType 移动手机12  宽带11  固话10
-      //   // objAttr 移动手机2   宽带3   固话0
-      //   "objAttr": ({'12': '2', '11': '3', '10': '0'})[formData.prodClass],
-      //   "dataArea": "1"
-      // }
-    }
+  const [startDate, endDate] = formData.timeRange || [];
+  const {res, err} = await proxy.$$api.crm.qryPointCosHis({
+    params: Object.assign({startDate, endDate}, formData)
   });
   if (err) return;
-  tableData.value = proxy.$$lodash.flatten(
-      (res?.accountInfoList || []).map(ail => (ail?.paymentInfoList || []).map(pil => Object.assign(pil, {acctId: ail.acctId})))
-  );
+  tableData.value = res?.list;
 };
 
 const StaffSelectorSearchFormItems = [
   {name: '设备号', key: 'accNum', value: '', type: 'input', col: 6},
-  {name: '月份', key: 'billingCycleId', placeholder: 'YYYYMM,如：202406', value: '', type: 'input', col: 6},
+  {name: '周期', key: 'timeRange', value: [], type: 'dateRangePicker', col: 8},
   {name: 'prodClass', key: 'prodClass', value: '', type: 'input', isHidden: !0, col: 9},
   {name: 'lanId', key: 'lanId', value: '', type: 'input', isHidden: !0, col: 9},
   {
-    type: 'buttons', align: 'left', verticalAlign: 'top', col: 12, items: [
+    type: 'buttons', align: 'left', verticalAlign: 'top', col: 10, items: [
       {
         btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
         onClick({vm}) {
@@ -125,8 +104,11 @@ function init() {
   if (!customPositioning) return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   console.log(PageSearchPanelRef.value)
+  const end = proxy.$$dateFormatter(proxy.$$dayjs(), 'YYYY-MM-DD')
+  const start = proxy.$$dateFormatter(proxy.$$dayjs(end).subtract(6, 'month'), 'YYYY-MM-DD')
   PageSearchPanelRef.value.initFormData({
-    accNum, prodClass: accType, lanId: lanIdInfo.lanid
+    accNum, prodClass: accType, lanId: lanIdInfo.lanid,
+    timeRange: [start, end]
   });
   getList(1);
 }

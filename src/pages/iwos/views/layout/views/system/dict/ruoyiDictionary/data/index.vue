@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
+  <div class="app-container one-screen">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
       <el-form-item label="字典名称" prop="dictType">
         <el-select v-model="queryParams.dictType">
           <el-option
@@ -35,7 +35,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="one-screen-fg0 mb8">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -84,7 +84,7 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" ref="table" :data="dataList" border @selection-change="handleSelectionChange">
+    <el-table class="one-screen-fg1" v-loading="loading" ref="table" :data="dataList" border height="100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="字典编码" align="center" prop="dictCode"/>
       <el-table-column label="字典标签" align="center" prop="dictLabel">
@@ -128,7 +128,7 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>

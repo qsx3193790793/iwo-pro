@@ -233,7 +233,7 @@ async function listComplaintPhenomenonTree() {
   if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree')?.length) return;
   const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree();
   if (err) return;
-  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree(res?.phenomList || [], 'phenomName', 'phenomCode', 'phenomList')});
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree(res?.phenomList?.[0]?.phenomList || [], 'phenomName', 'phenomCode', 'phenomList')});
 }
 
 //投诉来源下拉菜单

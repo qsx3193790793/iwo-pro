@@ -1,233 +1,141 @@
 <template>
   <div class="app-container one-screen">
-    <el-row :gutter="20">
+    <div class="app-container-inner">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
+      <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
+        <div class="head-container one-screen-fg0">
           <el-input
-            v-model="tree_channelName"
-            placeholder="请输入渠道名称"
-            clearable
-            size="small"
-            prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
-          />
-        </div>
-        <div class="head-container nodeTree">
-          <el-tree
-            :data="deptOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            node-key="id"
-            default-expand-all
-            highlight-current
-            @node-click="handleNodeClick"
-          />
-        </div>
-      </el-col>
-      <!--用户数据-->
-      <el-col :span="20" :xs="24">
-        <PageSearchPanel
-          ref="PageSearchPanelRef"
-          :formConfigItems="formConfigItems"
-        ></PageSearchPanel>
-        <!-- <el-form
-          :model="queryParams"
-          ref="queryForm"
-          size="small"
-          :inline="true"
-          v-show="showSearch"
-          label-width="auto"
-        >
-          <el-form-item label="渠道编码" prop="channelCode">
-            <el-input
-              v-model="queryParams.channelCode"
-              placeholder="请输入渠道编码"
-              clearable
-              class="queryItem"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item label="渠道名称" prop="channelName">
-            <el-input
-              v-model="queryParams.channelName"
+              v-model="tree_channelName"
               placeholder="请输入渠道名称"
               clearable
-              class="queryItem"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-          <el-form-item label="是否省自定义" >
-            <el-select
-              v-model="queryParams.isProvinceCustom"
-              placeholder="请选择是否省自定义"
-              clearable
-              class="queryItem"
-            >
-            <el-option
-              v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
-              :key=" dict.value"
-              :label="dict.label"
-              :value="dict.value"
+              size="small"
+              prefix-icon="el-icon-search"
+              style="margin-bottom: 20px"
           />
-            </el-select>
-          </el-form-item>
-            <el-form-item label="状态" prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="请选择状态"
-              clearable
-              class="queryItem"
-            >
-            <el-option
-              v-for="dict in $store.getters['dictionaries/GET_DICT']('start_stop')"
-              :key=" dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              icon="el-icon-search"
-              size="mini"
-              @click="handleQuery"
-              >搜索</el-button
-            >
-            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-              >重置</el-button
-            >
-          </el-form-item>
-        </el-form> -->
-
-        <!-- <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              icon="el-icon-plus"
-              size="mini"
-              @click="handleAdd"
-              v-hasPermission="['system:user:add']"
-              >新增
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="danger"
-              plain
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-              v-hasPermission="['system:user:remove']"
-              >删除
-            </el-button>
-          </el-col>
-        </el-row> -->
-        <div style="height: 70vh;"> 
-          <div class="one-screen" >
-            <div class="one-screen-fg1">
-              <JsTable :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
-                <template #isProvinceCustom="{row}">
-                  <div >{{ row.isProvinceCustom?'自定义':'否' }}</div>
-                </template>
-                <template #status="{ row }">
-                  <div v-show="row.status == 0"><el-tag type="danger">停用</el-tag></div>
-                  <div v-show="row.status == 1"><el-tag>启用</el-tag></div>
-                  <div v-show="row.status == 2"><el-tag type="danger">删除</el-tag></div>
-                </template>
-              </JsTable>
-            </div>
-          </div>
         </div>
+        <div class="head-container nodeTree one-screen-fg1">
+          <el-tree
+              :data="deptOptions"
+              :props="defaultProps"
+              :expand-on-click-node="false"
+              :filter-node-method="filterNode"
+              ref="tree"
+              node-key="id"
+              default-expand-all
+              highlight-current
+              @node-click="handleNodeClick"
+          />
+        </div>
+      </div>
+      <!--用户数据-->
+      <div class="one-screen one-screen-fg1">
+        <PageSearchPanel
+            class="one-screen-fg0"
+            ref="PageSearchPanelRef"
+            :formConfigItems="formConfigItems"
+            noBackground style="margin-bottom: 0;"
+        ></PageSearchPanel>
+        <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
+          <template #isProvinceCustom="{row}">
+            <div>{{ row.isProvinceCustom ? '自定义' : '否' }}</div>
+          </template>
+          <template #status="{ row }">
+            <div v-show="row.status == 0">
+              <el-tag type="danger">停用</el-tag>
+            </div>
+            <div v-show="row.status == 1">
+              <el-tag>启用</el-tag>
+            </div>
+            <div v-show="row.status == 2">
+              <el-tag type="danger">删除</el-tag>
+            </div>
+          </template>
+        </JsTable>
         <el-pagination
-          :current-page.sync="queryParams.pageNum"
-          :page-size.sync="queryParams.pageSize"
-          :page-sizes="[15, 30, 40, 50]"
-          background
-          layout=" ->,total, sizes, prev, pager, next, jumper"
-          :total="total"
-          @size-change="getList"
-          @current-change="getList"
+            class="one-screen-fg0"
+            :current-page.sync="queryParams.pageNum"
+            :page-size.sync="queryParams.pageSize"
+            :page-sizes="[15, 30, 40, 50]"
+            background
+            layout=" ->,total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="getList"
+            @current-change="getList"
         />
-      </el-col>
-    </el-row>
+      </div>
+    </div>
 
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="渠道一级" prop="oneChannelName" >
+            <el-form-item label="渠道一级" prop="oneChannelName">
               <el-input
-                :disabled="!!form.oneChannelEdit"
-                v-model="form.oneChannelName"
-                placeholder="请输入"
-                maxlength="30"
+                  :disabled="!!form.oneChannelEdit"
+                  v-model="form.oneChannelName"
+                  placeholder="请输入"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="渠道一级编码">
               <el-input
-               :disabled="!!form.oneChannelCode"
-                v-model="form.oneChannelCode"
-                placeholder="请输入"
-                maxlength="30"
+                  :disabled="!!form.oneChannelCode"
+                  v-model="form.oneChannelCode"
+                  placeholder="请输入"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
         </el-row>
         <div v-if="currentNode.channelLevel!=0">
           <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="渠道二级" prop="twoChannelName">
-              <el-input
-                :disabled="!!form.twoChannelEdit"
-                v-model="form.twoChannelName"
-                placeholder="请输入"
-                maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="渠道二级编码">
-              <el-input
-                :disabled="!!form.twoChannelCode"
-                v-model="form.twoChannelCode"
-                placeholder="请输入"
-                maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" v-if="currentNode.channelLevel!=1">
-          <el-col :span="12">
-            <el-form-item label="渠道名称"  prop="channelName">
-              <el-input
-                v-model="form.channelName"
-                placeholder="请输入"
-                maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="渠道三级编码">
-              <el-input
-                :disabled="!!form.channelCode"
-                v-model="form.channelCode"
-                placeholder="请输入"
-                maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            <el-col :span="12">
+              <el-form-item label="渠道二级" prop="twoChannelName">
+                <el-input
+                    :disabled="!!form.twoChannelEdit"
+                    v-model="form.twoChannelName"
+                    placeholder="请输入"
+                    maxlength="30"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="渠道二级编码">
+                <el-input
+                    :disabled="!!form.twoChannelCode"
+                    v-model="form.twoChannelCode"
+                    placeholder="请输入"
+                    maxlength="30"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20" v-if="currentNode.channelLevel!=1">
+            <el-col :span="12">
+              <el-form-item label="渠道名称" prop="channelName">
+                <el-input
+                    v-model="form.channelName"
+                    placeholder="请输入"
+                    maxlength="30"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="渠道三级编码">
+                <el-input
+                    :disabled="!!form.channelCode"
+                    v-model="form.channelCode"
+                    placeholder="请输入"
+                    maxlength="30"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
         </div>
-      
+
         <el-row>
           <el-col :span="12">
             <el-checkbox v-model="form.customProvince">是否省自定义</el-checkbox>
@@ -246,10 +154,11 @@
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
+
 export default {
   name: "UserIndex",
-  cusDicts: ['start_stop','yes_no'],
-  components: { Treeselect ,JsTable,PageSearchPanel},
+  cusDicts: ['start_stop', 'yes_no'],
+  components: {Treeselect, JsTable, PageSearchPanel},
   data() {
     return {
       // 遮罩层
@@ -257,7 +166,7 @@ export default {
       // 选中数组
       ids: [],
       // 渠道编码
-      channelCodeList:[],
+      channelCodeList: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -285,7 +194,7 @@ export default {
       // 角色选项
       roleOptions: [],
       // 树搜索项
-      tree_channelName:"",
+      tree_channelName: "",
       // 表单参数
       form: {},
       formConfigItems: [
@@ -316,7 +225,7 @@ export default {
           col: 6,
           type: "select",
           options: () =>
-            this.$store.getters["dictionaries/GET_DICT"]("yes_no"),
+              this.$store.getters["dictionaries/GET_DICT"]("yes_no"),
           isDisable: !1,
           isRequire: !1,
         },
@@ -327,7 +236,7 @@ export default {
           col: 6,
           type: "select",
           options: () =>
-          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+              this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
           isDisable: !1,
           isRequire: !1,
         },
@@ -340,9 +249,9 @@ export default {
             {
               btnName: "重置",
               type: "button",
-              attrs: { type: "" },
+              attrs: {type: ""},
               col: 1,
-              onClick:({vm})=>{
+              onClick: ({vm}) => {
                 vm.resetFormData();
                 this.resetQuery();
               }
@@ -350,24 +259,24 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              attrs: { type: "primary" },
+              attrs: {type: "primary"},
               col: 1,
-              onClick:({ vm }) =>{
+              onClick: ({vm}) => {
                 this.getList();
               },
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
-              onClick:({vm})=> {
+              onClick: ({vm}) => {
                 this.handleDelete();
               }
             },
             {
               btnName: "新增",
               type: "button",
-              attrs: { type: "success"},
+              attrs: {type: "success"},
               col: 1,
-              onClick:({ vm })=> {
+              onClick: ({vm}) => {
                 this.handleAdd()
               },
             },
@@ -407,7 +316,7 @@ export default {
           },
           {
             name: "更新时间",
-            width:130,
+            width: 130,
             key: "updatedTime",
           },
         ],
@@ -422,9 +331,9 @@ export default {
               label: "删除",
               key: "del",
               type: "danger",
-              event:(val)=>{
-                this.ids=[]
-                this.channelCodeList=[]
+              event: (val) => {
+                this.ids = []
+                this.channelCodeList = []
                 this.handleDelete(val)
               },
             },
@@ -446,7 +355,7 @@ export default {
         },
       },
       dataSource: [],
-      currentNode:{},
+      currentNode: {},
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -466,13 +375,13 @@ export default {
         //   },
         // ],
         channelName: [
-          { required: true, message: "渠道名称不能为空", trigger: "blur" },
+          {required: true, message: "渠道名称不能为空", trigger: "blur"},
         ],
         twoChannelName: [
-          { required: true, message: "二级渠道名称不能为空", trigger: "blur" },
+          {required: true, message: "二级渠道名称不能为空", trigger: "blur"},
         ],
         oneChannelName: [
-          { required: true, message: "一级渠道名称不能为空", trigger: "blur" },
+          {required: true, message: "一级渠道名称不能为空", trigger: "blur"},
         ],
       },
     };
@@ -489,48 +398,55 @@ export default {
     //   this.initPassword = response.msg;
     // });
   },
-  mounted(){
+  mounted() {
     this.getList();
     this.getChannelTree();
   },
   methods: {
-    autoStartHidden(val){
+    autoStartHidden(val) {
       if (val.row) {
-          return val.row.status == '0' ? true : false
-        } else {
-          return false
-        }
+        return val.row.status == '0' ? true : false
+      } else {
+        return false
+      }
     },
-    autoEndHidden(val){
+    autoEndHidden(val) {
       if (val.row) {
-          return val.row.status == '1' ? true : false
-        } else {
-          return false
-        }
+        return val.row.status == '1' ? true : false
+      } else {
+        return false
+      }
     },
     /** 查询用户列表 */
     getList() {
       this.loading = true;
-      const formData =this.$refs.PageSearchPanelRef.getFormData();
+      const formData = this.$refs.PageSearchPanelRef.getFormData();
       this.$$api.channelClassification
-        .listChannel({
-          params:{ 
-            ...formData,
-            ...this.queryParams
-          }
-        })
-        .then(({ res: response, err }) => {
-          if (err) return;
-          this.dataSource = response.rows;
-          this.total =  response.total;
-          this.loading = false;
-        });
+          .listChannel({
+            params: {
+              ...formData,
+              ...this.queryParams
+            }
+          })
+          .then(({res: response, err}) => {
+            if (err) return;
+            this.dataSource = response.rows;
+            this.total = response.total;
+            this.loading = false;
+          });
     },
     /** 查询部门下拉树结构 */
     getChannelTree() {
       this.$$api.channelClassification.listChannelTree().then(({res: response, err}) => {
-        if(err) return
-        this.deptOptions = response.list;
+        if (err) return
+        let data = [{
+          channelLevel: 0,
+          channelCode: '0',
+          channelId: '0',
+          channelName: '发展渠道',
+          children: response.list
+        }]
+        this.deptOptions = data;
       });
     },
     // 筛选节点
@@ -540,10 +456,10 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data) {
-      if(data.channelLevel==3) return
+      if (data.channelLevel == 3) return
       this.$refs["queryForm"]?.resetFields();
-      console.log(data,'----889')
-      this.currentNode=data
+      console.log(data, '----889')
+      this.currentNode = data
       this.queryParams.pcode = data.channelCode;
       this.handleQuery();
     },
@@ -580,11 +496,11 @@ export default {
         channelName: undefined,
         channelId: undefined,
         channelCode: undefined,
-        customProvince:true,
-        oneChannelEdit:true,
-        twoChannelEdit:true,
-        threeChannelEdit:true,
-        handleType:''
+        customProvince: true,
+        oneChannelEdit: true,
+        twoChannelEdit: true,
+        threeChannelEdit: true,
+        handleType: ''
       };
       this.$refs["form"]?.resetFields();
     },
@@ -605,63 +521,63 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.channelId);
-      this.channelCodeList=selection.map((item) => item.channelCode);
+      this.channelCodeList = selection.map((item) => item.channelCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.form.handleType='add'
+      this.form.handleType = 'add'
       this.getchannelCode(this.currentNode.channelCode)
       // 为0表示根路径，不需要回显一级、二级节点
-      if(this.currentNode.channelLevel!=0){
+      if (this.currentNode.channelLevel != 0) {
         this.getCurrentTreeNodeInfo(this.currentNode.channelId)
       }
       this.title = "渠道维护";
       this.open = true;
     },
-    getchannelCode(Code){
-      let data={
-        pcode:Code
+    getchannelCode(Code) {
+      let data = {
+        pcode: Code
       }
       this.$$api.channelClassification.getchannelCode({data}).then(({res: response, err}) => {
-        if (err) return 
-        if(this.currentNode.channelLevel==0){
-          this.form.oneChannelCode=response.channelCode
-          this.form.oneChannelEdit=false
+        if (err) return
+        if (this.currentNode.channelLevel == 0) {
+          this.form.oneChannelCode = response.channelCode
+          this.form.oneChannelEdit = false
         }
-        if(this.currentNode.channelLevel==1){
-          this.form.twoChannelCode=response.channelCode
-          
+        if (this.currentNode.channelLevel == 1) {
+          this.form.twoChannelCode = response.channelCode
+
         }
-        if(this.currentNode.channelLevel==2){
-          this.form.channelCode=response.channelCode
-          
+        if (this.currentNode.channelLevel == 2) {
+          this.form.channelCode = response.channelCode
+
         }
       });
     },
-    getCurrentTreeNodeInfo(ID){
-      this.$$api.channelClassification.getChannelDetail({channelId:ID}).then(({res: response, err}) => {
-        if (err) return 
-        let {oneChannelCode,oneChannelName,channelName,twoChannelName,channelId,twoChannelCode,channelCode,channelLevel}={...response}
-        this.form.oneChannelCode=oneChannelCode
-        this.form.oneChannelName=oneChannelName
-        this.form.channelId=channelId
-        if(channelLevel==1){
-          this.form.oneChannelCode=channelCode
-          this.form.oneChannelName=channelName
-          this.form.twoChannelEdit=false
+    getCurrentTreeNodeInfo(ID) {
+      this.$$api.channelClassification.getChannelDetail({channelId: ID}).then(({res: response, err}) => {
+        if (err) return
+        let {oneChannelCode, oneChannelName, channelName, twoChannelName, channelId, twoChannelCode, channelCode, channelLevel} = {...response}
+        this.form.oneChannelCode = oneChannelCode
+        this.form.oneChannelName = oneChannelName
+        this.form.channelId = channelId
+        if (channelLevel == 1) {
+          this.form.oneChannelCode = channelCode
+          this.form.oneChannelName = channelName
+          this.form.twoChannelEdit = false
         }
-        if(channelLevel==2){
-          this.form.twoChannelCode=channelCode
-          this.form.twoChannelName=channelName
+        if (channelLevel == 2) {
+          this.form.twoChannelCode = channelCode
+          this.form.twoChannelName = channelName
         }
-        if(channelLevel==3){
-          this.form.twoChannelCode=twoChannelCode
-          this.form.twoChannelName=twoChannelName
-          this.form.channelName=channelName
-          this.form.channelCode=channelCode
+        if (channelLevel == 3) {
+          this.form.twoChannelCode = twoChannelCode
+          this.form.twoChannelName = twoChannelName
+          this.form.channelName = channelName
+          this.form.channelCode = channelCode
         }
       });
     },
@@ -669,15 +585,16 @@ export default {
     handleUpdate(row) {
       this.reset();
       const channelCode = row.channelId;
-      this.form.handleType='edit'
+      this.form.handleType = 'edit'
       this.getCurrentTreeNodeInfo(channelCode)
-      if(row.channelLevel==1){
-        this.form.oneChannelEdit=false
-      }if(row.channelLevel==2){
-        this.form.twoChannelEdit=false
+      if (row.channelLevel == 1) {
+        this.form.oneChannelEdit = false
       }
-      if(row.channelLevel==1){
-        this.form.threeChannelEdit=false
+      if (row.channelLevel == 2) {
+        this.form.twoChannelEdit = false
+      }
+      if (row.channelLevel == 1) {
+        this.form.threeChannelEdit = false
       }
       this.title = "渠道维护";
       this.open = true;
@@ -688,129 +605,133 @@ export default {
         if (valid) {
 
           if (this.form.handleType == 'edit') {
-            let data={
-              channelId:this.form.channelId,
+            let data = {
+              channelId: this.form.channelId,
             }
             // 不同层级取值逻辑不同
-            if(this.currentNode.channelLevel==0){
-              data.channelName=this.form.oneChannelName
+            if (this.currentNode.channelLevel == 0) {
+              data.channelName = this.form.oneChannelName
             }
-            if(this.currentNode.channelLevel==1){
-              data.channelName=this.form.twoChannelName
+            if (this.currentNode.channelLevel == 1) {
+              data.channelName = this.form.twoChannelName
             }
-            if(this.currentNode.channelLevel==2){
-              data.channelName=this.form.channelName
+            if (this.currentNode.channelLevel == 2) {
+              data.channelName = this.form.channelName
             }
             this.$$api.channelClassification
-              .updateChannel({ data: data})
-              .then(({ res, err }) => {
-                if (err) return;
-                this.$$Toast.success("修改成功");
-                this.open = false;
-                this.getList();
-                this.getChannelTree();
-              });
+                .updateChannel({data: data})
+                .then(({res, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("修改成功");
+                  this.open = false;
+                  this.getList();
+                  this.getChannelTree();
+                });
           } else {
-            let data={
-              pcode:this.currentNode.channelCode,
+            let data = {
+              pcode: this.currentNode.channelCode,
             }
             // 不同层级取值逻辑不同
-            if(this.currentNode.channelLevel==0){
-              data.channelCode=this.form.oneChannelCode,
-              data.channelName=this.form.oneChannelName
+            if (this.currentNode.channelLevel == 0) {
+              data.channelCode = this.form.oneChannelCode,
+                  data.channelName = this.form.oneChannelName
             }
-            if(this.currentNode.channelLevel==1){
-              data.channelCode=this.form.twoChannelCode,
-              data.channelName=this.form.twoChannelName
+            if (this.currentNode.channelLevel == 1) {
+              data.channelCode = this.form.twoChannelCode,
+                  data.channelName = this.form.twoChannelName
             }
-            if(this.currentNode.channelLevel==2){
-              data.channelCode=this.form.channelCode,
-              data.channelName=this.form.channelName
+            if (this.currentNode.channelLevel == 2) {
+              data.channelCode = this.form.channelCode,
+                  data.channelName = this.form.channelName
             }
             this.$$api.channelClassification
-              .addChannel({ data: data })
-              .then(({ res, err }) => {
-                if (err) return;
-                this.$$Toast.success("新增成功");
-                this.open = false;
-                this.getList();
-                this.getChannelTree();
-              });
+                .addChannel({data: data})
+                .then(({res, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("新增成功");
+                  this.open = false;
+                  this.getList();
+                  this.getChannelTree();
+                });
           }
         }
       });
     },
     // 启用
-    handleStart(row){
+    handleStart(row) {
       this.$$Dialog
-        .confirm('是否确认启动渠道编码为"' + row.channelId + '"的数据项？')
-        .then(() => {
-          let data={
-            channelId:row.channelId,
-            status:1,
-          }
-          return this.$$api.channelClassification.updStatus({data:data});
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("启动成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认启动渠道编码为"' + row.channelId + '"的数据项？')
+          .then(() => {
+            let data = {
+              channelId: row.channelId,
+              status: 1,
+            }
+            return this.$$api.channelClassification.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("启动成功");
+          })
+          .catch(() => {
+          });
     },
-     // 停用
-    handleEnd(row){
+    // 停用
+    handleEnd(row) {
       this.$$Dialog
-        .confirm('是否确认停用渠道编码为"' + row.channelId + '"的数据项？')
-        .then(() => {
-          let data={
-            channelId:row.channelId,
-            status:0, 
-          }
-          return this.$$api.channelClassification.updStatus({data:data});
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("停用成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认停用渠道编码为"' + row.channelId + '"的数据项？')
+          .then(() => {
+            let data = {
+              channelId: row.channelId,
+              status: 0,
+            }
+            return this.$$api.channelClassification.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("停用成功");
+          })
+          .catch(() => {
+          });
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const channelCodes = row?.channelId || this.ids;
-      let showText=''
-      if(this.ids.length>0){
-        showText=this.channelCodeList.join(',')
-      }else{
-        showText=row?.channelCode
+      let showText = ''
+      if (this.ids.length > 0) {
+        showText = this.channelCodeList.join(',')
+      } else {
+        showText = row?.channelCode
       }
       this.$$Dialog
-        .confirm('是否确认删除渠道编码为"' + showText + '"的数据项？')
-        .then(() => {
-          
-          let data={
-            channelIds:Array.isArray(channelCodes)?channelCodes.join(','):channelCodes
-          }
-          return this.$$api.channelClassification.delChannel(data);
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.getChannelTree();
-          this.$$Toast.success("删除成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认删除渠道编码为"' + showText + '"的数据项？')
+          .then(() => {
+
+            let data = {
+              channelIds: Array.isArray(channelCodes) ? channelCodes.join(',') : channelCodes
+            }
+            return this.$$api.channelClassification.delChannel(data);
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.getChannelTree();
+            this.$$Toast.success("删除成功");
+          })
+          .catch(() => {
+          });
     },
   },
 };
 </script>
 <style scoped lang="scss">
-  .nodeTree{
-    overflow: scroll;
-    height: 74vh;
-  }
-  .queryItem {
+.nodeTree {
+  overflow: scroll;
+  height: 74vh;
+}
+
+.queryItem {
   width: 240px;
 }
 </style>

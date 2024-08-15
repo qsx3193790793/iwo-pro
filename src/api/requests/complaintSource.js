@@ -4,6 +4,8 @@ import apiPrefix from '../apiPrefix';
 const apis = {
   // 查询投诉来源树列表
   listComplaintSourceTree: {url: `${apiPrefix('config')}/complaintSource/findSourceTree`, method: 'post'},
+  // 根据当前登陆用户ID获取投诉来源树结构接口
+  getAskSourceSrlByUid: {url: `${apiPrefix('config')}/complaintSource/getAskSourceSrlByUid`, method: 'post'},
   // 查询投诉来源列表
   listComplaintSource: {url: `${apiPrefix('config')}/complaintSource/findSourceList`, method: 'get'},
   // 查询投诉来源详细

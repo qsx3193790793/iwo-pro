@@ -1,9 +1,9 @@
 <template>
-  <div class="app-container">
-    <el-row :gutter="20">
+  <div class="app-container one-screen">
+    <div class="app-container-inner">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
+      <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
+        <div class="head-container one-screen-fg0">
           <el-input
               v-model="treePhenomName"
               placeholder="请输入现象名称"
@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree">
+        <div class="head-container nodeTree one-screen-fg1">
           <el-tree
               :data="complaintPhenomenonTreeOptions"
               :props="defaultProps"
@@ -26,10 +26,11 @@
               @node-click="handleNodeClick"
           />
         </div>
-      </el-col>
+      </div>
       <!--用户数据-->
-      <el-col :span="20" :xs="24">
+      <div class="one-screen one-screen-fg1">
         <el-form
+            class="one-screen-fg0"
             :model="queryParams"
             ref="queryForm"
             size="small"
@@ -91,56 +92,28 @@
             >搜索
             </el-button
             >
-            <el-button  size="mini" @click="resetQuery"
+            <el-button size="mini" @click="resetQuery"
             >重置
             </el-button
             >
           </el-form-item>
         </el-form>
+        <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
+          <template #isProvinceCustom="{row}">
+            {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
+          </template>
+          <template #level="{row}">
+            {{ row.level }}
+          </template>
+          <template #status="{ row }">
+            <el-tag :type="row.status == 0?'danger':''">
+              {{ $store.getters['dictionaries/MATCH_LABEL']('phenom_status_name', row.status) }}
+            </el-tag>
+          </template>
 
-        <el-row :gutter="10" class="mb8">
-          <!-- <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              icon="el-icon-plus"
-              size="mini"
-              :disabled="isAllowAdd"
-              @click="handleAdd"
-              v-hasPermission="['system:user:add']"
-              >新增
-            </el-button>
-          </el-col> -->
-          <!-- <el-col :span="1.5">
-            <el-button
-              type="danger"
-              plain
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-              v-hasPermission="['system:user:remove']"
-              >删除
-            </el-button>
-          </el-col> -->
-        </el-row>
-        <div style="height: 70vh">
-          <JsTable :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
-            <template #isProvinceCustom="{row}">
-              {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
-            </template>
-            <template #level="{row}">
-              {{  row.level }}
-            </template>
-            <template #status="{ row }">
-              <el-tag :type="row.status == 0?'danger':''">
-                {{$store.getters['dictionaries/MATCH_LABEL']('phenom_status_name', row.status)}}
-              </el-tag>
-            </template>
-         
-          </JsTable>
-        </div>
+        </JsTable>
         <el-pagination
+            class="one-screen-fg0"
             :current-page.sync="queryParams.pageNum"
             :page-size.sync="queryParams.pageSize"
             :page-sizes="[15, 30, 40, 50]"
@@ -151,8 +124,8 @@
             @current-change="getList"
         />
         <!--        <el-pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList"/>-->
-      </el-col>
-    </el-row>
+      </div>
+    </div>
 
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
@@ -245,7 +218,7 @@
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer"  v-show="!detailDisabled">
+      <div slot="footer" class="dialog-footer" v-show="!detailDisabled">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -380,20 +353,20 @@ export default {
               },
               event: this.handleUpdate,
             },
-            
+
             {
               label: "更多",
               key: "more",
-              children:[
-                 {
-                 label: "删除",
-                 key: "del",
-                 type: "danger",
-                 autoHidden: ({row}) => {
-                   return row.level === 3 && row.isProvinceCustom === 1
-                 },
-                 event: this.handleDelete,
-               },
+              children: [
+                {
+                  label: "删除",
+                  key: "del",
+                  type: "danger",
+                  autoHidden: ({row}) => {
+                    return row.level === 3 && row.isProvinceCustom === 1
+                  },
+                  event: this.handleDelete,
+                },
                 {
                   label: "启用",
                   key: "start",
@@ -402,20 +375,20 @@ export default {
                   event: this.handleStart,
                 },
                 {
-                 label: "停用",
-                 key: "end",
-                 type: "danger",
-                 autoHidden: this.autoEndHidden,
-                 event: this.handleEnd,
+                  label: "停用",
+                  key: "end",
+                  type: "danger",
+                  autoHidden: this.autoEndHidden,
+                  event: this.handleEnd,
                 },
                 {
-                 label: "详情",
-                 key: "detail",
-                 event: this.handleDetail,
-                 autoHidden: ({row}) => {
-                   return  row.isProvinceCustom === 1
-                 },
-               },
+                  label: "详情",
+                  key: "detail",
+                  event: this.handleDetail,
+                  autoHidden: ({row}) => {
+                    return row.isProvinceCustom === 1
+                  },
+                },
               ]
             },
           ],
@@ -445,10 +418,10 @@ export default {
       this.$refs.tree.filter(val);
     },
   },
-  computed:{
-     detailDisabled(){
-       return this.title==='详情' ? true :false
-     }    
+  computed: {
+    detailDisabled() {
+      return this.title === '详情' ? true : false
+    }
   },
   created() {
     this.getList();
@@ -471,40 +444,42 @@ export default {
       }
     },
     //启用
-    handleStart(row){
+    handleStart(row) {
       this.$$Dialog
-        .confirm('是否确认启用投诉现象名称为"' + row.phenomName + '"的数据项？')
-        .then(() => {
-          let data = {
-            phenomId:  row.phenomId,
-            status: 1
-          };
-          return this.$$api.complaintPhenomenon.updateComplaintPhenomenon({ data: data });
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("启用成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认启用投诉现象名称为"' + row.phenomName + '"的数据项？')
+          .then(() => {
+            let data = {
+              phenomId: row.phenomId,
+              status: 1
+            };
+            return this.$$api.complaintPhenomenon.updateComplaintPhenomenon({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("启用成功");
+          })
+          .catch(() => {
+          });
     },
     //停用
-    handleEnd(row){
+    handleEnd(row) {
       this.$$Dialog
-        .confirm('是否确认停用投诉现象名称为"' + row.phenomName + '"的数据项？')
-        .then(() => {
-          let data = {
-            phenomId: row.phenomId,
-            status: 0
-          };
-          return this.$$api.complaintPhenomenon.updateComplaintPhenomenon({ data: data });
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("停用成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认停用投诉现象名称为"' + row.phenomName + '"的数据项？')
+          .then(() => {
+            let data = {
+              phenomId: row.phenomId,
+              status: 0
+            };
+            return this.$$api.complaintPhenomenon.updateComplaintPhenomenon({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("停用成功");
+          })
+          .catch(() => {
+          });
     },
     /** 查询用户列表 */
     getList() {
@@ -526,10 +501,10 @@ export default {
           .listComplaintPhenomenonTree({params: {phenomName: this.phenomName}}).then(({res: response, err}) => {
         if (err) return;
         this.complaintPhenomenonTreeOptions = [{
-          phenomCode:'0',
-          phenomName:'投诉现象',
+          phenomCode: '0',
+          phenomName: '投诉现象',
           phenomList: response.phenomList
-        }]  
+        }]
       }).catch((error) => {
       });
     },
@@ -570,7 +545,7 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data, node) {
-      if (node.childNodes.length <= 0) return  this.dataSource=[]
+      if (node.childNodes.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.phenomCode
       this.handleQuery();
     },
@@ -702,7 +677,7 @@ export default {
           });
     },
     //详情按钮
-    handleDetail(row){
+    handleDetail(row) {
       this.reset();
       const treeData = this.findAncestorsInMultipleTrees(this.complaintPhenomenonTreeOptions, row.phenomCode, 'phenomCode', 'phenomName', 'phenomList')
       const formData = {

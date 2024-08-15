@@ -2,14 +2,13 @@
 import {getProps} from "@/components/FMGenerator/FMDesigner/config/index";
 import useEvents from "@/components/FMGenerator/FMDesigner/config/events";
 import Vue from "vue";
-import {resFields} from "@/pages/iwos/fmDesignerEvents/events/crm/order_installationInfo";
 
 // 查询所有key
 export const keysFinder = (arr, filter = []) => {
   const FORM_HISTORY = Vue.prototype.$$store.getters['fmDesigner/GET_FORM_HISTORY'];
   const {hiddenFields} = getProps(FORM_HISTORY[FORM_HISTORY.length - 1]) || {};
   //去重相同key
-  return Array.from(new Set(arr.reduce((t, c) => {
+  return Array.from(new Set(arr?.reduce((t, c) => {
     const {key, name} = getProps(c['z_props']);
     const rk = `${name}||${key}`;
     if (key && name && !filter.includes(rk) && !t.includes(rk)) t.push(rk);
@@ -73,7 +72,7 @@ export const formConfigProps = () => [
       },
       handleValueKeys({vm}) {
         const events = useEvents();
-        return vm.formData.events?.map(evLabel => ({
+        return vm.formData.events?.filter(e => !!events[e])?.map(evLabel => ({
           label: events[evLabel].label, options: (events[evLabel].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
         }));
       },
@@ -164,7 +163,7 @@ const commonPropsMap = {
       formPlaceholder: '选择字段', toPlaceholder: '绑定字段',
       handleValueKeys({vm}) {
         const events = useEvents();
-        return vm.formData.events?.map(evLabel => ({
+        return vm.formData.events?.filter(e => !!events[e])?.map(evLabel => ({
           label: events[evLabel].label, options: (events[evLabel].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
         }));
       },

@@ -2,11 +2,11 @@
   <div class="OptionSelector">
     <div class="inner">
       <div v-for="(v,i) in value" :key="i" class="item">
-        <el-select v-if="getKeys.length" v-model="v.label" :placeholder="formPlaceholder" filterable clearable>
+        <el-select v-if="getKeys?.length" v-model="v.label" :placeholder="formPlaceholder" filterable clearable>
           <el-option v-for="(vv,ii) in getKeys" v-bind="vv" :key="ii"></el-option>
         </el-select>
         <el-input v-else v-model="v.label" :placeholder="formPlaceholder"></el-input>
-        <el-select v-if="getValueKeys.filter(vk=>vk?.options?.length)?.length" v-model="v.value" :placeholder="formPlaceholder" filterable clearable>
+        <el-select v-if="getValueKeys?.filter(vk=>vk?.options?.length)?.length" v-model="v.value" :placeholder="formPlaceholder" filterable clearable>
           <el-option-group v-for="(vv,ii) in getValueKeys" v-bind="vv" :key="ii">
             <el-option v-for="(vvv,iii) in vv.options" v-bind="vvv" :key="iii"></el-option>
           </el-option-group>

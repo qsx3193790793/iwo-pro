@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+  <div class="app-container one-screen">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="用户名称" prop="userName">
         <el-input
             v-model="queryParams.userName"
@@ -25,7 +25,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -61,7 +61,7 @@
       <!--      </el-col>-->
     </el-row>
 
-    <el-table v-loading="loading"  ref="table" :data="userList" border @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="userList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true"/>
       <el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true"/>
@@ -70,7 +70,7 @@
       <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="{row}">
           <!--          <dict-tag :options="$$dictionaries.get('sys_normal_disable')" :value="scope.row.status"/>-->
-           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable',row.status) }}
+          {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', row.status) }}
         </template>
       </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -92,7 +92,7 @@
       </el-table-column>
     </el-table>
 
-    <el-pagination :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
     <select-user ref="select" :roleId="queryParams.roleId" @ok="handleQuery"/>
   </div>
 </template>
@@ -134,7 +134,7 @@ export default {
       this.queryParams.roleId = roleId;
       this.getList();
     }
-    this.$nextTick(()=>this.$refs.table?.doLayout());
+    this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
     /** 查询授权用户列表 */

@@ -7,6 +7,8 @@ export default async ({vm, item}) => {
   if (!customPositioning) return;
   const {lanIdInfo, custom, accType, accNum, callerNo, recordingId, callId} = customPositioning;
 
+  vm.formConfig.appendItems = [];//清除模板
+
   // 工单画像
   const {res, err} = await vm.$$api.crm.sourceCountUserPicuture({loading: !1});
   // 省内接口_设备产品信息查询

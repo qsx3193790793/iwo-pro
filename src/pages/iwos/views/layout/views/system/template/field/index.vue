@@ -153,17 +153,17 @@ const formConfigItems = ref([
         }
       },
       {
-        btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
-        onClick({vm}) {
-          handleDel();
-        }
-      },
-      {
         btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
         onClick({vm}) {
           // 打开弹窗
           select_pkid.value = null;
           isShowAddDialog.value = !0;
+        }
+      },
+      {
+        btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
+        onClick({vm}) {
+          handleDel();
         }
       },
     ]

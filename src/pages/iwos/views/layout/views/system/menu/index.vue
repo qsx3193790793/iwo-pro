@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+  <div class="app-container one-screen">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="菜单名称" prop="menuName">
         <el-input
             v-model="queryParams.menuName"
@@ -25,7 +25,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -52,6 +52,8 @@
     <el-table
         v-if="refreshTable"
         v-loading="loading"
+        class="one-screen-fg1"
+        height="100%"
         ref="table"
         :data="menuList"
         row-key="menuId"
@@ -59,7 +61,7 @@
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         border
     >
-      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160"></el-table-column>
+      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="260"></el-table-column>
       <el-table-column prop="icon" label="图标" align="center" width="100">
         <template slot-scope="scope">
           <i class="iconfont" :class="scope.row.icon"></i>
@@ -244,7 +246,7 @@
           <!--              </el-radio-group>-->
           <!--            </el-form-item>-->
           <!--          </el-col>-->
-<!--          <el-col :span="12" v-if="form.menuType != 'F'">-->
+          <!--          <el-col :span="12" v-if="form.menuType != 'F'">-->
           <!--            <el-form-item prop="visible">-->
           <!--              <span slot="label">-->
           <!--                <el-tooltip content="选择隐藏则路由将不会出现在侧边栏，但仍然可以访问" placement="top">-->
@@ -396,7 +398,7 @@ export default {
         menuName: undefined,
         icon: undefined,
         menuType: "M",
-        orderNum: undefined,
+        orderNum: '0',
         isFrame: "1",
         isCache: "0",
         visible: "0",

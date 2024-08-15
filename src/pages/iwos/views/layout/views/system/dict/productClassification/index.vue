@@ -1,86 +1,64 @@
 <template>
   <div class="app-container one-screen">
-    <el-row :gutter="20">
+    <div class="app-container-inner">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
+      <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
+        <div class="head-container one-screen-fg0">
           <el-input
-            v-model="tree_productName"
-            placeholder="请输入产品名称"
-            clearable
-            size="small"
-            prefix-icon="el-icon-search"
-            style="margin-bottom: 20px"
+              v-model="tree_productName"
+              placeholder="请输入产品名称"
+              clearable
+              size="small"
+              prefix-icon="el-icon-search"
+              style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree">
+        <div class="head-container nodeTree one-screen-fg1">
           <el-tree
-            :data="deptOptions"
-            :props="defaultProps"
-            :expand-on-click-node="false"
-            :filter-node-method="filterNode"
-            ref="tree"
-            node-key="id"
-            default-expand-all
-            highlight-current
-            @node-click="handleNodeClick"
+              :data="deptOptions"
+              :props="defaultProps"
+              :expand-on-click-node="false"
+              :filter-node-method="filterNode"
+              ref="tree"
+              node-key="id"
+              default-expand-all
+              highlight-current
+              @node-click="handleNodeClick"
           />
         </div>
-      </el-col>
+      </div>
       <!--用户数据-->
-      <div class="one-screen-fg1">
-        <el-col :span="20" :xs="24" style="width: 100%; height: 100%">
-          <PageSearchPanel
-          ref="PageSearchPanelRef"
-          :formConfigItems="formConfigItems"
+      <div class="one-screen one-screen-fg1">
+        <PageSearchPanel
+            class="one-screen-fg0"
+            ref="PageSearchPanelRef"
+            :formConfigItems="formConfigItems"
+            noBackground style="margin-bottom: 0;"
         ></PageSearchPanel>
-          <!-- <el-row :gutter="10" class="mb8"   v-show="currentNode.productLevel === 1">
-            <el-col :span="1.5">
-              <el-button
-                type="primary"
-                plain
-                icon="el-icon-plus"
-                size="mini"
-                @click="handleAdd"
-                v-hasPermission="['system:user:add']"
-                >新增
-              </el-button>
-            </el-col>
-            <el-col :span="1.5">
-              <el-button
-                type="danger"
-                plain
-                icon="el-icon-delete"
-                size="mini"
-                :disabled="multiple"
-                @click="handleDelete"
-                v-hasPermission="['system:user:remove']"
-                >删除
-              </el-button>
-            </el-col>
-          </el-row> -->
-          <div style="height: 70vh">
-            <div class="one-screen">
-              <div class="one-screen-fg1">
-                <JsTable
-                  :dataSource="dataSource"
-                  :columns="columns"
-                  @selectionChange="handleSelectionChange"
-                >
-                  <template #isProvinceCustom="{ row }">
-                    <div>{{ row.isProvinceCustom ? "自定义" : "否" }}</div>
-                  </template>
-                  <template #status="{ row }">
-                    <div v-show="row.status == 0"><el-tag type="danger">停用</el-tag></div>
-                    <div v-show="row.status == 1"><el-tag>启用</el-tag></div>
-                    <div v-show="row.status == 2"><el-tag type="danger">删除</el-tag></div>
-                  </template>
-                </JsTable>
-              </div>
+        <JsTable
+            class="one-screen-fg1"
+            :dataSource="dataSource"
+            :columns="columns"
+            @selectionChange="handleSelectionChange"
+        >
+          <template #isProvinceCustom="{ row }">
+            <div>{{ row.isProvinceCustom ? "自定义" : "否" }}</div>
+          </template>
+          <template #status="{ row }">
+            <div v-show="row.status == 0">
+              <el-tag type="danger">停用</el-tag>
             </div>
-          </div>
+            <div v-show="row.status == 1">
+              <el-tag>启用</el-tag>
+            </div>
+            <div v-show="row.status == 2">
+              <el-tag type="danger">删除</el-tag>
+            </div>
+          </template>
+        </JsTable>
 
-          <el-pagination
+        <el-pagination
+            class="one-screen-fg0"
             :current-page.sync="queryParams.pageNum"
             :page-size.sync="queryParams.pageSize"
             :page-sizes="[15, 30, 40, 50]"
@@ -89,12 +67,9 @@
             :total="total"
             @size-change="getList"
             @current-change="getList"
-          />
-
-          <!--        <el-pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList"/>-->
-        </el-col>
+        />
       </div>
-    </el-row>
+    </div>
 
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
@@ -103,18 +78,18 @@
           <el-col :span="12">
             <el-form-item label="产品一级">
               <el-input
-                v-model="form.oneProductName"
-                placeholder="请输入"
-                maxlength="30"
+                  v-model="form.oneProductName"
+                  placeholder="请输入"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="产品一级编码">
               <el-input
-                v-model="form.oneProductCode"
-                placeholder="请输入"
-                maxlength="30"
+                  v-model="form.oneProductCode"
+                  placeholder="请输入"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
@@ -123,18 +98,18 @@
           <el-col :span="12">
             <el-form-item label="产品二级">
               <el-input
-                v-model="form.productName"
-                placeholder="请输入"
-                maxlength="30"
+                  v-model="form.productName"
+                  placeholder="请输入"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="产品二级编码">
               <el-input
-                v-model="form.productCode"
-                placeholder="请输入"
-                maxlength="30"
+                  v-model="form.productCode"
+                  placeholder="请输入"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
@@ -142,7 +117,8 @@
         <el-row>
           <el-col :span="12">
             <el-checkbox v-model="form.customProvince"
-              >是否省自定义</el-checkbox
+            >是否省自定义
+            </el-checkbox
             >
           </el-col>
         </el-row>
@@ -159,10 +135,11 @@
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
+
 export default {
   name: "UserIndex",
-  cusDicts: ['start_stop','yes_no'],
-  components: { Treeselect, JsTable ,PageSearchPanel},
+  cusDicts: ['start_stop', 'yes_no'],
+  components: {Treeselect, JsTable, PageSearchPanel},
   data() {
     return {
       // 遮罩层
@@ -170,7 +147,7 @@ export default {
       // 选中数组
       ids: [],
       // 产品编码
-      productCodeList:[],
+      productCodeList: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -198,9 +175,9 @@ export default {
       // 角色选项
       roleOptions: [],
       // 树搜索项
-      tree_productName:"",
+      tree_productName: "",
       // 是否允许新增
-      addFlag:false,
+      addFlag: false,
       // 表单参数
       form: {},
       formConfigItems: [
@@ -231,7 +208,7 @@ export default {
           col: 6,
           type: "select",
           options: () =>
-            this.$store.getters["dictionaries/GET_DICT"]("yes_no"),
+              this.$store.getters["dictionaries/GET_DICT"]("yes_no"),
           isDisable: !1,
           isRequire: !1,
         },
@@ -242,7 +219,7 @@ export default {
           col: 6,
           type: "select",
           options: () =>
-          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+              this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
           isDisable: !1,
           isRequire: !1,
         },
@@ -255,9 +232,9 @@ export default {
             {
               btnName: "重置",
               type: "button",
-              attrs: { type: "" },
+              attrs: {type: ""},
               col: 1,
-              onClick:({vm})=>{
+              onClick: ({vm}) => {
                 vm.resetFormData();
                 this.resetQuery();
               }
@@ -265,26 +242,28 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              attrs: { type: "primary" },
+              attrs: {type: "primary"},
               col: 1,
-              onClick:({ vm }) =>{
+              onClick: ({vm}) => {
                 this.handleQuery();
               },
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length || this.currentNode.productLevel !== 1}, col: 1,
-              onClick:({vm})=> {
+              onClick: ({vm}) => {
                 this.handleDelete();
               }
             },
             {
               btnName: "新增",
               type: "button",
-              attrs: { type: "success",disabled:()=>{
-                return this.currentNode.productLevel !== 1;
-              }},
+              attrs: {
+                type: "success", disabled: () => {
+                  return this.currentNode.productLevel !== 1;
+                }
+              },
               col: 1,
-              onClick:({ vm })=> {
+              onClick: ({vm}) => {
                 this.handleAdd()
               },
             },
@@ -324,7 +303,7 @@ export default {
           },
           {
             name: "更新时间",
-            width:130,
+            width: 130,
             key: "updatedTime",
           },
         ],
@@ -340,9 +319,9 @@ export default {
               label: "删除",
               key: "del",
               type: "danger",
-              event:(val)=>{
-                this.ids=[]
-                this.productCodeList=[]
+              event: (val) => {
+                this.ids = []
+                this.productCodeList = []
                 this.handleDelete(val)
               }
             },
@@ -369,12 +348,12 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 15,
-        pcode: undefined, 
+        pcode: undefined,
       },
       // 表单校验
       rules: {
         productCode: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
+          {required: true, message: "用户名称不能为空", trigger: "blur"},
           {
             min: 2,
             max: 20,
@@ -383,10 +362,10 @@ export default {
           },
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" },
+          {required: true, message: "用户昵称不能为空", trigger: "blur"},
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
+          {required: true, message: "用户密码不能为空", trigger: "blur"},
           {
             min: 5,
             max: 20,
@@ -428,10 +407,10 @@ export default {
     //   this.initPassword = response.msg;
     // });
   },
-  mounted(){
+  mounted() {
     this.getList();
     this.getProductTree();
-  },    
+  },
   methods: {
     autoStartHidden(val) {
       if (val.row) {
@@ -450,38 +429,40 @@ export default {
     // 启用
     handleStart(row) {
       this.$$Dialog
-        .confirm('是否确认启动投诉产品编号为"' + row.productId + '"的数据项？')
-        .then(() => {
-          let data = {
-            productId: row.productId,
-            status: 1,
-          };
-          return this.$$api.productClassification.updStatus({ data: data });
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("启动成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认启动投诉产品编号为"' + row.productId + '"的数据项？')
+          .then(() => {
+            let data = {
+              productId: row.productId,
+              status: 1,
+            };
+            return this.$$api.productClassification.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("启动成功");
+          })
+          .catch(() => {
+          });
     },
     // 停用
     handleEnd(row) {
       this.$$Dialog
-        .confirm('是否确认停用投诉产品编号为"' + row.productId + '"的数据项？')
-        .then(() => {
-          let data = {
-            productId: row.productId,
-            status: 0,
-          };
-          return this.$$api.productClassification.updStatus({ data: data });
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("停用成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认停用投诉产品编号为"' + row.productId + '"的数据项？')
+          .then(() => {
+            let data = {
+              productId: row.productId,
+              status: 0,
+            };
+            return this.$$api.productClassification.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("停用成功");
+          })
+          .catch(() => {
+          });
     },
     // 根据pCode获取投诉产品列表(投诉产品下拉框使用)
     // productTypeList(NodeId){
@@ -493,29 +474,36 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
-      const formData =this.$refs.PageSearchPanelRef.getFormData();
+      const formData = this.$refs.PageSearchPanelRef.getFormData();
       this.$$api.productClassification
-        .listProduct({
-          params: {
-            ...formData,
-            ...this.queryParams
-          },
-        })
-        .then(({ res: response, err }) => {
-          if (err) return;
-          this.dataSource = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        }); 
+          .listProduct({
+            params: {
+              ...formData,
+              ...this.queryParams
+            },
+          })
+          .then(({res: response, err}) => {
+            if (err) return;
+            this.dataSource = response.rows;
+            this.total = response.total;
+            this.loading = false;
+          });
     },
     /** 查询部门下拉树结构 */
     getProductTree() {
       this.$$api.productClassification
-        .listProductTree()
-        .then(({ res: response, err }) => {
-          if (err) return;
-          this.deptOptions = response.list;
-        });
+          .listProductTree()
+          .then(({res: response, err}) => {
+            if (err) return;
+            let data = [{
+              productLevel: 0,
+              productCode: '0',
+              productId: '0',
+              productName: '投诉产品',
+              children: response.list
+            }]
+            this.deptOptions = data;
+          });
     },
     // 筛选节点
     filterNode(value, data) {
@@ -524,7 +512,7 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data) {
-      if(data.productLevel==2)return
+      if (data.productLevel == 2) return
       this.$refs["queryForm"]?.resetFields();
       this.currentNode = data;
       this.queryParams.pcode = data.productCode;
@@ -581,7 +569,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.productId);
-      this.productCodeList= selection.map((item) => item.productCode);
+      this.productCodeList = selection.map((item) => item.productCode);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -600,38 +588,38 @@ export default {
         pcode: Code,
       };
       this.$$api.productClassification
-        .getProductCode({ data })
-        .then(({ res: response, err }) => {
-          if (err) return;
-          this.form.productCode = response.productCode;
-          // this.deptOptions = response.res;
-        });
+          .getProductCode({data})
+          .then(({res: response, err}) => {
+            if (err) return;
+            this.form.productCode = response.productCode;
+            // this.deptOptions = response.res;
+          });
     },
     getCurrentTreeNodeInfo(ID) {
       this.$$api.productClassification
-        .getProductDetail({ productId: ID })
-        .then(({ res: response, err }) => {
-          if (err) return;
-          let {
-            productName,
-            productCode,
-            productId,
-            productLevel,
-            oneProductCode,
-            oneProductName,
-          } = { ...response };
-          this.form.oneProductCode = oneProductCode;
-          this.form.oneProductName = oneProductName;
-          this.form.productId = productId;
-          if (productLevel == 1) {
-            this.form.oneProductCode = productCode;
-            this.form.oneProductName = productName;
-          }
-          if (productLevel == 2) {
-            this.form.productName = productName;
-            this.form.productCode = productCode;
-          }
-        });
+          .getProductDetail({productId: ID})
+          .then(({res: response, err}) => {
+            if (err) return;
+            let {
+              productName,
+              productCode,
+              productId,
+              productLevel,
+              oneProductCode,
+              oneProductName,
+            } = {...response};
+            this.form.oneProductCode = oneProductCode;
+            this.form.oneProductName = oneProductName;
+            this.form.productId = productId;
+            if (productLevel == 1) {
+              this.form.oneProductCode = productCode;
+              this.form.oneProductName = productName;
+            }
+            if (productLevel == 2) {
+              this.form.productName = productName;
+              this.form.productCode = productCode;
+            }
+          });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -648,14 +636,14 @@ export default {
         if (valid) {
           if (this.form.handleType == "edit") {
             this.$$api.productClassification
-              .updateProduct({ data: this.form })
-              .then(({ res, err }) => {
-                if (err) return;
-                this.$$Toast.success("修改成功");
-                this.open = false;
-                this.getList();
-                this.getProductTree();
-              });
+                .updateProduct({data: this.form})
+                .then(({res, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("修改成功");
+                  this.open = false;
+                  this.getList();
+                  this.getProductTree();
+                });
           } else {
             let data = {
               productCode: this.form.productCode,
@@ -663,14 +651,14 @@ export default {
               productName: this.form.productName,
             };
             this.$$api.productClassification
-              .addProduct({ data: data })
-              .then(({ res, err }) => {
-                if (err) return;
-                this.$$Toast.success("新增成功");
-                this.open = false;
-                this.getList();
-                this.getProductTree();
-              });
+                .addProduct({data: data})
+                .then(({res, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("新增成功");
+                  this.open = false;
+                  this.getList();
+                  this.getProductTree();
+                });
           }
         }
       });
@@ -678,29 +666,30 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const productIds = row?.productId || this.ids;
-      let showText=''
-      if(this.ids.length>0){
-        showText=this.productCodeList.join(',')
-      }else{
-        showText=row?.productCode
+      let showText = ''
+      if (this.ids.length > 0) {
+        showText = this.productCodeList.join(',')
+      } else {
+        showText = row?.productCode
       }
       this.$$Dialog
-        .confirm('是否确认删除投诉产品编号为"' + showText + '"的数据项？')
-        .then(() => {
-          let data = {
-            productIds: Array.isArray(productIds)
-              ? productIds.join(",")
-              : productIds,
-          };
-          return this.$$api.productClassification.delProduct(data);
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.getProductTree();
-          this.$$Toast.success("删除成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认删除投诉产品编号为"' + showText + '"的数据项？')
+          .then(() => {
+            let data = {
+              productIds: Array.isArray(productIds)
+                  ? productIds.join(",")
+                  : productIds,
+            };
+            return this.$$api.productClassification.delProduct(data);
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.getProductTree();
+            this.$$Toast.success("删除成功");
+          })
+          .catch(() => {
+          });
     },
   },
 };
@@ -710,10 +699,12 @@ export default {
   overflow: scroll;
   height: 74vh;
 }
+
 .queryItem {
   width: 240px;
 }
-::v-deep .el-form-item__label{
+
+::v-deep .el-form-item__label {
   width: 100px
 }
 </style>

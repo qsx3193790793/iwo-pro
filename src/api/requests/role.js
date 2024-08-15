@@ -23,6 +23,9 @@ const apis = {
   // 根据角色ID查询部门树结构
   deptTreeSelect: {url: (args) => `${apiPrefix('system')}/role/deptTree/${args?.roleId || ''}`, method: 'get'},
 
+  // 获取角色投诉来源
+  getAskSourceSrlRoleList: {url: (args) => `${apiPrefix('system')}/role/getAskSourceSrlRoleId/${args?.roleId || ''}`, method: 'get'},
+
   // 查询角色未授权用户列表
   unallocatedUserList: {url: `${apiPrefix('system')}/role/authUser/unallocatedList/`, method: 'get'},
   // 授权用户选择

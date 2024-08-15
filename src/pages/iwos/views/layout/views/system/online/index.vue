@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px">
+  <div class="app-container one-screen">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" label-width="68px">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
             v-model="queryParams.ipaddr"
@@ -23,7 +23,7 @@
       </el-form-item>
 
     </el-form>
-    <el-table v-loading="loading" ref="table" :data="list" border style="width: 100%;">
+    <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="list" border style="width: 100%;">
       <el-table-column label="序号" type="index" align="center"></el-table-column>
       <el-table-column label="会话编号" align="center" prop="tokenId" :show-overflow-tooltip="true"/>
       <el-table-column label="登录名称" align="center" prop="userName" :show-overflow-tooltip="true"/>

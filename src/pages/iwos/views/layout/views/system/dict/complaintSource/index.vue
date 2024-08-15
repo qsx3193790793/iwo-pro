@@ -1,9 +1,9 @@
 <template>
   <div class="app-container one-screen">
-    <el-row :gutter="20">
+    <div class="app-container-inner">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
+      <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
+        <div class="head-container one-screen-fg0">
           <el-input
               v-model="tree_sourceName"
               placeholder="请输入投诉来源名称"
@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree">
+        <div class="head-container nodeTree one-screen-fg1">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -26,64 +26,34 @@
               @node-click="handleNodeClick"
           />
         </div>
-      </el-col>
+      </div>
       <!--用户数据-->
-      <el-col :span="20" :xs="24">
+      <div class="one-screen one-screen-fg1">
         <PageSearchPanel
             ref="PageSearchPanelRef"
             :formConfigItems="formConfigItems"
-            noBackground
+            noBackground style="margin-bottom: 0;"
         ></PageSearchPanel>
-        <!-- <el-row :gutter="10" class="mb8" style="width: 100%; height: 100%">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              icon="el-icon-plus"
-              size="mini"
-              @click="handleAdd"
-              v-show="currentNode.level !== 3 && currentNode.level !== 0"
-              v-hasPermission="['system:user:add']"
-              >新增
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="danger"
-              plain
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-              v-hasPermission="['system:user:remove']"
-              >删除
-            </el-button>
-          </el-col>
-        </el-row> -->
-        <div style="height: 70vh">
-          <div class="one-screen">
-            <div class="one-screen-fg1">
-              <JsTable
-                  :dataSource="dataSource"
-                  :columns="columns"
-                  @selectionChange="handleSelectionChange"
-              >
-                <template #status="{ row }">
-                  <div v-show="row.status == 0">
-                    <el-tag type="danger">停用</el-tag>
-                  </div>
-                  <div v-show="row.status == 1">
-                    <el-tag>启用</el-tag>
-                  </div>
-                  <div v-show="row.status == 2">
-                    <el-tag type="danger">删除</el-tag>
-                  </div>
-                </template>
-              </JsTable>
+        <JsTable
+            class="one-screen-fg1"
+            :dataSource="dataSource"
+            :columns="columns"
+            @selectionChange="handleSelectionChange"
+        >
+          <template #status="{ row }">
+            <div v-show="row.status == 0">
+              <el-tag type="danger">停用</el-tag>
             </div>
-          </div>
-        </div>
+            <div v-show="row.status == 1">
+              <el-tag>启用</el-tag>
+            </div>
+            <div v-show="row.status == 2">
+              <el-tag type="danger">删除</el-tag>
+            </div>
+          </template>
+        </JsTable>
         <el-pagination
+            class="one-screen-fg0"
             :current-page.sync="queryParams.pageNum"
             :page-size.sync="queryParams.pageSize"
             :page-sizes="[15, 30, 40, 50]"
@@ -93,8 +63,8 @@
             @size-change="getList"
             @current-change="getList"
         />
-      </el-col>
-    </el-row>
+      </div>
+    </div>
 
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
@@ -486,13 +456,20 @@ export default {
             this.loading = false;
           });
     },
-    /** 查询部门下拉树结构 */
+    /** 查询投诉来源树结构 */
     getTree() {
       this.$$api.complaintSource
           .listComplaintSourceTree()
           .then(({res: response, err}) => {
             if (err) return;
-            this.deptOptions = response.list;
+            let data = [{
+              level: 0,
+              sourceCode: '0',
+              sourceId: '0',
+              sourceName: '投诉来源',
+              children: response.list
+            }]
+            this.deptOptions = data;
           });
     },
     // 筛选节点

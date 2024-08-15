@@ -1,6 +1,6 @@
 <template>
   <div class="one-screen">
-    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems" ></PageSearchPanel>
+    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
         <JsTable :dataSource="list" :columns="columns" @selectionChange="handleSelectionChange">
@@ -14,7 +14,7 @@
             {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_type', row.interfaceType) }}
           </template>
           <template #status="{row}">
-            <el-switch  v-model="row.status" :inactive-value="0" :active-value="1"  @change="handleStatusChange(row)"></el-switch>
+            <el-switch v-model="row.status" :inactive-value="0" :active-value="1" @change="handleStatusChange(row)"></el-switch>
           </template>
         </JsTable>
         <div class="pagination-area">
@@ -33,6 +33,7 @@ import JsTable from '@/components/js-table/index.vue';
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 import AddDialog from '../components/AddDialog';
 import {onMounted} from "vue"
+
 const {proxy} = getCurrentInstance();
 
 let columns = ref({
@@ -41,7 +42,7 @@ let columns = ref({
     {
       name: '接口编码',
       key: 'interfaceCode',
-    
+
     },
     {
       name: '接口名称',
@@ -96,15 +97,15 @@ let columns = ref({
     }
   ],
   options: {
-    btns:   [{
-          label: '编辑',
-          key: 'edit',
-          event: (row) => {
-            select_pkid.value = {interfaceId: row.interfaceId};
-            isShowAddDialog.value = !0;
-          },
-        },
-      ],
+    btns: [{
+      label: '编辑',
+      key: 'edit',
+      event: (row) => {
+        select_pkid.value = {interfaceId: row.interfaceId};
+        isShowAddDialog.value = !0;
+      },
+    },
+    ],
   },
 })
 
@@ -112,7 +113,7 @@ const PageSearchPanelRef = ref();
 const pageInfo = ref({pageNum: 1, pageSize: 15, rowCount: 0});
 
 const list = ref([]);
-const selectionList=ref([])
+const selectionList = ref([])
 // 列表请求
 const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.pageNum = pageNum;
@@ -122,32 +123,36 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
   list.value = res?.rows || [];
 };
-function handleSelectionChange(value){
-  selectionList.value=value
+
+function handleSelectionChange(value) {
+  selectionList.value = value
 }
+
 function handleDel(row) {
   proxy.$$Dialog.confirm('确认删除选中的数据吗？', '提示').then(async () => {
-    const interfaceIds= selectionList.value.map(item=>{
+    const interfaceIds = selectionList.value.map(item => {
       return item.interfaceId
     }).join(',')
-    const {res, err} = await proxy.$$api.interface.delete({data:{status:2},interfaceIds});
+    const {res, err} = await proxy.$$api.interface.delete({data: {status: 2}, interfaceIds});
     if (err) return;
     getList(1);
     proxy.$$Toast({message: `删除成功`, type: 'success'});
   }).catch(proxy.$$emptyFn);
 }
-function handleStatusChange(row){
+
+function handleStatusChange(row) {
   let text = row.status === 1 ? "启用" : "停用";
-      proxy.$$Dialog.confirm('确认要"' + text + '""' + row.interfaceName + '"接口吗？').then(() => {
-        return proxy.$$api.interface.changeStatus({data:{status:row.status,interfaceId:row.interfaceId}});
-      }).then(({res, err}) => {
-        if (err)  return ; 
-        getList(1);
-        proxy.$$Toast.success(text + "成功");
-      }).catch(function () {
-        row.status = row.status === 0 ? 1 : 0;
-      });
+  proxy.$$Dialog.confirm('确认要"' + text + '""' + row.interfaceName + '"接口吗？').then(() => {
+    return proxy.$$api.interface.changeStatus({data: {status: row.status, interfaceId: row.interfaceId}});
+  }).then(({res, err}) => {
+    if (err) return;
+    getList(1);
+    proxy.$$Toast.success(text + "成功");
+  }).catch(function () {
+    row.status = row.status === 0 ? 1 : 0;
+  });
 }
+
 //弹窗
 const isShowAddDialog = ref(!1);
 const select_pkid = ref(null);
@@ -158,8 +163,8 @@ const formConfigItems = ref([
   {name: '接口名称', key: 'interfaceName', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !1},
   {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: !1, isRequire: !1},
-  {name: '接口类型', key: 'interfaceType', value: '', col: 6, type: 'select',  options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_type'),isDisable: !1, isRequire: !1},
-  {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 6, type: 'input',  isDisable: !1, isRequire: !1},
+  {name: '接口类型', key: 'interfaceType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_type'), isDisable: !1, isRequire: !1},
+  {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '状态', key: 'status', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('start_stop'), isDisable: !1, isRequire: !1},
   {
     type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, items: [
@@ -203,7 +208,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'InterfaceIndex',
-  cusDicts: ['interface_request_method','interface_specification_type','interface_type','start_stop']
+  cusDicts: ['interface_request_method', 'interface_specification_type', 'interface_type', 'start_stop']
 }
 </script>
 <style lang="scss" scoped>

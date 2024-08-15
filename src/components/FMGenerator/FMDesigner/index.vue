@@ -321,7 +321,7 @@ onMounted(() => {
 
     & > .fm-designer-components-panel {
       position: relative;
-      width: 240px;
+      width: 300px;
       flex-grow: 0;
       flex-shrink: 0;
       overflow: auto;
@@ -356,7 +356,7 @@ onMounted(() => {
     }
 
     & > .fm-designer-config-panel {
-      width: 380px;
+      width: 400px;
       flex-grow: 0;
       flex-shrink: 0;
       overflow: auto;

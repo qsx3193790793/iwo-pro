@@ -1,9 +1,9 @@
 <template>
-  <div class="app-container">
-    <el-row :gutter="20">
+  <div class="app-container one-screen">
+    <div class="app-container-inner">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
+      <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
+        <div class="head-container one-screen-fg0">
           <el-input
               v-model="deptName"
               placeholder="请输入部门名称"
@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container">
+        <div class="head-container one-screen-fg1">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -26,10 +26,10 @@
               @node-click="handleNodeClick"
           />
         </div>
-      </el-col>
+      </div>
       <!--用户数据-->
-      <el-col :span="20" :xs="24">
-        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+      <div class="one-screen one-screen-fg1">
+        <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
           <el-form-item label="用户名称" prop="userName">
             <el-input
                 v-model="queryParams.userName"
@@ -73,73 +73,16 @@
             ></el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-            <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+            <el-button size="small" @click="resetQuery">重置</el-button>
+            <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
+            <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:user:add']">新增</el-button>
+            <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button>
+            <el-button type="info" plain size="small" @click="handleImport" v-hasPermission="['system:user:import']">导入</el-button>
+            <el-button type="warning" plain size="small" @click="handleExport" v-hasPermission="['system:user:export']">导出</el-button>
           </el-form-item>
         </el-form>
 
-        <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button
-                type="primary"
-                plain
-                icon="el-icon-plus"
-                size="small"
-                @click="handleAdd"
-                v-hasPermission="['system:user:add']"
-            >新增
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-                type="success"
-                plain
-                icon="el-icon-edit"
-                size="small"
-                :disabled="single"
-                @click="handleUpdate"
-                v-hasPermission="['system:user:edit']"
-            >修改
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-                type="danger"
-                plain
-                icon="el-icon-delete"
-                size="small"
-                :disabled="multiple"
-                @click="handleDelete"
-                v-hasPermission="['system:user:remove']"
-            >删除
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-                type="info"
-                plain
-                icon="el-icon-upload2"
-                size="small"
-                @click="handleImport"
-                v-hasPermission="['system:user:import']"
-            >导入
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-                type="warning"
-                plain
-                icon="el-icon-download"
-                size="small"
-                @click="handleExport"
-                v-hasPermission="['system:user:export']"
-            >导出
-            </el-button>
-          </el-col>
-          <!--          <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>-->
-        </el-row>
-
-        <el-table v-loading="loading" :data="userList" border @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" class="one-screen-fg1" height="100%" :data="userList" border @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
           <!-- <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible"/> -->
           <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true"/>
@@ -164,45 +107,29 @@
           <el-table-column
               label="操作"
               align="center"
-              width="160"
+              width="220"
               class-name="small-padding fixed-width"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
-              <el-button
-                  size="small"
-                  type="text"
-                  icon="el-icon-edit"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermission="['system:user:edit']"
-              >修改
-              </el-button>
-              <el-button
-                  size="small"
-                  type="text"
-                  icon="el-icon-delete"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermission="['system:user:remove']"
-              >删除
-              </el-button>
-              <el-dropdown size="small" @command="(command) => handleCommand(command, scope.row)" v-hasPermission="['system:user:resetPwd', 'system:user:edit']">
-                <el-button size="small" type="text" icon="el-icon-d-arrow-right">更多</el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
-                                    v-hasPermission="['system:user:resetPwd']">重置密码
-                  </el-dropdown-item>
-                  <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
-                                    v-hasPermission="['system:user:edit']">分配角色
-                  </el-dropdown-item>
+              <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['system:user:edit']">修改</el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.row)" v-hasPermission="['system:user:remove']">删除</el-button>
+              <el-dropdown v-hasPermission="['system:user:resetPwd', 'system:user:edit']" class="public-el-dropdown" trigger="click">
+                <el-button type="primary">
+                  更多<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
+                  <div class="inner">
+                    <el-button v-hasPermission="['system:user:resetPwd']" type="primary" size="small" @click="handleResetPwd(scope.row)">重置密码</el-button>
+                    <el-button v-hasPermission="['system:user:edit']" type="primary" size="small" @click="handleAuthRole(scope.row)">分配角色</el-button>
+                  </div>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
-
-        <!--        <el-pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList"/>-->
-      </el-col>
-    </el-row>
+        <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+      </div>
+    </div>
 
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
@@ -225,7 +152,7 @@
               <el-input v-model="form.nickName" placeholder="请输入用户名称" maxlength="30"/>
             </el-form-item>
           </el-col>
-          
+
         </el-row>
         <el-row>
           <el-col :span="12">
@@ -389,7 +316,7 @@ export default {
       // 岗位选项
       postOptions: [],
       // 班组列表
-      teamOptions:[],
+      teamOptions: [],
       // 角色选项
       roleOptions: [],
       // 表单参数
@@ -484,44 +411,44 @@ export default {
     // });
   },
   methods: {
-     // 机构变动时清除选择的班组，班组名，角色，获取班组数据
-     handelDeptIdChange(val){
-      this.form.parentId=undefined
-      this.form.teamIds=[]
-      this.form.roleIds=[]
-      this.roleOptions=[]
+    // 机构变动时清除选择的班组，班组名，角色，获取班组数据
+    handelDeptIdChange(val) {
+      this.form.parentId = undefined
+      this.form.teamIds = []
+      this.form.roleIds = []
+      this.roleOptions = []
       this.getTeamTreeInfo(val.id)
       this.getDeptRoleInfo(val.id)
     },
-    getTeamTreeInfo(deptId){
-      this.$$api.team.getDeptTeamTree({deptId:deptId}).then(({res: response, err}) => {
+    getTeamTreeInfo(deptId) {
+      this.$$api.team.getDeptTeamTree({deptId: deptId}).then(({res: response, err}) => {
         if (err) return
         this.teamOptions = this.$$handleTree(response.rows, "teamId");
       });
     },
-    getDeptRoleInfo(deptId){
-      this.$$api.team.getDeptRoleTree({deptId:deptId}).then(({res: response, err}) => {
+    getDeptRoleInfo(deptId) {
+      this.$$api.team.getDeptRoleTree({deptId: deptId}).then(({res: response, err}) => {
         if (err) return
         // 只有数据为空时，才进行赋值
-        if(this.roleOptions.length==0){
+        if (this.roleOptions.length == 0) {
           this.roleOptions = response.rows
         }
       });
     },
     // 班组变动时，角色也动态获取
-    handelparentIdChange(){
-      this.roleOptions=[]
-      this.form.roleIds=[]
+    handelparentIdChange() {
+      this.roleOptions = []
+      this.form.roleIds = []
       setTimeout(() => {
-        this.getTeamRoleInfo( this.form.teamIds.join(',') )
-      }, 0);  
-      
+        this.getTeamRoleInfo(this.form.teamIds.join(','))
+      }, 0);
+
     },
-    getTeamRoleInfo(teamId){
-      this.$$api.team.getTeamRoleTree({orgId:teamId}).then(({res: response, err}) => {
+    getTeamRoleInfo(teamId) {
+      this.$$api.team.getTeamRoleTree({orgId: teamId}).then(({res: response, err}) => {
         if (err) return
         // 只有数据为空时，才进行赋值
-        if(this.roleOptions.length==0){
+        if (this.roleOptions.length == 0) {
           this.roleOptions = response.rows
         }
       });
@@ -659,7 +586,7 @@ export default {
         if (err) return;
         this.form = response;
         this.roleOptions = response.roles;
-        this.teamOptions =this.$$handleTree(response.teams, "teamId");
+        this.teamOptions = this.$$handleTree(response.teams, "teamId");
         this.$set(this.form, "roleIds", response.roleIds);
         this.open = true;
         this.title = "修改用户";

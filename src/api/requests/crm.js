@@ -66,9 +66,13 @@ const apis = {
   //获取H码
   getHNumber: {url: `${apiPrefix('web')}/HNumber/get`, method: 'get'},
   // 获取GIS地址列表
-  getGisAddressList: {url: `${apiPrefix('web')}/gss/getGisAddressList`, method: 'get'},
+  getGisAddressList: {url: `${apiPrefix('web')}/group/getGisAddressList`, method: 'get'},
   // 工单画像
   sourceCountUserPicuture: {url: `${apiPrefix('web')}/sourceCount/userPicuture`, method: 'get'},
+  //积分消费历史查询
+  qryPointCosHis: {url: `${apiPrefix('web')}/group/qryPointCosHis`, method: 'get'},
+  //靓号资产信息查询
+  getBeautifulAccountInfo: {url: `${apiPrefix('web')}/group/getBeautifulAccountInfo`, method: 'get'},
 };
 
 export default apiGenerator(apis);

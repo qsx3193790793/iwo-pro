@@ -1,7 +1,8 @@
 <template>
-  <div class="app-container">
+  <div class="app-container one-screen">
     <el-form
         :model="queryParams"
+        class="one-screen-fg0"
         ref="queryForm"
         size="small"
         :inline="true"
@@ -67,7 +68,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -120,6 +121,8 @@
     </el-row>
     <el-table
         v-loading="loading"
+        class="one-screen-fg1"
+        height="100%"
         ref="table"
         :data="roleList"
         border
@@ -213,7 +216,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -278,6 +281,36 @@
               :check-strictly="!form.menuCheckStrictly"
               empty-text="加载中，请稍候"
               :props="defaultProps"
+          ></el-tree>
+        </el-form-item>
+        <el-form-item label="建单权限">
+          <el-checkbox
+              v-model="complaintSourceExpand"
+              @change="handleCheckedTreeExpand($event, 'complaintSource')"
+          >展开/折叠
+          </el-checkbox
+          >
+          <el-checkbox
+              v-model="complaintSourceNodeAll"
+              @change="handleCheckedTreeNodeAll($event, 'complaintSource')"
+          >全选/全不选
+          </el-checkbox
+          >
+          <el-checkbox
+              v-model="form.complaintSourceCheckStrictly"
+              @change="handleCheckedTreeConnect($event, 'complaintSource')"
+          >父子联动
+          </el-checkbox
+          >
+          <el-tree
+              class="tree-border"
+              :data="complaintSourceOptions"
+              show-checkbox
+              ref="complaintSource"
+              node-key="sourceCode"
+              :check-strictly="!form.complaintSourceCheckStrictly"
+              empty-text="加载中，请稍候"
+              :props="defaultComplaintSourceProps"
           ></el-tree>
         </el-form-item>
         <el-form-item label="备注">
@@ -387,7 +420,9 @@ export default {
       // 是否显示弹出层（数据权限）
       openDataScope: false,
       menuExpand: false,
+      complaintSourceExpand: false,
       menuNodeAll: false,
+      complaintSourceNodeAll: false,
       deptExpand: true,
       deptNodeAll: false,
       // 日期范围
@@ -417,6 +452,8 @@ export default {
       ],
       // 菜单列表
       menuOptions: [],
+      // 投诉来源
+      complaintSourceOptions: [],
       // 部门列表
       deptOptions: [],
       // 查询参数
@@ -433,6 +470,10 @@ export default {
       defaultProps: {
         children: "children",
         label: "label",
+      },
+      defaultComplaintSourceProps: {
+        children: "children",
+        label: "sourceName",
       },
       // 表单校验
       rules: {
@@ -474,6 +515,15 @@ export default {
         this.menuOptions = response.list;
       });
     },
+    /** 查询投诉来源下拉树结构 */
+    getcomplaintSourceTree() {
+      this.$$api.complaintSource
+          .getAskSourceSrlByUid()
+          .then(({res: response, err}) => {
+            if (err) return;
+            this.complaintSourceOptions = response?.list || [];
+          });
+    },
     // 所有菜单节点数据
     getMenuAllCheckedKeys() {
       // 目前被选中的菜单节点
@@ -489,6 +539,15 @@ export default {
       let checkedKeys = this.$refs.dept.getCheckedKeys();
       // 半选中的部门节点
       let halfCheckedKeys = this.$refs.dept.getHalfCheckedKeys();
+      checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+      return checkedKeys;
+    },
+    // 所有投诉来源数据
+    getComplaintSourceAllCheckedKeys() {
+      // 目前被选中的部门节点
+      let checkedKeys = this.$refs.complaintSource.getCheckedKeys();
+      // 半选中的部门节点
+      let halfCheckedKeys = this.$refs.complaintSource.getHalfCheckedKeys();
       checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
       return checkedKeys;
     },
@@ -541,6 +600,8 @@ export default {
       }
       (this.menuExpand = false),
           (this.menuNodeAll = false),
+          (this.complaintSourceExpand = false),
+          (this.complaintSourceNodeAll = false),
           (this.deptExpand = true),
           (this.deptNodeAll = false),
           (this.form = {
@@ -552,6 +613,7 @@ export default {
             menuIds: [],
             deptIds: [],
             menuCheckStrictly: true,
+            complaintSourceCheckStrictly: true,
             deptCheckStrictly: true,
             remark: undefined,
           });
@@ -599,6 +661,11 @@ export default {
         for (let i = 0; i < treeList.length; i++) {
           this.$refs.dept.store.nodesMap[treeList[i].id].expanded = value;
         }
+      } else if (type == "complaintSource") {
+        let treeList = this.complaintSourceOptions;
+        for (let i = 0; i < treeList.length; i++) {
+          this.$refs.complaintSource.store.nodesMap[treeList[i].sourceCode].expanded = value;
+        }
       }
     },
     // 树权限（全选/全不选）
@@ -607,6 +674,8 @@ export default {
         this.$refs.menu.setCheckedNodes(value ? this.menuOptions : []);
       } else if (type == "dept") {
         this.$refs.dept.setCheckedNodes(value ? this.deptOptions : []);
+      } else if (type == "complaintSource") {
+        this.$refs.complaintSource.setCheckedNodes(value ? this.complaintSourceOptions : []);
       }
     },
     // 树权限（父子联动）
@@ -615,20 +684,26 @@ export default {
         this.form.menuCheckStrictly = value ? true : false;
       } else if (type == "dept") {
         this.form.deptCheckStrictly = value ? true : false;
+      } else if (type == "complaintSource") {
+        this.form.complaintSourceCheckStrictly = value ? true : false;
       }
     },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.getMenuTreeselect();
+      this.getcomplaintSourceTree()
       this.open = true;
       this.title = "添加角色";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.getcomplaintSourceTree()
       const roleId = row.roleId || this.ids;
       const roleMenu = this.getRoleMenuTreeselect(roleId);
+      const srlRoleList = this.getsrlRoleListTree(roleId);
+
       this.$$api.role.getRole({roleId}).then(({res: response, err}) => {
         if (err) return;
         this.form = response;
@@ -642,8 +717,23 @@ export default {
               });
             });
           });
+          srlRoleList.then((res) => {
+            let checkedKeys = res;
+            checkedKeys.forEach((v) => {
+              this.$nextTick(() => {
+                this.$refs.complaintSource.setChecked(v, true, false);
+              });
+            });
+          });
+
         });
         this.title = "修改角色";
+      });
+    },
+    getsrlRoleListTree(roleId) {
+      return this.$$api.role.getAskSourceSrlRoleList({roleId}).then(({res: response, err}) => {
+        if (err) return [];
+        return response.list;
       });
     },
     /** 选择角色权限范围触发 */
@@ -679,6 +769,7 @@ export default {
         if (valid) {
           if (this.form.roleId != undefined) {
             this.form.menuIds = this.getMenuAllCheckedKeys();
+            this.form.askSourceIds = this.getComplaintSourceAllCheckedKeys();
             this.$$api.role.updateRole({data: this.form}).then(({res, err}) => {
               if (err) return;
               this.$$Toast.success("修改成功");
@@ -687,6 +778,7 @@ export default {
             });
           } else {
             this.form.menuIds = this.getMenuAllCheckedKeys();
+            this.form.askSourceIds = this.getComplaintSourceAllCheckedKeys();
             this.$$api.role.addRole({data: this.form}).then(({res, err}) => {
               if (err) return;
               this.$$Toast.success("新增成功");

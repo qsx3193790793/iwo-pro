@@ -1,9 +1,9 @@
 <template>
-  <div class="app-container">
-    <el-row :gutter="20">
+  <div class="app-container one-screen">
+    <div class="app-container-inner">
       <!--部门数据-->
-      <el-col :span="4" :xs="24">
-        <div class="head-container">
+      <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
+        <div class="head-container one-screen-fg0">
           <el-input
               v-model="treeReasonName"
               placeholder="请输入原因名称"
@@ -13,30 +13,13 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree">
-          <el-tree
-              :data="complaintReasonTreeOptions"
-              :props="defaultProps"
-              :expand-on-click-node="false"
-              :filter-node-method="filterNode"
-              ref="tree"
-              node-key="id"
-              default-expand-all
-              highlight-current
-              @node-click="handleNodeClick"
-          />
+        <div class="head-container nodeTree one-screen-fg1">
+          <el-tree :data="complaintReasonTreeOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" node-key="id" default-expand-all highlight-current @node-click="handleNodeClick"/>
         </div>
-      </el-col>
+      </div>
       <!--用户数据-->
-      <el-col :span="20" :xs="24">
-        <el-form
-            :model="queryParams"
-            ref="queryForm"
-            size="small"
-            :inline="true"
-            v-show="showSearch"
-            label-width="auto"
-        >
+      <div class="one-screen one-screen-fg1">
+        <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
           <el-form-item label="投诉原因编码" prop="reasonCode">
             <el-input
                 v-model="queryParams.reasonCode"
@@ -91,7 +74,7 @@
           <el-form-item>
             <el-button
                 type="primary"
-               
+
                 size="mini"
                 @click="handleQuery"
             >搜索
@@ -103,58 +86,19 @@
             >
           </el-form-item>
         </el-form>
-
-        <!-- <el-row :gutter="10" class="mb8">
-          <el-col :span="1.5">
-            <el-button
-              type="primary"
-              plain
-              icon="el-icon-plus"
-              size="mini"
-              :disabled="isAllowAdd"
-              @click="handleAdd"
-              v-hasPermission="['system:user:add']"
-              >新增
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              type="danger"
-              plain
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-              v-hasPermission="['system:user:remove']"
-              >删除
-            </el-button>
-          </el-col>
-        </el-row> -->
-        <div style="height: 70vh">
-          <JsTable :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
-            <template #isProvinceCustom="{row}">
-              {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
-            </template>
-            <template #status="{row}">
-              <el-tag :type="row.status == 0?'danger':''">
-                {{$store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status)}}
-              </el-tag>
-            </template>
-          </JsTable>
-        </div>
-        <el-pagination
-            :current-page.sync="queryParams.pageNum"
-            :page-size.sync="queryParams.pageSize"
-            :page-sizes="[15, 30, 40, 50]"
-            background
-            layout=" ->,total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="getList"
-            @current-change="getList"
-        />
-        <!--        <el-pagination :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList"/>-->
-      </el-col>
-    </el-row>
+        <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
+          <template #isProvinceCustom="{row}">
+            {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
+          </template>
+          <template #status="{row}">
+            <el-tag :type="row.status == 0?'danger':''">
+              {{ $store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status) }}
+            </el-tag>
+          </template>
+        </JsTable>
+        <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40, 50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+      </div>
+    </div>
 
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
@@ -429,38 +373,38 @@ export default {
             {
               label: "更多",
               key: "more",
-              children:[
-              {
-              label: "删除",
-              key: "del",
-              type: "danger",
-              autoHidden: ({row}) => {
-                return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
-              },
-              event: this.handleDelete,
-            },
-            {
-              label: "启用",
-              key: "start",
-              type: "primary",
-              autoHidden: this.autoStartHidden,
-              event: this.handleStart,
-            },
-            {
-              label: "停用",
-              key: "end",
-              type: "danger",
-              autoHidden: this.autoEndHidden,
-              event: this.handleEnd,
-            },
-            {
-              label: "详情",
-              key: "detail",
-              autoHidden: ({row}) => {
-                return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
-              },
-              event: this.handleDetail,
-            },
+              children: [
+                {
+                  label: "删除",
+                  key: "del",
+                  type: "danger",
+                  autoHidden: ({row}) => {
+                    return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                  },
+                  event: this.handleDelete,
+                },
+                {
+                  label: "启用",
+                  key: "start",
+                  type: "primary",
+                  autoHidden: this.autoStartHidden,
+                  event: this.handleStart,
+                },
+                {
+                  label: "停用",
+                  key: "end",
+                  type: "danger",
+                  autoHidden: this.autoEndHidden,
+                  event: this.handleEnd,
+                },
+                {
+                  label: "详情",
+                  key: "detail",
+                  autoHidden: ({row}) => {
+                    return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                  },
+                  event: this.handleDetail,
+                },
               ]
             },
           ],
@@ -490,10 +434,10 @@ export default {
       this.$refs.tree.filter(val);
     },
   },
-  computed:{
-     detailDisabled(){
-       return this.title==='详情' ? true :false
-     }    
+  computed: {
+    detailDisabled() {
+      return this.title === '详情' ? true : false
+    }
   },
   created() {
     this.getList();
@@ -515,40 +459,42 @@ export default {
       }
     },
     //启用
-    handleStart(row){
+    handleStart(row) {
       this.$$Dialog
-        .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？')
-        .then(() => {
-          let data = {
-            reasonId:  row.reasonId,
-            status: 1
-          };  
-          return this.$$api.complaintReason.updateComplaintReason({ data: data });
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("启动成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？')
+          .then(() => {
+            let data = {
+              reasonId: row.reasonId,
+              status: 1
+            };
+            return this.$$api.complaintReason.updateComplaintReason({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("启动成功");
+          })
+          .catch(() => {
+          });
     },
     //停用
-    handleEnd(row){
+    handleEnd(row) {
       this.$$Dialog
-        .confirm('是否确认停用用投诉原因名称为"' + row.reasonName + '"的数据项？')
-        .then(() => {
-          let data = {
-            reasonId: row.reasonId,
-            status: 0
-          };
-          return this.$$api.complaintreasonenon.updateComplaintReason({ data: data });
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("停用成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认停用用投诉原因名称为"' + row.reasonName + '"的数据项？')
+          .then(() => {
+            let data = {
+              reasonId: row.reasonId,
+              status: 0
+            };
+            return this.$$api.complaintreasonenon.updateComplaintReason({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("停用成功");
+          })
+          .catch(() => {
+          });
     },
     /** 查询用户列表 */
     getList() {
@@ -570,10 +516,10 @@ export default {
           .listComplaintReasonTree({params: {reasonName: this.reasonName}}).then(({res: response, err}) => {
         if (err) return;
         this.complaintReasonTreeOptions = [{
-          reasonCode:'0',
-          reasonName:'投诉原因',
+          reasonCode: '0',
+          reasonName: '投诉原因',
           reasonList: response.reasonList
-        }]   
+        }]
       }).catch((error) => {
       });
     },
@@ -584,7 +530,7 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data, node) {
-      if (node.childNodes.length <= 0) return this.dataSource=[]
+      if (node.childNodes.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.reasonCode
       this.handleQuery();
     },
@@ -831,10 +777,11 @@ export default {
 };
 </script>
 <style scoped>
-.nodeTree{
+.nodeTree {
   overflow: scroll;
   height: 74vh;
 }
+
 ::v-deep .component {
   display: flex;
   align-items: center;

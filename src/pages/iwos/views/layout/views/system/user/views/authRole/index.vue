@@ -1,7 +1,7 @@
 <template>
-  <div class="app-container">
-    <h4 class="main-title">基本信息</h4>
-    <el-form ref="form" :model="form" label-width="80px">
+  <div class="app-container one-screen">
+    <h4 class="main-title one-screen-fg0">基本信息</h4>
+    <el-form class="one-screen-fg0" ref="form" :model="form" label-width="80px">
       <el-row>
         <el-col :span="8" :offset="2">
           <el-form-item label="用户昵称" prop="nickName">
@@ -16,8 +16,8 @@
       </el-row>
     </el-form>
 
-    <h4 class="main-title">角色信息</h4>
-    <el-table v-loading="loading" :row-key="getRowKey" border @row-click="clickRow" ref="table" @selection-change="handleSelectionChange" :data="roles">
+    <h4 class="main-title one-screen-fg0">角色信息</h4>
+    <el-table v-loading="loading" class="one-screen-fg1" height="100%" :row-key="getRowKey" border @row-click="clickRow" ref="table" @selection-change="handleSelectionChange" :data="roles">
       <el-table-column label="序号" type="index" align="center"></el-table-column>
       <el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
       <el-table-column label="角色编号" align="center" prop="roleId"/>
@@ -30,7 +30,7 @@
       </el-table-column>
     </el-table>
 
-    <el-form label-width="100px">
+    <el-form class="one-screen-fg0" label-width="100px">
       <el-form-item style="text-align: center;margin-left:-120px;margin-top:30px;">
         <el-button type="primary" @click="submitForm()">提交</el-button>
         <el-button @click="close()">返回</el-button>

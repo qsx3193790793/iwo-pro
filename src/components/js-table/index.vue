@@ -22,7 +22,7 @@
                 <el-button v-if="(item.autoHidden?item.autoHidden(scope):true)" v-hasPermission="item.permission" :key="item.key" size="small" :loading="item.loading" :type="item.type||'primary'" @click="item.event?.(scope.row)">{{ item.label }}</el-button>
               </template>
               <!-- 更多下拉按钮-->
-              <el-dropdown v-else-if="item.children.filter(c=>(c.autoHidden ? c.autoHidden(scope) : true)).length" trigger="click">
+              <el-dropdown v-else-if="item.children.filter(c=>(c.autoHidden ? c.autoHidden(scope) : true)).length" class="public-el-dropdown" trigger="click">
                 <el-button type="primary">
                   {{ item.label || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
@@ -126,22 +126,6 @@ watchEffect(() => {
 :deep(.el-input__wrapper) {
   font-size: 13px;
   width: 100%;
-}
-
-:deep(.el-dropdown) {
-  margin-left: 6px;
-}
-
-.table-dropdown-menu {
-  & > .inner {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-
-    & > :deep(.el-button) {
-      margin: 5px 10px;
-    }
-  }
 }
 
 .js-table {

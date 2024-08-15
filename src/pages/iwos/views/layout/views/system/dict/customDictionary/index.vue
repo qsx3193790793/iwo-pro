@@ -1,101 +1,14 @@
 <template>
   <div class="app-container one-screen">
     <PageSearchPanel
-          ref="PageSearchPanelRef"
-          :formConfigItems="formConfigItems"
-        ></PageSearchPanel>
-    <!-- <el-form
-        :model="queryParams"
-        ref="queryForm"
-        size="small"
-        :inline="true"
-        v-show="showSearch"
-        label-width="auto"
-    >
-      <el-form-item label="字典名称" prop="dictName">
-        <el-input
-            v-model="queryParams.dictName"
-            placeholder="请输入字典名称"
-            clearable
-            class="queryItem"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="字典类型" prop="dictType">
-        <el-input
-            v-model="queryParams.dictType"
-            placeholder="请输入字典名称"
-            clearable
-            class="queryItem"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select
-            v-model="queryParams.status"
-            placeholder="状态"
-            clearable
-            class="queryItem"
-        >
-          <el-option
-              v-for="dict in statusList"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间">
-        <el-date-picker
-            class="queryItem"
-            v-model="queryParams.timeRange"
-            type="daterange"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-        >
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item>
-        <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="handleQuery"
-        >搜索
-        </el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
-      </el-form-item>
-    </el-form> -->
-
-    <!-- <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermission="['system:dict:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="mini"
-            @click="handleCache"
-            v-hasPermission="['system:dict:remove']"
-        >刷新缓存
-        </el-button>
-      </el-col>
-    </el-row> -->
+        class="one-screen-fg0"
+        ref="PageSearchPanelRef"
+        :formConfigItems="formConfigItems"
+        noBackground
+        style="margin-bottom: 0;"
+    ></PageSearchPanel>
     <JsTable
+        class="one-screen-fg1"
         :dataSource="dataSource"
         :columns="columns"
         @selectionChange="handleSelectionChange"
@@ -116,6 +29,7 @@
       </template>
     </JsTable>
     <el-pagination
+        class="one-screen-fg0"
         :current-page.sync="queryParams.pageNum"
         :page-size.sync="queryParams.pageSize"
         :page-sizes="[15, 30, 40, 50]"
@@ -184,11 +98,12 @@
 import dayjs from 'dayjs'
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
+
 export default {
-  name: "Dict",    
+  name: "Dict",
   // dicts: ["sys_normal_disable"],
   cusDicts: ['start_stop'],
-  components: {JsTable,PageSearchPanel},
+  components: {JsTable, PageSearchPanel},
   data() {
     return {
       // 遮罩层
@@ -307,7 +222,7 @@ export default {
           col: 6,
           type: "select",
           options: () =>
-          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+              this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
           isDisable: !1,
           isRequire: !1,
         },
@@ -321,9 +236,9 @@ export default {
             {
               btnName: "重置",
               type: "button",
-              attrs: { type: "" },
+              attrs: {type: ""},
               col: 1,
-              onClick:({vm})=>{
+              onClick: ({vm}) => {
                 vm.resetFormData();
                 this.resetQuery();
               }
@@ -331,24 +246,24 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              attrs: { type: "primary" },
+              attrs: {type: "primary"},
               col: 1,
-              onClick:({ vm }) =>{
+              onClick: ({vm}) => {
                 this.getList();
               },
             },
             {
               btnName: '刷新缓存', type: 'button', attrs: {type: 'danger'}, col: 1,
-              onClick:({vm})=> {
+              onClick: ({vm}) => {
                 this.handleCache();
               }
             },
             {
               btnName: "新增",
               type: "button",
-              attrs: { type: "success"},
+              attrs: {type: "success"},
               col: 1,
-              onClick:({ vm })=> {
+              onClick: ({vm}) => {
                 this.handleAdd()
               },
             },
@@ -369,7 +284,7 @@ export default {
   created() {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
-  mounted(){
+  mounted() {
     this.getList();
   },
   methods: {
@@ -396,16 +311,16 @@ export default {
     /** 查询标签类型列表 */
     getList() {
       this.loading = true;
-      const formData =this.$refs.PageSearchPanelRef.getFormData();
+      const formData = this.$refs.PageSearchPanelRef.getFormData();
       let data = {
         ...formData,
         ...this.queryParams
       }
       if (data.timeRange && data.timeRange.length > 0) {
         data.beginTime = dayjs(new Date(data.timeRange[0]).getTime()).format('YYYY-MM-DD HH:mm:ss')
-        if(new Date(data.timeRange[0]).getTime()==new Date(data.timeRange[1]).getTime()){
-          data.endTime = dayjs(new Date(data.timeRange[1]).getTime()+24*60*60*1000-1).format('YYYY-MM-DD HH:mm:ss')
-        }else{
+        if (new Date(data.timeRange[0]).getTime() == new Date(data.timeRange[1]).getTime()) {
+          data.endTime = dayjs(new Date(data.timeRange[1]).getTime() + 24 * 60 * 60 * 1000 - 1).format('YYYY-MM-DD HH:mm:ss')
+        } else {
           data.endTime = dayjs(new Date(data.timeRange[1]).getTime()).format('YYYY-MM-DD HH:mm:ss')
         }
         delete data.timeRange
@@ -496,7 +411,7 @@ export default {
     handleDelete(row) {
       const dictIds = row.dictId || this.ids;
       // 启动状态的不能删除
-      if(row.status==1){
+      if (row.status == 1) {
         this.$$Toast.warning("当前字段状态为启用，不可以删除");
         return
       }

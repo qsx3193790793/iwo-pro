@@ -1,103 +1,44 @@
 <template>
   <div class="app-container one-screen">
     <PageSearchPanel
-          ref="PageSearchPanelRef"
-          :formConfigItems="formConfigItems"
-        ></PageSearchPanel>
-    <!-- <el-form
-      :model="queryParams"
-      ref="queryForm"
-      size="small"
-      :inline="true"
-      v-show="showSearch"
-      label-width="auto"
-    >
-      <el-form-item label="标签名称" prop="tagName">
-        <el-input
-          v-model="queryParams.tagName"
-          placeholder="请输入标签名称"
-          clearable
-          class="queryItem"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="标签状态"
-          clearable
-          class="queryItem"
-        >
-          <el-option
-            v-for="dict in $store.getters['dictionaries/GET_DICT'](
-              'start_stop'
-            )"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
-      </el-form-item>
-    </el-form> -->
-    <div class="one-screen-fg1"></div>
-    <!-- <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermission="['system:dict:add']"
-          >新增
-        </el-button>
-      </el-col>
-
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermission="['system:dict:remove']"
-          >删除
-        </el-button>
-      </el-col>
-    </el-row> -->
+        class="one-screen-fg0"
+        ref="PageSearchPanelRef"
+        :formConfigItems="formConfigItems"
+        noBackground
+        style="margin-bottom: 0;"
+    ></PageSearchPanel>
     <JsTable
-      :dataSource="dataSource"
-      :columns="columns"
-      @selectionChange="handleSelectionChange"
+        class="one-screen-fg1"
+        :dataSource="dataSource"
+        :columns="columns"
+        @selectionChange="handleSelectionChange"
     >
       <template #status="{ row }">
-        <div v-show="row.status == 0"><el-tag type="danger">停用</el-tag></div>
-        <div v-show="row.status == 1"><el-tag>启用</el-tag></div>
-        <div v-show="row.status == 2"><el-tag type="danger">删除</el-tag></div>
+        <div v-show="row.status == 0">
+          <el-tag type="danger">停用</el-tag>
+        </div>
+        <div v-show="row.status == 1">
+          <el-tag>启用</el-tag>
+        </div>
+        <div v-show="row.status == 2">
+          <el-tag type="danger">删除</el-tag>
+        </div>
       </template>
+      <template #provinceCode="{ row }">
+        <div> {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}</div>
+      </template>
+
     </JsTable>
     <el-pagination
-      :current-page.sync="queryParams.pageNum"
-      :page-size.sync="queryParams.pageSize"
-      :page-sizes="[15, 30, 40, 50]"
-      background
-      layout=" ->,total, sizes, prev, pager, next, jumper"
-      :total="total"
-      @size-change="getList"
-      @current-change="getList"
+        class="one-screen-fg0"
+        :current-page.sync="queryParams.pageNum"
+        :page-size.sync="queryParams.pageSize"
+        :page-sizes="[15, 30, 40, 50]"
+        background
+        layout=" ->,total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="getList"
+        @current-change="getList"
     />
 
     <!-- 添加或修改参数配置对话框 -->
@@ -112,9 +53,9 @@
           <el-col :span="12">
             <el-form-item label="标签名称" prop="tagName">
               <el-input
-                v-model="form.tagName"
-                placeholder="请输入"
-                maxlength="30"
+                  v-model="form.tagName"
+                  placeholder="请输入"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
@@ -130,10 +71,11 @@
 <script>
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
+
 export default {
   name: "Dict",
-  cusDicts: ["start_stop"],
-  components: { JsTable,PageSearchPanel },
+  cusDicts: ["start_stop", "base_province_code"],
+  components: {JsTable, PageSearchPanel},
   data() {
     return {
       // 遮罩层
@@ -141,7 +83,7 @@ export default {
       // 选中数组
       ids: [],
       // 删除时显示的标签编码
-      tagcodeList:[],
+      tagcodeList: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -209,9 +151,9 @@ export default {
               label: "删除",
               key: "del",
               type: "danger",
-              event: (val)=>{
-                this.ids=[]
-                this.tagcodeList=[]
+              event: (val) => {
+                this.ids = []
+                this.tagcodeList = []
                 this.handleDelete(val)
               },
             },
@@ -263,7 +205,7 @@ export default {
           col: 6,
           type: "select",
           options: () =>
-          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+              this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
           isDisable: !1,
           isRequire: !1,
         },
@@ -276,9 +218,9 @@ export default {
             {
               btnName: "重置",
               type: "button",
-              attrs: { type: "" },
+              attrs: {type: ""},
               col: 1,
-              onClick:({vm})=>{
+              onClick: ({vm}) => {
                 vm.resetFormData();
                 this.resetQuery();
               }
@@ -286,24 +228,24 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              attrs: { type: "primary" },
+              attrs: {type: "primary"},
               col: 1,
-              onClick:({ vm }) =>{
+              onClick: ({vm}) => {
                 this.getList();
               },
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
-              onClick:({vm})=> {
+              onClick: ({vm}) => {
                 this.handleDelete();
               }
             },
             {
               btnName: "新增",
               type: "button",
-              attrs: { type: "success"},
+              attrs: {type: "success"},
               col: 1,
-              onClick:({ vm })=> {
+              onClick: ({vm}) => {
                 this.handleAdd()
               },
             },
@@ -313,10 +255,10 @@ export default {
       // 表单校验
       rules: {
         tagColor: [
-          { required: true, message: "标签颜色不能为空", trigger: "blur" },
+          {required: true, message: "标签颜色不能为空", trigger: "blur"},
         ],
         tagName: [
-          { required: true, message: "标签名称不能为空", trigger: "blur" },
+          {required: true, message: "标签名称不能为空", trigger: "blur"},
         ],
       },
     };
@@ -324,76 +266,78 @@ export default {
   created() {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
-  mounted(){
+  mounted() {
     this.getList();
   },
   methods: {
-    autoStartHidden(val){
+    autoStartHidden(val) {
       if (val.row) {
-          return val.row.status == '0' ? true : false
-        } else {
-          return false
-        }
+        return val.row.status == '0' ? true : false
+      } else {
+        return false
+      }
     },
-    autoEndHidden(val){
+    autoEndHidden(val) {
       if (val.row) {
-          return val.row.status == '1' ? true : false
-        } else {
-          return false
-        }
+        return val.row.status == '1' ? true : false
+      } else {
+        return false
+      }
     },
-        // 启用
-    handleStart(row){
+    // 启用
+    handleStart(row) {
       this.$$Dialog
-        .confirm('是否确认启动标签编码为"' + row.tagCode + '"的数据项？')
-        .then(() => {
-          let data={
-            tagId:row.tagId,
-            status:1,
-          }
-          return this.$$api.labelDictionary.updStatus({data:data});
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("启动成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认启动标签编码为"' + row.tagCode + '"的数据项？')
+          .then(() => {
+            let data = {
+              tagId: row.tagId,
+              status: 1,
+            }
+            return this.$$api.labelDictionary.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("启动成功");
+          })
+          .catch(() => {
+          });
     },
-     // 停用
-    handleEnd(row){
+    // 停用
+    handleEnd(row) {
       this.$$Dialog
-        .confirm('是否确认停用标签编码为"' + row.tagCode + '"的数据项？')
-        .then(() => {
-          let data={
-            tagId:row.tagId,
-            status:0, 
-          }
-          return this.$$api.labelDictionary.updStatus({data:data});
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("停用成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认停用标签编码为"' + row.tagCode + '"的数据项？')
+          .then(() => {
+            let data = {
+              tagId: row.tagId,
+              status: 0,
+            }
+            return this.$$api.labelDictionary.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("停用成功");
+          })
+          .catch(() => {
+          });
     },
     ToDictData(row) {
-      this.$router.push({ name: "DictData", params: { dictId: row.dictId } });
+      this.$router.push({name: "DictData", params: {dictId: row.dictId}});
     },
     /** 查询标签类型列表 */
     getList() {
       this.loading = true;
       this.$$api.labelDictionary
-        .listDictTag({
-          params: this.queryParams,
-        })
-        .then(({ res: response, err }) => {
-          if (err) return (this.loading = false);
-          this.dataSource = response.rows;
-          this.total = response.total;
-          this.loading = false;
-        });
+          .listDictTag({
+            params: this.queryParams,
+          })
+          .then(({res: response, err}) => {
+            if (err) return (this.loading = false);
+            this.dataSource = response.rows;
+            this.total = response.total;
+            this.loading = false;
+          });
     },
     // 取消按钮
     cancel() {
@@ -428,7 +372,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.tagId);
-      this.tagcodeList=selection.map((item) => item.tagCode)
+      this.tagcodeList = selection.map((item) => item.tagCode)
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -437,14 +381,14 @@ export default {
       this.reset();
       const tDictTagId = row.tagId;
       this.$$api.labelDictionary
-        .getChannelDetail({ tDictTagId: tDictTagId })
-        .then(({ res: response, err }) => {
-          if (err) return;
-          let { tagId, tagColor, tagName } = { ...response };
-          this.form = { tagId, tagColor, tagName };
-          this.open = true;
-          this.title = "修改标签类型";
-        });
+          .getChannelDetail({tDictTagId: tDictTagId})
+          .then(({res: response, err}) => {
+            if (err) return;
+            let {tagId, tagColor, tagName} = {...response};
+            this.form = {tagId, tagColor, tagName};
+            this.open = true;
+            this.title = "修改标签类型";
+          });
     },
     /** 提交按钮 */
     submitForm: function () {
@@ -452,55 +396,56 @@ export default {
         if (valid) {
           if (this.form.tagId != undefined) {
             this.$$api.labelDictionary
-              .updateDictTag({ data: this.form })
-              .then(({ res: response, err }) => {
-                if (err) return;
-                this.$$Toast.success("修改成功");
-                this.open = false;
-                this.getList();
-              });
+                .updateDictTag({data: this.form})
+                .then(({res: response, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("修改成功");
+                  this.open = false;
+                  this.getList();
+                });
           } else {
-            let { tagColor, tagName } = { ...this.form };
+            let {tagColor, tagName} = {...this.form};
 
             let data = {
               tagColor,
               tagName,
             };
             this.$$api.labelDictionary
-              .addDictTag({ data: data })
-              .then(({ res: response, err }) => {
-                if (err) return;
-                this.$$Toast.success("新增成功");
-                this.open = false;
-                this.getList();
-              });
+                .addDictTag({data: data})
+                .then(({res: response, err}) => {
+                  if (err) return;
+                  this.$$Toast.success("新增成功");
+                  this.open = false;
+                  this.getList();
+                });
           }
         }
       });
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const tagId = row?.tagId || this.ids; 
-      let showText=''
-      if(this.ids.length>0){
-        showText=this.tagcodeList.join(',')
-      }else{
-        showText=row?.tagCode
+      const tagId = row?.tagId || this.ids;
+      let showText = ''
+      if (this.ids.length > 0) {
+        showText = this.tagcodeList.join(',')
+      } else {
+        showText = row?.tagCode
       }
       this.$$Dialog
-        .confirm('是否确认删除标签编码为"' + showText + '"的数据项？')
-        .then(() => {
-          let data = {
-            tDictTagIds: Array.isArray(tagId) ? tagId.join(",") : tagId,
-          };
-          return this.$$api.labelDictionary.delChannel(data);
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          this.getList();
-          this.$$Toast.success("删除成功");
-        })
-        .catch(() => {});
+          .confirm('是否确认删除标签编码为"' + showText + '"的数据项？')
+          .then(() => {
+            let data = {
+              tDictTagIds: Array.isArray(tagId) ? tagId.join(",") : tagId,
+            };
+            return this.$$api.labelDictionary.delChannel(data);
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("删除成功");
+          })
+          .catch(() => {
+          });
     },
   },
 };
@@ -509,14 +454,17 @@ export default {
 ::v-deep .el-color-picker__trigger {
   width: 132px;
 }
+
 ::v-deep .el-color-picker__empty,
 ::v-deep .el-color-picker__icon {
   left: 90%;
 }
+
 .queryItem {
   width: 240px;
 }
-::v-deep .el-form-item__label{
+
+::v-deep .el-form-item__label {
   width: 80px
 }
 </style>

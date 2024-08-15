@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+  <div class="app-container one-screen">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="岗位编码" prop="postCode">
         <el-input
             v-model="queryParams.postCode"
@@ -33,7 +33,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
         <el-button
             type="primary"
@@ -81,64 +81,65 @@
         </el-button>
       </el-col>
     </el-row>
-    <div class="table-panel one-screen-fg1">
-      <el-table
-          v-loading="loading"
-          ref="table"
-          :data="postList"
-          border
-          @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="55" align="center"/>
-        <el-table-column label="岗位编号" align="center" prop="postId"/>
-        <el-table-column label="岗位编码" align="center" prop="postCode"/>
-        <el-table-column label="岗位名称" align="center" prop="postName"/>
-        <el-table-column label="岗位排序" align="center" prop="postSort"/>
-        <el-table-column label="状态" align="center" prop="status">
-          <template slot-scope="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', row.status) }}
-          </template>
-        </el-table-column>
-        <el-table-column
-            label="创建时间"
-            align="center"
-            prop="createTime"
-            width="180"
-        >
-          <template slot-scope="scope">
-            <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-            label="操作"
-            align="center"
-            class-name="small-padding fixed-width"
-        >
-          <template slot-scope="scope">
-            <el-button
-                size="small"
-                type="text"
-                icon="el-icon-edit"
-                @click="handleUpdate(scope.row)"
-                v-hasPermission="['system:post:edit']"
-            >修改
-            </el-button
-            >
-            <el-button
-                size="small"
-                type="text"
-                icon="el-icon-delete"
-                @click="handleDelete(scope.row)"
-                v-hasPermission="['system:post:remove']"
-            >删除
-            </el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
 
-      <el-pagination :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
-    </div>
+    <el-table
+        v-loading="loading"
+        class="one-screen-fg1"
+        height="100%"
+        ref="table"
+        :data="postList"
+        border
+        @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" align="center"/>
+      <el-table-column label="岗位编号" align="center" prop="postId"/>
+      <el-table-column label="岗位编码" align="center" prop="postCode"/>
+      <el-table-column label="岗位名称" align="center" prop="postName"/>
+      <el-table-column label="岗位排序" align="center" prop="postSort"/>
+      <el-table-column label="状态" align="center" prop="status">
+        <template slot-scope="{row}">
+          {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', row.status) }}
+        </template>
+      </el-table-column>
+      <el-table-column
+          label="创建时间"
+          align="center"
+          prop="createTime"
+          width="180"
+      >
+        <template slot-scope="scope">
+          <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+          label="操作"
+          align="center"
+          class-name="small-padding fixed-width"
+      >
+        <template slot-scope="scope">
+          <el-button
+              size="small"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermission="['system:post:edit']"
+          >修改
+          </el-button
+          >
+          <el-button
+              size="small"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+              v-hasPermission="['system:post:remove']"
+          >删除
+          </el-button
+          >
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改岗位对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>

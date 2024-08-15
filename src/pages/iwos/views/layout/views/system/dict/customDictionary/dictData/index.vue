@@ -1,87 +1,13 @@
 <template>
   <div class="app-container one-screen">
     <PageSearchPanel
-          ref="PageSearchPanelRef"
-          :formConfigItems="formConfigItems"
-        ></PageSearchPanel>
-    <!-- <el-form
-        :model="queryParams"
-        ref="queryForm"
-        size="small"
-        :inline="true"
-        v-show="showSearch"
-        label-width="auto"
-    >
-      <el-form-item label="字典名称">
-        <el-select
-            v-model="queryParams.dictType"
-            placeholder="字典类型"
-            clearable
-            class="queryItem"
-            @change="setNewTypeValue"
-        >
-          <el-option
-              v-for="dict in typeList"
-              :key="dict.dictType"
-              :label="dict.dictName"
-              :value="dict.dictType"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="字典标签">
-        <el-input
-            v-model="queryParams.dictLabel"
-            placeholder="请输入字典标签"
-            clearable
-            class="queryItem"
-            @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select
-            v-model="queryParams.status"
-            placeholder="状态"
-            clearable
-            class="queryItem"
-        >
-          <el-option
-              v-for="dict in statusList"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="handleQuery"
-        >搜索
-        </el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-        >重置
-        </el-button
-        >
-      </el-form-item>
-    </el-form> -->
-
-    <!-- <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="mini"
-            @click="handleAdd"
-            v-hasPermission="['system:dict:add']"
-        >新增
-        </el-button>
-      </el-col>
-    </el-row> -->
+        ref="PageSearchPanelRef"
+        :formConfigItems="formConfigItems"
+        noBackground
+        style="margin-bottom: 0;"
+    ></PageSearchPanel>
     <JsTable
+        class="one-screen-fg1"
         :dataSource="dataSource"
         :columns="columns"
         @selectionChange="handleSelectionChange"
@@ -99,6 +25,7 @@
       </template>
     </JsTable>
     <el-pagination
+        class="one-screen-fg0"
         :current-page.sync="queryParams.pageNum"
         :page-size.sync="queryParams.pageSize"
         :page-sizes="[15, 30, 40, 50]"
@@ -218,11 +145,12 @@
 <script>
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
+
 export default {
   name: "Dict",
   // dicts: ["sys_normal_disable"],
   cusDicts: ['start_stop'],
-  components: {JsTable,PageSearchPanel},
+  components: {JsTable, PageSearchPanel},
   data() {
     return {
       // 遮罩层
@@ -363,12 +291,12 @@ export default {
         {
           name: "字典类型",
           key: "dictType",
-          value:'',
+          value: '',
           placeholder: "字典类型",
           type: "select",
-          options: async ()=>{
+          options: async () => {
             return this.getTypeLsit()
-          } ,
+          },
           col: 6,
           isDisable: !1,
           isRequire: !1,
@@ -390,7 +318,7 @@ export default {
           col: 6,
           type: "select",
           options: () =>
-          this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+              this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
           isDisable: !1,
           isRequire: !1,
         },
@@ -403,9 +331,9 @@ export default {
             {
               btnName: "重置",
               type: "button",
-              attrs: { type: "" },
+              attrs: {type: ""},
               col: 1,
-              onClick:({vm})=>{
+              onClick: ({vm}) => {
                 vm.resetFormData();
                 this.$refs.PageSearchPanelRef.initFormData({
                   dictType: this.currentType
@@ -416,18 +344,18 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              attrs: { type: "primary" },
+              attrs: {type: "primary"},
               col: 1,
-              onClick:({ vm }) =>{
+              onClick: ({vm}) => {
                 this.getList();
               },
             },
             {
               btnName: "新增",
               type: "button",
-              attrs: { type: "success"},
+              attrs: {type: "success"},
               col: 1,
-              onClick:({ vm })=> {
+              onClick: ({vm}) => {
                 this.handleAdd()
               },
             },
@@ -451,7 +379,7 @@ export default {
   created() {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
-  mounted(){
+  mounted() {
     this.currentType = this.$route.query.dictType
     this.$refs.PageSearchPanelRef.initFormData({
       dictType: this.currentType
@@ -464,28 +392,28 @@ export default {
       this.currentType = val
       this.getList();
     },
-   async getTypeLsit() {
-    let res=[]
-     await this.$$api.customDict
+    async getTypeLsit() {
+      let res = []
+      await this.$$api.customDict
           .DictionaryTypeOptions()
           .then(({res: response, err, total}) => {
             if (err) return;
-            res = response.dataList.map((ele)=>{
-              let item={
-                label:ele.dictName,
-                value:ele.dictType,
+            res = response.dataList.map((ele) => {
+              let item = {
+                label: ele.dictName,
+                value: ele.dictType,
               }
               return item
             });
           });
-          return res
+      return res
     },
     /** 查询标签类型列表 */
     getList() {
       this.loading = true;
-      const formData =this.$refs.PageSearchPanelRef.getFormData();
+      const formData = this.$refs.PageSearchPanelRef.getFormData();
       this.$$api.customDict
-          .listDictionaryData({params: {...this.queryParams,...formData}})
+          .listDictionaryData({params: {...this.queryParams, ...formData}})
           .then(({res: response, err, total}) => {
             if (err) return (this.loading = false);
             this.dataSource = response.rows;
