@@ -45,71 +45,34 @@
             end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+      <el-form-item style="width: 100%;text-align: right;">
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
+        <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:dict:add']">新增 </el-button>
+   <!-- <el-button type="success"  size="small"  :disabled="single"  @click="handleUpdate"  v-hasPermission="['system:dict:edit']">修改   </el-button> -->
+        <el-button type="danger"  size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:dict:remove']" >删除 </el-button>
+        <el-button type="warning" size="small"  @click="handleExport" v-hasPermission="['system:dict:export']" >导出  </el-button>
+        <el-button type="danger"  size="small"  @click="handleRefreshCache" v-hasPermission="['system:dict:remove']" >刷新缓存  </el-button>
       </el-form-item>
     </el-form>
 
-    <el-row class="one-screen-fg0 mb8" :gutter="10">
+    <!-- <el-row class="one-screen-fg0 mb8" :gutter="10">
       <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="small"
-            @click="handleAdd"
-            v-hasPermission="['system:dict:add']"
-        >新增
-        </el-button>
+        
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="small"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermission="['system:dict:edit']"
-        >修改
-        </el-button>
+        
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermission="['system:dict:remove']"
-        >删除
-        </el-button>
+        
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="small"
-            @click="handleExport"
-            v-hasPermission="['system:dict:export']"
-        >导出
-        </el-button>
+      
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-refresh"
-            size="small"
-            @click="handleRefreshCache"
-            v-hasPermission="['system:dict:remove']"
-        >刷新缓存
-        </el-button>
+      
       </el-col>
-    </el-row>
+    </el-row> -->
 
     <el-table class="one-screen-fg1" v-loading="loading" ref="table" :data="typeList" border height="100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
@@ -137,16 +100,14 @@
         <template slot-scope="scope">
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-edit"
+              type="success"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['system:dict:edit']"
           >修改
           </el-button>
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-delete"
+              type="danger"
               @click="handleDelete(scope.row)"
               v-hasPermission="['system:dict:remove']"
           >删除

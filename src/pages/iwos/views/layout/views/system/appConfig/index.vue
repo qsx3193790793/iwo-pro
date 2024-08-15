@@ -3,9 +3,10 @@
     <PageSearchPanel
       ref="PageSearchPanelRef"
       :formConfigItems="formConfigItems"
+      noBackground
     ></PageSearchPanel>
 
-    <el-row :gutter="10" class="mb8">
+    <!-- <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -29,9 +30,9 @@
           v-hasPermission="['system:dict:remove']"
           >删除
         </el-button>
-      </el-col>
+      </el-col> -->
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
+    <!-- </el-row> -->
     <JsTable
       :dataSource="state.dataSource"
       :columns="state.columns"
@@ -209,6 +210,26 @@ const formConfigItems = ref([
         onClick({ vm }) {
           vm.resetFormData();
           resetQuery();
+        },
+      },
+      {
+        btnName: "新增",
+        type: "button",
+        attrs: { type: "success" },
+        col: 1,
+        onClick({ vm }) {
+          handleAdd();
+        },
+      },
+      {
+        btnName: "删除",
+        type: "button",
+        attrs: { type: "danger" ,disabled:()=>{
+          return state.value.multiple
+        }},
+        col: 1,
+        onClick({ vm }) {
+          handleDelete();
         },
       },
       // {
@@ -417,7 +438,7 @@ const submitForm = () => {
 };
 /** 删除按钮操作 */
 const handleDelete = (row) => {
-  const appIds = row.appId || state.value.ids;
+  const appIds = row?.appId || state.value.ids;
   proxy.$$Dialog
     .confirm('是否确认删除应用系统编码为"' + appIds + '"的数据项？')
     .then(() => {

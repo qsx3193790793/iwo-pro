@@ -20,35 +20,33 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+        <el-button  size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
         <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
+            type="success"
             size="small"
             @click="handleAdd"
             v-hasPermission="['system:dept:add']"
         >新增
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="info"
             plain
-            icon="el-icon-sort"
             size="small"
             @click="toggleExpandAll"
         >展开/折叠
         </el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+       
       </el-col>
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
+      <el-col :span="1.5">
+       
+      </el-col>
+    </el-row> -->
 
     <el-table
         v-if="refreshTable"
@@ -77,16 +75,14 @@
         <template slot-scope="scope">
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-edit"
+              type="primary"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['system:dept:edit']"
           >修改
           </el-button>
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-plus"
+              type="success"
               @click="handleAdd(scope.row)"
               v-hasPermission="['system:dept:add']"
           >新增
@@ -94,8 +90,7 @@
           <el-button
               v-if="scope.row.parentId != 0"
               size="small"
-              type="text"
-              icon="el-icon-delete"
+              type="danger"
               @click="handleDelete(scope.row)"
               v-hasPermission="['system:dept:remove']"
           >删除

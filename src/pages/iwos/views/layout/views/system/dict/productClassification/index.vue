@@ -249,12 +249,6 @@ export default {
               },
             },
             {
-              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length || this.currentNode.productLevel !== 1}, col: 1,
-              onClick: ({vm}) => {
-                this.handleDelete();
-              }
-            },
-            {
               btnName: "新增",
               type: "button",
               attrs: {
@@ -266,6 +260,12 @@ export default {
               onClick: ({vm}) => {
                 this.handleAdd()
               },
+            },
+            {
+              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length || this.currentNode.productLevel !== 1}, col: 1,
+              onClick: ({vm}) => {
+                this.handleDelete();
+              }
             },
           ],
         },

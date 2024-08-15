@@ -72,18 +72,10 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button
-                type="primary"
-
-                size="mini"
-                @click="handleQuery"
-            >搜索
-            </el-button
-            >
-            <el-button size="mini" @click="resetQuery"
-            >重置
-            </el-button
-            >
+            <el-button size="mini" @click="resetQuery">重置  </el-button>
+            <el-button  type="primary" size="mini" @click="handleQuery">搜索 </el-button>
+            <el-button  type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)">新增 </el-button>
+            <el-button  type="danger" size="mini"  :disabled="isAllowDelet"  @click="handleDelete(selectRow)">删除 </el-button>
           </el-form-item>
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
@@ -264,8 +256,12 @@ export default {
       multiple: true,
       //是否可以新增
       isAllowAdd: true,
+      //是否可以删除
+      isAllowDelet:true,
       // 显示搜索条件
       showSearch: true,
+      //SELECT选中数据
+      selectRow:"",
       // 总条数
       total: 0,
       // 用户表格数据
@@ -563,7 +559,11 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      this.selectRow= selection[0]
+      this.multiple = !selection.length
       this.single = selection.length != 1;
+      this.isAllowAdd=  !this.single && (selection[0]?.level === 2 && selection[0]?.isProvinceCustom === 1) ? false :true
+      this.isAllowDelet= !this.single &&( selection[0]?.level === 3 && selection[0]?.isProvinceCustom === 1)  ? false :true
     },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {
