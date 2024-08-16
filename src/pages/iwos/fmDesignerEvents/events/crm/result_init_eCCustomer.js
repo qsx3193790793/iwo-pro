@@ -35,7 +35,7 @@ export const resFields = [
 export default async ({vm, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
-  if (!customPositioning) return;
+  if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   console.log('eventsFields', vm, eventsFields)
   vm.$nextTick(() => {

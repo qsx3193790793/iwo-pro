@@ -33,7 +33,7 @@ export const parseJson = (stage, formConfigs) => {
 export const parseStage = (json, isNewCID = false) => {
   return json.map(j => Object.assign({}, compsMap[j.name], {
     cId: isNewCID ? `${j.name}_ID_${Vue.prototype.$$getUUID()}` : j.cId,
-    z_props: compsMap[j.name].z_props.map(zp => Object.assign({}, zp, {value: j.z_props[zp.key] ?? zp.value})),
+    z_props: compsMap[j.name].z_props.map(zp => (console.log(zp.key, zp, zp.value), Object.assign({}, zp, {value: j.z_props[zp.key] ?? zp.value}))),
     children: j.children ? parseStage(j.children, isNewCID) : null
   }))
 };
@@ -48,16 +48,21 @@ export const parseFormModel = (json, isView = false) => {
   return {
     formName: '',
     loading: false,
-    onLoad: async function ({vm}) {
-      console.log('parseFormModel onLoad...', vm, json)
+    onLoad: async function ({vm, value}) {
+      console.log('parseFormModel onLoad...', vm, value, json)
       if (isView) return;//预览跳过
       const events = useEvents();
-      json.form?.events?.forEach(evk => events[evk]?.fn?.({vm, eventsFields: json.form?.eventsFields || []}));
+      json.form?.events?.forEach(evk => events[evk]?.fn?.({vm, value, eventsFields: json.form?.eventsFields || []}));
     },
     appendItems: null,
-    hiddenFields: json.form.hiddenFields?.map(hf => ({key: hf.label, value: hf.value})) || [],
+    hiddenFields: [].concat(
+      json.form.hiddenFields?.map(hf => ({key: hf.label, value: hf.value})) || [],
+      ...json.stage?.filter(it => ['隐藏域'].includes(it.z_props.isBtnBlock)).map(it => it.children.map(j => ({
+        key: j.z_props.key, value: j.z_props.value
+      })))
+    ),
     items: [].concat(
-      json.stage?.filter(it => it.z_props.isBtnBlock !== '是').map(it => ({
+      json.stage?.filter(it => !['按钮组', '隐藏域'].includes(it.z_props.isBtnBlock)).map(it => ({
         name: it.z_props.name, subName: it.z_props.subName,
         items: it.children.map(j => {
           return Object.assign(
@@ -76,7 +81,7 @@ export const parseFormModel = (json, isView = false) => {
     ),
     bottomButtons: (function () {
       // 只能存在一个 其他忽略
-      const FMButtons = json.stage?.filter(it => it.z_props.isBtnBlock === '是')?.[0]?.children?.[0];
+      const FMButtons = json.stage?.filter(it => it.z_props.isBtnBlock === '按钮组')?.[0]?.children?.[0];
       if (!FMButtons) return {items: []}
       return {
         align: FMButtons.z_props.align,

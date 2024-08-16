@@ -5,7 +5,7 @@ export default {
   name: "ComplaintPhenomenon",
   component: () => import("./index.vue"),
   meta: {
-    belong: 'System',//属于哪个一级菜单 填写路由name
+    belong: 'Config',//属于哪个一级菜单 填写路由name
     name: '投诉现象',
     title: "智慧客服工单系统",
     authentication: true, //该页面是否需要登陆才可进入

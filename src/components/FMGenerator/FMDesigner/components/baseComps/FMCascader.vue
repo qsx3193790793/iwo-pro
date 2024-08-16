@@ -41,7 +41,8 @@ export default {
         return Object.keys(events).map(etk => ({label: events[etk].label, value: etk}))
       }
     },
-    {sort: 4.6, name: '子父级互不关联', key: 'checkStrictly', value: true, type: 'radio', options: [{label: '是', value: true}, {label: '否', value: false}], isRequire: !1, col: 24}
+    {sort: 4.6, name: '子父级互不关联', key: 'checkStrictly', value: true, type: 'radio', options: [{label: '是', value: true}, {label: '否', value: false}], isRequire: !1, col: 24},
+    {sort: 4.7, name: '值类型', key: 'valueType', value: 'array', type: 'radio', options: [{label: '数组', value: 'array'}, {label: '字符串', value: 'string'}], isRequire: !1, col: 24}
   ])
 }
 </script>

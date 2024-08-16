@@ -7,11 +7,14 @@
         <TabPanel class="tab-panel"></TabPanel>
         <div class="layout">
           <ELScrollbar>
-            <router-view v-slot="{ Component }">
-              <keep-alive :include="alivePage">
-                <component :is="Component" :key="$route.name"/>
-              </keep-alive>
-            </router-view>
+            <keep-alive :include="alivePage">
+              <router-view :key="$route.name"></router-view>
+            </keep-alive>
+            <!--            <router-view v-slot="{ Component }">-->
+            <!--              <keep-alive :include="alivePage">-->
+            <!--                <component :is="Component" :key="$route.name"/>-->
+            <!--              </keep-alive>-->
+            <!--            </router-view>-->
           </ELScrollbar>
         </div>
       </div>
@@ -30,7 +33,7 @@ const {proxy} = getCurrentInstance();
 const alivePage = computed(() => proxy.$$store.getters['keepAlive/GET_ALIVE_PAGE']);
 
 watchEffect(() => {
-  console.log('alivePage', alivePage.value);
+  console.log('alivePage', alivePage.value, proxy.$route.name);
 });
 </script>
 

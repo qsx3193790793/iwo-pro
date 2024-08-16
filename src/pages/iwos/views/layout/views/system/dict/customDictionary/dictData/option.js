@@ -5,7 +5,7 @@ export default {
   name: "CustomDictionaryData",
   component: () => import("./index.vue"),
   meta: {
-    belong: 'System',//属于哪个一级菜单 填写路由name
+    belong: 'Config',//属于哪个一级菜单 填写路由name
     parentName: 'CustomDictionary',
     name: '字典数据',
     title: "智慧客服工单系统",

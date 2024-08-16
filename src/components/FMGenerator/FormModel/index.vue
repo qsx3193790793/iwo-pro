@@ -25,7 +25,7 @@
               <Row :gutter="16">
                 <!-- 一行5列 无法整除 前后去掉1-->
                 <template v-for="(v,i) in item.items">
-                  <Col v-if="(!v.isShow)||v.isShow({vm})" :class="{'is-hidden':v.isHidden,[v.type]:!0,[(!v.resize||v.resize==='none')&&`mine-row-${v.type==='textarea'?v.row:1}`]:!['divider-line','divider-empty'].includes(v.type),[`mine-row-divider-empty`]:['divider-empty'].includes(v.type)}" :key="`${v.key}`+v.name+`${i}`" :span="(v.col||8)">
+                  <Col v-if="(!v.isShow)||v.isShow({vm})" :class="{'is-hidden':v.isHidden,[v.type]:!0,[(!v.resize||v.resize==='none')&&`mine-row-${v.type==='textarea'?v.row:1}`]:!['divider-line','divider-empty'].includes(v.type),[`mine-row-divider-empty`]:['divider-empty'].includes(v.type)}" :key="i" :span="(v.col||8)">
                     <FormItem :key="v.key+v.name" :prop="v.key" :key-value="v.key" :class="v.class" :style="v.style" :rules="getRules(v)" :required="v.isRequire">
                       <template v-if="v.name" #label>
                         <div class="slot-label">
@@ -43,7 +43,7 @@
                           </Modal>
                         </template>
                       </Input>
-                      <Input v-else-if="['textarea','FMTextarea'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :ref="v.key" type="textarea" :rows="v.rows??2" :maxlength="v.maxlength" :show-word-limit="!!v.maxlength" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :clearable="v.clearable??true" :resize="v.resize||'none'" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"/>
+                      <Input v-else-if="['textarea','FMTextarea'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :ref="v.key" type="textarea" :rows="v.rows??2" :maxlength="v.maxlength==0?null:v.maxlength" :show-word-limit="!!v.maxlength" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :clearable="v.clearable??true" :resize="v.resize||'none'" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"/>
                       <InputNumber v-else-if="['number','FMNumber'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :precision="v.precision??0" :min="$$getVariableType(v.min)==='[object Function]'?v.min({vm}):v.min" :max="$$getVariableType(v.max)==='[object Function]'?v.max({vm}):v.max" :controls="!0" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"/>
                       <Autocomplete v-else-if="['inputAutocomplete','FMInputAutocomplete'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" value-key="name" :fetch-suggestions="v.suggestions&&v.suggestions({vm,options:v.options})" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :required="v.isRequire" :disabled="disabled||v.isDisable" :clearable="v.clearable??true" @select="v.onChange&&v.onChange({vm,item:v})" @change="v.onChange&&v.onChange({vm,item:v})">
                         <template #default="{ item }">
@@ -51,43 +51,43 @@
                         </template>
                       </Autocomplete>
                       <Select v-else-if="['remoteSelect','FMRemoteSelect'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :clearable="v.clearable??true" :required="v.isRequire" :multiple="v.multiple??!1" filterable remote :remote-method="(query)=>v.remoteMethod&&v.remoteMethod({vm,options:v.options,query})" :disabled="disabled||v.isDisable" collapse-tags @change="v.onChange&&v.onChange({vm,item:v})">
-                        <Option v-for="vv in getSelectOptions(v)" :key="vv.value+i" :label="vv.label" :value="vv.value" :disabled="vv.disabled"></Option>
+                        <Option v-for="vv in getSelectOptions(v)" :key="vv.label+vv.value+i" :label="vv.label" :value="vv.value" :disabled="vv.disabled"></Option>
                       </Select>
                       <Cascader v-else-if="['cascader','FMCascader'].includes(v.type)" v-loading.stop="v.loading" v-bind="getName(v.attrs)" v-model="formData[v.key]" :ref="v.key" :options="getSelectOptions(v)" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" filterable collapse-tags collapse-tags-tooltip @change="v.onChange&&v.onChange({vm,item:v})"></Cascader>
                       <Select v-else-if="['select','FMSelect'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" filterable @change="v.onChange&&v.onChange({vm,item:v})">
                         <template #label="slotProps">
                           <component :is="v.label_component" :item="slotProps"></component>
                         </template>
-                        <Option v-for="vv in getSelectOptions(v)" :key="vv.value+i" :label="vv.label" :value="vv.value" :disabled="vv.disabled">
+                        <Option v-for="(vv,oi) in getSelectOptions(v)" :key="vv.label+vv.value+oi" :label="vv.label" :value="vv.value" :disabled="vv.disabled">
                           <component v-if="v.option_component" :is="v.option_component" :item="vv"></component>
                         </Option>
                       </Select>
                       <Select v-else-if="['multipleSelect','FMMultipleSelect'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" multiple collapse-tags filterable @change="v.onChange&&v.onChange({vm,item:v})">
-                        <Option v-for="vv in getSelectOptions(v)" :key="vv.value+i" :label="vv.label" :value="vv.value" :disabled="vv.disabled"></Option>
+                        <Option v-for="(vv,oi) in getSelectOptions(v)" :key="vv.label+vv.value+oi" :label="vv.label" :value="vv.value" :disabled="vv.disabled"></Option>
                       </Select>
                       <Select v-else-if="['groupSelect','FMGroupSelect'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" multiple collapse-tags filterable @change="v.onChange&&v.onChange({vm,item:v})">
                         <OptionGroup v-for="item in getSelectOptions(v)" :key="item.label" :label="item.label">
-                          <Option v-for="v in item.options" :key="v.value+i" :label="v.label" :value="v.value"/>
+                          <Option v-for="(vv,oi) in item.options" :key="vv.value+oi" :label="vv.label" :value="vv.value"/>
                         </OptionGroup>
                       </Select>
                       <DatePicker v-else-if="['datePicker','FMDatePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format" :value-format="v.valueFormat||'yyyy-MM-dd'" type="date" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['datesPicker','FMDatesPicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format" :value-format="v.valueFormat||'yyyy-MM-dd'" type="dates" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
-                      <DatePicker v-else-if="['dateRangePicker','FMDateRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd'" :value-format="v.valueFormat||'yyyy-MM-dd'" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
+                      <DatePicker v-else-if="['dateRangePicker','FMDateRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd'" :value-format="v.valueFormat||'yyyy-MM-dd'" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" :clearable="v.clearable??true" :editable="!1" unlink-panels @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['monthPicker','FMMonthPicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM'" :value-format="v.valueFormat||'yyyy-MM'" type="month" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['monthsPicker','FMMonthsPicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM'" :value-format="v.valueFormat||'yyyy-MM'" type="months" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
-                      <DatePicker v-else-if="['monthRangePicker','FMMonthRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM'" :value-format="v.valueFormat||'yyyy-MM'" type="monthrange" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
+                      <DatePicker v-else-if="['monthRangePicker','FMMonthRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM'" :value-format="v.valueFormat||'yyyy-MM'" type="monthrange" :clearable="v.clearable??true" :editable="!1" unlink-panels @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['yearPicker','FMYearPicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy'" :value-format="v.valueFormat||'yyyy'" type="year" :readonly="v.readonly??false" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['yearsPicker','FMYearsPicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy'" :value-format="v.valueFormat||'yyyy'" type="years" :readonly="v.readonly??false" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['dateTimePicker','FMDateTimePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd HH:mm:ss'" :value-format="v.valueFormat||'yyyy-MM-dd HH:mm:ss'" type="datetime" :default-time="v.defaultTime ||new Date(1970, 1, 1, 0, 0, 0)" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
-                      <DatePicker v-else-if="['dateTimeRangePicker','FMDateTimeRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd HH:mm:ss'" :value-format="v.valueFormat||'yyyy-MM-dd HH:mm:ss'" type="datetimerange" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
+                      <DatePicker v-else-if="['dateTimeRangePicker','FMDateTimeRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd HH:mm:ss'" :value-format="v.valueFormat||'yyyy-MM-dd HH:mm:ss'" type="datetimerange" :clearable="v.clearable??true" :editable="!1" unlink-panels @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <TimePicker v-else-if="['timePicker','FMTimePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'HH:mm:ss'" :value-format="v.valueFormat||'HH:mm:ss'" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></TimePicker>
-                      <TimePicker v-else-if="['timeRangePicker','FMTimeRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" start-placeholder="开始时间" end-placeholder="结束时间" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'HH:mm:ss'" :value-format="v.valueFormat||'HH:mm:ss'" :clearable="v.clearable??true" :editable="!1" is-range @change="v.onChange&&v.onChange({vm,item:v})"></TimePicker>
+                      <TimePicker v-else-if="['timeRangePicker','FMTimeRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" start-placeholder="开始时间" end-placeholder="结束时间" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'HH:mm:ss'" :value-format="v.valueFormat||'HH:mm:ss'" :clearable="v.clearable??true" :editable="!1" is-range unlink-panels @change="v.onChange&&v.onChange({vm,item:v})"></TimePicker>
                       <TimerSelector v-else-if="['timerSelector','FMTimerSelector'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v,value:$event})"></TimerSelector>
                       <RadioGroup v-else-if="['radio','FMRadio'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :required="v.isRequire" :disabled="disabled||v.isDisable" :max="v.max" @change="v.onChange&&v.onChange({vm,item:v})">
-                        <RadioButton v-for="ev in getSelectOptions(v)" :key="ev.value+i" :label="ev.value" :style="{width: `calc(100% / ${v.options?.length||2})`}" border>{{ ev.label }}</RadioButton>
+                        <RadioButton v-for="ev in getSelectOptions(v)" :key="ev.label+ev.value+i" :label="ev.value" :style="{width: `calc(100% / ${v.options?.length||2})`}" border>{{ ev.label }}</RadioButton>
                       </RadioGroup>
                       <CheckboxGroup v-else-if="['checkbox','FMCheckbox'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})">
-                        <CheckboxButton v-for="ev in getSelectOptions(v)" :key="ev.value+i" :label="ev.value" :style="{width: `calc(100% / ${v.options?.length||2})`}" border>{{ ev.label }}</CheckboxButton>
+                        <CheckboxButton v-for="ev in getSelectOptions(v)" :key="ev.label+ev.value+i" :label="ev.value" :style="{width: `calc(100% / ${v.options?.length||2})`}" border>{{ ev.label }}</CheckboxButton>
                       </CheckboxGroup>
                       <Slider v-else-if="['slider','FMSlider'].includes(v.type)" v-model="formData[v.key]" :min="v.min??0" :max="v.max??100" :disabled="v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"></Slider>
                       <MonacoEditor v-else-if="['monacoEditor','FMMonacoEditor'].includes(v.type)" v-model="formData[v.key]" :height="v.height||'1.2rem'" @change="v.onChange&&v.onChange({vm,item:v})" :disabled="v.isDisable"></MonacoEditor>
@@ -100,7 +100,9 @@
                       <template v-else-if="['buttons','FMButtons'].includes(v.type)">
                         <div v-if="v.verticalAlign!=='top'" style="height: 0.28rem;"></div>
                         <div class="form-buttons" :class="v.align||'left'">
-                          <Button v-for="(bv,bi) in v.items" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm})">{{ bv.btnName }}</Button>
+                          <template v-for="(bv,bi) in v.items">
+                            <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm})">{{ bv.btnName }}</Button>
+                          </template>
                         </div>
                       </template>
                       <div v-else-if="['text','FMText'].includes(v.type)" class="just-text" :style="v.style">{{ formData[v.key] }}</div>
@@ -129,6 +131,7 @@
 </template>
 
 <script>
+import debounce from "@/plugins/debounce.js";
 import {Alert, Autocomplete, Button, Cascader, Checkbox, CheckboxButton, CheckboxGroup, Col, Collapse, CollapseItem, DatePicker, Form, FormItem, Icon, Input, InputNumber, Option, OptionGroup, Radio, RadioButton, RadioGroup, Row, Select, Slider, TimePicker} from "element-ui";
 import Modal from "./components/Modal";
 import TimerSelector from "./components/TimerSelector";
@@ -154,7 +157,8 @@ export default {
   props: {
     formConfig: {type: Object, default: () => ({})},
     fixedWidth: {type: String, default: '45%'},
-    disabled: {type: Boolean, default: !1},//表单禁用
+    formStatus: {type: String, default: 'create'},//表单运行状态 create=新增 edit=编辑 view=查看=表单禁用
+    // disabled: {type: Boolean, default: !1},//表单禁用
   },
   data() {
     return {
@@ -172,7 +176,7 @@ export default {
     },
     formData: {
       handler() {
-        this.$emit('formDataChange', this.formData);
+        this.onFormDataChange();
         this.isSaved = !1;//表单改动 标为未保存
       },
       deep: !0
@@ -195,11 +199,18 @@ export default {
     }
   },
   computed: {
+    disabled() {
+      //表单禁用
+      return this.formStatus === 'view';
+    },
     appendItems() {
       return this.formConfig.appendItems?.length ? this.formConfig.appendItems : [];
     }
   },
   methods: {
+    onFormDataChange: debounce(function () {
+      this.$emit('formDataChange', this.getFormData());
+    }),
     //将数字值转为字符串
     getStringValue(value) {
       if (this.$$getVariableType(value) === '[object Array]') return value.map(v => this.getStringValue(v));
@@ -208,24 +219,43 @@ export default {
     },
     //赋值数据
     initFormData(res) {
+      if (!res) return;
       const formDataKeys = Object.keys(this.formData), resDataKeys = Object.keys(this.$$object2pathObject(res || {}));
-      this.expandFormConfigItems?.forEach(efci => {
-        if (!efci.key) return;
-        let v = this.$$lodash.get(res || {}, efci.key?.replace(/\$dot\$/g, '.'));
-        // 选择器类型的讲值转为字符串 不然element无法匹配 数字
-        if (['radio', 'FMRadio', 'checkbox', 'FMCheckbox', 'select', 'FMSelect', 'groupSelect', 'FMGroupSelect', 'multipleSelect', 'FMMultipleSelect', 'cascader', 'FMCascader'].includes(efci.type)) {
-          if (this.$$isEmpty(v)) return this.formData[efci.key] = efci.value ?? null;
-          return this.formData[efci.key] = this.getStringValue(v);
+      const expandFormConfigItemsKeyMap = this.expandFormConfigItems.reduce((t, c) => ((c.key && (t[c.key] = c)), t), {});//配置地图
+
+      resDataKeys.forEach(key => {
+        const rk = key?.replace(/\./g, '$dot$');
+        let v = this.$$lodash.get(res || {}, key);
+        const k = formDataKeys.includes(key) ? key : (formDataKeys.includes(rk) ? rk : null);
+
+        if (!k) return this.formData[key] = v ?? null;//key不在formData里 往里面补一个 以便提交用到
+
+        //如果下拉匹配类型  把数字转为字符串
+        if (['radio', 'FMRadio', 'checkbox', 'FMCheckbox', 'select', 'FMSelect', 'groupSelect', 'FMGroupSelect', 'multipleSelect', 'FMMultipleSelect', 'cascader', 'FMCascader'].includes(expandFormConfigItemsKeyMap[k]?.type)) {
+          if (this.$$isEmpty(v)) return this.formData[k] = null;
+          //如果是多选列表型 如果配置的是valueType=string  则切割 1,2,3=》[1,2,3]  相应的存的时候转成1,2,3
+          if (['multipleSelect', 'FMMultipleSelect', 'cascader', 'FMCascader'].includes(expandFormConfigItemsKeyMap[k]?.type) && expandFormConfigItemsKeyMap[k]?.valueType === 'string' && this.$$getVariableType(v) === '[object String]') {
+            v = v.split(',');
+          }
+          return this.formData[k] = this.getStringValue(v);
         }
-        this.formData[efci.key] = v ?? efci.value ?? null;
+        this.formData[k] = v ?? null;
       });
-      //然后再把resData里没用到的去插到formdata里
-      resDataKeys.forEach(key => !(formDataKeys.includes(key) || formDataKeys.includes(key.replace(/\./g, '$dot$'))) && (this.formData[key] = res[key] ?? null));
       console.log('initFormData', res, formDataKeys, resDataKeys, this.formData);
     },
     //封装多级数据 填写时 key为 a.b.c 转换成 a：{b：{c}}
     getFormData() {
-      return Object.keys(this.formData).reduce((t, k) => (this.$$lodash.set(t, k?.replace(/\$dot\$/g, '.'), this.formData[k]), t), {});
+      const expandFormConfigItemsKeyMap = this.expandFormConfigItems.reduce((t, c) => ((c.key && (t[c.key] = c)), t), {});//配置地图
+      //如果是多选列表型 如果配置的是valueType=string  则切割 1,2,3=》[1,2,3]  相应的存的时候转成1,2,3
+
+      return Object.keys(this.formData).reduce((t, k) => {
+        let v = this.formData[k];
+        if (['multipleSelect', 'FMMultipleSelect', 'cascader', 'FMCascader'].includes(expandFormConfigItemsKeyMap[k]?.type) && expandFormConfigItemsKeyMap[k]?.valueType === 'string' && this.$$getVariableType(v) === '[object Array]') {
+          v = v.join(',');
+        }
+        this.$$lodash.set(t, k?.replace(/\$dot\$/g, '.'), v);
+        return t;
+      }, {});
     },
     appendFormData(formData) {
       Object.assign(this.formData, formData);
@@ -234,7 +264,7 @@ export default {
       keys.forEach(k => delete this.formData[k]);
     },
     validator(cb, err) {
-      console.log('validator', this.formData);
+      console.log('validator', this.formData, this.getFormData());
       this.$refs['Form']?.validate(valid => valid ? cb?.(this.getFormData(), this) : (err ? err(valid) : this.$$Toast({message: `表单验证不通过，请检查`, type: 'error'})));
     },
     resetFormData(filterKeys = []) {

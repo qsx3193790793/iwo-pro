@@ -1,18 +1,17 @@
 import useEvents from "./events";
-import {parseGeoJSON} from "../../../../../public/static/js/echarts.min";
+import Vue from "vue";
 
 //选项字典获取渲染
-function dictReqCompiler(dictName) {
+function dictReqCompiler(dictType) {
   return async function ({vm}) {
-    return await (new Promise((rs, rj) => setTimeout(() => rs([
-      {label: '1', value: '1'}, {label: '2', value: '2'}
-    ]), 1000)));
+    await vm.$store.dispatch('dictionaries/GET_DICTIONARIES', {type: 'customDict', dicts: [dictType]})
+    return vm.$store.getters['dictionaries/GET_DICT'](dictType);
   }
 }
 
-function baseOnChange (j,isView){
+function baseOnChange(j, isView) {
   const events = useEvents();
-  return function({vm, item}) {
+  return function ({vm, item, value}) {
     //处理关联字段
     if (j.z_props.relevance?.length) {
       // 如果清空了 则清空他关联字段
@@ -20,9 +19,28 @@ function baseOnChange (j,isView){
     }
     //触发关联事件
     if (isView) return;
-    (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item}));
+    (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item, value}));
     // //值变化时 是否调用接口
     // j.z_props.apiName && console.log('FMInput onChange 调用接口', j.z_props.key, vm);
+  }
+}
+
+//显示条件编译
+export const showConditionCompiler = (j) => {
+  if (['FMButtons'].includes(j.name) || !j.z_props?.showCondition?.length) return {};
+  return {
+    isShow({vm}) {
+      return j.z_props.showCondition.map((sc, idx) => {//先处理数据true|false
+        const result = sc.value?.split(',').includes(vm.formData[sc.key]);
+        return {
+          result: sc.condition === '等于' ? result : !result,
+          nextRelation: idx < j.z_props.showCondition.length - 1 ? sc.relation : null
+        };
+      }).reduce((t, c) => {//再处理关系 || &&
+        if (t === null) return (t = {result: c.result, nextRelation: c.nextRelation}, t);//第一次先赋值第一个数据
+        return (t = {result: t.nextRelation === '||' ? (t.result || c.result) : (t.result && c.result), nextRelation: c.nextRelation}, t);
+      }, null).result;
+    }
   }
 }
 
@@ -36,7 +54,7 @@ export const cascaderCompiler = (j, isView) => {
     value: j.z_props['value']?.split(','),
     //值变化时触发
     attrs: {props: {checkStrictly: j.z_props['checkStrictly']}},
-    onChange: baseOnChange(j,isView)
+    onChange: baseOnChange(j, isView)
   }
 };
 
@@ -53,7 +71,7 @@ export const selectCompiler = (j, isView) => {
       return [];
     })(),
     //resetNextValue 是否重置关联表单
-    onChange: function ({vm, item, resetNextValue = true}) {
+    onChange: function ({vm, item, value, resetNextValue = true}) {
       //处理关联字段
       if (j.z_props.relevance?.length) {
         j.z_props.relevance?.forEach(k => {
@@ -84,7 +102,7 @@ export const inputCompiler = (j, isView) => {
   if (!['FMInput'].includes(j.name)) return {};
   return {
     //值变化时触发
-    onChange:  baseOnChange(j,isView)
+    onChange: baseOnChange(j, isView)
   }
 };
 
@@ -94,7 +112,7 @@ export const datePickerCompiler = (j, isView) => {
   return {
     type: j.z_props.dateType,
     //值变化时触发
-    onChange:  baseOnChange(j,isView)
+    onChange: baseOnChange(j, isView)
   }
 };
 
@@ -102,7 +120,6 @@ export const datePickerCompiler = (j, isView) => {
 export const buttonCompiler = (j, isView) => {
   if (!['FMButton'].includes(j.name)) return {};
   const events = useEvents();
-  console.log('buttonCompiler', j.z_props)
   return {
     //点击
     attrs: {
@@ -111,6 +128,7 @@ export const buttonCompiler = (j, isView) => {
     },
     btnName: j.z_props.btnName,
     onClick: function ({vm}) {
+      console.log('onClick', vm);
       //触发关联事件
       if (isView) return;
       (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm}));
@@ -122,7 +140,10 @@ export const buttonCompiler = (j, isView) => {
 export const buttonsCompiler = (j, isView) => {
   if (!['FMButtons'].includes(j.name)) return {};
   return {
-    items: j.children.map(btn => Object.assign(buttonCompiler(btn, isView)))
+    items: j.children.map(btn => Object.assign(buttonCompiler(btn, isView), showConditionCompiler(btn))),
+    isShow({vm}) {
+      return !!this.items.filter(bv => (!bv.isShow) || bv.isShow({vm})).length;
+    }
   }
 };
 
@@ -152,21 +173,4 @@ export const customizationCompsCompiler = (j, isView) => {
   }
 };
 
-//显示条件编译
-export const showConditionCompiler = (j, isView) => {
-  if (!j.z_props?.showCondition?.length) return {};
-  return {
-    isShow({vm}) {
-      return j.z_props.showCondition.map((sc, idx) => {//先处理数据true|false
-        const result = sc.value?.split(',').includes(vm.formData[sc.key]);
-        return {
-          result: sc.condition === '等于' ? result : !result,
-          nextRelation: idx < j.z_props.showCondition.length - 1 ? sc.relation : null
-        };
-      }).reduce((t, c) => {//再处理关系 || &&
-        if (t === null) return (t = {result: c.result, nextRelation: c.nextRelation}, t);//第一次先赋值第一个数据
-        return (t = {result: t.nextRelation === '||' ? (t.result || c.result) : (t.result && c.result), nextRelation: c.nextRelation}, t);
-      }, null).result;
-    }
-  }
-}
+

@@ -3,7 +3,7 @@
     <el-tabs v-model="tabActive" class="AddDialog" :before-leave="tabBeforeLeave">
       <el-tab-pane label="基本信息" name="基本信息">
         <ELScrollbar style="height: 100%">
-          <FormModel ref="FormModelRef" :formConfig="formConfig" :disabled="props?.isDetail"></FormModel>
+          <FormModel ref="FormModelRef" :formConfig="formConfig" :formStatus="props?.isDetail?'view':'create'"></FormModel>
         </ELScrollbar>
       </el-tab-pane>
       <el-tab-pane label="表单设计" name="表单设计">
@@ -233,7 +233,7 @@ async function listComplaintPhenomenonTree() {
   if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree')?.length) return;
   const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree();
   if (err) return;
-  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree(res?.phenomList?.[0]?.phenomList || [], 'phenomName', 'phenomCode', 'phenomList')});
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree(res?.phenomList || [], 'phenomName', 'phenomCode', 'phenomList')});
 }
 
 //投诉来源下拉菜单

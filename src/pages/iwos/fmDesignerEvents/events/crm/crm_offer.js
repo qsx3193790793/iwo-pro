@@ -26,7 +26,7 @@ export default async ({vm, item, value}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning, item, value);
   // 未定位直接pass
-  if (!customPositioning) return;
+  if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   const {res, err} = await vm.$$api.crm.offer({
     params: {

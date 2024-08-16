@@ -1,7 +1,7 @@
 <template>
   <DragElement v-bind="$attrs" v-on="$listeners">
     <el-radio-group v-bind.sync="props_bind" :disabled="props_bind?.isDisable">
-      <el-radio-button v-for="(ev,i) in options" :key="ev.value+i" :label="ev.value" :style="{width: `calc(100% / ${options?.length||2})`}" border>{{ ev.label }}</el-radio-button>
+      <el-radio-button v-for="(ev,i) in options" :key="i" :label="ev.value" :style="{width: `calc(100% / ${options?.length||2})`}" border>{{ ev.label }}</el-radio-button>
     </el-radio-group>
   </DragElement>
 </template>

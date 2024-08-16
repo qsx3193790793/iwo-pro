@@ -883,3 +883,11 @@
     }
   }
 }
+
+.search_tree{
+  //选中的背景色
+  .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+    background-color: $tree-chance-background;
+    color:#ffffff !important;
+  }
+}

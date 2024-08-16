@@ -42,11 +42,10 @@
   </div>
 </template>
 <script setup>
-import {shallowRef, ref, onMounted, watchEffect, getCurrentInstance} from "vue";
+import {shallowRef, ref, nextTick, watchEffect, getCurrentInstance, onActivated} from "vue";
 import TableFormat from "./comps/TableFormat.vue";
 import TableText from "./comps/TableText.vue";
 import {computed, watch} from "vue"
-import {$$getPageScale} from "@/utils";
 
 const {proxy} = getCurrentInstance();
 const compsMap = ref({
@@ -118,7 +117,12 @@ const handleSelectionChange = (val) => {
 
 watchEffect(() => {
   console.log('table onMounted', props.dataSource)
-})
+});
+
+onActivated(() => {
+  // keep-alive回来后  fiexed列有问题
+  nextTick(() => tableView.value?.doLayout())
+});
 </script>
 <style lang="scss" scoped>
 //.content {

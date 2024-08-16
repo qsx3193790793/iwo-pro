@@ -32,7 +32,7 @@ let store = {
             commit('SET_DICTIONARIES', {
               [dictType]: payload.type === 'dict'
                 ? (res?.list || []).map(r => ({label: r.dictLabel, value: r.dictValue, key: r.dictValue}))
-                : (res?.dataList || []).map(r => ({label: r.dictLabel, value: r.dictValue, key: r.dictValue}))
+                : (res?.dataList || []).sort((a, b) => a.dictSort - b.dictSort).map(r => ({label: r.dictLabel, value: r.dictValue, key: r.dictValue}))
             });
             rs(res);
           }).catch(() => rj(dictType))

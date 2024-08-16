@@ -56,7 +56,7 @@
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
             <el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
-            <el-button type="success" size="mini" @click="handleAdd" v-hasPermi="['system:team:add']">新增</el-button>
+            <el-button type="success" size="mini" @click="handleAdd" v-hasPermission="['system:team:add']">新增</el-button>
             <el-button type="info" plain size="small" @click="toggleExpandAll">展开/折叠</el-button>
 
           </el-form-item>
@@ -73,11 +73,11 @@
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template slot-scope="scope">
-              <el-button size="mini" type="primary" @click="handleUpdate(scope.row)" v-hasPermi="['system:team:edit']">修改
+              <el-button size="mini" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['system:team:edit']">修改
               </el-button>
-              <el-button size="mini" type="success" @click="handleAdd(scope.row)" v-hasPermi="['system:team:edit']">新增</el-button>
+              <el-button size="mini" type="success" @click="handleAdd(scope.row)" v-hasPermission="['system:team:edit']">新增</el-button>
               <el-button
-                  size="mini" type="danger" @click="handleDelete(scope.row)" v-hasPermi="['system:team:remove']">删除
+                  size="mini" type="danger" @click="handleDelete(scope.row)" v-hasPermission="['system:team:remove']">删除
               </el-button>
             </template>
           </el-table-column>

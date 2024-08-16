@@ -18,7 +18,7 @@ export default async ({vm, item, value}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('result_init_customerOrderDetail', customPositioning)
   // 未定位直接pass
-  if (!customPositioning) return;
+  if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   // const {res, err} = await vm.$$api.crm.ECQueryBalance({
   //   params: {provinceId: lanIdInfo.provinceCode},

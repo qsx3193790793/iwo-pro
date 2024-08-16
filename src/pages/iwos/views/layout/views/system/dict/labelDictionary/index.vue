@@ -235,12 +235,6 @@ export default {
               },
             },
             {
-              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
-              onClick: ({vm}) => {
-                this.handleDelete();
-              }
-            },
-            {
               btnName: "新增",
               type: "button",
               attrs: {type: "success"},
@@ -248,6 +242,12 @@ export default {
               onClick: ({vm}) => {
                 this.handleAdd()
               },
+            },
+            {
+              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
+              onClick: ({vm}) => {
+                this.handleDelete();
+              }
             },
           ],
         },

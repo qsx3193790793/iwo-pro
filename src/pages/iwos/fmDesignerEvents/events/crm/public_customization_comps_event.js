@@ -6,7 +6,7 @@ export default ({vm, item, value}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning, item, value);
   // 未定位直接pass
-  if (!customPositioning) return;
+  if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   console.log('eventsFields', item?.eventsFields)
   // 模板会字段统一会加$template$前缀用来区分

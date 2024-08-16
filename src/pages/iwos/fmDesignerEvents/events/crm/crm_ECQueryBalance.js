@@ -34,7 +34,7 @@ export const resFields = [
 export default async ({vm, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
-  if (!customPositioning) return;
+  if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   const {res, err} = await vm.$$api.crm.ECQueryBalance({
     // params: {provinceId: '8130000'},
@@ -46,7 +46,7 @@ export default async ({vm, eventsFields}) => {
   });
   console.log('eventsFields', vm, eventsFields)
   eventsFields.forEach(ef => {
-    const v = vm.$$lodash.get(res || {}, ef.value);
+    const v = vm.$$lodash.get(res?.accountInfoList?.[0] || {}, ef.value);
     if (vm.$$isEmpty(v)) return;
     vm.formData[`$template$${ef.label}`] = v;
   });

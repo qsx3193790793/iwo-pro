@@ -5,7 +5,7 @@ export default {
   name: 'TemplateDesigner',
   component: () => import('./index.vue'),
   meta: {
-    belong: 'System',
+    belong: 'Config',
     parentName: 'TemplateIndex',//父级路由名称 用来定位导航
     name: '设计表单',
     title: '智慧客服工单系统',

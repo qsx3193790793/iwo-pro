@@ -1,6 +1,6 @@
 <template>
   <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="80%" :title="`${props.pkid?'编辑':'新增'}课程资源`">
-    <FormModel ref="FormModelRef" :formConfig="formConfig" :disabled="props?.isDetail"></FormModel>
+    <FormModel ref="FormModelRef" :formConfig="formConfig" :formStatus="props?.isDetail?'view':'create'"></FormModel>
     <template #footer="{DialogRef}">
       <el-button type="primary" plain @click="DialogRef?.handleClose()">返回</el-button>
       <el-button type="primary" @click="onSubmit(DialogRef)">保存</el-button>

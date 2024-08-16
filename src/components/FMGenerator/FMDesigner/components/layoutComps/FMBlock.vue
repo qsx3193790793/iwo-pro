@@ -49,9 +49,8 @@ const collapseActive = computed({
   }
 });
 
-watch(() => props_bind.value?.isBtnBlock, () => {
-  if (props_bind.value?.isBtnBlock === '是') {
-    console.log(components.value['FMButtons'])
+watch(() => props_bind.value?.isBtnBlock, (nV, oV) => {
+  if (nV === '按钮组') {
     const clone = proxy.$$deepmerge(components.value['FMButtons']);
     clone.cId = `FMButtons_ID_${proxy.$$getUUID()}`;
     clone.z_props[0].value = 24;
@@ -59,12 +58,11 @@ watch(() => props_bind.value?.isBtnBlock, () => {
     childrenModel.value = [clone];
     return;
   }
-  childrenModel.value = [];
+  if (oV === '按钮组') childrenModel.value = [];
 })
 
 function layoutPut(to, form, item) {
-  console.log(props_bind.value)
-  if (props_bind.value?.isBtnBlock === '是') {
+  if (props_bind.value?.isBtnBlock === '按钮组') {
     // if (item.getAttribute('data-comp-type') === 'FMButton') {
     //   return !0;
     // }
@@ -96,9 +94,9 @@ export default {
   children: [],
   z_props: [].concat([
     {
-      sort: 4, name: '是否操作按钮板块', key: 'isBtnBlock', value: '否', type: 'radio', options: [{label: '是', value: '是'}, {label: '否', value: '否'}], isRequire: !1, col: 24,
+      sort: 4, name: '板块类型', key: 'isBtnBlock', value: '基础', type: 'radio', options: [{label: '基础', value: '基础'}, {label: '按钮组', value: '按钮组'}, {label: '隐藏域', value: '隐藏域'}], isRequire: !1, col: 24,
       onChange({vm}) {
-        if (vm.formData.isBtnBlock === '否') {
+        if (vm.formData.isBtnBlock === '基础') {
           return vm.formData.name = '板块名称', vm.formData.subName = '板块子名称';
         }
         vm.formData.name = '', vm.formData.subName = '';
@@ -107,13 +105,13 @@ export default {
     {
       sort: 5, name: '板块名称', key: 'name', value: '板块名称', type: 'input', isRequire: !1, col: 24,
       isShow({vm}) {
-        return vm.formData.isBtnBlock === '否'
+        return vm.formData.isBtnBlock === '基础'
       }
     },
     {
       sort: 6, name: '子板块名称', key: 'subName', value: '板块子名称', type: 'input', isRequire: !1, col: 24,
       isShow({vm}) {
-        return vm.formData.isBtnBlock === '否'
+        return vm.formData.isBtnBlock === '基础'
       }
     },
   ])

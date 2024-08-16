@@ -1175,6 +1175,13 @@ const $$formatCascaderTree = (data = [], labelName = 'label', valueName = 'value
   return t;
 }, []);
 
+//寻找树路径
+const $$findTreePath = ({tree = [], props = {codeKey: 'code', childrenKey: 'children'}}) => {
+  const flats = $$lodash.flatMapDeep(tree, n => {
+    console.log('n', n)
+  });
+}
+
 export default {
   install(Vue, options) {
     //加密串
@@ -1190,6 +1197,8 @@ export default {
     Vue.prototype.$$dateFormatter = $$dateFormatter;
     Vue.prototype.$$dateFormatterYMDHMS = $$dateFormatterYMDHMS;
     Vue.prototype.$$dateFormatterYMD = $$dateFormatterYMD;
+
+    Vue.prototype.$$findTreePath = $$findTreePath;
 
     Vue.prototype.$$lodash = $$lodash;
     Vue.prototype.$$getFullDateStr = $$getFullDateStr;
@@ -1526,5 +1535,6 @@ export {
   $$RouYiHandleTree,
   $$tansParams,
   $$fileSaveAs,
-  $$formatCascaderTree
+  $$formatCascaderTree,
+  $$findTreePath
 };

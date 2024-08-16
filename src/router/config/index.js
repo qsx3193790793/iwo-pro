@@ -65,12 +65,12 @@ export default ({customRoutes, routeContext, beforeEach, afterEach}) => {
     Vue.prototype.$$store.dispatch("user/CHECK_STORAGE");//检查缓存
     // return next();
     // keepAlive逻辑 返回时清除pageLevel大于等于from的pageLevel的页面
-    if (to.meta.pageLevel < from.meta.pageLevel) {
-      // 返回前面的页面
-      if (from.meta.keepAlive) Vue.prototype.$$store.dispatch("keepAlive/REMOVE_ALIVE_PAGE", from);
-    } else {
-      if (to.meta.keepAlive) Vue.prototype.$$store.dispatch("keepAlive/ADD_ALIVE_PAGE", to);
-    }
+    // if (to.meta.pageLevel < from.meta.pageLevel) {
+    //   // 返回前面的页面
+    //   if (from.meta.keepAlive) Vue.prototype.$$store.dispatch("keepAlive/REMOVE_ALIVE_PAGE", from);
+    // } else {
+    if (to.meta.keepAlive) Vue.prototype.$$store.dispatch("keepAlive/ADD_ALIVE_PAGE", to);
+    // }
 
     if (to.meta.authentication) {
       const token = Vue.prototype.$$store.getters['user/GET_TOKEN'];

@@ -5,7 +5,7 @@ export default {
   name: 'ReleaseIndex',
   component: () => import('./index.vue'),
   meta: {
-    belong: 'System',
+    belong: 'Config',
     name: '待发布列表',
     title: '智慧客服工单系统',
     authentication: true,//该页面是否需要登陆才可进入

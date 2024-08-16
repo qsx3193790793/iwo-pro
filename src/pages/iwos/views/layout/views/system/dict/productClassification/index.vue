@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree one-screen-fg1">
+        <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -22,7 +22,7 @@
               ref="tree"
               node-key="id"
               default-expand-all
-              highlight-current
+               :highlight-current='true'
               @node-click="handleNodeClick"
           />
         </div>
@@ -42,7 +42,7 @@
             @selectionChange="handleSelectionChange"
         >
           <template #isProvinceCustom="{ row }">
-            <div>{{ row.isProvinceCustom ? "自定义" : "否" }}</div>
+            <div>{{ row.isProvinceCustom ? "是" : "否" }}</div>
           </template>
           <template #status="{ row }">
             <div v-show="row.status == 0">
@@ -78,6 +78,7 @@
           <el-col :span="12">
             <el-form-item label="产品一级">
               <el-input
+                  :disabled="form.oneProductNameEdit"
                   v-model="form.oneProductName"
                   placeholder="请输入"
                   maxlength="30"
@@ -88,16 +89,19 @@
             <el-form-item label="产品一级编码">
               <el-input
                   v-model="form.oneProductCode"
+                  disabled
                   placeholder="请输入"
                   maxlength="30"
               />
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <!-- &&form.handleType!='edit' -->
+        <el-row :gutter="20" v-if="(currentNode.level>1&&form.handleType=='edit'||currentNode.level==1&&form.handleType=='add')">
           <el-col :span="12">
             <el-form-item label="产品二级">
               <el-input
+                 :disabled="form.productNameEdit"
                   v-model="form.productName"
                   placeholder="请输入"
                   maxlength="30"
@@ -108,6 +112,7 @@
             <el-form-item label="产品二级编码">
               <el-input
                   v-model="form.productCode"
+                  disabled
                   placeholder="请输入"
                   maxlength="30"
               />
@@ -278,6 +283,10 @@ export default {
         selection: true,
         props: [
           {
+            name: "上级节点",
+            key: "parentNode",
+          },
+          {
             name: "投诉产品编码",
             key: "productCode",
           },
@@ -314,11 +323,13 @@ export default {
               label: "编辑",
               key: "edit",
               event: this.handleUpdate,
+              autoHidden: this.autoHandleHidden,
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
+              autoHidden: this.autoHandleHidden,
               event: (val) => {
                 this.ids = []
                 this.productCodeList = []
@@ -343,7 +354,9 @@ export default {
         },
       },
       dataSource: [],
-      currentNode: {},
+      currentNode: {
+        level:0
+      },
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -412,16 +425,23 @@ export default {
     this.getProductTree();
   },
   methods: {
+    autoHandleHidden(val) {
+      if (val.row) {
+        return  val.row.isProvinceCustom  != "0" ? true : false;
+      } else {
+        return false;
+      }
+    },
     autoStartHidden(val) {
       if (val.row) {
-        return val.row.status == "0" ? true : false;
+        return (val.row.status == "0" && val.row.isProvinceCustom  != "0")? true : false;
       } else {
         return false;
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return val.row.status == "1" ? true : false;
+        return (val.row.status == "1"&& val.row.isProvinceCustom  != "0") ? true : false;
       } else {
         return false;
       }
@@ -484,7 +504,15 @@ export default {
           })
           .then(({res: response, err}) => {
             if (err) return;
-            this.dataSource = response.rows;
+            this.dataSource = response.rows.map((ele)=>{
+              if(this.currentNode?.productName){
+                ele.parentNode=this.currentNode?.productName
+              }else{
+                ele.parentNode='投诉产品'
+              }
+              return ele
+            })
+            // this.dataSource = response.rows;
             this.total = response.total;
             this.loading = false;
           });
@@ -512,7 +540,7 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data) {
-      if (data.productLevel == 2) return
+      // if (data.productLevel == 2) return this.dataSource=[]
       this.$refs["queryForm"]?.resetFields();
       this.currentNode = data;
       this.queryParams.pcode = data.productCode;
@@ -611,14 +639,22 @@ export default {
             this.form.oneProductCode = oneProductCode;
             this.form.oneProductName = oneProductName;
             this.form.productId = productId;
+            this.currentNode.level=productLevel
             if (productLevel == 1) {
               this.form.oneProductCode = productCode;
               this.form.oneProductName = productName;
+              this.form.productNameEdit = true;
+              if(this.form.handleType=='add'){
+                this.form.oneProductNameEdit = true;
+                this.form.productNameEdit = false;
+              }
             }
             if (productLevel == 2) {
               this.form.productName = productName;
               this.form.productCode = productCode;
+              this.form.oneProductNameEdit = true;
             }
+            
           });
     },
     /** 修改按钮操作 */
@@ -694,7 +730,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped lang="scss">
 .nodeTree {
   overflow: scroll;
   height: 74vh;

@@ -25,7 +25,7 @@
             <!--                      <el-collapse v-model="activeTemplatesCollapse">-->
             <!--                        <el-collapse-item v-for="(it,ii) in templates" :title="it.name" :name="it.name" :key="it.name">-->
             <template v-for="(it,ii) in templates">
-              <div v-for="(v,i) in it.items" :key="it.name+i" class="fm-designer-components-item" @click="useTemplate(v)">{{ v.title }}</div>
+              <div v-for="(v,i) in it.items" :key="it.name" class="fm-designer-components-item" @click="useTemplate(v)">{{ v.title }}</div>
             </template>
             <!--                        </el-collapse-item>-->
             <!--                      </el-collapse>-->

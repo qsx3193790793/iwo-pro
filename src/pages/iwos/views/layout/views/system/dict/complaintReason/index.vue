@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree one-screen-fg1">
+        <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree :data="complaintReasonTreeOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" node-key="id" default-expand-all highlight-current @node-click="handleNodeClick"/>
         </div>
       </div>

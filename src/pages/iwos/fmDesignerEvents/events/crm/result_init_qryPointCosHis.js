@@ -18,12 +18,13 @@ export const resFields = [
   {label: '服务代码', value: 'svcCode'},
   {label: '项目ID', value: 'itemID'},
   {label: '项目价值', value: 'itemValue'},
+  {label: '是否有兑换记录', value: 'status'},
   {label: '订单号', value: 'orderNbr'}
 ];
 export default async ({vm, item, value}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
-  if (!customPositioning) return;
+  if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   console.log('eventsFields', vm, item.eventsFields)
   item.eventsFields.forEach(ef => {

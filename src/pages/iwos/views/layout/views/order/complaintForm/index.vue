@@ -7,12 +7,12 @@
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
         <JsTable :dataSource="list" :columns="columns">
-          <template #unifiedComplaintCode="scope">
-            <!-- @click="Todetail(scope.row)" -->
-            <div style="color: rgb(50, 151, 255); cursor: pointer">
-              {{ scope.row.unifiedComplaintCode }}
-            </div>
-          </template>
+          <!--          <template #unifiedComplaintCode="scope">-->
+          <!--            &lt;!&ndash; @click="Todetail(scope.row)" &ndash;&gt;-->
+          <!--            <div style="color: rgb(50, 151, 255); cursor: pointer">-->
+          <!--              {{ scope.row.unifiedComplaintCode }}-->
+          <!--            </div>-->
+          <!--          </template>-->
           <template #workorderType="scope">
             {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", scope.row.workorderType) }}
           </template>
@@ -44,19 +44,13 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
-import {getCurrentInstance, ref, onBeforeMount, onMounted} from "vue";
+import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
 
 const {proxy} = getCurrentInstance();
 const selectionChange = (val) => {
   console.log(val);
-};
-
-const Todetail = (val) => {
-  console.log(val);
-  proxy.$$router.push({name: "ComplaintDetail", query: {ID: val.id}});
 };
 
 const FormRef = ref();
@@ -72,6 +66,7 @@ const columns = ref({
   props: [
     {
       name: "投诉编号",
+      width: 200,
       key: "unifiedComplaintCode",
     },
     {
@@ -109,6 +104,7 @@ const columns = ref({
     },
     {
       name: "创建时间",
+      width: 160,
       key: "createdTime",
       el: "format",
       format: "default",
@@ -119,21 +115,23 @@ const columns = ref({
     //   format: 'default',
     // },
   ],
-  // options: {
-  //   width:120,
-  //   btns: [
-  //     {
-  //       label: '开启路由',
-  //       key: 'change',
-  //       event: change,
-  //     },
-  //     {
-  //       label: '编辑',
-  //       key: 'eidt',
-  //       event: edit,
-  //     },
-  //   ],
-  // },
+  options: {
+    btns: [
+      {
+        label: '编辑',
+        key: 'edit',
+        event: row => {
+          console.log(row);
+          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}})
+        },
+      },
+      {
+        label: '删除',
+        key: 'del',
+        type: 'danger',
+      },
+    ],
+  },
 });
 
 const PageSearchPanelRef = ref();
@@ -147,22 +145,15 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   let queryParams = PageSearchPanelRef.value.getFormData();
   let dataTime = {};
   // 建单时间的取值
-  if (
-      queryParams.provinceOrderCreateTime &&
-      queryParams.provinceOrderCreateTime.length > 0
-  ) {
-    dataTime.beginTime = dayjs(
-        new Date(queryParams.provinceOrderCreateTime[0]).getTime()
-    ).format("YYYY-MM-DD HH:mm:ss");
-    dataTime.endTime = dayjs(
-        new Date(queryParams.provinceOrderCreateTime[1]).getTime()
-    ).format("YYYY-MM-DD HH:mm:ss");
+  if (queryParams.provinceOrderCreateTime && queryParams.provinceOrderCreateTime.length > 0) {
+    dataTime.beginTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[0]).format("YYYY-MM-DD HH:mm:ss");
+    dataTime.endTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[1]).format("YYYY-MM-DD HH:mm:ss");
   }
   // 投诉来源的取值
-  if (queryParams.askSourceSrl && queryParams.askSourceSrl.length > 1) {
+  if (queryParams.askSourceSrl && queryParams.askSourceSrl?.length > 1) {
     queryParams.askSourceSrl = queryParams.askSourceSrl[1];
   } else {
-    if (queryParams.askSourceSrl.length > 0) {
+    if (queryParams.askSourceSrl?.length > 0) {
       queryParams.askSourceSrl = queryParams.askSourceSrl[0];
     } else {
       queryParams.askSourceSrl = [];
@@ -292,6 +283,7 @@ const formConfigItems = ref([
         col: 1,
         onClick({vm}) {
           vm.resetFormData();
+          getList(1);
         },
       },
       {
@@ -311,7 +303,7 @@ const formConfigItems = ref([
         col: 1,
         onClick({vm}) {
           console.time('open');
-          proxy.$router.push({name: 'ComplaintDetail'})
+          proxy.$router.push({name: 'ComplaintCreate'})
         },
       },
     ],
@@ -342,6 +334,7 @@ onMounted(() => {
   listComplaintSourceTree();
   getList(1);
 });
+
 </script>
 
 <script>

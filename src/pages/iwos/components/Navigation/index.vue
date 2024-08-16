@@ -66,6 +66,8 @@ function handlerSecNavChange(v) {
   proxy.$store.commit('storage/SET_NAV_SETTING', {canCollapse: !!v.children?.length});
   if (v.children) return secNavigation.value = v;
   secNavigation.value = null;
+  const finder = proxy.$$router.getRoutes().find(r => r.name === v.name);
+  if (!finder) return proxy.$$Toast.error('访问页面不存在');
   proxy.$$router.push({name: v.name});
 }
 

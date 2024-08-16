@@ -67,7 +67,7 @@ function handleInsert(row) {
   const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[0]?.$refs?.textarea;
   if (!textarea) return;
   const arr = textarea.value.split('');
-  arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, '{{' + row.name + '}}');
+  arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, `{{${row.type == '0' ? '$public$' : ''}${row.name}}}`);
   props.root.vm.formData.verbalTrickContent = arr.join('');
 }
 

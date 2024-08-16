@@ -5,9 +5,11 @@
         <i class="circle"></i> 今日生日
       </div>
       <img ref="" :src="userProfile.gender=='0'?womanImage:manImage" alt="" class="userImg"/>
-      <div v-for="item in tagList" :key="item.v" :style="item.style" class="imgCss">
-        {{ item.v }}
-      </div>
+      <template v-for="(item,i) in tagList">
+        <div v-if="item.v&&item.v!=='-'" :key="i" :style="item.style" class="imgCss">
+          {{ item.v }}
+        </div>
+      </template>
     </div>
   </div>
 </template>

@@ -28,9 +28,10 @@ export const optionsProps = (sort = 1) => [
   },
   {
     sort: sort + 0.2, name: '数据字典', key: 'optionsDictName', value: '', type: 'select', isRequire: !1, col: 24,
-    options: [
-      {label: '性别', value: 'dict_sex'}
-    ],
+    async options({vm}) {
+      const {res, err} = await vm.$$api.customDict.listDictionary({params: {status: 1, pageNum: 1, pageSize: 1000}});
+      return (res?.rows || []).map(r => ({label: r.dictName, value: r.dictType}))
+    },
     isShow({vm}) {
       return vm.formData.optionsType === '字典'
     }
@@ -123,38 +124,24 @@ const commonPropsMap = {
       });
     }
   },
-  reqFields: {
-    sort: 10.1, name: '绑定入参', key: 'reqFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
-    attrs: {
-      formPlaceholder: '选择字段', toPlaceholder: '绑定字段',
-      handleValueKeys({vm}) {
-        const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
-        return [
-          {
-            label: '当前表单',
-            options: keysFinder(stage[stage.length - 1], []).map(rk => {
-              const [label, key] = rk.split('||');
-              return {label: `${label}(${key})`, value: key};
-            })
-          }
-        ]
-      },
-      handleKeys({vm}) {
-        return [
-          {label: '订单编号(orderId)', value: 'orderId'}
-        ]
+  eventsType: {sort: 11, name: '事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
+  apiKey: {
+    sort: 11.5, name: '接口名', key: 'events', value: '', type: 'select', isRequire: !1, col: 24,
+    options({vm}) {
+      return async function ({vm}) {
+        await vm.$store.dispatch('dictionaries/GET_DICTIONARIES', {type: 'customDict', dicts: [dictType]})
+        return vm.$store.getters['dictionaries/GET_DICT'](dictType);
       }
+    },
+    isShow({vm}) {
+      return vm.formData.eventsType === '接口'
     }
   },
-  eventsType: {sort: 11, name: '事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
   events: {
     sort: 12, name: '绑定事件', key: 'events', value: [], type: 'multipleSelect', isRequire: !1, col: 24,
     options({vm}) {
       const events = useEvents();
       return Object.keys(events).map(etk => ({label: events[etk].label, value: etk}))
-    },
-    isShow({vm}) {
-      return vm.formData.eventsType === '事件'
     }
   },
   eventsFields: {

@@ -1,6 +1,6 @@
 //防抖
 //debounce防抖
-export default (fn, delay = 500) => {
+export default (fn, delay = 400) => {
   let debounceHandler = null;
   return function () {
     clearTimeout(debounceHandler);

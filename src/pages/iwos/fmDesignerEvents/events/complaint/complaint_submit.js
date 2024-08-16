@@ -6,15 +6,15 @@ export const label = '投诉单_提交';
 export default ({vm, item}) => {
   const formData = vm.getFormData();
   // 发展渠道
-  const {path: developChannelPath, pathLabels: developChannelPathLabels} = vm.$refs.complaint$dot$developChannel?.[0]?.getCheckedNodes()?.[0] || {};
-  vm.$$lodash.set(formData, 'complaint.developChannel', null);
-  vm.$$lodash.set(formData, 'complaint.developChannelCode', null);
-  vm.$$lodash.set(formData, 'complaint.developChannelLevel1', developChannelPathLabels?.[0] ?? null);
-  vm.$$lodash.set(formData, 'complaint.developChannelLevel2', developChannelPathLabels?.[1] ?? null);
-  vm.$$lodash.set(formData, 'complaint.developChannelLevel3', developChannelPathLabels?.[2] ?? null);
-  vm.$$lodash.set(formData, 'complaint.developChannelLevel1Code', developChannelPath?.[0] ?? null);
-  vm.$$lodash.set(formData, 'complaint.developChannelLevel2Code', developChannelPath?.[1] ?? null);
-  vm.$$lodash.set(formData, 'complaint.developChannelLevel3Code', developChannelPath?.[2] ?? null);
+  const {path: developChannelLevelPath, pathLabels: developChannelLevelPathLabels} = vm.$refs.complaint$dot$developChannelLevel?.[0]?.getCheckedNodes()?.[0] || {};
+  // vm.$$lodash.set(formData, 'complaint.developChannel', null);
+  // vm.$$lodash.set(formData, 'complaint.developChannelCode', null);
+  vm.$$lodash.set(formData, 'complaint.developChannelLevel1', developChannelLevelPathLabels?.[0] ?? null);
+  vm.$$lodash.set(formData, 'complaint.developChannelLevel2', developChannelLevelPathLabels?.[1] ?? null);
+  vm.$$lodash.set(formData, 'complaint.developChannelLevel3', developChannelLevelPathLabels?.[2] ?? null);
+  vm.$$lodash.set(formData, 'complaint.developChannelLevel1Code', developChannelLevelPath?.[0] ?? null);
+  vm.$$lodash.set(formData, 'complaint.developChannelLevel2Code', developChannelLevelPath?.[1] ?? null);
+  vm.$$lodash.set(formData, 'complaint.developChannelLevel3Code', developChannelLevelPath?.[2] ?? null);
 
   // 投诉现象
   const {path: complaintPhenomenonLevelPath, pathLabels: complaintPhenomenonLevelPathLabels} = vm.$refs.complaint$dot$complaintPhenomenonLevel?.[0]?.getCheckedNodes()?.[0] || {};
@@ -33,18 +33,18 @@ export default ({vm, item}) => {
   vm.$$lodash.set(formData, 'complaint.productLevel2Code', productLevelPath?.[1] ?? null);
 
   //投诉来源
-  const {path: askSourceSrlPath, pathLabels: askSourceSrlPathLabels} = vm.$refs.complaint$dot$askSourceSrl?.[0]?.getCheckedNodes()?.[0] || {};
-  vm.$$lodash.set(formData, 'complaint.askSourceSrl', '1');
+  const {path: askSourceSrlChainPath, pathLabels: askSourceSrlChainPathLabels} = vm.$refs.complaint$dot$askSourceSrlChain?.[0]?.getCheckedNodes()?.[0] || {};
+  vm.$$lodash.set(formData, 'complaint.askSourceSrl', askSourceSrlChainPath?.[askSourceSrlChainPath?.length - 1] ?? null);
 
   //省内建单时间
-  vm.$$lodash.set(formData, 'complaint.provinceOrderCreateTimeStr', vm.$$dateFormatterYMDHMS(vm.$$dayjs()));
+  vm.$$lodash.set(formData, 'complaint.provinceOrderCreateTime', vm.$$dateFormatterYMDHMS(vm.$$dayjs()));
 
   //场景字段
   vm.$$lodash.set(formData, 'complaintAssistList', vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$template$')).map(efci => ({
-    fieldTitle: efci.name, fieldName: efci.key.replace('$template$', ''), fieldValue: vm.formData[efci.key] ?? null
+    fieldTitle: efci.name, fieldName: efci.key.replace('$template$', ''), fieldValue: formData[efci.key] ?? null
   })));
 
-  console.log('complaint_submit', formData, askSourceSrlPath, askSourceSrlPathLabels)
+  console.log('complaint_submit', formData)
   vm.validator(
     () => {
       vm.$$Dialog.confirm(`你确定要保存吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {

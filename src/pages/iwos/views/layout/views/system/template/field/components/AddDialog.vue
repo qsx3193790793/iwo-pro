@@ -1,6 +1,6 @@
 <template>
   <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="80%" :title="`${props.pkid?'编辑':'新增'}字段`">
-    <FormModel ref="FormModelRef" :formConfig="formConfig" :disabled="props?.isDetail"></FormModel>
+    <FormModel ref="FormModelRef" :formConfig="formConfig" :formStatus="props?.isDetail?'view':'create'"></FormModel>
     <template #footer="{DialogRef}">
       <el-button type="primary" plain @click="DialogRef?.handleClose()">返回</el-button>
       <el-button type="primary" @click="onSubmit(DialogRef)">保存</el-button>
@@ -71,14 +71,14 @@ const formConfig = ref({
         },
         {name: '字段标题', key: 'title', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0},
         {
-          name: '字段名称', key: 'name', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0, 
+          name: '字段名称', key: 'name', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0,
           rules: [{validator: (rule, value, cb) => Vue.prototype.$$validator.isVariable(value) ? cb() : cb(new Error('不符合变量规范[A~Z、a~z、0~9、_]不允许数字开头）')), trigger: 'blur'}],
           isShow({vm}) {
             return vm.formData.type == '1'
           }
         },
         {
-          name: '字段名称', key: 'name', value: '', type: 'select', options: [], col: 8, isDisable: !1, isRequire: !0,placeholder:'请从下拉表中选择',
+          name: '字段名称', key: 'name', value: '', type: 'select', options: [], col: 8, isDisable: !1, isRequire: !0, placeholder: '请从下拉表中选择',
           isShow({vm}) {
             return vm.formData.type == '0'
           }

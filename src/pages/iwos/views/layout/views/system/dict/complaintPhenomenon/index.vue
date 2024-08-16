@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree one-screen-fg1">
+        <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
               :data="complaintPhenomenonTreeOptions"
               :props="defaultProps"
@@ -22,7 +22,7 @@
               ref="tree"
               node-key="id"
               default-expand-all
-              highlight-current
+              :highlight-current="true"
               @node-click="handleNodeClick"
           />
         </div>
@@ -391,7 +391,6 @@ export default {
           ],
         },
       },
-      dataSource: [],
       // 表单校验
       rules: {
         phenomName: [
@@ -580,7 +579,7 @@ export default {
       this.single = selection.length != 1;
       this.isAllowAdd=  !this.single && (selection[0]?.level === 2 && selection[0]?.isProvinceCustom === 1) ? false :true
       this.isAllowDelet= !this.single &&( selection[0]?.level === 3 && selection[0]?.isProvinceCustom === 1)  ? false :true
-      
+
 
     },
     /** 新增按钮操作 */
@@ -701,7 +700,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
 .nodeTree {
   overflow: scroll;
   height: 74vh;

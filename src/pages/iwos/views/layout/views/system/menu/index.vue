@@ -451,14 +451,14 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.menuId != undefined) {
-            this.$$api.menu.updateMenu({data: this.form}).then(({res: response, err}) => {
+            this.$$api.menu.updateMenu({data: Object.assign({}, this.form, {icon: this.form.icon || 'none'})}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.$$api.menu.addMenu({data: this.form}).then(({res: response, err}) => {
+            this.$$api.menu.addMenu({data: Object.assign({}, this.form, {icon: this.form.icon || 'none'})}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("新增成功");
               this.open = false;

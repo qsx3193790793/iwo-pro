@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container nodeTree one-screen-fg1">
+        <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -22,7 +22,7 @@
               ref="tree"
               node-key="id"
               default-expand-all
-              highlight-current
+              :highlight-current="true"
               @node-click="handleNodeClick"
           />
         </div>
@@ -40,6 +40,9 @@
             :columns="columns"
             @selectionChange="handleSelectionChange"
         >
+        <template #isProvinceCustom="{row}">
+            <div>{{ row.isProvinceCustom ? '是' : '否' }}</div>
+          </template>
           <template #status="{ row }">
             <div v-show="row.status == 0">
               <el-tag type="danger">停用</el-tag>
@@ -83,7 +86,7 @@
           <el-col :span="12">
             <el-form-item label="来源一级编码">
               <el-input
-                  :disabled="!!form.oneSourceCode"
+                  disabled
                   v-model="form.oneSourceCode"
                   placeholder="请输入"
                   maxlength="30"
@@ -94,8 +97,8 @@
         <el-row
             :gutter="20"
             v-if="
-            currentNode.level > 1 ||
-            (currentNode.level == 1 && form.handleType == 'add')
+            form.level > 1 ||
+            (form.level == 1 && form.handleType == 'add')
           "
         >
           <el-col :span="12">
@@ -111,7 +114,7 @@
           <el-col :span="12">
             <el-form-item label="来源二级编码">
               <el-input
-                  :disabled="!!form.twoSourceCode"
+                  disabled
                   v-model="form.twoSourceCode"
                   placeholder="请输入"
                   maxlength="30"
@@ -122,8 +125,8 @@
         <el-row
             :gutter="20"
             v-if="
-            currentNode.level == 3 ||
-            (currentNode.level == 2 && form.handleType == 'add')
+            form.level == 3 ||
+            (form.level == 2 && form.handleType == 'add')
           "
         >
           <el-col :span="12">
@@ -139,12 +142,17 @@
           <el-col :span="12">
             <el-form-item label="建单来源编码">
               <el-input
-                  :disabled="!!form.sourceCode"
+                  disabled
                   v-model="form.sourceCode"
                   placeholder="请输入"
                   maxlength="30"
               />
             </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-checkbox v-model="form.customProvince" disabled>是否省自定义</el-checkbox>
           </el-col>
         </el-row>
       </el-form>
@@ -205,11 +213,21 @@ export default {
       form: {},
       formConfigItems: [
         {
-          name: "建单来源名称",
+          name: "投诉来源名称",
           key: "sourceName",
           value: "",
           type: "input",
-          placeholder: "建单来源名称",
+          placeholder: "投诉来源名称",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "投诉来源编码",
+          key: "sourceCode",
+          value: "",
+          type: "input",
+          placeholder: "投诉来源名称",
           col: 6,
           isDisable: !1,
           isRequire: !1,
@@ -262,12 +280,6 @@ export default {
               },
             },
             {
-              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
-              onClick: ({vm}) => {
-                this.handleDelete();
-              }
-            },
-            {
               btnName: "新增",
               type: "button",
               attrs: {
@@ -280,6 +292,12 @@ export default {
                 this.handleAdd()
               },
             },
+            {
+              btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
+              onClick: ({vm}) => {
+                this.handleDelete();
+              }
+            },
           ],
         },
       ],
@@ -290,6 +308,10 @@ export default {
       columns: {
         selection: true,
         props: [
+          {
+            name: "上级节点",
+            key: "parentNode",
+          },
           {
             name: "来源名称",
             key: "sourceName",
@@ -303,12 +325,16 @@ export default {
             key: "status",
           },
           {
+            name: "是否省自定义",
+            key: "isProvinceCustom",
+          },
+          {
             name: "更新人",
-            key: "closingContent",
+            key: "updatedBy",
           },
           {
             name: "更新时间",
-            key: "updataTime",
+            key: "updatedTime",
           },
         ],
         options: {
@@ -317,11 +343,13 @@ export default {
               label: "编辑",
               key: "edit",
               event: this.handleUpdate,
+              autoHidden: this.autoHandleHidden,
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
+              autoHidden: this.autoHandleHidden,
               event: (val) => {
                 this.ids = []
                 this.sourceCodeList = []
@@ -385,16 +413,23 @@ export default {
     this.getTree();
   },
   methods: {
+    autoHandleHidden(val) {
+      if (val.row) {
+        return  val.row.isProvinceCustom  != "0" ? true : false;
+      } else {
+        return false;
+      }
+    },
     autoStartHidden(val) {
       if (val.row) {
-        return val.row.status == "0" ? true : false;
+        return (val.row.status == "0" && val.row.isProvinceCustom  != "0")? true : false;
       } else {
         return false;
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return val.row.status == "1" ? true : false;
+        return (val.row.status == "1"  && val.row.isProvinceCustom  != "0")? true : false;
       } else {
         return false;
       }
@@ -402,7 +437,7 @@ export default {
     // 启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启动来源编码为"' + row.sourceId + '"的数据项？')
+          .confirm('是否确认启动来源编码为"' + row.sourceCode + '"的数据项？')
           .then(() => {
             let data = {
               sourceId: row.sourceId,
@@ -421,7 +456,7 @@ export default {
     // 停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用来源编码为"' + row.sourceId + '"的数据项？')
+          .confirm('是否确认停用来源编码为"' + row.sourceCode + '"的数据项？')
           .then(() => {
             let data = {
               sourceId: row.sourceId,
@@ -451,7 +486,15 @@ export default {
           })
           .then(({res: response, err}) => {
             if (err) return;
-            this.dataSource = response.rows;
+            this.dataSource = response.rows.map((ele)=>{
+              if(this.currentNode?.sourceName){
+                ele.parentNode=this.currentNode?.sourceName
+              }else{
+                ele.parentNode='投诉来源'
+              }
+              return ele
+            })
+            // this.dataSource = response.rows;
             this.total = response.total;
             this.loading = false;
           });
@@ -520,6 +563,7 @@ export default {
         oneSourceEdit: true,
         twoSourceEdit: true,
         threeSourceEdit: true,
+        customProvince: true,
         pcode: undefined,
         handleType: "",
       };
@@ -548,6 +592,7 @@ export default {
       this.form.handleType = "add";
       this.getSourCode();
       this.getCurrentTreeNodeInfo(this.currentNode.sourceId);
+      this.form.level=this.currentNode.level
       if (this.currentNode.level == 1) {
         this.form.twoSourceEdit = false;
       }
@@ -562,14 +607,14 @@ export default {
       this.reset();
       const sourceId = row.sourceId;
       this.form.handleType = "edit";
-      if (this.currentNode.level == 1) {
-        this.form.twoSourceEdit = false;
-      }
-      if (this.currentNode.level == 0) {
+      if (row.level == 1) {
         this.form.oneSourceEdit = false;
       }
-      if (this.currentNode.level == 2) {
-        this.form.threeSourceEdit = false;
+      if (row.level == 0) {
+        this.form.oneSourceEdit = false;
+      }
+      if (row.level == 2) {
+        this.form.twoSourceEdit = false;
       }
       this.getCurrentTreeNodeInfo(sourceId);
       this.title = "修改投诉来源";
@@ -607,7 +652,9 @@ export default {
               twoSourceName,
               sourceCode,
               sourceName,
+              isProvinceCustom
             } = {...response};
+            this.form.customProvince = isProvinceCustom;
             if (level == 3) {
               this.form.sourceName = sourceName;
               this.form.sourceCode = sourceCode;
@@ -618,8 +665,8 @@ export default {
               this.form.twoSourceCode = twoSourceCode;
               this.form.twoSourceName = twoSourceName;
             }
-            this.form.sourceId = sourceId;
-            this.currentNode.level = level;
+            this.form.sourceId = sourceId;  
+            this.form.level = level
             this.form.oneSourceCode = oneSourceCode;
             this.form.oneSourceName = oneSourceName;
           });
@@ -642,10 +689,10 @@ export default {
             data = {
               sourceId: this.form.sourceId,
             };
-            if (this.currentNode.level == 2) {
+            if (this.form.level == 2) {
               data.sourceName = this.form.twoSourceName;
             }
-            if (this.currentNode.level == 3) {
+            if (this.form.level == 3) {
               data.sourceName = this.form.sourceName;
             }
             this.$$api.complaintSource
@@ -719,4 +766,5 @@ export default {
 .queryItem {
   width: 240px;
 }
+
 </style>

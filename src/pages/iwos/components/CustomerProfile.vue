@@ -151,6 +151,9 @@ async function getInfo(isForce) {
     }
     const {res: iRes, err: iErr} = R1;
     if (iRes) {
+      //带m_自己算的 和接口区分开
+      iRes.m_netAge = iRes?.netAccess ? proxy.$$dayjs().diff(iRes.netAccess, 'year') : null;
+
       // 存储定位后数据 后续用
       proxy.$store.commit('storage/SET_STORAGE', {key: 'customPositioning', value: {lanIdInfo: res, custom: iRes, accType: accType.value, accNum: accNum.value}});
       proxy.$emit('change');//变化通知
@@ -165,12 +168,12 @@ async function getInfo(isForce) {
 
       state.value.userProfile.tagList = [
         iRes?.isImportant === '是' ? "重要客户" : null,
-        iRes?.netAccess ? `网龄${proxy.$$dayjs().diff(iRes.netAccess, 'year')}年` : null,
-        iRes?.custAge ? `${iRes.custAge}岁` : null,
+        !proxy.$$isEmpty(iRes?.m_netAge) ? `网龄${iRes.m_netAge}年` : null,
+        !proxy.$$isEmpty(iRes?.custAge) ? `${iRes.custAge}岁` : null,
         iRes?.cityFlagName ?? null,
         iRes?.isGovernment === '是' ? "关键政企客户" : null,
         iRes?.custTypeName ? `${iRes.custTypeName}客户` : null,
-      ].filter(r => !!r);
+      ];
 
       console.log("获取用户详情", res);
       return;
