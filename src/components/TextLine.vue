@@ -1,7 +1,7 @@
 <template>
   <div class="text-line-container">
     <div v-for="(v,i) in list" class="text-line-item" :key="i" :style="{width: `calc(100% / ${v.col||col})`}">
-      <div v-if="v.label" v-html="v.label" class="text-line-item-label" :style="{width:labelWidth}"></div>
+      <div v-if="v.label" v-html="v.label" class="text-line-item-label" :style="{width:labelWidth, color:labelColor}"></div>
       <div v-html="$$isEmpty(v.value)?'-':v.value" class="text-line-item-value"></div>
     </div>
   </div>
@@ -12,6 +12,7 @@ const props = defineProps({
   list: {type: Array, default: () => []},//数据 [{label,value,col},...]
   labelWidth: {type: String, default: '120px'},
   col: {type: Number, default: 1},//几列 一行
+  labelColor: {type :String, default: ''},
 })
 
 </script>
