@@ -3,6 +3,7 @@
     <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="公告标题" prop="noticeTitle">
         <el-input
+            class="queryItem"
             v-model="queryParams.noticeTitle"
             placeholder="请输入公告标题"
             clearable
@@ -11,6 +12,7 @@
       </el-form-item>
       <el-form-item label="操作人员" prop="createBy">
         <el-input
+            class="queryItem"
             v-model="queryParams.createBy"
             placeholder="请输入操作人员"
             clearable
@@ -18,7 +20,7 @@
         />
       </el-form-item>
       <el-form-item label="类型" prop="noticeType">
-        <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable>
+        <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable class="queryItem">
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')"
               :key="dict.value"
@@ -28,48 +30,47 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
-        <el-button
+        <el-button  size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button><el-button
             type="primary"
             plain
-            icon="el-icon-plus"
             size="small"
             @click="handleAdd"
             v-hasPermission="['system:notice:add']"
         >新增
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="success"
             plain
-            icon="el-icon-edit"
             size="small"
             :disabled="single"
             @click="handleUpdate"
             v-hasPermission="['system:notice:edit']"
         >修改
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="danger"
             plain
-            icon="el-icon-delete"
             size="small"
             :disabled="multiple"
             @click="handleDelete"
             v-hasPermission="['system:notice:remove']"
         >删除
         </el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
+      <el-col :span="1.5">
+        
       </el-col>
-    </el-row>
+      <el-col :span="1.5">
+        
+      </el-col>
+      <el-col :span="1.5">
+        
+      </el-col>
+    </el-row> -->
 
     <el-table v-loading="loading" class="one-screen-fg1" height="100%" :data="noticeList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
@@ -100,16 +101,14 @@
         <template slot-scope="scope">
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-edit"
+              type="primary"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['system:notice:edit']"
           >修改
           </el-button>
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-delete"
+              type="danger"
               @click="handleDelete(scope.row)"
               v-hasPermission="['system:notice:remove']"
           >删除
@@ -316,3 +315,8 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.queryItem {
+  width: 240px;
+}
+</style>

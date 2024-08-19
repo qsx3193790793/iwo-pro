@@ -36,6 +36,10 @@ import {onMounted} from "vue"
 
 const {proxy} = getCurrentInstance();
 
+const props = defineProps({
+  type: {type: String, default: null},//打开类型 默认普通 ，FormModel=表单打开
+});
+
 let columns = ref({
   selection: true,
   props: [
@@ -97,7 +101,11 @@ let columns = ref({
     }
   ],
   options: {
-    btns: [{
+    btns: props.type === 'FormModel' ? [{
+      label: '选择', event: (row) => {
+        proxy.$emit('onSelect', row);
+      }
+    }] : [{
       label: '编辑',
       key: 'edit',
       event: (row) => {
@@ -185,6 +193,9 @@ const formConfigItems = ref([
         btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
         onClick({vm}) {
           handleDel();
+        },
+        isShow({vm}) {
+          return props.type !== 'FormModel'
         }
       },
       {
@@ -193,6 +204,9 @@ const formConfigItems = ref([
           // 打开弹窗
           select_pkid.value = null;
           isShowAddDialog.value = !0;
+        },
+        isShow({vm}) {
+          return props.type !== 'FormModel'
         }
       },
     ]

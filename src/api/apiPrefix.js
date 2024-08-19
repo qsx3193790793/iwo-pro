@@ -14,6 +14,7 @@ const service = {
   auth: getProxy('auth'),
   config: getProxy('config'),
   web: getProxy('web'),
+  srv: getProxy('srv'),
   ruoyi: getProxy(),
 };
 

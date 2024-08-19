@@ -2,7 +2,7 @@
 import Vue from "vue";
 import {compsMap} from "./comps";
 import useEvents from "./events";
-import {buttonCompiler, buttonsCompiler, cascaderCompiler, customizationCompsCompiler, datePickerCompiler, inputCompiler, selectCompiler, showConditionCompiler} from "./compiler";
+import {buttonCompiler, buttonsCompiler, cascaderCompiler, customizationCompsCompiler, datePickerCompiler, inputCompiler, interfaceCompiler, selectCompiler, showConditionCompiler} from "./compiler";
 
 //配置列表转换值模型
 export const getProps = (props_arr) => {
@@ -33,7 +33,10 @@ export const parseJson = (stage, formConfigs) => {
 export const parseStage = (json, isNewCID = false) => {
   return json.map(j => Object.assign({}, compsMap[j.name], {
     cId: isNewCID ? `${j.name}_ID_${Vue.prototype.$$getUUID()}` : j.cId,
-    z_props: compsMap[j.name].z_props.map(zp => (console.log(zp.key, zp, zp.value), Object.assign({}, zp, {value: j.z_props[zp.key] ?? zp.value}))),
+    z_props: compsMap[j.name].z_props.map(zp => {
+      // console.log('parseStage z_props', zp, j.z_props[zp.key], zp.value)
+      return Object.assign({}, zp, {value: j.z_props[zp.key] ?? zp.value})
+    }),
     children: j.children ? parseStage(j.children, isNewCID) : null
   }))
 };
@@ -52,6 +55,10 @@ export const parseFormModel = (json, isView = false) => {
       console.log('parseFormModel onLoad...', vm, value, json)
       if (isView) return;//预览跳过
       const events = useEvents();
+
+      if (json.form?.eventsType === '接口') {
+        return await interfaceCompiler({vm, value, opts: json.form});
+      }
       json.form?.events?.forEach(evk => events[evk]?.fn?.({vm, value, eventsFields: json.form?.eventsFields || []}));
     },
     appendItems: null,

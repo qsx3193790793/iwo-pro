@@ -1,5 +1,4 @@
 import useEvents from "./events";
-import Vue from "vue";
 
 //选项字典获取渲染
 function dictReqCompiler(dictType) {
@@ -23,6 +22,30 @@ function baseOnChange(j, isView) {
     // //值变化时 是否调用接口
     // j.z_props.apiName && console.log('FMInput onChange 调用接口', j.z_props.key, vm);
   }
+}
+
+//接口时间编译
+export const interfaceCompiler = async ({vm, value, item, opts}) => {
+  const formData = vm.getFormData();
+  const {res, err} = await vm.$$api.interface.requestApi({
+    data: {
+      interfaceCode: opts.interfaceCode,
+      requestParam: JSON.stringify((opts.interfaceReqParams || []).reduce((t, c) => {
+        c.value.startsWith('$public$')
+          ? vm.$$lodash.set(t, c.label, formData[c.value.replace('$public$', '')])//从通用字段获取
+          : vm.$$lodash.set(t, c.label, formData[`$template$${c.value}`]);//从场景字段获取
+        return t;
+      }, {}))
+    }
+  });
+  // 赋值出参
+  (opts.interfaceResParams || []).forEach(ef => {
+    const v = vm.$$lodash.get(res || {}, ef.value);
+    if (vm.$$isEmpty(v)) return;
+    ef.label.startsWith('$public$')
+      ? formData[ef.label.replace('$public$', '')] = v
+      : vm.formData[`$template$${ef.label}`] = v;
+  });
 }
 
 //显示条件编译
@@ -127,18 +150,21 @@ export const buttonCompiler = (j, isView) => {
       type: j.z_props.btnType,
     },
     btnName: j.z_props.btnName,
-    onClick: function ({vm}) {
-      console.log('onClick', vm);
+    onClick: async function ({vm, value, item}) {
+      console.log('onClick', vm, j.z_props);
       //触发关联事件
       if (isView) return;
-      (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm}));
+      if (j.z_props.eventsType === '接口') {
+        return await interfaceCompiler({vm, value, item, opts: j.z_props});
+      }
+      (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, value, item}));
     }
   }
 };
 
 //按钮组类型编译
 export const buttonsCompiler = (j, isView) => {
-  if (!['FMButtons'].includes(j.name)) return {};
+  if (!['FMButtons', 'FMApi'].includes(j.name)) return {};
   return {
     items: j.children.map(btn => Object.assign(buttonCompiler(btn, isView), showConditionCompiler(btn))),
     isShow({vm}) {

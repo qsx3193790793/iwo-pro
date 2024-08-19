@@ -10,7 +10,6 @@
     </div>
     <div class="fm-designer-bottom-panel">
       <div class="fm-designer-components-panel">
-        <el-button v-if="quoteComponent" class="quote-trigger" type="text" icon="el-icon-document-copy" @click="isQuoteTemplateShow=!0">复用</el-button>
         <el-tabs v-model="compsPanelActive">
           <el-tab-pane label="组件" name="组件">
             <el-collapse v-model="activeCollapse">
@@ -22,11 +21,19 @@
             </el-collapse>
           </el-tab-pane>
           <el-tab-pane label="表单" name="表单">
+            <div v-if="quoteComponent" class="quote-trigger">
+              相关模板
+              <el-button type="text" icon="el-icon-document-copy" @click="isQuoteTemplateShow=!0">更多</el-button>
+            </div>
+
             <!--                      <el-collapse v-model="activeTemplatesCollapse">-->
             <!--                        <el-collapse-item v-for="(it,ii) in templates" :title="it.name" :name="it.name" :key="it.name">-->
-            <template v-for="(it,ii) in templates">
-              <div v-for="(v,i) in it.items" :key="it.name" class="fm-designer-components-item" @click="useTemplate(v)">{{ v.title }}</div>
-            </template>
+            <!--            <template v-for="(it,ii) in templates">-->
+            <div v-for="(v,i) in quoteTemplateList" :key="i" class="fm-designer-templates-item">
+              <span :title="v.title">{{ v.title }}</span>
+              <el-button type="text" icon="el-icon-document-copy" @click="useTemplate(v)">复用</el-button>
+            </div>
+            <!--            </template>-->
             <!--                        </el-collapse-item>-->
             <!--                      </el-collapse>-->
           </el-tab-pane>
@@ -64,7 +71,7 @@
 </template>
 <script setup>
 import Draggable from 'vuedraggable';
-import {comps, templates} from './config/comps';
+import {comps} from './config/comps';
 import FormModel from '../FormModel/index.vue';
 import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
 import {parseFormModel, parseJson, parseStage, parseStageFormConfig} from "./config";
@@ -77,13 +84,14 @@ const props = defineProps({
   fieldsArray: {type: [Array, Function], default: null},//字段名列表 为空手填
   hasSave: {type: Boolean, default: false},//是否显示保存按钮
   quoteComponent: {type: Object, default: null},//是否显示保存按钮
+  quoteTemplateList: {type: Array, default: () => []},//引用模板列表
 });
 
 const isQuoteTemplateShow = ref(!1);
 const dialogVisible = ref(!1);
 
 const activeCollapse = ref((comps || []).map(c => c.name));
-const activeTemplatesCollapse = ref((templates || []).map(t => t.name));
+// const activeTemplatesCollapse = ref((templates || []).map(t => t.name));
 
 const compsPanelActive = ref('组件');
 
@@ -191,6 +199,7 @@ const compFormConfig = computed(() => {
   const comp = finder(stage.value, cId);
   return comp ? {
     formName: '',
+    fieldsArray: proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray,//选择字段列表 没有就手输
     onLoad: async function ({vm}) {
       console.log('compFormConfig onLoad...', vm.reqQuery, vm.$attrs)
     },
@@ -201,7 +210,6 @@ const compFormConfig = computed(() => {
           // 对字段名进行处理 如果是有列表的使用下拉
           if (p.key === 'key') {
             const options = proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray;
-            console.log('compFormConfig', options)
             if (options?.length) return Object.assign(p, {type: 'select', options});
             return Object.assign(p, {type: 'input', options: []});
           }
@@ -223,6 +231,7 @@ function z_formConfigPropsChange(formData) {
 const formConfig = computed(() => {
   return {
     formName: '',
+    fieldsArray: proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray,//选择字段列表 没有就手输
     onLoad: async function ({vm}) {
       console.log('formConfig onLoad...', vm.reqQuery, vm.$attrs)
     },
@@ -329,12 +338,13 @@ onMounted(() => {
       padding: 0 8PX;
 
       .quote-trigger {
-        position: absolute;
-        right: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
         line-height: 40px !important;
         padding: 0 !important;
-        font-size: 12px;
-        z-index: 2;
+        font-size: 13px;
       }
 
       ::v-deep(.el-collapse-item__header) {
@@ -420,6 +430,29 @@ onMounted(() => {
             }
           }
         }
+      }
+    }
+
+    .fm-designer-templates-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      border-bottom: 1PX solid #d5d5d5;
+      color: rgb(97, 101, 110);
+      line-height: 3.2;
+
+      & > span {
+        text-overflow: ellipsis;
+        flex-grow: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-right: 6px;
+      }
+
+      .el-button {
+        flex-grow: 0;
+        flex-shrink: 0;
       }
     }
 

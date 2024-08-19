@@ -378,3 +378,9 @@ $main-color-5: rgba($main-color, 0.5);
 .el-card__header {
   padding: 12px 20px;
 }
+
+.el-select-group__title {
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+}

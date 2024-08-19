@@ -6,7 +6,7 @@
             v-model="queryParams.ipaddr"
             placeholder="请输入登录地址"
             clearable
-            style="width: 240px;"
+             class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -15,7 +15,7 @@
             v-model="queryParams.userName"
             placeholder="请输入用户名称"
             clearable
-            style="width: 240px;"
+             class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -24,7 +24,7 @@
             v-model="queryParams.status"
             placeholder="登录状态"
             clearable
-            style="width: 240px"
+             class="queryItem"
         >
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_common_status')"
@@ -37,7 +37,7 @@
       <el-form-item label="登录时间">
         <el-date-picker
             v-model="dateRange"
-            style="width: 240px"
+            class="queryItem"
             value-format="yyyy-MM-dd HH:mm:ss"
             type="daterange"
             range-separator="-"
@@ -47,59 +47,59 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
+        <el-button  size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button>
         <el-button
             type="danger"
             plain
-            icon="el-icon-delete"
             size="small"
             :disabled="multiple"
             @click="handleDelete"
             v-hasPermission="['system:logininfor:remove']"
         >删除
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="danger"
             plain
-            icon="el-icon-delete"
             size="small"
             @click="handleClean"
             v-hasPermission="['system:logininfor:remove']"
         >清空
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="primary"
             plain
-            icon="el-icon-unlock"
             size="small"
             :disabled="single"
             @click="handleUnlock"
             v-hasPermission="['system:logininfor:unlock']"
         >解锁
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="warning"
             plain
-            icon="el-icon-download"
             size="small"
             @click="handleExport"
             v-hasPermission="['system:logininfor:export']"
         >导出
         </el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
+      <el-col :span="1.5">
+        
       </el-col>
-    </el-row>
+      <el-col :span="1.5">
+       
+      </el-col>
+      <el-col :span="1.5">
+        
+      </el-col>
+      <el-col :span="1.5">
+       
+      </el-col>
+    </el-row> -->
 
     <el-table ref="table" v-loading="loading" class="one-screen-fg1" height="100%" :data="list" border @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
       <el-table-column type="selection" width="55" align="center"/>
@@ -245,4 +245,9 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.queryItem {
+  width: 240px;
+}
+</style>
 

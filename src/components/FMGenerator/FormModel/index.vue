@@ -95,13 +95,13 @@
                       <component v-else-if="['component','FMComponent'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" v-on="v.emitter?.({vm,item:v})" v-bind="v.attrs||{}" :ref="v.key" :root="{vm,item:v}" :is="v.component" :disabled="disabled||v.isDisable"></component>
                       <template v-else-if="['button','FMButton'].includes(v.type)">
                         <div v-if="v.verticalAlign!=='top'" style="height: 0.28rem;"></div>
-                        <Button v-bind="v.attrs" :loading="v.loading" :disabled="$$getVariableType(v.attrs?.disabled)==='[object Function]'?v.attrs.disabled({vm}):v.attrs?.disabled" @click="v.onClick&&v.onClick({vm})">{{ v.btnName }}</Button>
+                        <Button v-bind="v.attrs" :loading="v.loading" :disabled="$$getVariableType(v.attrs?.disabled)==='[object Function]'?v.attrs.disabled({vm}):v.attrs?.disabled" @click="v.onClick&&v.onClick({vm,item:v})">{{ v.btnName }}</Button>
                       </template>
                       <template v-else-if="['buttons','FMButtons'].includes(v.type)">
                         <div v-if="v.verticalAlign!=='top'" style="height: 0.28rem;"></div>
                         <div class="form-buttons" :class="v.align||'left'">
                           <template v-for="(bv,bi) in v.items">
-                            <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm})">{{ bv.btnName }}</Button>
+                            <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
                           </template>
                         </div>
                       </template>
@@ -123,7 +123,7 @@
     </div>
     <div v-if="formConfig.bottomButtons?.items?.length" class="bottomButtons" :class="formConfig.bottomButtons?.align">
       <template v-for="(bv,bi) in formConfig.bottomButtons?.items">
-        <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="bv.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm})">{{ bv.btnName }}</Button>
+        <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="bv.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
         <!--        <Button v-if="(!item.isShow)||item.isShow({vm})" v-bind="item.attrs" :key="index" @click="item.onClick&&item.onClick({vm})">{{ item.name }}</Button>-->
       </template>
     </div>
@@ -144,11 +144,12 @@ import SalesSelector from "./components/SalesSelector";
 import PaymentSelector from "./components/PaymentSelector";
 import OrderSalesSelector from "./components/OrderSalesSelector";
 import PointCosHisSelector from "./components/PointCosHisSelector";
+import ApiSelector from "./components/ApiSelector";
 
 export default {
   name: "FormModel",
   components: {
-    DingDanSelector, MonacoEditor,
+    DingDanSelector, MonacoEditor, ApiSelector,
     PaymentSelector, SalesSelector, AddressSelector, PointCosHisSelector,
     TimePicker, OptionSelector, ConditionSelector, OrderSalesSelector,
     TimerSelector, Modal,

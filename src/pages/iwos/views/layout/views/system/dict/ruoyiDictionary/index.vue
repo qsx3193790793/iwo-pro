@@ -6,7 +6,7 @@
             v-model="queryParams.dictName"
             placeholder="请输入字典名称"
             clearable
-            style="width: 240px"
+            class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -15,7 +15,7 @@
             v-model="queryParams.dictType"
             placeholder="请输入字典类型"
             clearable
-            style="width: 240px"
+            class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -24,7 +24,7 @@
             v-model="queryParams.status"
             placeholder="字典状态"
             clearable
-            style="width: 240px"
+            class="queryItem"
         >
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
@@ -37,7 +37,7 @@
       <el-form-item label="创建时间">
         <el-date-picker
             v-model="dateRange"
-            style="width: 240px"
+            class="queryItem"
             value-format="yyyy-MM-dd"
             type="daterange"
             range-separator="-"
@@ -316,3 +316,8 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.queryItem {
+  width: 240px;
+}
+</style>

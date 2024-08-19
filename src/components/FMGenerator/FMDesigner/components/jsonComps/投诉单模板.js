@@ -6,236 +6,242 @@ export default {
   json: {
     "form": {
       "eventsType": "事件",
+      "interfaceName": null,
+      "interfaceReqParams": null,
+      "interfaceResParams": null,
       "events": [
         "complaint_init"
       ],
       "eventsFields": [],
       "hiddenFields": [
         {
-          "label": "complaint.workorderId",
+          "label": "workorderId",
           "value": null
         },
         {
-          "label": "complaint.lanId",
+          "label": "lanId",
           "value": null
         },
         {
-          "label": "complaint.provinceOrderCreateTime",
+          "label": "provinceOrderCreateTime",
           "value": null
         },
         {
-          "label": "complaint.createStaff",
+          "label": "createStaff",
           "value": null
         },
         {
-          "label": "complaint.settlementTime",
+          "label": "settlementTime",
           "value": null
         },
         {
-          "label": "complaint.workArchivesTime",
+          "label": "workArchivesTime",
           "value": null
         },
         {
-          "label": "complaint.workorderType",
+          "label": "workorderType",
           "value": "BUS0001"
         },
         {
-          "label": "complaint.recmplntTimes30days",
+          "label": "recmplntTimes30days",
           "value": null
         },
         {
-          "label": "complaint.croscmplntTimes30days",
+          "label": "croscmplntTimes30days",
           "value": null
         },
         {
-          "label": "complaint.refundRecords90days",
+          "label": "refundRecords90days",
           "value": null
         },
         {
-          "label": "complaint.satisfactionEstima30days",
+          "label": "satisfactionEstima30days",
           "value": null
         },
         {
-          "label": "complaint.dissatisfactionEstima30days",
+          "label": "dissatisfactionEstima30days",
           "value": null
         },
         {
-          "label": "complaint.governmentEnterprisekeyPerson",
+          "label": "governmentEnterprisekeyPerson",
           "value": null
         },
         {
-          "label": "complaint.custType",
+          "label": "custType",
           "value": null
         },
         {
-          "label": "complaint.userStarLevel",
+          "label": "userStarLevel",
           "value": null
         },
         {
-          "label": "complaint.netAge",
+          "label": "netAge",
           "value": null
         },
         {
-          "label": "complaint.custAge",
+          "label": "custAge",
           "value": null
         },
         {
-          "label": "complaint.importantCustomer",
+          "label": "importantCustomer",
           "value": null
         },
         {
-          "label": "complaint.askSourceSrl",
+          "label": "askSourceSrl",
           "value": null
         },
         {
-          "label": "complaint.cityFlag",
+          "label": "cityFlag",
           "value": null
         },
         {
-          "label": "complaint.replyRecordingNum",
+          "label": "replyRecordingNum",
           "value": null
         },
         {
-          "label": "complaint.replyAudio",
+          "label": "replyAudio",
           "value": null
         },
         {
-          "label": "complaint.replyTime",
+          "label": "replyTime",
           "value": null
         },
         {
-          "label": "complaint.replyStaffId",
+          "label": "replyStaffId",
           "value": null
         },
         {
-          "label": "complaint.problemReason",
+          "label": "problemReason",
           "value": null
         },
         {
-          "label": "complaint.checkSituation",
+          "label": "checkSituation",
           "value": null
         },
         {
-          "label": "complaint.timeoutFlag",
+          "label": "timeoutFlag",
           "value": null
         },
         {
-          "label": "complaint.demandTimeLimit",
+          "label": "demandTimeLimit",
           "value": null
         },
         {
-          "label": "complaint.nodeCode",
+          "label": "nodeCode",
           "value": null
         },
         {
-          "label": "complaint.opStaffName",
+          "label": "opStaffName",
           "value": null
         },
         {
-          "label": "complaint.opGropName",
+          "label": "opGropName",
           "value": null
         },
         {
-          "label": "complaint.assistStaffId",
+          "label": "assistStaffId",
           "value": null
         },
         {
-          "label": "complaint.assistStaffName",
+          "label": "assistStaffName",
           "value": null
         },
         {
-          "label": "complaint.assistGroupName",
+          "label": "assistGroupName",
           "value": null
         },
         {
-          "label": "complaint.urgencyCount",
+          "label": "urgencyCount",
           "value": null
         },
         {
-          "label": "complaint.contactName",
+          "label": "contactName",
           "value": null
         },
         {
-          "label": "complaint.timeoutReason",
+          "label": "timeoutReason",
           "value": null
         },
         {
-          "label": "complaint.settleFlag",
+          "label": "settleFlag",
           "value": null
         },
         {
-          "label": "complaint.unsettleReason",
+          "label": "unsettleReason",
           "value": null
         },
         {
-          "label": "complaint.raiseDealFlag",
+          "label": "raiseDealFlag",
           "value": null
         },
         {
-          "label": "complaint.valetFlag",
+          "label": "valetFlag",
           "value": null
         },
         {
-          "label": "complaint.valetScene",
+          "label": "valetScene",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel1",
+          "label": "reasonLevel1",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel1Code",
+          "label": "reasonLevel1Code",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel2",
+          "label": "reasonLevel2",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel2Code",
+          "label": "reasonLevel2Code",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel3",
+          "label": "reasonLevel3",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel3Code",
+          "label": "reasonLevel3Code",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel4",
+          "label": "reasonLevel4",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel4Code",
+          "label": "reasonLevel4Code",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel5",
+          "label": "reasonLevel5",
           "value": null
         },
         {
-          "label": "complaint.reasonLevel5Code",
+          "label": "reasonLevel5Code",
           "value": null
         },
         {
-          "label": "complaint.appealResult",
+          "label": "appealResult",
           "value": null
         },
         {
-          "label": "complaint.statusCd",
+          "label": "statusCd",
           "value": "C006000"
         },
         {
-          "label": "complaint.developChannelCode",
+          "label": "developChannelCode",
           "value": null
         },
         {
-          "label": "complaint.recordingId",
+          "label": "recordingId",
           "value": ""
         }
-      ]
+      ],
+      "interfaceCode": null,
+      "interfaceReqParamsArray": null,
+      "interfaceResParamsArray": null
     },
     "stage": [
       {
@@ -253,8 +259,9 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
+              "type": "FMInput",
               "col": 6,
-              "key": "complaint.callerNo",
+              "key": "callerNo",
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
@@ -262,11 +269,9 @@ export default {
               "name": "主叫号码",
               "placeholder": "",
               "showCondition": [],
-              "relevance": "",
-              "eventsType": "事件",
+              "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
+              "eventsFields": []
             },
             "children": []
           },
@@ -275,8 +280,9 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
+              "type": "FMInput",
               "col": 6,
-              "key": "complaint.complaintAssetNum",
+              "key": "complaintAssetNum",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -285,10 +291,8 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": "",
-              "eventsType": "事件",
               "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
+              "eventsFields": []
             },
             "children": []
           },
@@ -298,7 +302,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.custName",
+              "key": "custName",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -307,7 +311,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": "",
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -320,7 +323,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.phoneLocal",
+              "key": "phoneLocal",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -329,7 +332,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": "",
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -342,7 +344,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.contactPhone1",
+              "key": "contactPhone1",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -351,7 +353,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": "",
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -364,7 +365,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.contactPhone2",
+              "key": "contactPhone2",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -373,7 +374,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -386,7 +386,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.upgradeTrend",
+              "key": "upgradeTrend",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -395,7 +395,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -408,7 +407,7 @@ export default {
             "compType": "FMSelect",
             "z_props": {
               "col": 6,
-              "key": "complaint.problemLanId",
+              "key": "problemLanId",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -417,7 +416,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "optionsType": "字典",
@@ -446,7 +444,7 @@ export default {
             "compType": "FMCascader",
             "z_props": {
               "col": 6,
-              "key": "complaint.askSourceSrlChain",
+              "key": "askSourceSrlChain",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -455,12 +453,12 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMCascader",
               "optionsEvent": "complaint_listComplaintSourceTree",
-              "checkStrictly": true
+              "checkStrictly": true,
+              "valueType": "array"
             },
             "children": []
           },
@@ -469,24 +467,23 @@ export default {
             "name": "FMRadio",
             "compType": "FMRadio",
             "z_props": {
-              "type": "FMRadio",
               "col": 6,
-              "key": "complaint.workorderStrictest",
+              "key": "workorderStrictest",
               "isRequire": false,
               "isDisable": false,
-              "optionsType": "字典",
-              "optionsStaticValue": [],
-              "optionsDictName": "yes_no",
-              "optionsEvent": "",
               "clearable": true,
               "value": "0",
               "name": "是否市场最严工单",
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "optionsType": "字典",
+              "optionsStaticValue": [],
+              "optionsDictName": "yes_no",
+              "optionsEvent": "",
+              "type": "FMRadio"
             },
             "children": []
           },
@@ -496,7 +493,7 @@ export default {
             "compType": "FMSelect",
             "z_props": {
               "col": 6,
-              "key": "complaint.workorderStrictestScene",
+              "key": "workorderStrictestScene",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -505,7 +502,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "optionsType": "静态数据",
@@ -551,7 +547,7 @@ export default {
             "compType": "FMCascader",
             "z_props": {
               "col": 6,
-              "key": "complaint.developChannelLevel",
+              "key": "developChannelLevel",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -560,12 +556,12 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMCascader",
               "optionsEvent": "complaint_listChannelTree",
-              "checkStrictly": true
+              "checkStrictly": true,
+              "valueType": "array"
             },
             "children": []
           },
@@ -575,7 +571,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.controlChannel",
+              "key": "controlChannel",
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
@@ -584,7 +580,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -597,16 +592,15 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.complaintWorksheetId",
+              "key": "complaintWorksheetId",
               "isRequire": false,
               "isDisable": true,
               "clearable": true,
-              "value": "11",
+              "value": "",
               "name": "集团工单编号",
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -619,7 +613,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.unifiedComplaintCode",
+              "key": "unifiedComplaintCode",
               "isRequire": true,
               "isDisable": true,
               "clearable": true,
@@ -628,7 +622,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -641,7 +634,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.callId",
+              "key": "callId",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -650,7 +643,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -663,7 +655,7 @@ export default {
             "compType": "FMInput",
             "z_props": {
               "col": 6,
-              "key": "complaint.appealUserName",
+              "key": "appealUserName",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -672,7 +664,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMInput"
@@ -685,7 +676,7 @@ export default {
             "compType": "FMDatePicker",
             "z_props": {
               "col": 6,
-              "key": "complaint.appealDate",
+              "key": "appealDate",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -694,7 +685,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMDatePicker",
@@ -709,7 +699,7 @@ export default {
             "compType": "FMTextarea",
             "z_props": {
               "col": 20,
-              "key": "complaint.complaintDescription",
+              "key": "complaintDescription",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -718,7 +708,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMTextarea",
@@ -745,12 +734,18 @@ export default {
                 "z_props": {
                   "isDisable": false,
                   "showCondition": [],
-                  "eventsType": "事件",
-                  "events": [],
-                  "eventsFields": [],
                   "type": "FMButton",
                   "btnName": "获取投诉现象",
-                  "btnType": "primary"
+                  "btnType": "primary",
+                  "eventsType": "事件",
+                  "interfaceName": "",
+                  "interfaceReqParams": [],
+                  "interfaceResParams": [],
+                  "interfaceCode": "",
+                  "interfaceReqParamsArray": [],
+                  "interfaceResParamsArray": [],
+                  "events": [],
+                  "eventsFields": []
                 },
                 "children": []
               }
@@ -774,7 +769,7 @@ export default {
             "compType": "FMCascader",
             "z_props": {
               "col": 12,
-              "key": "complaint.complaintPhenomenonLevel",
+              "key": "complaintPhenomenonLevel",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -783,14 +778,14 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [
                 "complaint_phenomenon_and_product_change"
               ],
               "eventsFields": [],
               "type": "FMCascader",
               "optionsEvent": "complaint_listComplaintPhenomenonTree",
-              "checkStrictly": true
+              "checkStrictly": true,
+              "valueType": "array"
             },
             "children": []
           },
@@ -800,7 +795,7 @@ export default {
             "compType": "FMCascader",
             "z_props": {
               "col": 12,
-              "key": "complaint.productLevel",
+              "key": "productLevel",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -809,14 +804,14 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [
                 "complaint_phenomenon_and_product_change"
               ],
               "eventsFields": [],
               "type": "FMCascader",
               "optionsEvent": "complaint_listProductTree",
-              "checkStrictly": true
+              "checkStrictly": true,
+              "valueType": "array"
             },
             "children": []
           },
@@ -826,7 +821,7 @@ export default {
             "compType": "FMTextarea",
             "z_props": {
               "col": 20,
-              "key": "complaint.complaintInfo",
+              "key": "complaintInfo",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
@@ -835,7 +830,6 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "eventsType": "事件",
               "events": [],
               "eventsFields": [],
               "type": "FMTextarea",
@@ -863,25 +857,31 @@ export default {
                   "isDisable": false,
                   "showCondition": [
                     {
-                      "key": "complaint.statusCd",
+                      "key": "statusCd",
                       "condition": "等于",
                       "value": "C006000",
                       "relation": "&&"
                     }
                   ],
+                  "type": "FMButton",
+                  "btnName": "投诉内容模板化",
+                  "btnType": "default",
                   "eventsType": "事件",
+                  "interfaceName": "",
+                  "interfaceReqParams": [],
+                  "interfaceResParams": [],
+                  "interfaceCode": "",
+                  "interfaceReqParamsArray": [],
+                  "interfaceResParamsArray": [],
                   "events": [
                     "complaint_btn_formatVerbalTrickContent"
                   ],
-                  "eventsFields": [],
-                  "type": "FMButton",
-                  "btnName": "投诉内容模板化",
-                  "btnType": "default"
+                  "eventsFields": []
                 },
                 "children": []
               }
             ]
-          }
+          },
         ]
       },
       {
@@ -911,14 +911,20 @@ export default {
                 "z_props": {
                   "isDisable": false,
                   "showCondition": [],
+                  "type": "FMButton",
+                  "btnName": "提交",
+                  "btnType": "success",
                   "eventsType": "事件",
+                  "interfaceName": "",
+                  "interfaceReqParams": [],
+                  "interfaceResParams": [],
+                  "interfaceCode": "",
+                  "interfaceReqParamsArray": [],
+                  "interfaceResParamsArray": [],
                   "events": [
                     "complaint_submit"
                   ],
-                  "eventsFields": [],
-                  "type": "FMButton",
-                  "btnName": "提交",
-                  "btnType": "success"
+                  "eventsFields": []
                 },
                 "children": []
               },
@@ -929,12 +935,18 @@ export default {
                 "z_props": {
                   "isDisable": false,
                   "showCondition": [],
-                  "eventsType": "事件",
-                  "events": [],
-                  "eventsFields": [],
                   "type": "FMButton",
                   "btnName": "暂存",
-                  "btnType": "warning"
+                  "btnType": "warning",
+                  "eventsType": "事件",
+                  "interfaceName": "",
+                  "interfaceReqParams": [],
+                  "interfaceResParams": [],
+                  "interfaceCode": "",
+                  "interfaceReqParamsArray": [],
+                  "interfaceResParamsArray": [],
+                  "events": [],
+                  "eventsFields": []
                 },
                 "children": []
               }

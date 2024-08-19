@@ -7,7 +7,7 @@
         </ELScrollbar>
       </el-tab-pane>
       <el-tab-pane label="表单设计" name="表单设计">
-        <FMDesigner v-if="!props?.isDetail" ref="FMDesignerRef" :fieldsArray="getFieldsArray" :quoteComponent="QuoteComponent"></FMDesigner>
+        <FMDesigner v-if="!props?.isDetail" ref="FMDesignerRef" :fieldsArray="getFieldsArray" :quoteTemplateList="quoteTemplateList" :quoteComponent="QuoteComponent"></FMDesigner>
         <FormModel v-else-if="detailFormConfig" :formConfig="detailFormConfig"></FormModel>
       </el-tab-pane>
     </el-tabs>
@@ -60,11 +60,25 @@ function tabBeforeLeave(activeName, oldActiveName) {
 const FMDesignerRef = ref(null);
 const FormModelRef = ref(null);
 
+const quoteTemplateList = ref([]);
+
+async function getSceneForm(vm) {
+  const formData = vm.getFormData();
+  // 场景编码：投诉来源或投诉现象的编码，如果选择了产品需要合并一起。例如：现象编码末级:产品编码(10001:2010)
+  const sceneCode = [formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0], formData.productCode?.[0]].filter(v => !!v).join(':');
+  if (!sceneCode) return quoteTemplateList.value = [];
+  const {res, err} = await proxy.$$api.template.getSceneForm({sceneCode});
+  quoteTemplateList.value = (res?.list || []).map(r => ({title: r.formName, json: JSON.parse(r.formContent || 'null')}));
+}
+
 const detailFormConfig = ref(null);//详情json
 
 //设计器获取字段名下拉
 function getFieldsArray() {
-  return FormModelRef.value?.formData?.fieldList?.map(r => ({label: `${r.title}(${r.name})`, value: r.name})) || [];
+  return FormModelRef.value?.formData?.fieldList?.map(r => {
+    const name = `${r.type == '0' ? '$public$' : ''}${r.name}`
+    return {label: `${r.title}(${name})`, value: name}
+  }) || [];
 }
 
 //审核通过
@@ -174,6 +188,7 @@ const formConfig = ref({
           bigType: res?.bigType?.toString(),
           smallType: res?.smallType?.toString(),
         }));
+        getSceneForm(vm);
         if (res?.formTemplateConfig?.formContent) {
           //回显设计器
           FMDesignerRef.value && FMDesignerRef.value.loadJson(JSON.parse(res.formTemplateConfig.formContent));
@@ -203,6 +218,9 @@ const formConfig = ref({
           name: ({vm}) => (vm.formData.smallType === '0' ? '投诉现象' : '投诉来源'), key: 'sceneLevelCode', value: [], type: 'cascader', isDisable: !1, isRequire: !0,
           options: ({vm}) => vm.formData.smallType === '0' ? proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree') : proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree'),
           attrs: {props: {checkStrictly: !0}},
+          onChange({vm}) {
+            getSceneForm(vm);
+          }
         },
         {
           name: '产品', key: 'productCode', value: [], type: 'cascader', isDisable: !1, isRequire: !1,
@@ -212,7 +230,7 @@ const formConfig = ref({
             return vm.formData.smallType === '0';
           },
           onChange({vm}) {
-            console.log(vm)
+            getSceneForm(vm);
           }
         },
         {name: '模板名称', key: 'templateName', value: '', placeholder: '', type: 'input', isDisable: !1, isRequire: !0},
@@ -231,7 +249,7 @@ const formConfig = ref({
 //投诉现象下拉菜单
 async function listComplaintPhenomenonTree() {
   if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree')?.length) return;
-  const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree();
+  const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree({params: {status: 1}});
   if (err) return;
   proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree(res?.phenomList || [], 'phenomName', 'phenomCode', 'phenomList')});
 }
@@ -239,7 +257,7 @@ async function listComplaintPhenomenonTree() {
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
   if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree')?.length) return;
-  const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree();
+  const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
   if (err) return;
   proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree: proxy.$$formatCascaderTree(res?.list || [], 'sourceName', 'sourceCode', 'children')});
 }
@@ -247,7 +265,7 @@ async function listComplaintSourceTree() {
 //产品下拉菜单
 async function listProductTree() {
   if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_product_tree_level_1')?.length) return;
-  const {res, err} = await proxy.$$api.productClassification.listProductTree();
+  const {res, err} = await proxy.$$api.productClassification.listProductTree({params: {status: 1}});
   if (err) return;
   // 只需要一级即可
   proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_product_tree_level_1: proxy.$$formatCascaderTree((res?.list || []).map(r => (r.children = null, r)), 'productName', 'productCode', 'children')});

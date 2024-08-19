@@ -18,8 +18,8 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+        <el-button  size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button>
       </el-form-item>
 
     </el-form>
@@ -37,8 +37,7 @@
         <template slot-scope="scope">
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-delete"
+              type="primary"
               @click="handleForceLogout(scope.row)"
               v-hasPermission="['monitor:online:forceLogout']"
           >强退

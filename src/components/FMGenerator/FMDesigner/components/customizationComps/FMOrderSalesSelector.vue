@@ -28,23 +28,26 @@ export default {
   cId: '',
   type: 'comp',
   z_props: [].concat(
-      commonProps(['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'reqFields', 'eventsType', 'events', 'eventsFields']),
+      commonProps(
+          ['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'reqFields', 'eventsType', 'events', 'eventsFields'],
+          {
+            events: ['result_init_customerOrderDetail'],
+            name: '订单销售品',
+          }
+      ),
+
       [
         {sort: -1, name: '组件类型', key: 'typeName', value: 'FMOrderSalesSelector', type: 'input', isDisable: !0, isRequire: !1, col: 24},
         {isHidden: !0, key: 'component', value: 'OrderSalesSelector'},
         {
-          sort: 10.1, name: '绑定入参', key: 'reqFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+          sort: 10.1, name: '绑定入参', key: 'reqFields', value: [{label: 'orderId', value: ''}], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
           attrs: {
-            formPlaceholder: '选择字段', toPlaceholder: '绑定字段',
+            formPlaceholder: '入参字段', toPlaceholder: '绑定表单字段',
             handleValueKeys({vm}) {
-              const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
               return [
                 {
-                  label: '当前表单',
-                  options: keysFinder(stage[stage.length - 1], []).map(rk => {
-                    const [label, key] = rk.split('||');
-                    return {label: `${label}(${key})`, value: key};
-                  })
+                  label: '',
+                  options: vm.formConfig.fieldsArray
                 }
               ]
             },

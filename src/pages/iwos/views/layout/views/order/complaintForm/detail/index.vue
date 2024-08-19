@@ -4,7 +4,9 @@
       <div class="main-title">用户信息</div>
       <div class="cusName">{{ userInfo.custName || '客户姓名' }}</div>
       <el-rate v-model="userInfo.custLevel" class="rate" disabled-void-color="#C6D1DE" :max="7" score-template="{value}星用户" show-score disabled></el-rate>
-      <el-tag style="margin:0 0.2rem 0.1rem 0;" v-for="item in tagList1" :key="item.label"   type="warning" size="medium" color="#f49e47" effect="dark"> {{ item.value }} </el-tag> 
+      <template v-for="item in tagList1">
+        <el-tag v-if="item.value" style="margin:0 0.2rem 0.1rem 0;" :key="item.label" type="warning" size="medium" color="#f49e47" effect="dark"> {{ item.value }}</el-tag>
+      </template>
       <TextLine labelColor="#a7abb4" labelWidth="1.4rem" :list="textLineList1" style="font-size: 14px;margin: 15px 0;"></TextLine>
       <div class="tag-body" :style=" `border: 2px solid ${item.color}`" v-for="item in evaluateTagList" :key="item.label">
         <div class="tag-name" :style="`color:${item.color}`">{{ item.label }}</div>
@@ -18,11 +20,11 @@
       <div class="main-title">服务轨迹</div>
       <div class="service-trajectory">
         <el-badge :value="200" :max="99" style="cursor: pointer;">
-          <div> <i class="el-icon-document-copy service-trajectory-icon" ></i></div>
+          <div> <i class="el-icon-document-copy service-trajectory-icon"></i></div>
           <div>历史工单</div>
         </el-badge>
         <el-badge :value="200" :max="99" style="cursor: pointer;">
-          <div><i class=" el-icon-paperclip service-trajectory-icon" ></i></div>
+          <div><i class=" el-icon-paperclip service-trajectory-icon"></i></div>
           <div>附件列表</div>
         </el-badge>
       </div>
@@ -33,7 +35,7 @@
         <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" @onFormLoaded="onFormLoaded"></FormModel>
       </div>
     </ELScrollbar>
-   
+
   </div>
 </template>
 
@@ -56,19 +58,18 @@ const userInfo = ref({
 });
 
 async function onFormLoaded(v) {
-  console.log('formDataChange', v)
   formData.value = v;
-  if (!proxy.$$lodash.get(formData.value, 'complaint.complaintAssetNum')) return;
+  if (!proxy.$$lodash.get(formData.value, 'complaintAssetNum')) return;
   //没有存性别和生日
   const {res, err} = await proxy.$$api.crm.queryCommonCustInfo({
     loading: !1, data: {
-      accNumber: proxy.$$lodash.get(formData.value, 'complaint.complaintAssetNum'),
-      lanId: proxy.$$lodash.get(formData.value, 'complaint.lanId')
+      accNumber: proxy.$$lodash.get(formData.value, 'complaintAssetNum'),
+      lanId: proxy.$$lodash.get(formData.value, 'lanId')
     }
   });
   userInfo.value = {
-    custName: proxy.$$lodash.get(formData.value, 'complaint.custName'),
-    custLevel: proxy.$$lodash.get(formData.value, 'complaint.userStarLevel') ?? 0,
+    custName: proxy.$$lodash.get(formData.value, 'custName'),
+    custLevel: proxy.$$lodash.get(formData.value, 'userStarLevel') ?? 0,
     gender: res?.gender,
     birthdayFlag: res?.birth ? proxy.$$dayjs(proxy.$$dateFormatterYMD(proxy.$$dayjs())).isSame(res.birth) : false
   }
@@ -95,15 +96,17 @@ async function onFormLoaded(v) {
 //     ]
 //   }
 // });
-const tagList1=computed(()=>{
-  const importantCustomer = proxy.$$lodash.get(formData.value, 'complaint.importantCustomer');
-  const netAge = proxy.$$lodash.get(formData.value, 'complaint.netAge');
-  const custAge = proxy.$$lodash.get(formData.value, 'complaint.custAge');
-  const cityFlag = proxy.$$lodash.get(formData.value, 'complaint.cityFlag');
-  const governmentEnterprisekeyPerson = proxy.$$lodash.get(formData.value, 'complaint.governmentEnterprisekeyPerson');
-  const custType = proxy.$$lodash.get(formData.value, 'complaint.custType');
-  return[
-    {label: '归属地：', value:  `归属地：${proxy.$$lodash.get(formData.value, 'complaint.phoneLocal')}`},
+const tagList1 = computed(() => {
+  const importantCustomer = proxy.$$lodash.get(formData.value, 'importantCustomer');
+  const netAge = proxy.$$lodash.get(formData.value, 'netAge');
+  const custAge = proxy.$$lodash.get(formData.value, 'custAge');
+  const cityFlag = proxy.$$lodash.get(formData.value, 'cityFlag');
+  const governmentEnterprisekeyPerson = proxy.$$lodash.get(formData.value, 'governmentEnterprisekeyPerson');
+  const custType = proxy.$$lodash.get(formData.value, 'custType');
+  const phoneLocal = proxy.$$lodash.get(formData.value, 'phoneLocal');
+
+  return [
+    {label: '归属地：', value: phoneLocal ? `归属地：${phoneLocal}` : null},
     {label: '网龄', value: !proxy.$$isEmpty(netAge) ? `网龄${netAge}年` : null},
     {label: '城市', value: cityFlag && proxy.$store.getters["dictionaries/MATCH_LABEL"]("cus_city", cityFlag)},
     {label: '重要客户', value: importantCustomer == '1' ? '重要客户' : null},
@@ -112,12 +115,12 @@ const tagList1=computed(()=>{
     {label: '客户投诉倾向', value: custType ? `${proxy.$store.getters["dictionaries/MATCH_LABEL"]("customer_strategy_grouping", custType)}` : null},
   ]
 })
-const evaluateTagList = computed(()=>[
-  {label: '满意', value: proxy.$$lodash.get(formData.value, 'complaint.satisfactionEstima30days'), color:'#68b14e'},
-  {label: '越级', value: proxy.$$lodash.get(formData.value, 'complaint.croscmplntTimes30days'), color:'#956ec8'},
-  {label: '不满意', value: proxy.$$lodash.get(formData.value, 'complaint.dissatisfactionEstima30days'), color:'#d86ca0'},
-  {label: '重复', value: proxy.$$lodash.get(formData.value, 'complaint.recmplntTimes30days'), color:'#6e84fe'},
-  {label: '退费', value: proxy.$$lodash.get(formData.value, 'complaint.refundRecords90days'), color:'#fcc600'},
+const evaluateTagList = computed(() => [
+  {label: '满意', value: proxy.$$lodash.get(formData.value, 'satisfactionEstima30days'), color: '#68b14e'},
+  {label: '越级', value: proxy.$$lodash.get(formData.value, 'croscmplntTimes30days'), color: '#956ec8'},
+  {label: '不满意', value: proxy.$$lodash.get(formData.value, 'dissatisfactionEstima30days'), color: '#d86ca0'},
+  {label: '重复', value: proxy.$$lodash.get(formData.value, 'recmplntTimes30days'), color: '#6e84fe'},
+  {label: '退费', value: proxy.$$lodash.get(formData.value, 'refundRecords90days'), color: '#fcc600'},
 ])
 const textLineList1 = computed(() => [
   // {label: '号码归属地：', value: proxy.$$lodash.get(formData.value, 'complaint.phoneLocal')},
@@ -126,23 +129,23 @@ const textLineList1 = computed(() => [
   // {label: '重复投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.recmplntTimes30days')},
   // {label: '越级投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.croscmplntTimes30days')},
   // {label: '退费记录：', value: proxy.$$lodash.get(formData.value, 'complaint.refundRecords90days')},
-  {label: '业务号码：', value: proxy.$$lodash.get(formData.value, 'complaint.complaintAssetNum')},
-  {label: '主叫号码：', value: proxy.$$lodash.get(formData.value, 'complaint.callerNo')},
-  {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'complaint.contactPhone1')},
-  {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'complaint.contactPhone2')},
+  {label: '业务号码：', value: proxy.$$lodash.get(formData.value, 'complaintAssetNum')},
+  {label: '主叫号码：', value: proxy.$$lodash.get(formData.value, 'callerNo')},
+  {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'contactPhone1')},
+  {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'contactPhone2')},
 ]);
 
 const textLineList2 = computed(() => [
   {label: '工单类型：', value: '投诉单'},
-  {label: '统一投诉编码：', value: proxy.$$lodash.get(formData.value, 'complaint.unifiedComplaintCode')},
-  {label: '申诉工单编号：', value: proxy.$$lodash.get(formData.value, 'complaint.appealWorksheetId')},
-  {label: '集团工单编号：', value: proxy.$$lodash.get(formData.value, 'complaint.complaintWorksheetId')},
-  {label: '省内工单编号：', value: proxy.$$lodash.get(formData.value, 'complaint.worksheetId')},
-  {label: '呼叫流水号：', value: proxy.$$lodash.get(formData.value, 'complaint.callId')},
-  {label: '录音流水号：', value: proxy.$$lodash.get(formData.value, 'complaint.recordingId')},
-  {label: '申诉日期：', value: proxy.$$lodash.get(formData.value, 'complaint.appealDateStr')},
-  {label: '申诉用户姓名：', value: proxy.$$lodash.get(formData.value, 'complaint.appealUserName')},
-  {label: '建单时间：', value: proxy.$$lodash.get(formData.value, 'complaint.provinceOrderCreateTimeStr')},
+  {label: '统一投诉编码：', value: proxy.$$lodash.get(formData.value, 'unifiedComplaintCode')},
+  {label: '申诉工单编号：', value: proxy.$$lodash.get(formData.value, 'appealWorksheetId')},
+  {label: '集团工单编号：', value: proxy.$$lodash.get(formData.value, 'complaintWorksheetId')},
+  {label: '省内工单编号：', value: proxy.$$lodash.get(formData.value, 'worksheetId')},
+  {label: '呼叫流水号：', value: proxy.$$lodash.get(formData.value, 'callId')},
+  {label: '录音流水号：', value: proxy.$$lodash.get(formData.value, 'recordingId')},
+  {label: '申诉日期：', value: proxy.$$lodash.get(formData.value, 'appealDate')},
+  {label: '申诉用户姓名：', value: proxy.$$lodash.get(formData.value, 'appealUserName')},
+  {label: '建单时间：', value: proxy.$$lodash.get(formData.value, 'provinceOrderCreateTime')},
 ]);
 
 watch(() => proxy.$route.params.workorderId, () => FormModelRef.value?.init())
@@ -193,7 +196,7 @@ export default {
   }
 
   .base-info {
-    width: 450px;
+    width: 400px;
     flex-shrink: 0;
     flex-grow: 0;
   }
@@ -201,25 +204,29 @@ export default {
   .create-order-container {
     flex-grow: 1;
   }
-  .tag-body{
-        display: inline-block;
-        font-size: 12px;
-        line-height: 24px;
-        border-radius: 2px;
-        margin:0 0.2rem 0.1rem 0;
-    .tag-name{
+
+  .tag-body {
+    display: inline-block;
+    font-size: 12px;
+    line-height: 24px;
+    border-radius: 2px;
+    margin: 0 0.2rem 0.1rem 0;
+
+    .tag-name {
       display: inline-block;
-      padding:0 10px;
+      padding: 0 10px;
     }
-    .tag-number{
+
+    .tag-number {
       display: inline-block;
-      padding:0 10px;
+      padding: 0 10px;
       text-align: center;
       color: white;
     }
   }
 }
-.service-trajectory{
+
+.service-trajectory {
   display: flex;
   justify-content: space-evenly;
   width: 100%;
@@ -227,7 +234,8 @@ export default {
   text-align: center;
   font-size: 16px;
   font-weight: 700;
-  &-icon{
+
+  &-icon {
     font-size: 24px;
     background-color: #e6ebf1;
     padding: 8px 4px;

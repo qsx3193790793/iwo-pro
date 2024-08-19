@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container one-screen-fg1">
+        <div class="head-container one-screen-fg1 search_tree">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -22,7 +22,7 @@
               ref="tree"
               node-key="id"
               default-expand-all
-              highlight-current
+              :highlight-current='true'
               @node-click="handleNodeClick"
           />
         </div>
@@ -88,6 +88,7 @@
           <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true"/>
           <el-table-column label="用户名称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true"/>
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true"/>
+          <el-table-column label="班组" align="center" key="teamName" prop="dept.teamName" v-if="columns[7].visible" :show-overflow-tooltip="true"/>
           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120"/>
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
@@ -358,7 +359,8 @@ export default {
         {key: 3, label: `部门`, visible: true},
         {key: 4, label: `手机号码`, visible: true},
         {key: 5, label: `状态`, visible: true},
-        {key: 6, label: `创建时间`, visible: true}
+        {key: 6, label: `创建时间`, visible: true},
+        {key: 7, label: `班组`, visible: true}
       ],
       // 表单校验
       rules: {

@@ -14,18 +14,18 @@ const phenomenon2StrictestMap = {
 
 // 形参value为详情传过来的值
 export default async ({vm, value = null}) => {
-  const complaintPhenomenonLevel = vm.formData.complaint$dot$complaintPhenomenonLevel?.[vm.formData.complaint$dot$complaintPhenomenonLevel.length - 1];
-  const productLevel = vm.formData.complaint$dot$productLevel?.[vm.formData.complaint$dot$productLevel.length - 1];
+  const complaintPhenomenonLevel = vm.formData.complaintPhenomenonLevel?.[vm.formData.complaintPhenomenonLevel.length - 1];
+  const productLevel = vm.formData.productLevel?.[vm.formData.productLevel.length - 1];
 
   //市场最严工单场景 逻辑
-  const [level1, level2] = vm.formData.complaint$dot$complaintPhenomenonLevel || [];
+  const [level1, level2] = vm.formData.complaintPhenomenonLevel || [];
   const workorderStrictestScene = phenomenon2StrictestMap[level2] || phenomenon2StrictestMap[level1];
   if (workorderStrictestScene) {
-    vm.formData.complaint$dot$workorderStrictest = '1';//市场最严工单
-    vm.formData.complaint$dot$workorderStrictestScene = workorderStrictestScene;//市场最严工单场景
+    vm.formData.workorderStrictest = '1';//市场最严工单
+    vm.formData.workorderStrictestScene = workorderStrictestScene;//市场最严工单场景
   } else {
-    vm.formData.complaint$dot$workorderStrictest = '0';//市场最严工单
-    vm.formData.complaint$dot$workorderStrictestScene = null;//市场最严工单场景
+    vm.formData.workorderStrictest = '0';//市场最严工单
+    vm.formData.workorderStrictestScene = null;//市场最严工单场景
   }
 
   //必须要有现象 通过 (现象:产品) 进行查询场景模板

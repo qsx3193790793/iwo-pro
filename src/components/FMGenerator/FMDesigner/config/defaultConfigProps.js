@@ -51,7 +51,75 @@ export const optionsProps = (sort = 1) => [
 export const formConfigProps = () => [
   {sort: 1, name: '初始化事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
   {
-    sort: 2, name: '绑定事件', key: 'events', value: [], type: 'multipleSelect', isRequire: !1, col: 24,
+    sort: 2, name: '绑定接口', key: 'interfaceName', value: '', type: 'component', component: 'ApiSelector', isRequire: !1, col: 24,
+    emitter({vm, item}) {
+      return {
+        onConfirm: function (value) {
+          console.log(value)
+          vm.formData.interfaceName = value?.interfaceName;
+          vm.formData.interfaceCode = value?.interfaceCode;
+          vm.formData.interfaceReqParamsArray = (value?.requestParam ? JSON.parse(value?.requestParam) : []).map(r => ({label: `${r.label}(${r.key})`, value: r.key}));
+          vm.formData.interfaceResParamsArray = (value?.responseParam ? JSON.parse(value?.responseParam) : []).map(r => ({label: `${r.label}(${r.key})`, value: r.key}));
+        }
+      }
+    },
+    isShow({vm}) {
+      return vm.formData.eventsType === '接口'
+    }
+  },
+  {
+    sort: 2.1, name: '绑定入参', key: 'interfaceReqParams', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+    attrs: {
+      formPlaceholder: '入参字段', toPlaceholder: '绑定表单字段',
+      handleValueKeys({vm}) {
+        return [
+          {
+            label: '',
+            options: vm.formConfig.fieldsArray
+            // options: keysFinder(stage[stage.length - 1], []).map(rk => {
+            //   const [label, key] = rk.split('||');
+            //   return {label: `${label}(${key})`, value: key};
+            // })
+          }
+        ]
+      },
+      handleKeys({vm}) {
+        return vm.formData.interfaceReqParamsArray || [];
+      }
+    },
+    isShow({vm}) {
+      return vm.formData.eventsType === '接口'
+    }
+  },
+  {
+    sort: 2.1, name: '绑定出参', key: 'interfaceResParams', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+    attrs: {
+      formPlaceholder: '表单字段', toPlaceholder: '绑定出参字段',
+      handleValueKeys({vm}) {
+        return [
+          {
+            label: '',
+            options: vm.formData.interfaceResParamsArray || []
+          }
+        ]
+      },
+      handleKeys({vm}) {
+        const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
+        return keysFinder(stage[stage.length - 1], []).map(rk => {
+          const [label, key] = rk.split('||');
+          return {label: `${label}(${key})`, value: key};
+        })
+      }
+    },
+    isShow({vm}) {
+      return vm.formData.eventsType === '接口'
+    }
+  },
+  {isHidden: !0, key: 'interfaceCode', value: ''},
+  {isHidden: !0, key: 'interfaceReqParamsArray', value: []},
+  {isHidden: !0, key: 'interfaceResParamsArray', value: []},
+  {
+    sort: 3, name: '绑定事件', key: 'events', value: [], type: 'multipleSelect', isRequire: !1, col: 24,
     options({vm}) {
       const events = useEvents();
       return Object.keys(events).map(etk => ({label: events[etk].label, value: etk}))
@@ -61,9 +129,9 @@ export const formConfigProps = () => [
     }
   },
   {
-    sort: 3, name: '绑定事件字段', key: 'eventsFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+    sort: 4, name: '绑定事件字段', key: 'eventsFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
     attrs: {
-      formPlaceholder: '选择字段', toPlaceholder: '绑定字段',
+      formPlaceholder: '表单字段', toPlaceholder: '绑定事件字段',
       handleKeys({vm}) {
         const stage = vm.$$store.getters['fmDesigner/GET_HISTORY'];
         return keysFinder(stage[stage.length - 1], []).map(rk => {
@@ -76,16 +144,12 @@ export const formConfigProps = () => [
         return vm.formData.events?.filter(e => !!events[e])?.map(evLabel => ({
           label: events[evLabel].label, options: (events[evLabel].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
         }));
-      },
+      }
+    },
+    isShow({vm}) {
+      return vm.formData.eventsType === '事件'
     }
   },
-  // {
-  //   sort: 1, name: '关联初始化事件', key: 'events', value: '', type: 'multipleSelect', isRequire: !1, col: 24,
-  //   options({vm}) {
-  //     const events = useEvents();
-  //     return Object.keys(events).map(etk => ({label: events[etk].label, value: etk}))
-  //   }
-  // },
   {sort: 4, name: '隐藏字段域', key: 'hiddenFields', attrs: {formPlaceholder: '字段名', toPlaceholder: '默认值',}, value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24},
 ];
 
@@ -124,19 +188,13 @@ const commonPropsMap = {
       });
     }
   },
-  eventsType: {sort: 11, name: '事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
-  apiKey: {
-    sort: 11.5, name: '接口名', key: 'events', value: '', type: 'select', isRequire: !1, col: 24,
-    options({vm}) {
-      return async function ({vm}) {
-        await vm.$store.dispatch('dictionaries/GET_DICTIONARIES', {type: 'customDict', dicts: [dictType]})
-        return vm.$store.getters['dictionaries/GET_DICT'](dictType);
-      }
-    },
-    isShow({vm}) {
-      return vm.formData.eventsType === '接口'
-    }
-  },
+  // eventsType: {sort: 11, name: '事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
+  // apiKey: {
+  //   sort: 11.5, name: '接口名', key: 'apiKey', value: '', type: 'component', component: 'ApiSelector', isRequire: !1, col: 24,
+  //   isShow({vm}) {
+  //     return vm.formData.eventsType === '接口'
+  //   }
+  // },
   events: {
     sort: 12, name: '绑定事件', key: 'events', value: [], type: 'multipleSelect', isRequire: !1, col: 24,
     options({vm}) {
@@ -147,7 +205,7 @@ const commonPropsMap = {
   eventsFields: {
     sort: 13, name: '绑定事件字段', key: 'eventsFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
     attrs: {
-      formPlaceholder: '选择字段', toPlaceholder: '绑定字段',
+      formPlaceholder: '表单字段', toPlaceholder: '绑定事件字段',
       handleValueKeys({vm}) {
         const events = useEvents();
         return vm.formData.events?.filter(e => !!events[e])?.map(evLabel => ({
@@ -164,4 +222,8 @@ const commonPropsMap = {
     }
   },
 }
-export const commonProps = (commonPropsKeys = ['col', 'key', 'isRequire', 'isDisable', 'clearable', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields']) => commonPropsKeys.map((key, idx) => Object.assign({}, commonPropsMap[key]));
+
+// defaultValue默认值  {events:[xxxx,xxx]}
+export const commonProps = (commonPropsKeys = ['col', 'key', 'isRequire', 'isDisable', 'clearable', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields'], defaultValue = {}) => commonPropsKeys.map((key, idx) => Object.assign({}, commonPropsMap[key], {
+  value: defaultValue[key] ?? commonPropsMap[key]?.value
+}));

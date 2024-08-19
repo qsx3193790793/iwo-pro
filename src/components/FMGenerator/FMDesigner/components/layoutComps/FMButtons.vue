@@ -45,7 +45,7 @@ export default {
   type: 'comp',
   children: [],
   z_props: [].concat(commonProps(['col']), [
-    {sort: 5.3, name: '对齐方式', key: 'align', value: 'right', type: 'radio', options: [{label: '左', value: 'left'}, {label: '中', value: 'center'}, {label: '右', value: 'right'}], isRequire: !1, col: 24},
+    {sort: 5.3, name: '对齐方式', key: 'align', value: 'center', type: 'radio', options: [{label: '左', value: 'left'}, {label: '中', value: 'center'}, {label: '右', value: 'right'}], isRequire: !1, col: 24},
     {sort: 5.1, name: '垂直对齐', key: 'verticalAlign', value: 'form', type: 'radio', options: [{label: '表单', value: 'form'}, {label: '顶部', value: 'top'}], isRequire: !1, col: 24},
   ])
 }

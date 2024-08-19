@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container one-screen-fg1">
+        <div class="head-container one-screen-fg1 search_tree">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -22,7 +22,7 @@
               ref="tree"
               node-key="id"
               default-expand-all
-              highlight-current
+              :highlight-current='true'
               @node-click="handleNodeClick"
           />
         </div>
@@ -82,6 +82,7 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
       </div>
 
     </div>
@@ -177,8 +178,8 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        // pageNum: 1,
-        // pageSize: 10,
+        pageNum: 1,
+        pageSize: 15,
         teamName: null,
         deptId: null,
         parentId: null,
@@ -317,12 +318,14 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      // this.queryParams.pageNum = 1;
+      this.queryParams.pageNum = 1;
       this.getList();
     },
     /** 重置按钮操作 */
     resetQuery() {
       this.$$resetForm("queryForm", this.$refs);
+      this.queryParams.deptId = undefined;
+      this.$refs.tree.setCurrentKey(null);
       this.handleQuery();
     },
     // 多选框选中数据

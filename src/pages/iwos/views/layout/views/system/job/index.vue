@@ -3,6 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
+            class="queryItem"
             v-model="queryParams.jobName"
             placeholder="请输入任务名称"
             clearable
@@ -10,7 +11,7 @@
         />
       </el-form-item>
       <el-form-item label="任务组名" prop="jobGroup">
-        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable>
+        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable  class="queryItem">
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_job_group')"
               :key=" dict.value"
@@ -20,7 +21,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="任务状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable>
+        <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable  class="queryItem">
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_job_status')"
               :key=" dict.value
@@ -31,70 +32,70 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
+        <el-button  size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button>
         <el-button
             type="primary"
             plain
-            icon="el-icon-plus"
             size="small"
             @click="handleAdd"
             v-hasPermission="['monitor:job:add']"
         >新增
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="success"
             plain
-            icon="el-icon-edit"
             size="small"
             :disabled="single"
             @click="handleUpdate"
             v-hasPermission="['monitor:job:edit']"
         >修改
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="danger"
             plain
-            icon="el-icon-delete"
             size="small"
             :disabled="multiple"
             @click="handleDelete"
             v-hasPermission="['monitor:job:remove']"
         >删除
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="warning"
             plain
-            icon="el-icon-download"
             size="small"
             @click="handleExport"
             v-hasPermission="['monitor:job:export']"
         >导出
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="info"
             plain
-            icon="el-icon-s-operation"
             size="small"
             @click="handleJobLog"
             v-hasPermission="['monitor:job:query']"
         >日志
         </el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
+      <el-col :span="1.5">
+       
       </el-col>
-    </el-row>
+      <el-col :span="1.5">
+        
+      </el-col>
+      <el-col :span="1.5">
+        
+      </el-col>
+      <el-col :span="1.5">
+       
+      </el-col>
+      <el-col :span="1.5">
+        
+      </el-col>
+    </el-row> -->
 
     <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="jobList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
@@ -121,30 +122,28 @@
         <template slot-scope="scope">
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-edit"
+              type="primary"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['monitor:job:edit']"
           >修改
           </el-button>
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-delete"
+              type="danger"
               @click="handleDelete(scope.row)"
               v-hasPermission="['monitor:job:remove']"
           >删除
           </el-button>
           <el-dropdown size="small" @command="(command) => handleCommand(command, scope.row)" v-hasPermission="['monitor:job:changeStatus', 'monitor:job:query']">
-            <el-button size="small" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+            <el-button size="small" type="text" >更多</el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="handleRun" icon="el-icon-caret-right"
+              <el-dropdown-item command="handleRun" 
                                 v-hasPermission="['monitor:job:changeStatus']">执行一次
               </el-dropdown-item>
-              <el-dropdown-item command="handleView" icon="el-icon-view"
+              <el-dropdown-item command="handleView" 
                                 v-hasPermission="['monitor:job:query']">任务详细
               </el-dropdown-item>
-              <el-dropdown-item command="handleJobLog" icon="el-icon-s-operation"
+              <el-dropdown-item command="handleJobLog" 
                                 v-hasPermission="['monitor:job:query']">调度日志
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -522,3 +521,8 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.queryItem {
+  width: 240px;
+}
+</style>

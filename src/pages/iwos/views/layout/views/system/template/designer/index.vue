@@ -1,5 +1,5 @@
 <template>
-  <FMDesigner ref="FMDesignerRef" :fieldsArray="getFieldsArray" :quoteComponent="QuoteComponent" has-save @onSave="handleSave"></FMDesigner>
+  <FMDesigner ref="FMDesignerRef" :fieldsArray="getFieldsArray" :quoteComponent="QuoteComponent" :quoteTemplateList="quoteTemplateList" has-save @onSave="handleSave"></FMDesigner>
 </template>
 
 <script setup>
@@ -15,13 +15,24 @@ const detail = ref()
 
 //设计器获取字段名下拉
 function getFieldsArray() {
-  return detail.value?.fieldConfigs?.map(r => ({label: `${r.title}(${r.name})`, value: r.name})) || [];
+  return detail.value?.fieldConfigs?.map(r => {
+    const name = `${r.type == '0' ? '$public$' : ''}${r.name}`
+    return {label: `${r.title}(${name})`, value: name}
+  }) || [];
+}
+
+const quoteTemplateList = ref([]);
+
+async function getSceneForm(sceneCode) {
+  const {res, err} = await proxy.$$api.template.getSceneForm({sceneCode});
+  quoteTemplateList.value = (res?.list || []).map(r => ({title: r.formName, json: JSON.parse(r.formContent || 'null')}));
 }
 
 async function getDetail() {
   const {res, err} = await proxy.$$api.template.detail(proxy.$route.params)
   if (err) return;
   detail.value = res;
+  if (detail.value.sceneCode) getSceneForm(detail.value.sceneCode);
   if (res?.formTemplateConfig?.formContent) {
     FMDesignerRef.value.loadJson(JSON.parse(res.formTemplateConfig.formContent));
   }

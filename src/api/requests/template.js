@@ -26,13 +26,15 @@ const apis = {
   // 提交通过
   approval: {url: (args) => `${apiPrefix('config')}/template/approval/${args?.versionId ?? ''}`},
   // 提交上架
-  release: {url: (args) => `${apiPrefix('config')}/template/release`},
+  release: {url: `${apiPrefix('config')}/template/release`},
   // 提交下架
-  soldOut: {url: (args) => `${apiPrefix('config')}/template/soldOut`},
+  soldOut: {url: `${apiPrefix('config')}/template/soldOut`},
   // 驳回
-  reject: {url: (args) => `${apiPrefix('config')}/template/reject`},
+  reject: {url: `${apiPrefix('config')}/template/reject`},
   // 回退
-  rollback: {url: (args) => `${apiPrefix('config')}/template/rollback`},
+  rollback: {url: `${apiPrefix('config')}/template/rollback`},
+  // 根据投诉现象或投诉来源查询模板表单信息
+  getSceneForm: {url: (args) => `${apiPrefix('config')}/template/sceneForm/${args?.sceneCode ?? ''}`, method: 'get'},
 };
 
 export default apiGenerator(apis);

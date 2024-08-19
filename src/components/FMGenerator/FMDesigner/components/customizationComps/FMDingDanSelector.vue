@@ -24,11 +24,17 @@ import {commonProps} from "../../config/defaultConfigProps";
 export default {
   name: 'FMDingDanSelector',
   compType: 'FMComponent',
-  title: '订单选择',
+  title: '订单',
   cId: '',
   type: 'comp',
   z_props: [].concat(
-      commonProps(['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields']),
+      commonProps(
+          ['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields'],
+          {
+            events: ['result_init_orderInfo', 'acceptOrders_customerOrderDetail'],
+            name: '订单',
+          }
+      ),
       [
         {sort: -1, name: '组件类型', key: 'typeName', value: 'FMDingDanSelector', type: 'input', isDisable: !0, isRequire: !1, col: 24},
         {isHidden: !0, key: 'component', value: 'DingDanSelector'},

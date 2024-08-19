@@ -20,34 +20,33 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
+        <el-button  size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button>
         <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
+            type="success"
             size="small"
             @click="handleAdd"
             v-hasPermission="['system:menu:add']"
         >新增
         </el-button>
-      </el-col>
-      <el-col :span="1.5">
         <el-button
             type="info"
             plain
-            icon="el-icon-sort"
             size="small"
             @click="toggleExpandAll"
         >展开/折叠
         </el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
+      <el-col :span="1.5">
+        
       </el-col>
-    </el-row>
+      <el-col :span="1.5">
+        
+      </el-col>
+    </el-row> -->
 
     <el-table
         v-if="refreshTable"
@@ -82,28 +81,25 @@
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column  label="操作" align="center" width="220" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-edit"
+              type="primary"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['system:menu:edit']"
           >修改
           </el-button>
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-plus"
+              type="success"
               @click="handleAdd(scope.row)"
               v-hasPermission="['system:menu:add']"
           >新增
           </el-button>
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-delete"
+              type="danger"
               @click="handleDelete(scope.row)"
               v-hasPermission="['system:menu:remove']"
           >删除

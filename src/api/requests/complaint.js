@@ -16,6 +16,9 @@ const apis = {
   // 归档审批
   examineOnFile: {url: `${apiPrefix("web")}/workOrder/groupOrderArchives`, method: "post"},
 
+  // 获取集团工单编号
+  getComplaintWorksheetId: {url: `${apiPrefix("web")}/workOrder/getComplaintWorksheetId`, method: "get"},
+
   // -------------------------------------------归档策略--------------------------
   // 分页查询归档配置
   listOnFileStrategy: {url: `${apiPrefix("config")}/archiveRule/findArchiveRulePage`, method: "get"},

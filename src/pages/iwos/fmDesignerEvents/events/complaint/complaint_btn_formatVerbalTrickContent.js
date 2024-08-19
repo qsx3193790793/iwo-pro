@@ -9,10 +9,10 @@ export default ({vm, item}) => {
   matches?.forEach(key => {
     const rk = key.replace(/[\{\}]/g, '');
     if (rk.startsWith('$public$')) {
-      verbalTrickContent = verbalTrickContent.replace(key, vm.$$lodash.get(formData, `${rk.replace('$public$', `complaint.`)}`) ?? '');
+      verbalTrickContent = verbalTrickContent.replace(key, vm.$$lodash.get(formData, `${rk.replace('$public$', ``)}`) ?? '');
       return;
     }
     verbalTrickContent = verbalTrickContent.replace(key, formData[`$template$${rk}`] ?? '');
   });
-  vm.formData['complaint$dot$complaintInfo'] = verbalTrickContent;
+  vm.formData['complaintInfo'] = verbalTrickContent;
 }

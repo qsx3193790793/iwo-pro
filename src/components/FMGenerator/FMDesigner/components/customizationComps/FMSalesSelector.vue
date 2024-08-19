@@ -24,11 +24,17 @@ import {commonProps} from "../../config/defaultConfigProps";
 export default {
   name: 'FMSalesSelector',
   compType: 'FMComponent',
-  title: '销售品选择',
+  title: '销售品',
   cId: '',
   type: 'comp',
   z_props: [].concat(
-      commonProps(['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields']),
+      commonProps(
+          ['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields'],
+          {
+            events: ['result_init_getpromInfo', 'crm_offer'],
+            name: '销售品',
+          }
+      ),
       [
         {sort: -1, name: '组件类型', key: 'typeName', value: 'FMSalesSelector', type: 'input', isDisable: !0, isRequire: !1, col: 24},
         {isHidden: !0, key: 'component', value: 'SalesSelector'},

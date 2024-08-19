@@ -114,7 +114,7 @@ let columns = ref({
   options: {
     btns: props.isQuote
         ? [{
-          label: '引用',
+          label: '复用',
           key: 'quote',
           event: (row) => {
             proxy.$$Dialog.confirm('复用模板将清空已配置数据，是否复用？', '提示', {

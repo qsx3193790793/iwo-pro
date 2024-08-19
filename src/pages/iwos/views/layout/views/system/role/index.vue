@@ -53,33 +53,51 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
+        
+        <el-button  size="small" @click="resetQuery"
+        >重置
+        </el-button
+        >
         <el-button
             type="primary"
-            icon="el-icon-search"
+
             size="small"
             @click="handleQuery"
         >搜索
         </el-button
         >
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery"
-        >重置
-        </el-button
-        >
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
         <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
+            type="success"
             size="small"
             @click="handleAdd"
             v-hasPermission="['system:role:add']"
         >新增
         </el-button
         >
+        <el-button
+            type="danger"
+            plain
+            size="small"
+            :disabled="multiple"
+            @click="handleDelete"
+            v-hasPermission="['system:role:remove']"
+        >删除
+        </el-button
+        >
+        <el-button
+            type="warning"
+            plain
+            size="small"
+            @click="handleExport"
+            v-hasPermission="['system:role:export']"
+        >导出
+        </el-button>
+      </el-form-item>
+    </el-form>
+
+    <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
+      <el-col :span="1.5">
+       
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -95,30 +113,12 @@
         >
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermission="['system:role:remove']"
-        >删除
-        </el-button
-        >
+        
       </el-col>
       <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="small"
-            @click="handleExport"
-            v-hasPermission="['system:role:export']"
-        >导出
-        </el-button>
+       
       </el-col>
-    </el-row>
+    </el-row> -->
     <el-table
         v-loading="loading"
         class="one-screen-fg1"
@@ -129,21 +129,21 @@
         @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="角色编号" prop="roleId" width="180"/>
+      <!-- <el-table-column label="角色编号" prop="roleId" width="180"/> -->
       <el-table-column
           label="角色名称"
           prop="roleName"
           :show-overflow-tooltip="true"
-          width="150"
+          
       />
       <el-table-column
           label="权限字符"
           prop="roleKey"
           :show-overflow-tooltip="true"
-          width="150"
+          
       />
-      <el-table-column label="显示顺序" prop="roleSort" width="100"/>
-      <el-table-column label="状态" align="center" width="100">
+      <el-table-column label="显示顺序" prop="roleSort" />
+      <el-table-column label="状态" align="center" >
         <template slot-scope="scope">
           <el-switch
               v-model="scope.row.status"
@@ -157,22 +157,22 @@
           label="创建时间"
           align="center"
           prop="createTime"
-          width="180"
+          
       >
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column
-          label="操作"
-          align="center"
-          class-name="small-padding fixed-width"
+              label="操作"
+              align="center"
+              width="220"
+              class-name="small-padding fixed-width"
       >
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-edit"
+             type="primary"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['system:role:edit']"
           >修改
@@ -180,9 +180,8 @@
           >
           <el-button
               size="small"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
+             type="danger"
+              @click="{ ids = [] ;roleNameList = [];handleDelete(scope.row)}"
               v-hasPermission="['system:role:remove']"
           >删除
           </el-button
@@ -192,10 +191,9 @@
               @command="(command) => handleCommand(command, scope.row)"
               v-hasPermission="['system:role:edit']"
           >
-            <el-button size="small" type="text" icon="el-icon-d-arrow-right"
-            >更多
-            </el-button
-            >
+            <el-button type="primary">
+                  更多<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
                   command="handleDataScope"
@@ -403,6 +401,8 @@ export default {
       loading: false,
       // 选中数组
       ids: [],
+      // 选中角色的名称
+      roleNameList: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -633,6 +633,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.roleId);
+      this.roleNameList=selection.map((item) => item.roleName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -804,9 +805,16 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const roleIds = row.roleId || this.ids
+      let showText=''
+      if(this.ids.length>0){
+        showText=this.roleNameList.join(',')
+      }else{
+        this.roleNameList=[]
+        showText= row.roleName
+      }
       if (roleIds?.length) {
         this.$$Dialog
-            .confirm('是否确认删除角色编号为"' + roleIds + '"的数据项？')
+            .confirm('是否确认删除角色名称为"' + showText + '"的数据项？')
             .then(() => {
               return this.$$api.role.delRole({roleId: roleIds});
             })

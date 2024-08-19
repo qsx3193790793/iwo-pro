@@ -24,11 +24,17 @@ import {commonProps} from "../../config/defaultConfigProps";
 export default {
   name: 'FMPaymentSelector',
   compType: 'FMComponent',
-  title: '缴费明细选择',
+  title: '缴费明细',
   cId: '',
   type: 'comp',
   z_props: [].concat(
-      commonProps(['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields']),
+      commonProps(
+          ['col', 'key', 'isRequire', 'value', 'name', 'placeholder', 'showCondition', 'relevance', 'eventsType', 'events', 'eventsFields'],
+          {
+            events: ['result_init_ECQryPayment'],
+            name: '缴费明细',
+          }
+      ),
       [
         {sort: -1, name: '组件类型', key: 'typeName', value: 'FMPaymentSelector', type: 'input', isDisable: !0, isRequire: !1, col: 24},
         {isHidden: !0, key: 'component', value: 'PaymentSelector'},

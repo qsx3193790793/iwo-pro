@@ -12,7 +12,7 @@ const props = defineProps({
   list: {type: Array, default: () => []},//数据 [{label,value,col},...]
   labelWidth: {type: String, default: '120px'},
   col: {type: Number, default: 1},//几列 一行
-  labelColor: {type :String, default: ''},
+  labelColor: {type: String, default: ''},
 })
 
 </script>

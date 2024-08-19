@@ -110,6 +110,20 @@
           </el-col>
         </el-row>
         <el-row>
+          <el-col :span="24" v-if="deptParentId == 0">
+            <el-form-item label="所属省份" prop="provinceCode">
+              <el-select v-model="form.provinceCode" placeholder="请选择所属省份" style="width:100%" clearable >
+                <el-option
+                    v-for="province in $store.getters['dictionaries/GET_DICT']('base_province_code')"
+                     :key="province.value"
+                     :label="province.label"
+                     :value="province.value"
+                />
+              </el-select>
+              </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="24">
             <el-form-item label="部门名称" prop="deptName">
               <el-input v-model="form.deptName" placeholder="请输入部门名称"/>
@@ -183,9 +197,12 @@ import Treeselect from "@riophae/vue-treeselect";
 export default {
   name: "Dept",
   dicts: ['sys_normal_disable'],
+  cusDicts:['base_province_code'],
   components: {Treeselect},
   data() {
     return {
+      // 新增编辑选部门时所选部门的父级id
+      deptParentId:null,
       // 遮罩层
       loading: true,
       // 显示搜索条件
@@ -214,7 +231,10 @@ export default {
       // 表单校验
       rules: {
         parentId: [
-          {required: true, message: "上级部门不能为空", trigger: "blur"}
+          {required: true, message: "上级部门不能为空", trigger: ["blur",'change']}
+        ],
+        provinceCode: [
+          {required: true, message: "所属省份不能为空", trigger: "blur"}
         ],
         deptName: [
           {required: true, message: "部门名称不能为空", trigger: "blur"}
@@ -248,6 +268,7 @@ export default {
   methods: {
     // 机构变动时清除选择的班组，班组名，角色，获取班组数据
     handelDeptIdChange(val){
+      this.deptParentId=val.parentId
       this.form.roleIds=null
       this.roleOptions=[]
       this.getDeptRoleInfo(val.deptId)
@@ -291,6 +312,7 @@ export default {
         deptId: undefined,
         parentId: undefined,
         deptName: undefined,
+        provinceCode: undefined,
         orderNum: undefined,
         leader: undefined,
         phone: undefined,
@@ -314,6 +336,9 @@ export default {
       this.reset();
       if (row != undefined) {
         this.form.parentId = row.deptId;
+        if(row.parentId==0){
+          this.deptParentId=0
+        }
       }
       this.open = true;
       this.title = "添加部门";
