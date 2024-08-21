@@ -73,7 +73,7 @@
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置  </el-button>
-            <el-button  type="primary" size="mini" @click="handleQuery">搜索 </el-button>
+            <el-button  type="primary" size="mini" @click="handleQuery">查询 </el-button>
             <el-button  type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)">新增 </el-button>
             <el-button  type="danger" size="mini"  :disabled="isAllowDelet"  @click="handleDelete(selectRow)">删除 </el-button>
           </el-form-item>
@@ -311,7 +311,7 @@ export default {
         selection: true,
         props: [
           {
-            name: "上级节点",
+            name: "节点层级链",
             key: "reasonChain",
           },
           {
@@ -325,10 +325,6 @@ export default {
           {
             name: "是否省自定义",
             key: "isProvinceCustom",
-          },
-          {
-            name: "原因层级",
-            key: "level",
           },
           {
             name: "省份",
@@ -354,7 +350,7 @@ export default {
               key: "add",
               type: "success",
               autoHidden: ({row}) => {
-                return (row.level === 3 || row.level === 4) && row.isProvinceCustom === 1
+                return row.level === 3 || row.level === 4
               },
               event: this.handleAdd,
             },
@@ -362,7 +358,7 @@ export default {
               label: "编辑",
               key: "edit",
               autoHidden: ({row}) => {
-                return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                return row.level === 4 || row.level === 5
               },
               event: this.handleUpdate,
             },
@@ -375,7 +371,7 @@ export default {
                   key: "del",
                   type: "danger",
                   autoHidden: ({row}) => {
-                    return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                    return row.level === 4 || row.level === 5
                   },
                   event: this.handleDelete,
                 },
@@ -397,7 +393,7 @@ export default {
                   label: "详情",
                   key: "detail",
                   autoHidden: ({row}) => {
-                    return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                    return row.level === 4 || row.level === 5
                   },
                   event: this.handleDetail,
                 },
@@ -442,14 +438,14 @@ export default {
   methods: {
     autoStartHidden(val) {
       if (val.row) {
-        return (val.row.status == "0" ? true : false) && val.row.isProvinceCustom === 1;
+        return (val.row.status == "0" ? true : false);
       } else {
         return false;
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return (val.row.status == "1" ? true : false) && val.row.isProvinceCustom === 1;
+        return (val.row.status == "1" ? true : false);
       } else {
         return false;
       }
@@ -562,8 +558,8 @@ export default {
       this.selectRow= selection[0]
       this.multiple = !selection.length
       this.single = selection.length != 1;
-      this.isAllowAdd=  !this.single && (selection[0]?.level === 2 && selection[0]?.isProvinceCustom === 1) ? false :true
-      this.isAllowDelet= !this.single &&( selection[0]?.level === 3 && selection[0]?.isProvinceCustom === 1)  ? false :true
+      this.isAllowAdd=  !this.single && selection[0]?.level === 2 ? false :true
+      this.isAllowDelet= !this.single && selection[0]?.level === 3  ? false :true
     },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {

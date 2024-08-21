@@ -12,10 +12,11 @@
 import {getCurrentInstance, onBeforeMount, ref, watch} from "vue";
 import MDialog from '@/components/MDialog';
 import FormModel from '@/components/FMGenerator/FormModel';
-
-const {proxy} = getCurrentInstance();
 import requstFieldSelector from './requstFieldSelector.vue'
 import responseFieldSelector from './responseFieldSelector.vue'
+import sendRequst from './sendRequst.vue'
+import analysisParams from "./analysisParams.vue";
+const {proxy} = getCurrentInstance();
 
 const props = defineProps({
   pkid: {type: Object, default: null},//详情id
@@ -23,14 +24,13 @@ const props = defineProps({
 });
 
 const emitter = defineEmits(['success']);
-const isRequstEdit = ref(false)
-const isResponseEdit = ref(false)
+const isSaveDiscribe = ref(false)
 const FormModelRef = ref();
 //编辑保存
 const onSubmit = DialogRef => {
   FormModelRef.value?.validator(
       formData => {
-        if (!isRequstEdit.value || !isResponseEdit.value) return proxy.$$Dialog.confirm(`尚有label未保存！`)
+        if (!isSaveDiscribe.value) return proxy.$$Dialog.confirm(`尚有label未保存！`)
         proxy.$$Dialog.confirm(`你确定要保存吗？保存前请确认已解析成功！`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
           const {res, err} = await proxy.$$api.interface[props.pkid ? 'update' : 'create']({
             data: Object.assign({}, formData, {
@@ -61,14 +61,13 @@ const formConfig = ref({
     console.log('formConfig onLoad...', vm.reqQuery, vm.$attrs)
     // 获取详情
     if (props.pkid) proxy.$$api.interface.detail({interfaceId: props.pkid.interfaceId}).then(({res}) => {
-      isRequstEdit.value = true
-      isResponseEdit.value = true
+      isSaveDiscribe.value = true
       vm.initFormData({})
       //以下字段新建后不可再编辑
-      vm.expandFormConfigItems.forEach(efci => ['smallType', 'sceneLevelCode', 'productCode'].includes(efci.key) && (efci.isDisable = !0));
+      vm.expandFormConfigItems.forEach(efci => [].includes(efci.key) && (efci.isDisable = !0));
       if (res) {
         vm.initFormData(Object.assign(res || {}, {
-          interfaceCode: res.interfaceCode || '',
+          // interfaceCode: res.interfaceCode || '',
           interfaceName: res?.interfaceName,
           interfaceUrl: res?.interfaceUrl,
           appId: res?.appId,
@@ -77,11 +76,12 @@ const formConfig = ref({
           interfaceMethod: res?.interfaceMethod,
           interfaceNormType: res?.interfaceNormType,
           interfaceInfo: res?.interfaceInfo,
-          requestJsonStr: res?.requestJsonStr,
-          responseJsonStr: res?.responseJsonStr,
           requestParam: JSON.parse(res?.requestParam),
           responseParam: JSON.parse(res?.responseParam),
-
+          stagingrequest: JSON.parse(res?.requestParam),
+          stagingresponse: JSON.parse(res?.responseParam),
+          requestJsonStr: res?.requestJsonStr,
+          responseJsonStr: res?.responseJsonStr,
         }));
       }
     });
@@ -90,35 +90,32 @@ const formConfig = ref({
     {
       name: '',
       items: [
-        {name: '接口编码', key: 'interfaceCode', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
+        // {name: '接口编码', key: 'interfaceCode', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: '接口名称', key: 'interfaceName', value: '', type: 'input', col: 6, isDisable: !1, isRequire: !0},
-        {name: '接口地址', key: 'interfaceUrl', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: 'appId', key: 'appId', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: 'appKey', key: 'appKey', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
-        {name: '接口描述', key: 'interfaceDesc', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
-        {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !0},
         {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: !1, isRequire: !0},
-        {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
+        {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 12, type: 'textarea', isDisable: !1, isRequire: !0},
+        {name: '接口描述', key: 'interfaceDesc', value: '', col: 12, type: 'textarea', isDisable: !1, isRequire: !0},
+        {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !0},
+        {name: '接口地址', key: 'interfaceUrl', value: '', placeholder: '', col: 12, type: 'input', isDisable: !1, isRequire: !0},
+        {name: '请确保下方入参填写无误再发送', key: '', value: '', placeholder: '', col: 6, type: 'component',component: sendRequst, isDisable: !1, isRequire: !0},
         {name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'monacoEditor', height: '2rem', isRequire: !0, col: 24,},
-        {
-          name: '入参列表', key: 'requestParam', value: [], placeholder: '', col: 24, type: 'component', component: requstFieldSelector, isDisable: !1, isRequire: !1, emitter({vm}) {
-            return {
-              requstHasEdit(val) {
-                isRequstEdit.value = val
+        {name: '出参json', key: 'responseJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !1, isRequire: !0, col: 24},
+        {name: '入参出参确认无误后可将其解析至下方表格并填写描述', key: '', value: '', placeholder: '', col: 20, type: 'component',component: analysisParams, isDisable: !1, isRequire: !0,
+          emitter({vm}) {
+             return {
+              hasSaveDiscribe(val) {
+                isSaveDiscribe.value = val
               }
             }
           }
         },
-        {name: '出参json', key: 'responseJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !0, isRequire: !0, col: 24},
-        {
-          name: '出参列表', key: 'responseParam', value: [], placeholder: '', col: 24, type: 'component', component: responseFieldSelector, isRequire: !1, readOnly: !0, emitter({vm}) {
-            return {
-              responseHasEdit(val) {
-                isResponseEdit.value = val
-              }
-            }
-          }
-        }
+        // 将请求响应参数暂存
+        {name: '', key: 'stagingrequest', value: '', col: 1},
+        {name: '', key: 'stagingresponse', value: '', col: 1},
+        {name: '入参列表', key: 'requestParam', value: [], placeholder: '', col: 24,attrs:{isEdit: true}, type: 'component', component: requstFieldSelector, isDisable: !1, isRequire: !1},
+        {name: '出参列表', key: 'responseParam', value: [], placeholder: '', col: 24, attrs:{isEdit: true}, type: 'component', component: responseFieldSelector, isRequire: !1, readOnly: !0}
       ]
     }
   ],

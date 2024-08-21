@@ -86,7 +86,7 @@
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置  </el-button>
-            <el-button  type="primary" size="mini" @click="handleQuery">搜索 </el-button>
+            <el-button  type="primary" size="mini" @click="handleQuery">查询 </el-button>
             <el-button  type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)">新增 </el-button>
             <el-button  type="danger" size="mini"  :disabled="isAllowDelet"  @click="handleDelete(selectRow)">删除 </el-button>
           </el-form-item>
@@ -295,7 +295,7 @@ export default {
         selection: true,
         props: [
           {
-            name: "上级节点",
+            name: "节点层级链",
             key: "phenomChain",
           },
           {
@@ -309,10 +309,6 @@ export default {
           {
             name: "是否省自定义",
             key: "isProvinceCustom",
-          },
-          {
-            name: "现象层级",
-            key: "level",
           },
           {
             name: "省份",
