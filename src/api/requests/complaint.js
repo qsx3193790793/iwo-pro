@@ -12,6 +12,8 @@ const apis = {
   queryPendingWorkOrderByAssetNum: {url: `${apiPrefix("web")}/complaintWorkOrder/queryPendingWorkOrderByAssetNum`, method: "get"},
   // 列表
   listComplaint: {url: `${apiPrefix("web")}/createOrder/list`, method: "get"},
+  //我的待办-待提交投诉单
+  waitCommitList: {url: `${apiPrefix("web")}/createOrder/waitCommitList`, method: "get"},
   // -------------------------------------------归档--------------------------
   // 归档列表
   listOnFile: {url: `${apiPrefix("web")}/workOrder/archiveList`, method: "get"},

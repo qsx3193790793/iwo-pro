@@ -42,7 +42,7 @@
               <el-col :span="6">
                 <div>
                   号码归属地：
-                  <span class="showData">{{ state.userInfo.oneLevel }}</span>
+                  <span class="showData">{{ state.userInfo.twoLevel }}</span>
                 </div>
               </el-col>
               <el-col :span="6">
@@ -79,13 +79,13 @@
                     }}</span>
                 </div>
               </el-col>
-              <el-col :span="6">
-                <div>
-                  退费记录：<span class="showData">{{
-                    state.userInfo.ninetyDaysRefundRecord
-                  }}</span>
-                </div>
-              </el-col>
+              <!--              <el-col :span="6">-->
+              <!--                <div>-->
+              <!--                  退费记录：<span class="showData">{{-->
+              <!--                    state.userInfo.ninetyDaysRefundRecord-->
+              <!--                  }}</span>-->
+              <!--                </div>-->
+              <!--              </el-col>-->
               <!--              <el-col :span="6">-->
               <!--                <div>-->
               <!--                  客户升级投诉倾向：-->
@@ -121,7 +121,7 @@ function reset() {
       thirtyDaysOrderSatisfied: '-',//      30天工单评价-满意
       thirtyDaysOrderDissatisfied: '-',//   30天工单评价-不满意
       refundValue: "-",
-      oneLevel: "-",
+      twoLevel: "-",
       custLevel: 0,
       custName: "客户姓名",
     },
@@ -157,7 +157,7 @@ async function getInfo({isForce, from}) {
   if (res) {
     const [R1, R2] = await Promise.all([
       proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({data: {accNumber: accNum.value, lanId: res.lanid}}),
-      proxy.$$api.crm.sourceCountUserPicuture({})
+      proxy.$$api.crm.sourceCountUserPicuture({params: {complaintAssetNum: accNum.value}})
     ]);
     const {res: scupRes, err: scupErr} = R2;
     if (scupRes) {
@@ -180,7 +180,7 @@ async function getInfo({isForce, from}) {
       state.value.userInfo.complaintLevelUp = iRes?.complaintLevelUp || '-';
       state.value.userInfo.custLevel = parseInt(iRes?.custLevel ?? '0') || 0;
       state.value.userInfo.custName = iRes?.custName || '-';
-      state.value.userInfo.oneLevel = res?.oneLevel || '-';
+      state.value.userInfo.twoLevel = res?.twoLevel || '-';
       state.value.userInfo.recmplntTimesDays = iRes?.recmplntTimesDays || '-';
       state.value.userProfile.gender = iRes?.gender;
       // iRes.birth = '2022-09-07'
@@ -203,6 +203,10 @@ async function getInfo({isForce, from}) {
 }
 
 async function getDetail() {
+  if (proxy.$route.query.complaintAssetNum) {
+    accNum.value = proxy.$route.query.complaintAssetNum;
+    return getInfo({from: '详情'});
+  }
   const {res, err} = await proxy.$$api.complaint.complaintWorkOrderDetail({workorderId: proxy.$route.params.workorderId});
   if (res) {
     accNum.value = res?.complaintAssetNum;

@@ -108,13 +108,11 @@ let store = {
     DO_LOGOUT({commit, state}) {
       return new Promise(async (resolve, reject) => {
         const {res, err} = await Vue.prototype.$$api.login.logout();
-        if (res) {
-          sessionStorage.clear();
-          localStorage.clear();
-          Vue.prototype.$$router.replace({name: 'Login'});
-          return resolve();
-        }
-        reject(err);
+        if (err) return reject();
+        sessionStorage.clear();
+        localStorage.clear();
+        Vue.prototype.$$router.replace({name: 'Login'});
+        return resolve();
       })
     },
   },

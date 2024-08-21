@@ -1,8 +1,8 @@
 //通用配置
-import Vue from "vue";
 import {compsMap} from "./comps";
 import useEvents from "./events";
 import {buttonCompiler, buttonsCompiler, cascaderCompiler, customizationCompsCompiler, datePickerCompiler, inputCompiler, interfaceCompiler, selectCompiler, showConditionCompiler} from "./compiler";
+import {$$isEmpty, $$getUUID} from "@/utils";
 
 //配置列表转换值模型
 export const getProps = (props_arr) => {
@@ -14,9 +14,9 @@ function compsStageJson(stage) {
   return stage.map(st => {
     const z_props = getProps(st.z_props);
     //OptionSelector 过滤
-    if (z_props.optionsStaticValue?.length) z_props.optionsStaticValue = z_props.optionsStaticValue.filter(op => !Vue.prototype.$$isEmpty(op.label) && !Vue.prototype.$$isEmpty(op.value))
+    if (z_props.optionsStaticValue?.length) z_props.optionsStaticValue = z_props.optionsStaticValue.filter(op => !$$isEmpty(op.label) && !$$isEmpty(op.value))
     //ConditionSelector 过滤
-    if (z_props.showCondition?.length) z_props.showCondition = z_props.showCondition.filter(op => !Vue.prototype.$$isEmpty(op.key))
+    if (z_props.showCondition?.length) z_props.showCondition = z_props.showCondition.filter(op => !$$isEmpty(op.key))
     return {cId: st.cId, name: st.name, compType: st.compType, z_props, children: st.children ? compsStageJson(st.children) : null}
   })
 }
@@ -32,7 +32,7 @@ export const parseJson = (stage, formConfigs) => {
 //json配置转舞台  传入json.stage
 export const parseStage = (json, isNewCID = false) => {
   return json.map(j => Object.assign({}, compsMap[j.name], {
-    cId: isNewCID ? `${j.name}_ID_${Vue.prototype.$$getUUID()}` : j.cId,
+    cId: isNewCID ? `${j.name}_ID_${$$getUUID()}` : j.cId,
     z_props: compsMap[j.name].z_props.map(zp => {
       // console.log('parseStage z_props', zp, j.z_props[zp.key], zp.value)
       return Object.assign({}, zp, {value: j.z_props[zp.key] ?? zp.value})
@@ -101,3 +101,23 @@ export const parseFormModel = (json, isView = false) => {
     })()
   }
 };
+
+//验证配置项必填字段是否填写
+export const stageValidator = arr => {
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i].z_props?.length) {
+      for (let zpi = 0; zpi < arr[i].z_props.length; zpi++) {
+        const zp = arr[i].z_props[zpi];
+        if (zp.isRequire && ((Object.prototype.toString.call(zp.value) === '[object Array]' && !zp.value.length) || $$isEmpty(zp.value))) {
+          const zpf = getProps(arr[i].z_props);
+          return {cId: arr[i].cId, name: zpf.name, title: zp.name};
+        }
+      }
+    }
+    if (arr[i].children?.length) {
+      const cid = stageValidator(arr[i].children);
+      if (cid) return cid;
+    }
+  }
+  return null;
+}

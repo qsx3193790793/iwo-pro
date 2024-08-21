@@ -6,7 +6,7 @@ export default {
   component: () => import("./index.vue"),
   meta: {
     belong: 'System',//属于哪个一级菜单 填写路由name
-    name: '部门管理',
+    name: '机构管理',
     title: "智慧客服工单系统",
     authentication: true, //该页面是否需要登陆才可进入
     keepAlive: false,

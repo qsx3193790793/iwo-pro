@@ -74,6 +74,7 @@ const columns = ref({
       width: 200,
       key: "appealWorksheetId",
     },
+
     {
       name: "客户名称",
       key: "appealUserName",
@@ -109,13 +110,13 @@ const columns = ref({
     //   key: "orderType",
     // },
     {
-      name: "创建人",
-      key: "createdBy",
+      name: "更新人",
+      key: "updatedBy",
     },
     {
-      name: "创建时间",
+      name: "更新时间",
       width: 160,
-      key: "createdTime",
+      key: "updatedTime",
       el: "format",
       format: "default",
     },
@@ -178,7 +179,7 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   }
   // 时间的传值不传这个字段
   delete queryParams.provinceOrderCreateTime;
-  let {res} = await proxy.$$api.complaint.listComplaint({
+  let {res} = await proxy.$$api.complaint.waitCommitList({
     params: Object.assign(
         {
           pageNum: pageInfo.value.pageNum,
@@ -221,6 +222,7 @@ const formConfigItems = ref([
     isDisable: !1,
     isRequire: !1,
   },
+
   {
     name: "客户名称",
     key: "appealUserName",
@@ -249,37 +251,6 @@ const formConfigItems = ref([
     isRequire: !1,
   },
   {
-    name: "创建人",
-    key: "createdBy",
-    value: "",
-    col: 6,
-    type: "input",
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "省",
-    key: "provinceCode",
-    value: "",
-    col: 6,
-    type: "select",
-    options: () =>
-        proxy.$store.getters["dictionaries/GET_DICT"]("base_province_code"),
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "工单类型",
-    key: "workorderType",
-    value: "",
-    col: 6,
-    type: "select",
-    options: () =>
-        proxy.$store.getters["dictionaries/GET_DICT"]("search_order_type"),
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
     name: "投诉来源",
     key: "askSourceSrl",
     value: "",
@@ -300,7 +271,6 @@ const formConfigItems = ref([
     isDisable: !1,
     isRequire: !1,
   },
-  {col: 6, type: "divider-empty"},
   {
     type: "buttons",
     align: "right",
@@ -325,16 +295,6 @@ const formConfigItems = ref([
         onClick({vm}) {
           console.log(vm);
           getList(1);
-        },
-      },
-      {
-        btnName: "新增",
-        type: "button",
-        attrs: {type: "success"},
-        col: 1,
-        onClick({vm}) {
-          console.time('open');
-          proxy.$router.push({name: 'ComplaintCreate'})
         },
       },
     ],

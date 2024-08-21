@@ -156,7 +156,7 @@ export default {
               },
             },
             {
-              label: "启动",
+              label: "启用",
               key: "start",
               type: "primary",
               autoHidden: this.autoStartHidden,
@@ -285,7 +285,7 @@ export default {
     // 启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启动标签编码为"' + row.tagCode + '"的数据项？')
+          .confirm('是否确认启用标签编码为"' + row.tagCode + '"的数据项？')
           .then(() => {
             let data = {
               tagId: row.tagId,
@@ -296,7 +296,7 @@ export default {
           .then(({res, err}) => {
             if (err) return;
             this.getList();
-            this.$$Toast.success("启动成功");
+            this.$$Toast.success("启用成功");
           })
           .catch(() => {
           });

@@ -17,7 +17,8 @@
 </template>
 
 <script>
-import Vue from "vue";
+
+import {$$validator} from "@/utils";
 
 export default {
   data() {
@@ -26,6 +27,13 @@ export default {
         callback(new Error("两次输入的密码不一致"));
       } else {
         callback();
+      }
+    };
+    const complexPW = (rule, value, callback) => {
+      if (this.$$validator.isPwd(value)) {
+        callback();
+      } else {
+        callback(new Error("密码为8到16位数字、小写字母、大写字母、特殊符号4类中的3类组合"));
       }
     };
     return {
@@ -41,12 +49,12 @@ export default {
         ],
         newPassword: [
           {required: true, message: "新密码不能为空", trigger: "blur"},
-          {min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur"},
-          {pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur"}
+          {validator: complexPW, trigger: "blur"},
         ],
         confirmPassword: [
           {required: true, message: "确认密码不能为空", trigger: "blur"},
-          {required: true, validator: equalToPassword, trigger: "blur"}
+          {required: true, validator: equalToPassword, trigger: "blur"},
+          {validator: complexPW, trigger: "blur"},
         ]
       }
     };

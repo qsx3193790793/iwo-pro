@@ -88,13 +88,13 @@
             <!-- <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button> -->
             <el-button type="info" plain size="small" @click="handleImport" v-hasPermission="['system:user:import']">导入</el-button>
             <el-button type="warning" plain size="small" @click="handleExport" v-hasPermission="['system:user:export']">导出</el-button>
-            <el-dropdown @command="(command) => handleBatchClick(command)"  v-hasPermission="['system:user:edit']" :disabled="multiple">
+            <el-dropdown @command="(command) => handleBatchClick(command)" v-hasPermission="['system:user:edit']" :disabled="multiple">
               <el-button type="danger">
                 批量操作<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="begin" >批量启用</el-dropdown-item>
-                <el-dropdown-item command="end" >批量停用</el-dropdown-item>
+                <el-dropdown-item command="begin">批量启用</el-dropdown-item>
+                <el-dropdown-item command="end">批量停用</el-dropdown-item>
                 <el-dropdown-item command="delete" v-hasPermission="['system:user:remove']">批量删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -153,7 +153,7 @@
 
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="auto">
+      <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="90px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="归属部门" prop="deptId">
@@ -193,13 +193,6 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password/>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
             <el-form-item label="用户性别">
               <el-select v-model="form.sex" placeholder="请选择性别" style="width: 100%;">
                 <el-option
@@ -209,7 +202,14 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
+              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
             <el-form-item v-if="form.userId == undefined" label="确认密码" prop="confirmPassword">
               <el-input v-model="form.confirmPassword" placeholder="请输入确认密码" type="password" maxlength="20" show-password/>
             </el-form-item>
@@ -313,13 +313,20 @@ export default {
   dicts: ['sys_normal_disable', 'sys_user_sex'],
   components: {Treeselect},
   data() {
+    const complexPW = (rule, value, callback) => {
+      if (this.$$validator.isPwd(value)) {
+        callback();
+      } else {
+        callback(new Error("密码为8到16位数字、小写字母、大写字母、特殊符号4类中的3类组合"));
+      }
+    };
     return {
       // 遮罩层
       loading: false,
       // 选中数组
       ids: [],
       // 用户名
-      nickNameList:[],
+      nickNameList: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -404,20 +411,11 @@ export default {
         ],
         password: [
           {required: true, message: "用户密码不能为空", trigger: "blur"},
-          {min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur'},
-          {pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur"}
+          {validator: complexPW, trigger: "blur"},
         ],
         confirmPassword: [
-          {
-            required: true,
-            trigger: 'blur',
-            message: '请再次输入新密码！'
-          },
-          {
-            trigger: ['blur'],
-            message: '两次输入密码不一致！',
-            validator: this.confirmPwdValidate
-          }
+          {required: true, trigger: 'blur', message: '请再次输入新密码！'},
+          {validator: complexPW, trigger: "blur"},
         ],
         email: [
           {
@@ -453,46 +451,45 @@ export default {
     // });
   },
   methods: {
-    handleBatchClick(type){
-      if(type=='end'){
+    handleBatchClick(type) {
+      if (type == 'end') {
         this.$$Dialog.confirm(`确认要"停用""${this.nickNameList.join(',')}"用户吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
-        }).then(() =>{
+        }).then(() => {
           this.handleStatus('1')
         })
       }
-      if(type=='begin'){
+      if (type == 'begin') {
         this.$$Dialog.confirm(`确认要"启用""${this.nickNameList.join(',')}"用户吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
-        }).then(() =>{
+        }).then(() => {
           this.handleStatus('0')
         })
       }
-      if(type=='delete'){
+      if (type == 'delete') {
         this.handleDelete()
       }
-      
+
     },
-    handleStatus(type){
-      let showText=type=='0'?'启用成功':'停用成功'
-      let data={
-        "ids":this.ids,
-        status:type
+    handleStatus(type) {
+      let showText = type == '0' ? '启用成功' : '停用成功'
+      let data = {
+        "ids": this.ids,
+        status: type
       }
       this.$$api.user
           .updataStatus({data: data})
-          .then(({ err}) => {
+          .then(({err}) => {
             if (err) return this.loading = false;
             this.getList();
             this.$$Toast.success(showText);
           });
-    }, 
-     // 确认密码校验
-     confirmPwdValidate (rul, value, callback){
+    },
+    // 确认密码校验
+    confirmPwdValidate(rul, value, callback) {
       if (value !== this.form.password) {
         callback(new Error('两次输入密码不一致！'))
-      }
-      else if (value == this.form.password) {
+      } else if (value == this.form.password) {
         callback()
       }
     },
@@ -608,7 +605,7 @@ export default {
         phonenumber: undefined,
         email: undefined,
         sex: undefined,
-        confirmPassword:undefined,
+        confirmPassword: undefined,
         status: "0",
         remark: undefined,
         // postIds: [],
@@ -633,7 +630,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.userId);
-      this.nickNameList=selection.map(item => item.nickName);
+      this.nickNameList = selection.map(item => item.nickName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -686,11 +683,9 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         closeOnClickModal: false,
-        inputPattern: /^.{5,20}$/,
-        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
         inputValidator: (value) => {
-          if (/<|>|"|'|\||\\/.test(value)) {
-            return "不能包含非法字符：< > \" ' \\\ |"
+          if (!this.$$validator.isPwd(value)) {
+            return "密码为8到16位数字、小写字母、大写字母、特殊符号4类中的3类组合"
           }
         },
       }).then(({value}) => {
@@ -730,11 +725,11 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row?.userId || this.ids;
-      let showText=''
-      if(this.ids.length>0 && !row?.userId){
-        showText=this.nickNameList.join(',')
-      }else{
-        showText= row.nickName
+      let showText = ''
+      if (this.ids.length > 0 && !row?.userId) {
+        showText = this.nickNameList.join(',')
+      } else {
+        showText = row.nickName
       }
       this.$$Dialog.confirm('是否确认删除用户名称为"' + showText + '"的数据项？').then(() => {
         return this.$$api.user.delUser({userId: userIds});

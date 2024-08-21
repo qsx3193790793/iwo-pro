@@ -75,7 +75,7 @@ export const cascaderCompiler = (j, isView) => {
   return {
     // 选项
     options: events[j.z_props['optionsEvent']]?.fn,
-    value: j.z_props['value']?.split(','),
+    value: j.z_props['value'] ? j.z_props['value'].split(',') : [],
     //值变化时触发
     attrs: {props: {checkStrictly: j.z_props['checkStrictly']}},
     onChange: baseOnChange(j, isView)

@@ -318,27 +318,6 @@ export default {
             "children": []
           },
           {
-            "cId": "FMInput_ID_009EC2EFC8A376488B6B228A20B452FBE784",
-            "name": "FMInput",
-            "compType": "FMInput",
-            "z_props": {
-              "col": 6,
-              "key": "phoneLocal",
-              "isRequire": false,
-              "isDisable": false,
-              "clearable": true,
-              "value": "",
-              "name": "号码归属地",
-              "placeholder": "",
-              "showCondition": [],
-              "relevance": "",
-              "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
-            },
-            "children": []
-          },
-          {
             "cId": "FMInput_ID_33AFCD8CCFE1F6415A1AF9880AEB1E245B82",
             "name": "FMInput",
             "compType": "FMInput",

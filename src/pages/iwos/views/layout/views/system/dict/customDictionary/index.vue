@@ -410,7 +410,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const dictIds = row.dictId || this.ids;
-      // 启动状态的不能删除
+      // 启用状态的不能删除
       if (row.status == 1) {
         this.$$Toast.warning("当前字段状态为启用，不可以删除");
         return

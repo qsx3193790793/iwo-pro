@@ -264,7 +264,7 @@ const autoEndHidden = (val) => {
 // 启用
 const handleStart = (row) => {
   proxy.$$Dialog
-    .confirm('是否确认启动应用系统编号为"' + row.clientId + '"的数据项？')
+    .confirm('是否确认启用应用系统编号为"' + row.clientId + '"的数据项？')
     .then(() => {
       let data = {
         appId: row.appId,
@@ -275,7 +275,7 @@ const handleStart = (row) => {
     .then(({ res, err }) => {
       if (err) return;
       handleQuery();
-      proxy.$$Toast.success("启动成功");
+      proxy.$$Toast.success("启用成功");
     })
     .catch(() => {});
 };
@@ -524,7 +524,7 @@ let state = ref({
           event: handleDelete,
         },
         {
-          label: "启动",
+          label: "启用",
           key: "start",
           type: "primary",
           autoHidden: autoStartHidden,

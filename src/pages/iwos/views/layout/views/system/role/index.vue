@@ -143,7 +143,7 @@
           :show-overflow-tooltip="true"
           
       />
-      <el-table-column label="显示顺序" prop="roleSort" />
+      <!-- <el-table-column label="显示顺序" prop="roleSort" /> -->
       <el-table-column label="状态" align="center" >
         <template slot-scope="scope">
           <el-switch

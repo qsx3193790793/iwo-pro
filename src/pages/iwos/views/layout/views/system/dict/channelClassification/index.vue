@@ -185,8 +185,6 @@ export default {
       open: false,
       // 部门名称
       deptName: undefined,
-      // 默认密码
-      initPassword: "123456",
       // 日期范围
       dateRange: [],
       // 岗位选项
@@ -342,7 +340,7 @@ export default {
               },
             },
             {
-              label: "启动",
+              label: "启用",
               key: "start",
               type: "primary",
               autoHidden: this.autoStartHidden,
@@ -403,9 +401,6 @@ export default {
   },
   created() {
     this.$nextTick(() => this.$refs.table?.doLayout());
-    // this.getConfigKey("sys.user.initPassword").then(response => {
-    //   this.initPassword = response.msg;
-    // });
   },
   mounted() {
     this.getList();
@@ -691,7 +686,7 @@ export default {
     // 启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启动渠道编码为"' + row.channelId + '"的数据项？')
+          .confirm('是否确认启用渠道编码为"' + row.channelId + '"的数据项？')
           .then(() => {
             let data = {
               channelId: row.channelId,
@@ -702,7 +697,7 @@ export default {
           .then(({res, err}) => {
             if (err) return;
             this.getList();
-            this.$$Toast.success("启动成功");
+            this.$$Toast.success("启用成功");
           })
           .catch(() => {
           });

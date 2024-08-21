@@ -63,7 +63,7 @@ export default async ({vm, item}) => {
       'userStarLevel': custom.custLevel ?? null,
       'upgradeTrend': custom.complaintLevelUp ?? '无',
       'contactPhone1': accNum ?? null,
-      'phoneLocal': lanIdInfo.oneLevel ?? null,
+      'phoneLocal': lanIdInfo.twoLevel ?? null,
       'complaintAssetNum': accNum ?? null,
       'appealUserName': custom.custName ?? null,
       'custName': custom.custName ?? null,

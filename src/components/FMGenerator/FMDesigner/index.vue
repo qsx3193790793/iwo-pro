@@ -74,7 +74,7 @@ import Draggable from 'vuedraggable';
 import {comps} from './config/comps';
 import FormModel from '../FormModel/index.vue';
 import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
-import {parseFormModel, parseJson, parseStage, parseStageFormConfig} from "./config";
+import {parseFormModel, parseJson, parseStage, parseStageFormConfig, stageValidator} from "./config";
 import {formConfigProps} from "./config/defaultConfigProps";
 import MDialog from '@/components/MDialog';
 
@@ -245,12 +245,18 @@ const formConfig = computed(() => {
 });
 
 function getJson() {
+  const errMsg = stageValidator(stage.value);
+  if (errMsg) {
+    proxy.$$store.commit('fmDesigner/SET_ACTIVE_COMP_ID', errMsg.cId);
+    return proxy.$$Toast.error(`[${errMsg.name}]配置中[${errMsg.title}]未填写，请检查`)
+  }
   return parseJson(stage.value, z_formConfigProps.value);
 }
 
 function onSave() {
-  console.log('onSave', getJson());
-  proxy.$emit('onSave', getJson());
+  const json = getJson();
+  console.log('onSave', json);
+  proxy.$emit('onSave', json);
 }
 
 //加载json
@@ -261,7 +267,7 @@ function loadJson(json) {
 
 //使用模板
 function useTemplate(v) {
-  proxy.$$Dialog.confirm(`使用模板将清空舞台数据，是否应用？`).then(() => {
+  proxy.$$Dialog.confirm(`使用模板将清空表单数据，是否应用？`).then(() => {
     loadJson(v.json);
   }).catch(proxy.$$emptyFn)
 }
