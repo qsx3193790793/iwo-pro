@@ -16,7 +16,11 @@
         <el-table-column prop="paymentChannelName" label="缴费渠道"></el-table-column>
         <el-table-column prop="paymentMethod" label="付款方式"></el-table-column>
         <el-table-column prop="amount" label="缴费金额"></el-table-column>
-        <el-table-column prop="paymentDate" label="缴费时间" width="160"></el-table-column>
+        <el-table-column prop="paymentDate" label="缴费时间" width="160">
+          <template #default="{row}">
+            {{ $$dateFormatterYMDHMS(row.paymentDate) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="balance" label="缴费预存余额"></el-table-column>
         <el-table-column prop="accNbrDetail" label="余额使用范围" width="240"></el-table-column>
         <el-table-column label="操作" width="120" align="center">
@@ -50,9 +54,10 @@ const tableData = ref([]);
 
 function confirm(row) {
   props.valueKey && proxy.$emit('input', row[props.valueKey]);
-  proxy.$emit('onConfirm', row);
+  proxy.$emit('onConfirm', Object.assign({}, row, {
+    paymentDate: proxy.$$dateFormatterYMDHMS(row.paymentDate)
+  }));
   modelIsShow.value = false;
-  console.log(PageSearchPanelRef.value.getFormData())
   tableData.value = []
   // pageInfo.value.rowCount = 0;
   // pageInfo.value.offset = 1;
@@ -91,7 +96,7 @@ const getList = async () => {
 
 const StaffSelectorSearchFormItems = [
   {name: '设备号', key: 'accNum', value: '', type: 'input', col: 6},
-  {name: '月份', key: 'billingCycleId', placeholder: 'YYYYMM,如：202406', value: '', type: 'input', col: 6},
+  {name: '月份', key: 'billingCycleId', value: '', type: 'monthPicker', valueFormat: 'yyyyMM', col: 6},
   {name: 'prodClass', key: 'prodClass', value: '', type: 'input', isHidden: !0, col: 9},
   {name: 'lanId', key: 'lanId', value: '', type: 'input', isHidden: !0, col: 9},
   {
@@ -101,6 +106,7 @@ const StaffSelectorSearchFormItems = [
         onClick({vm}) {
           vm.resetFormData();
           tableData.value = [];
+          init();
         }
       },
       {
@@ -120,11 +126,9 @@ const StaffSelectorSearchFormItems = [
 ];
 
 function init() {
-  console.log('opened')
   const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   if (!customPositioning) return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
-  console.log(PageSearchPanelRef.value)
   PageSearchPanelRef.value.initFormData({
     accNum, prodClass: accType, lanId: lanIdInfo.lanid
   });

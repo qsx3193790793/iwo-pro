@@ -17,7 +17,11 @@
         <el-table-column prop="orderStatus" label="订单状态"></el-table-column>
         <el-table-column prop="channelNbr" label="订单受理渠道"></el-table-column>
         <el-table-column prop="staffCode" label="受理员工编码"></el-table-column>
-        <el-table-column prop="acceptDate" label="受理时间" width="160"></el-table-column>
+        <el-table-column prop="acceptDate" label="受理时间" width="160">
+          <template #default="{row}">
+            {{ $$dateFormatterYMDHMS(row.acceptDate) }}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="120" align="center">
           <template #default="{row}">
             <el-button type="text" size="mini" @click="confirm(row)">选择</el-button>
@@ -53,7 +57,9 @@ const tableData = ref([]);
 
 function confirm(row) {
   props.valueKey && proxy.$emit('input', row[props.valueKey]);
-  proxy.$emit('onConfirm', row);
+  proxy.$emit('onConfirm', Object.assign({}, row, {
+    acceptDate: proxy.$$dateFormatterYMDHMS(row.acceptDate)
+  }));
   modelIsShow.value = false;
   console.log(PageSearchPanelRef.value.getFormData())
   tableData.value = []
@@ -86,6 +92,7 @@ const StaffSelectorSearchFormItems = [
         onClick({vm}) {
           vm.resetFormData();
           tableData.value = [];
+          init()
         }
       },
       {
@@ -105,13 +112,12 @@ const StaffSelectorSearchFormItems = [
 ];
 
 function init() {
-  console.log('opened')
   const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   if (!customPositioning) return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
-  console.log(PageSearchPanelRef.value)
   PageSearchPanelRef.value.initFormData({
-    serialNumber: accNum, prodClass: accType, lanId: lanIdInfo.lanid
+    serialNumber: accNum, prodClass: accType, lanId: lanIdInfo.lanid,
+    timeRange: ['2020-08-01', '2024-08-01']
   });
   getList(1);
 }

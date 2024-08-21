@@ -1,7 +1,7 @@
 //测试
 
-export const key = 'complaint_submit';
-export const label = '投诉单_提交';
+export const key = 'complaint_save';
+export const label = '投诉单_暂存';
 
 export default ({vm, item}) => {
   const formData = vm.getFormData();
@@ -40,7 +40,7 @@ export default ({vm, item}) => {
   vm.$$lodash.set(formData, 'provinceOrderCreateTime', vm.$$dateFormatterYMDHMS(vm.$$dayjs()));
 
   // 状态
-  vm.$$lodash.set(formData, 'statusCd', 'C200001');//处理中
+  vm.$$lodash.set(formData, 'statusCd', 'C100001');//新建
 
   //场景字段
   const complaintAssistList = vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$template$')).map(efci => ({
@@ -50,8 +50,8 @@ export default ({vm, item}) => {
   console.log('complaint_submit', formData)
   vm.validator(
     () => {
-      vm.$$Dialog.confirm(`你确定要提交吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
-        const {res, err} = await vm.$$api.complaint.saveComplaintWorkOrder({
+      vm.$$Dialog.confirm(`你确定要暂存吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
+        const {res, err} = await vm.$$api.complaint.temporarySaveComplaintWorkOrder({
           data: {
             complaint: formData,
             complaintAssistList

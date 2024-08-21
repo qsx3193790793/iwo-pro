@@ -16,7 +16,10 @@ const detail = ref()
 //设计器获取字段名下拉
 function getFieldsArray() {
   return detail.value?.fieldConfigs?.map(r => {
-    const name = `${r.type == '0' ? '$public$' : ''}${r.name}`
+    let name = r.name;
+    // 场景字段type=1无开头  通用扩展type=0&&ext.开头以$ext$开头 通用基础$public$
+    if (r.type == 0 && r.name.startsWith('ext.')) name = `$ext$${r.name.replace('ext.', '')}`;
+    else if (r.type == 0) name = `$public$${r.name}`;
     return {label: `${r.title}(${name})`, value: name}
   }) || [];
 }

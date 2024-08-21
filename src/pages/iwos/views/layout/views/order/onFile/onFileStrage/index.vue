@@ -1,51 +1,44 @@
 <template>
-  <div class="app-container one-screen">
-    <div>
-      <PageSearchPanel
-        ref="PageSearchPanelRef"
-        :formConfigItems="formConfigItems"
-        noBackground
-      ></PageSearchPanel>
-      <div style="height: 70vh">
-        <div class="one-screen">
-          <div class="one-screen-fg1">
-            <JsTable
-              :dataSource="dataSource"
-              :columns="columns"
-              @selectionChange="handleSelectionChange"
-            >
-              <template #isProvinceCustom="{ row }">
-                <div>{{ row.isProvinceCustom ? "自定义" : "否" }}</div>
-              </template>
-              <template #orderType="{ row }">
-                {{
-                  $store.getters["dictionaries/MATCH_LABEL"](
-                    "search_order_type",
-                    row.orderType
-                  )
-                }}
-              </template>
-              <template #provinceCode="scope">
-                {{
-                  $store.getters["dictionaries/MATCH_LABEL"](
-                    "base_province_code",
-                    scope.row.provinceCode
-                  )
-                }}
-              </template>
-              <template #status="{ row }">
-                <div v-show="row.status == 0">
-                  <el-tag type="danger">停用</el-tag>
-                </div>
-                <div v-show="row.status == 1"><el-tag>启用</el-tag></div>
-                <div v-show="row.status == 2">
-                  <el-tag type="danger">删除</el-tag>
-                </div>
-              </template>
-            </JsTable>
+  <div class="one-screen">
+    <PageSearchPanel
+      ref="PageSearchPanelRef"
+      :formConfigItems="formConfigItems"
+    ></PageSearchPanel>
+    <div class="table-panel one-screen-fg1">
+      <JsTable
+        :dataSource="dataSource"
+        :columns="columns"
+        @selectionChange="handleSelectionChange"
+      >
+        <template #isProvinceCustom="{ row }">
+          <div>{{ row.isProvinceCustom ? "自定义" : "否" }}</div>
+        </template>
+        <template #orderType="{ row }">
+          {{
+            $store.getters["dictionaries/MATCH_LABEL"](
+              "search_order_type",
+              row.orderType
+            )
+          }}
+        </template>
+        <template #provinceCode="scope">
+          {{
+            $store.getters["dictionaries/MATCH_LABEL"](
+              "base_province_code",
+              scope.row.provinceCode
+            )
+          }}
+        </template>
+        <template #status="{ row }">
+          <div v-show="row.status == 0">
+            <el-tag type="danger">停用</el-tag>
           </div>
-        </div>
-      </div>
+          <div v-show="row.status == 1"><el-tag>启用</el-tag></div>
+          <div v-show="row.status == 2">
+            <el-tag type="danger">删除</el-tag>
+          </div>
+        </template>
+      </JsTable>
       <el-pagination
         :current-page.sync="queryParams.pageNum"
         :page-size.sync="queryParams.pageSize"
@@ -97,13 +90,13 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="归档时间" prop="archiveTime">
+            <el-form-item label="归档时长" prop="archiveTime">
               <el-input-number
                 v-model="form.archiveTime"
                 :min="0"
                 :max="168"
               ></el-input-number>
-              <span class="unit">(h)</span>
+              <span class="unit">(小时)</span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -140,7 +133,6 @@ export default {
   cusDicts: [
     "start_stop",
     "search_order_type",
-    "complaint_source_tree",
     "base_province_code",
   ],
   components: { Treeselect, JsTable, PageSearchPanel },
@@ -174,6 +166,8 @@ export default {
       postOptions: [],
       // 角色选项
       roleOptions: [],
+      //投诉来源树
+      complaint_source_tree: [],
       // 表单参数
       form: {},
       formConfigItems: [
@@ -189,48 +183,17 @@ export default {
           isRequire: !1,
         },
         {
-          name: "归档时间",
-          key: "archiveTime",
-          value: "",
-          type: "input",
-          placeholder: "归档时间",
-          col: 6,
-          isDisable: !1,
-          isRequire: !1,
-        },
-        {
           name: "投诉来源",
           key: "complaintSource",
           value: "",
           col: 6,
           type: "cascader",
-          options: () =>
-            this.$store.getters["dictionaries/GET_DICT"](
-              "complaint_source_tree"
-            ),
+          options: () => this.complaint_source_tree,
           attrs: { props: { checkStrictly: !0 } },
           isDisable: !1,
           isRequire: !1,
         },
-        {
-          name: "满意度",
-          key: "satisfied",
-          value: "",
-          col: 6,
-          type: "select",
-          options: [
-            {
-              label: "满意",
-              value: "满意",
-            },
-            {
-              label: "不满意",
-              value: "不满意",
-            },
-          ],
-          isDisable: !1,
-          isRequire: !1,
-        },
+        { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",
@@ -290,7 +253,7 @@ export default {
             key: "sourceName",
           },
           {
-            name: "归档时间(h)",
+            name: "归档时长(小时)",
             key: "archiveTime",
           },
           {
@@ -331,7 +294,6 @@ export default {
               key: "del",
               type: "danger",
               event: (val) => {
-                this.ids = [];
                 this.handleDelete(val);
               },
             },
@@ -383,7 +345,7 @@ export default {
         archiveTime: [
           {
             required: true,
-            message: "归档时间不能为空",
+            message: "归档时长不能为空",
             trigger: ["blur", "submit"],
           },
         ],
@@ -402,28 +364,25 @@ export default {
   },
   methods: {
     //投诉来源下拉菜单
-    async listComplaintSourceTree() {
-      if (
-        this.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree")
-          ?.length
-      )
-        return;
-      const { res, err } =
-        await this.$$api.complaintSource.listComplaintSourceTree();
-      if (err) return;
-      this.$store.commit("dictionaries/SET_DICTIONARIES", {
-        complaint_source_tree: this.$$formatCascaderTree(
-          res?.list || [],
-          "sourceName",
-          "sourceCode",
-          "children"
-        ),
-      });
+    listComplaintSourceTree() {
+      this.$$api.complaintSource
+        .listComplaintSourceTree({
+          data: { status: 1 },
+        })
+        .then((res, err) => {
+          if (err) return;
+          this.complaint_source_tree = this.$$formatCascaderTree(
+            res?.res.list || [],
+            "sourceName",
+            "sourceCode",
+            "children"
+          );
+        });
     },
     /** 查询部门下拉树结构 */
     getSourceTree() {
       this.$$api.complaintSource
-        .listComplaintSourceTree()
+        .listComplaintSourceTree({ data: { status: 1 } })
         .then(({ res, err }) => {
           if (err) return;
           this.sourceTree = res?.list || [];
@@ -458,10 +417,15 @@ export default {
     getList() {
       this.loading = true;
       const formData = this.$refs.PageSearchPanelRef.getFormData();
+      let copyData = JSON.parse(JSON.stringify(formData));
+      if (copyData?.complaintSource && copyData?.complaintSource.length > 0) {
+        copyData.complaintSource =
+          copyData.complaintSource[copyData.complaintSource.length - 1];
+      }
       this.$$api.complaint
         .listOnFileStrategy({
           params: {
-            ...formData,
+            ...copyData,
             ...this.queryParams,
           },
         })
@@ -482,8 +446,6 @@ export default {
       this.form = {
         orderType: undefined,
         complaintSource: undefined,
-        archiveTime: undefined,
-        satisfied: undefined,
         archiveRuleId: undefined,
       };
       this.$refs["form"]?.resetFields();
@@ -579,7 +541,7 @@ export default {
     // 启用
     handleStart(row) {
       this.$$Dialog
-        .confirm('是否确认启动当前归档策略？')
+        .confirm("是否确认启动当前归档策略？")
         .then(() => {
           let data = {
             archiveRuleId: row.archiveRuleId,
@@ -597,7 +559,7 @@ export default {
     // 停用
     handleEnd(row) {
       this.$$Dialog
-        .confirm('是否确认停用当前归档策略？')
+        .confirm("是否确认停用当前归档策略？")
         .then(() => {
           let data = {
             archiveRuleId: row.archiveRuleId,
@@ -615,16 +577,17 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const archiveRuleIds = row?.archiveRuleId || this.ids;
-      
       this.$$Dialog
-        .confirm('是否确认删除归档策略的数据项？')
+        .confirm("是否确认删除归档策略的数据项？")
         .then(() => {
           let data = {
             ruleIdList: Array.isArray(archiveRuleIds)
               ? archiveRuleIds
               : [archiveRuleIds],
           };
-          return this.$$api.complaint.delteOnFileStrategy({data:data.ruleIdList});
+          return this.$$api.complaint.delteOnFileStrategy({
+            data: data.ruleIdList,
+          });
         })
         .then(({ res, err }) => {
           if (err) return;

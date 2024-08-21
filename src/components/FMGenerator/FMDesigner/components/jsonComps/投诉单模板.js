@@ -228,7 +228,7 @@ export default {
         },
         {
           "label": "statusCd",
-          "value": "C006000"
+          "value": null
         },
         {
           "label": "developChannelCode",
@@ -236,7 +236,7 @@ export default {
         },
         {
           "label": "recordingId",
-          "value": ""
+          "value": null
         }
       ],
       "interfaceCode": null,
@@ -855,14 +855,7 @@ export default {
                 "compType": "FMButton",
                 "z_props": {
                   "isDisable": false,
-                  "showCondition": [
-                    {
-                      "key": "statusCd",
-                      "condition": "等于",
-                      "value": "C006000",
-                      "relation": "&&"
-                    }
-                  ],
+                  "showCondition": [],
                   "type": "FMButton",
                   "btnName": "投诉内容模板化",
                   "btnType": "default",
@@ -945,7 +938,7 @@ export default {
                   "interfaceCode": "",
                   "interfaceReqParamsArray": [],
                   "interfaceResParamsArray": [],
-                  "events": [],
+                  "events": ['complaint_save'],
                   "eventsFields": []
                 },
                 "children": []

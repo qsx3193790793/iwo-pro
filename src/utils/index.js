@@ -31,7 +31,9 @@ const $$dateFormatter = (date, formatStr = 'YYYY-MM-DD HH:mm:ss') => {
   if (!date) return '-';
   return dayjs(date || null).format(formatStr);
 }
-const $$dateFormatterYMDHMS = date => date ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : '-';
+const $$dateFormatterYMDHMS = date => {
+  return date ? dayjs(date).format('YYYY-MM-DD HH:mm:ss') : '-'
+};
 const $$dateFormatterYMD = date => date ? dayjs(date).format('YYYY-MM-DD') : '-';
 
 // 事件bus
@@ -1536,5 +1538,5 @@ export {
   $$tansParams,
   $$fileSaveAs,
   $$formatCascaderTree,
-  $$findTreePath
+  $$findTreePath,
 };

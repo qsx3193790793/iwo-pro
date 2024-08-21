@@ -6,7 +6,7 @@
         <div class="head-container one-screen-fg0">
           <el-input
               v-model="deptName"
-              placeholder="请输入部门名称"
+              placeholder="请输入机构名称"
               clearable
               size="small"
               prefix-icon="el-icon-search"
@@ -31,6 +31,7 @@
         <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="auto">
           <el-form-item label="班组名称" prop="teamName">
             <el-input
+                class="queryItem"
                 v-model="queryParams.teamName"
                 placeholder="请输入班组名称"
                 clearable
@@ -45,7 +46,7 @@
                 v-model="queryParams.status"
                 placeholder="用户状态"
                 clearable
-                style="width: 240px"
+                class="queryItem"
             >
               <el-option
                   v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
@@ -371,21 +372,35 @@ export default {
 
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      let that=this;
+      that.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.teamId != null) {
-            this.$$api.team.updateTeam({data: this.form}).then(({res: response, err}) => {
+          if (that.form.teamId != null) {
+            if(that.form.status=='1'){
+              that.$$Dialog.confirm('确定停用所选部门吗?停用后部门下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
+                confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
+              }).then(() =>{
+                  that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
+                if (err) return
+                that.$$Toast.success("修改成功");
+                that.open = false;
+                that.getList(); 
+              });
+              })
+            }else{
+              that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
               if (err) return
-              this.$$Toast.success("修改成功");
-              this.open = false;
-              this.getList();
+              that.$$Toast.success("修改成功");
+              that.open = false;
+              that.getList();
             });
+            }
           } else {
-            this.$$api.team.addTeam({data: this.form}).then(({res: response, err}) => {
+            that.$$api.team.addTeam({data: that.form}).then(({res: response, err}) => {
               if (err) return
-              this.$$Toast.success("新增成功");
-              this.open = false;
-              this.getList();
+              that.$$Toast.success("新增成功");
+              that.open = false;
+              that.getList();
             });
           }
         }

@@ -2,10 +2,10 @@
   <div class="AddressSelector">
     <el-input v-model="value" disabled>
       <template #append>
-        <el-button  icon="el-icon-search" @click="modelIsShow=!0"/>
+        <el-button icon="el-icon-search" @click="modelIsShow=!0"/>
       </template>
     </el-input>
-    <MDialog v-model="modelIsShow" title="选择订单" width="80%">
+    <MDialog v-model="modelIsShow" title="选择地址" width="80%">
       <div class="search-bar">
         <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="StaffSelectorSearchFormItems"></PageSearchPanel>
       </div>

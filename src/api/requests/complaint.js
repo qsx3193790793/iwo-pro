@@ -4,6 +4,8 @@ import apiPrefix from "../apiPrefix";
 const apis = {
   // 提交
   saveComplaintWorkOrder: {url: `${apiPrefix("web")}/complaintWorkOrder/saveComplaintWorkOrder`},
+  // 暂存
+  temporarySaveComplaintWorkOrder: {url: `${apiPrefix("web")}/complaintWorkOrder/temporarySaveComplaintWorkOrder`},
   // 详情
   complaintWorkOrderDetail: {url: (args) => `${apiPrefix("web")}/complaintWorkOrder/complaintWorkOrderDetail/${args.workorderId}`, method: "get"},
   // 查询是否存在在途单 0==不存在在途工单 1==存在在途工单
@@ -18,7 +20,8 @@ const apis = {
 
   // 获取集团工单编号
   getComplaintWorksheetId: {url: `${apiPrefix("web")}/workOrder/getComplaintWorksheetId`, method: "get"},
-
+  //一键信息获取
+  diagnosisHandleInfo: {url: `${apiPrefix('web')}/diagnosis/handleInfo`, method: 'post'},
   // -------------------------------------------归档策略--------------------------
   // 分页查询归档配置
   listOnFileStrategy: {url: `${apiPrefix("config")}/archiveRule/findArchiveRulePage`, method: "get"},

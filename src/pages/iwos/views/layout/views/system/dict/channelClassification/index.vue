@@ -338,8 +338,6 @@ export default {
               type: "danger",
               autoHidden: this.autoHandleHidden,
               event: (val) => {
-                this.ids = []
-                this.channelCodeList = []
                 this.handleDelete(val)
               },
             },
@@ -590,7 +588,9 @@ export default {
         this.form.oneChannelCode = oneChannelCode
         this.form.oneChannelName = oneChannelName
         this.form.channelId = channelId
-        this.form.customProvince = isProvinceCustom?true:false
+        if(this.form.handleType == "edit"){
+              this.form.customProvince = isProvinceCustom?true:false
+        }
         // 用于编辑时，效果等同于点击树节点（新增、编辑的逻辑就按照同一套逻辑处理）
         if(this.form.handleType=='edit'){
           this.currentNode.channelLevel=channelLevel -1
@@ -710,7 +710,7 @@ export default {
     // 停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用渠道编码为"' + row.channelId + '"的数据项？')
+          .confirm('是否确认停用渠道编码为"' + row.channelCode + '"的数据项？')
           .then(() => {
             let data = {
               channelId: row.channelId,
@@ -730,7 +730,7 @@ export default {
     handleDelete(row) {
       const channelCodes = row?.channelId || this.ids;
       let showText = ''
-      if (this.ids.length > 0) {
+      if (this.ids.length > 0 &&!row.channelId) {
         showText = this.channelCodeList.join(',')
       } else {
         showText = row?.channelCode

@@ -78,6 +78,7 @@ const StaffSelectorSearchFormItems = [
         onClick({vm}) {
           vm.resetFormData();
           tableData.value = [];
+          init();
         }
       },
       {
@@ -97,11 +98,9 @@ const StaffSelectorSearchFormItems = [
 ];
 
 function init() {
-  console.log('opened')
   const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   if (!customPositioning) return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
-  console.log(PageSearchPanelRef.value)
   PageSearchPanelRef.value.initFormData({
     accNum, lanId: lanIdInfo.lanid, prodClass: accType
   });

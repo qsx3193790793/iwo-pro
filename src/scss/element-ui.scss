@@ -357,9 +357,17 @@ $main-color-5: rgba($main-color, 0.5);
   }
 }
 
-.el-input.is-disabled .el-input__inner {
+.el-input.is-disabled .el-input__inner, .is-disabled .el-textarea__inner {
   color: #5b5b5b;
-  -webkit-text-fill-color: #5b5b5b;
+}
+
+.el-radio-button__orig-radio:checked + .el-radio-button__inner {
+
+}
+
+.el-radio-button__orig-radio:disabled:checked + .el-radio-button__inner {
+  color: #5b5b5b;
+  background-color: rgba($main-color, 0.2);
 }
 
 .el-overlay, .el-loading-mask.is-fullscreen {

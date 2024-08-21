@@ -82,7 +82,7 @@ export default (args) => {
       params: Object.assign({}, args.params || {}),//, {_t: new Date().getTime()}
       cancelId: (args.hasCancel === undefined ? false : args.hasCancel) ? (args.method.toUpperCase() === 'POST' ? args.requestUrl : args.cancelId) : null,
     }).then(res => {
-      const d = ['[object String]', '[object Number]', '[object Boolean]'].includes(Vue.prototype.$$getVariableType(res.data)) ? {value: res.data} : (res.data || {});
+      const d = ['[object String]', '[object Number]', '[object Boolean]'].includes(Vue.prototype.$$getVariableType(res.data)) ? {value: res.data} : res.data;
       const timestamp = Number(`${(res.timestamp || res.serverTime)}000`.substring(0, 13));
       setTimeout(() => {
         if (args.cache) {

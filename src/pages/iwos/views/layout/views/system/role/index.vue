@@ -13,7 +13,7 @@
             v-model="queryParams.roleName"
             placeholder="请输入角色名称"
             clearable
-            style="width: 240px"
+            class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -22,7 +22,7 @@
             v-model="queryParams.roleKey"
             placeholder="请输入权限字符"
             clearable
-            style="width: 240px"
+            class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -31,7 +31,7 @@
             v-model="queryParams.status"
             placeholder="角色状态"
             clearable
-            style="width: 240px"
+            class="queryItem"
         >
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
@@ -44,7 +44,7 @@
       <el-form-item label="创建时间">
         <el-date-picker
             v-model="dateRange"
-            style="width: 240px"
+            class="queryItem"
             value-format="yyyy-MM-dd"
             type="daterange"
             range-separator="-"
@@ -74,7 +74,7 @@
         >新增
         </el-button
         >
-        <el-button
+        <!-- <el-button
             type="danger"
             plain
             size="small"
@@ -83,7 +83,7 @@
             v-hasPermission="['system:role:remove']"
         >删除
         </el-button
-        >
+        > -->
         <el-button
             type="warning"
             plain
@@ -92,13 +92,20 @@
             v-hasPermission="['system:role:export']"
         >导出
         </el-button>
+        <el-dropdown @command="(command) => handleBatchClick(command)"  v-hasPermission="['system:role:edit']" :disabled="multiple">
+          <el-button type="danger">
+            批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+          </el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="begin" >批量启用</el-dropdown-item>
+            <el-dropdown-item command="end" >批量停用</el-dropdown-item>
+            <el-dropdown-item command="delete" v-hasPermission="['system:role:remove']">批量删除</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-form-item>
     </el-form>
 
     <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
-       
-      </el-col>
       <el-col :span="1.5">
         <el-button
             type="success"
@@ -111,12 +118,6 @@
         >修改
         </el-button
         >
-      </el-col>
-      <el-col :span="1.5">
-        
-      </el-col>
-      <el-col :span="1.5">
-       
       </el-col>
     </el-row> -->
     <el-table
@@ -153,6 +154,7 @@
           ></el-switch>
         </template>
       </el-table-column>
+      <el-table-column label="创建人" prop="createBy" />
       <el-table-column
           label="创建时间"
           align="center"
@@ -181,7 +183,7 @@
           <el-button
               size="small"
              type="danger"
-              @click="{ ids = [] ;roleNameList = [];handleDelete(scope.row)}"
+              @click="{handleDelete(scope.row)}"
               v-hasPermission="['system:role:remove']"
           >删除
           </el-button
@@ -494,6 +496,41 @@ export default {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
+    handleBatchClick(type){
+      // 确认要"停用""上海管理员"角色吗？
+      if(type=='end'){
+        this.$$Dialog.confirm(`确认要"停用""${this.roleNameList.join(',')}"角色吗？`, '提示', {
+          confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
+        }).then(() =>{
+          this.handleStatus('1')
+        })
+      }
+      if(type=='begin'){
+        this.$$Dialog.confirm(`确认要"启用""${this.roleNameList.join(',')}"角色吗？`, '提示', {
+          confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
+        }).then(() =>{
+          this.handleStatus('0')
+        })
+      }
+      if(type=='delete'){
+        this.handleDelete()
+      }
+      
+    },
+    handleStatus(type){
+      let showText=type=='0'?'启用成功':'停用成功'
+      let data={
+        "ids":this.ids,
+        status:type
+      }
+      this.$$api.role
+          .updataStatus({data: data})
+          .then(({ err}) => {
+            if (err) return this.loading = false;
+            this.getList();
+            this.$$Toast.success(showText);
+          });
+    },  
     /** 查询角色列表 */
     getList() {
       // this.roleList = Array.from({length: 20}).map((r, i) => ({roleId: i}));
@@ -787,6 +824,8 @@ export default {
               this.getList();
             });
           }
+        }else{
+          this.$$Toast.warning("有必填项未填写");
         }
       });
     },
@@ -804,9 +843,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const roleIds = row.roleId || this.ids
+      const roleIds = row?.roleId || this.ids
       let showText=''
-      if(this.ids.length>0){
+      if(this.ids.length>0 && !row?.roleId){
         showText=this.roleNameList.join(',')
       }else{
         this.roleNameList=[]
@@ -842,3 +881,8 @@ export default {
   },
 };
 </script>
+<style scoped lang="scss">
+.queryItem {
+  width: 240px;
+}
+</style>

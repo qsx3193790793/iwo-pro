@@ -9,7 +9,7 @@ export default {
     name: '角色管理',
     title: '智慧客服工单系统',
     authentication: true, //该页面是否需要登陆才可进入
-    keepAlive: !0,
+    keepAlive: false,
     pageLevel: 1
   },
 };

@@ -152,8 +152,6 @@ export default {
               key: "del",
               type: "danger",
               event: (val) => {
-                this.ids = []
-                this.tagcodeList = []
                 this.handleDelete(val)
               },
             },
@@ -426,7 +424,7 @@ export default {
     handleDelete(row) {
       const tagId = row?.tagId || this.ids;
       let showText = ''
-      if (this.ids.length > 0) {
+      if (this.ids.length > 0 && !row.tagId) {
         showText = this.tagcodeList.join(',')
       } else {
         showText = row?.tagCode

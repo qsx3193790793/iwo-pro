@@ -227,7 +227,7 @@ export default {
           key: "sourceCode",
           value: "",
           type: "input",
-          placeholder: "投诉来源名称",
+          placeholder: "投诉来源编码",
           col: 6,
           isDisable: !1,
           isRequire: !1,
@@ -351,8 +351,6 @@ export default {
               type: "danger",
               autoHidden: this.autoHandleHidden,
               event: (val) => {
-                this.ids = []
-                this.sourceCodeList = []
                 this.handleDelete(val)
               }
             },
@@ -654,7 +652,9 @@ export default {
               sourceName,
               isProvinceCustom
             } = {...response};
-            this.form.customProvince = isProvinceCustom;
+            if(this.form.handleType == "edit"){
+              this.form.customProvince = isProvinceCustom?true:false
+            }
             if (level == 3) {
               this.form.sourceName = sourceName;
               this.form.sourceCode = sourceCode;
@@ -728,7 +728,7 @@ export default {
     handleDelete(row) {
       const sourceId = row?.sourceId || this.ids;
       let showText = ''
-      if (this.ids.length > 0) {
+      if (this.ids.length > 0 &&!row.sourceId) {
         showText = this.sourceCodeList.join(',')
       } else {
         showText = row?.sourceCode

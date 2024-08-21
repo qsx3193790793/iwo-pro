@@ -121,7 +121,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-checkbox v-model="form.customProvince"
+            <el-checkbox v-model="form.customProvince" disabled
             >是否省自定义
             </el-checkbox
             >
@@ -331,8 +331,6 @@ export default {
               type: "danger",
               autoHidden: this.autoHandleHidden,
               event: (val) => {
-                this.ids = []
-                this.productCodeList = []
                 this.handleDelete(val)
               }
             },
@@ -635,11 +633,15 @@ export default {
               productLevel,
               oneProductCode,
               oneProductName,
+              isProvinceCustom
             } = {...response};
             this.form.oneProductCode = oneProductCode;
             this.form.oneProductName = oneProductName;
             this.form.productId = productId;
-            this.currentNode.level=productLevel
+            this.currentNode.level=productLevel;
+            if(this.form.handleType == "edit"){
+              this.form.customProvince = isProvinceCustom?true:false
+            }
             if (productLevel == 1) {
               this.form.oneProductCode = productCode;
               this.form.oneProductName = productName;
@@ -703,7 +705,7 @@ export default {
     handleDelete(row) {
       const productIds = row?.productId || this.ids;
       let showText = ''
-      if (this.ids.length > 0) {
+      if (this.ids.length > 0 && !row.productId) {
         showText = this.productCodeList.join(',')
       } else {
         showText = row?.productCode

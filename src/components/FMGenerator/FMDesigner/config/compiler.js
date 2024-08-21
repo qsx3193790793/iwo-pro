@@ -31,9 +31,10 @@ export const interfaceCompiler = async ({vm, value, item, opts}) => {
     data: {
       interfaceCode: opts.interfaceCode,
       requestParam: JSON.stringify((opts.interfaceReqParams || []).reduce((t, c) => {
-        c.value.startsWith('$public$')
-          ? vm.$$lodash.set(t, c.label, formData[c.value.replace('$public$', '')])//从通用字段获取
-          : vm.$$lodash.set(t, c.label, formData[`$template$${c.value}`]);//从场景字段获取
+        // 目前模板配置三类型取值 $public$开头-通用字段  $ext$开头-扩展字段 其他默认场景字段
+        if (c.value.startsWith('$public$')) vm.$$lodash.set(t, c.label, formData[c.value.replace('$public$', '')]);
+        else if (c.value.startsWith('$ext$')) vm.$$lodash.set(t, c.label, formData[c.value]);
+        else vm.$$lodash.set(t, c.label, formData[`$template$${c.value}`]);
         return t;
       }, {}))
     }
@@ -42,9 +43,9 @@ export const interfaceCompiler = async ({vm, value, item, opts}) => {
   (opts.interfaceResParams || []).forEach(ef => {
     const v = vm.$$lodash.get(res || {}, ef.value);
     if (vm.$$isEmpty(v)) return;
-    ef.label.startsWith('$public$')
-      ? formData[ef.label.replace('$public$', '')] = v
-      : vm.formData[`$template$${ef.label}`] = v;
+    if (ef.label.startsWith('$public$')) formData[ef.label.replace('$public$', '')] = v;
+    else if (ef.label.startsWith('$ext$')) vm.formData[ef.label] = v;
+    else vm.formData[`$template$${ef.label}`] = v;
   });
 }
 

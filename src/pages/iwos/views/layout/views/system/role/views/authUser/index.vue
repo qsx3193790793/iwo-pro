@@ -22,6 +22,7 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-back" size="small" @click="goBack">返回</el-button>
       </el-form-item>
     </el-form>
 
@@ -137,6 +138,9 @@ export default {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
+    goBack(){
+      this.$router.go(-1)
+    },
     /** 查询授权用户列表 */
     getList() {
       // this.userList = Array.from({length: 20}).map((r, i) => ({userId: i}));

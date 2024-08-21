@@ -34,7 +34,7 @@ export default async ({vm, value = null}) => {
     // const formModel = parseFormModel(testT);
     // 将模板key和其他表单区分开 把key加个$template$
     const {res, err} = await vm.$$api.template.formMock({loading: false, sceneCode, templateType: '0'});
-    if (res) {
+    if (res?.formContent) {
       const formModel = parseFormModel(JSON.parse(res.formContent));
       vm.formData.verbalTrickContent = res.verbalTrickContent || '';
       vm.formConfig.appendItems = formModel.items.map(it => (it.items.forEach(itt => itt.key = `$template$${itt.key}`), it));

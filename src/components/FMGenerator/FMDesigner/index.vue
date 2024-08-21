@@ -22,7 +22,7 @@
           </el-tab-pane>
           <el-tab-pane label="表单" name="表单">
             <div v-if="quoteComponent" class="quote-trigger">
-              相关模板
+              <span>相关模板</span>
               <el-button type="text" icon="el-icon-document-copy" @click="isQuoteTemplateShow=!0">更多</el-button>
             </div>
 
@@ -315,7 +315,7 @@ onMounted(() => {
     padding: 0 10px;
 
     & > .t {
-      font-size: 14px;
+      font-size: 16px;
       font-weight: bold;
     }
   }
@@ -345,6 +345,11 @@ onMounted(() => {
         line-height: 40px !important;
         padding: 0 !important;
         font-size: 13px;
+
+        & > span {
+          font-weight: bold;
+          font-size: 15px;
+        }
       }
 
       ::v-deep(.el-collapse-item__header) {

@@ -30,10 +30,15 @@ export default async ({vm, eventsFields}) => {
     }
   });
   console.log('eventsFields', eventsFields)
-  const main = (res?.list || []).find(tc => ['10', '11'].includes(tc.type));
+  const r = (res?.list || []).find(tc => ['10', '11'].includes(tc.type)) || {};
+  const main = Object.assign(r, {
+    startDate: vm.$$dateFormatterYMDHMS(r?.startDate),
+    endTime: vm.$$dateFormatterYMDHMS(r?.endTime),
+  });
+
   // 模板会字段统一会加$template$前缀用来区分
   eventsFields.forEach(ef => {
-    const value = vm.$$lodash.get(main || {}, ef.value);
+    const value = vm.$$lodash.get(main, ef.value);
     if (vm.$$isEmpty(value)) return;
     vm.formData[`$template$${ef.label}`] = value;
   });

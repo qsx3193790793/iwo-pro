@@ -7,7 +7,7 @@
             <div class="searchParams">
               <span class="searchParams_text">用户视图</span>
               <div>
-                <el-input v-model="accNum" clearable placeholder="请输入设备号" @click.stop.native @keyup.enter.space.stop.native="getInfo()">
+                <el-input v-model="accNum" clearable placeholder="请输入设备号" @click.stop.native @keyup.enter.space.stop.native="getInfo({from:'手动'})">
                   <el-select v-model="accType" slot="prepend">
                     <el-option label="移动手机" value="12"></el-option>
                     <el-option label="宽带" value="11"></el-option>
@@ -16,8 +16,9 @@
                 </el-input>
               </div>
               <div>
-                <el-button type="primary" size="small" class="search_btn" @click.stop="getInfo()">查询</el-button>
-                <el-button type="danger" size="small" class="search_btn" @click.stop="getInfo(!0)">更新查询</el-button>
+                <el-button type="primary" size="small" class="search_btn" @click.stop="getInfo({from:'手动'})">查询</el-button>
+                <el-button type="danger" size="small" class="search_btn" @click.stop="getInfo({isForce:!0,from:'手动'})">更新查询</el-button>
+                <el-button type="warning" size="small" class="search_btn" @click.stop="diagnosisHandleInfo()">一键信息获取</el-button>
               </div>
             </div>
           </div>
@@ -103,12 +104,13 @@
 </template>
 <script setup>
 import UserTag from "./UserTag.vue";
-import {getCurrentInstance, ref} from "vue";
+import {getCurrentInstance, onBeforeMount, ref, watch} from "vue";
 
 const {proxy} = getCurrentInstance();
 const collapseHead = ref(['1']);
-const accNum = ref('18931177956');
+const accNum = ref('');
 const accType = ref('12');
+const redirectInfo = ref(null);
 
 function reset() {
   return {
@@ -133,9 +135,25 @@ function reset() {
 
 const state = ref(reset());
 
-async function getInfo(isForce) {
+async function diagnosisHandleInfo() {
   if (!accNum.value) return;
-  const {res, err} = await proxy.$$api.crm.getHNumber({params: {segment: accNum.value.slice(0, 7)}});//segment
+  const {res, err} = await proxy.$$api.complaint.diagnosisHandleInfo({data: {accNum: accNum.value}});
+  if (res) {
+    proxy.$emit('diagnosisChange', (res.fieldList || []).reduce((t, c) => {
+      // 场景字段type=1以$template$开头  通用扩展type=0&&ext.开头以$ext$开头 通用基础无前缀
+      if (c.type == 1) t[`$template$${c.name}`] = c.value;
+      else if (c.type == 0 && c.name.startsWith('ext.')) t[`$ext$${c.name.replace('ext.', '')}`] = c.value;
+      else t[`${c.name}`] = c.value;
+      return t;
+    }, {
+      callId: res.callId, complaintDescription: res.complaintDescription
+    }));
+  }
+}
+
+async function getInfo({isForce, from}) {
+  if (!accNum.value) return;
+  const {res, err} = await proxy.$$api.crm.getHNumber({params: {segment: accNum.value}});//segment
   if (res) {
     const [R1, R2] = await Promise.all([
       proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({data: {accNumber: accNum.value, lanId: res.lanid}}),
@@ -155,8 +173,10 @@ async function getInfo(isForce) {
       iRes.m_netAge = iRes?.netAccess ? proxy.$$dayjs().diff(iRes.netAccess, 'year') : null;
 
       // 存储定位后数据 后续用
-      proxy.$store.commit('storage/SET_STORAGE', {key: 'customPositioning', value: {lanIdInfo: res, custom: iRes, accType: accType.value, accNum: accNum.value}});
-      proxy.$emit('change');//变化通知
+      proxy.$store.commit('storage/SET_STORAGE', {key: 'customPositioning', value: {lanIdInfo: res, custom: iRes, accType: accType.value, accNum: accNum.value, redirectInfo: redirectInfo.value}});
+
+      if (from !== '详情') proxy.$emit('change');//变化通知 详情时不触发
+
       state.value.userInfo.complaintLevelUp = iRes?.complaintLevelUp || '-';
       state.value.userInfo.custLevel = parseInt(iRes?.custLevel ?? '0') || 0;
       state.value.userInfo.custName = iRes?.custName || '-';
@@ -180,27 +200,35 @@ async function getInfo(isForce) {
     }
   }
   state.value = reset();
-  // state.value.userInfo = {
-  //   belongingPlace: "上海",
-  //   satisfaction: "2",
-  //   dissatisfied: "1",
-  //   duplicateValue: "1",
-  //   TranscendingLevelsValue: "2",
-  //   refundValue: "2",
-  //   ComplaintTendency: "0",
-  //   score: 4.7,
-  //   circleUrl:
-  //       "https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg",
-  // };
-  // state.value.userProfile.tagList = [
-  //   "重要客户",
-  //   "网龄19年",
-  //   "36岁",
-  //   "城镇",
-  //   "政企关键人",
-  //   "公众客",
-  // ];
 }
+
+async function getDetail() {
+  const {res, err} = await proxy.$$api.complaint.complaintWorkOrderDetail({workorderId: proxy.$route.params.workorderId});
+  if (res) {
+    accNum.value = res?.complaintAssetNum;
+    getInfo({from: '详情'});
+  }
+}
+
+watch(() => proxy.$route.params.workorderId, () => {
+  reset();
+  if (proxy.$route.params.workorderId) getDetail();
+});
+
+onBeforeMount(() => {
+  proxy.$store.commit('storage/REMOVE_STORAGE', ['customPositioning']);
+  if (proxy.$route.params.workorderId) return getDetail();
+  try {
+    redirectInfo.value = JSON.parse(decodeURIComponent(proxy.$route.query.p || null));
+    console.log('p', redirectInfo.value);
+    if (redirectInfo.value) {
+      accNum.value = redirectInfo.value.accNum;
+    }
+  } catch (e) {
+    console.log('parse err', e);
+  }
+});
+
 </script>
 <script>
 export default {

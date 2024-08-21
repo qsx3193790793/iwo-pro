@@ -13,7 +13,11 @@
         <el-table-column type="index" label="序号" width="60"></el-table-column>
         <el-table-column prop="exchangeID" label="兑换流水号" width="160"></el-table-column>
         <el-table-column prop="point" label="消费数额"></el-table-column>
-        <el-table-column prop="pointCosumeTime" label="消费时间" width="160"></el-table-column>
+        <el-table-column prop="pointCosumeTime" label="消费时间" width="160">
+          <template #default="{row}">
+            {{ $$dateFormatterYMDHMS(row.pointCosumeTime) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="storeName" label="商家名称" width="200"></el-table-column>
         <el-table-column prop="giftAmount" label="礼品的数量"></el-table-column>
         <el-table-column prop="giftDes" label="礼品描述" width="420"></el-table-column>
@@ -49,7 +53,9 @@ const tableData = ref([]);
 
 function confirm(row) {
   props.valueKey && proxy.$emit('input', row[props.valueKey]);
-  proxy.$emit('onConfirm', row);
+  proxy.$emit('onConfirm', Object.assign({}, row, {
+    pointCosumeTime: proxy.$$dateFormatterYMDHMS(row.pointCosumeTime)
+  }));
   modelIsShow.value = false;
   console.log(PageSearchPanelRef.value.getFormData())
   tableData.value = []
@@ -80,6 +86,7 @@ const StaffSelectorSearchFormItems = [
         onClick({vm}) {
           vm.resetFormData();
           tableData.value = [];
+          init();
         }
       },
       {
@@ -99,11 +106,9 @@ const StaffSelectorSearchFormItems = [
 ];
 
 function init() {
-  console.log('opened')
   const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   if (!customPositioning) return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
-  console.log(PageSearchPanelRef.value)
   const end = proxy.$$dateFormatter(proxy.$$dayjs(), 'YYYY-MM-DD')
   const start = proxy.$$dateFormatter(proxy.$$dayjs(end).subtract(6, 'month'), 'YYYY-MM-DD')
   PageSearchPanelRef.value.initFormData({

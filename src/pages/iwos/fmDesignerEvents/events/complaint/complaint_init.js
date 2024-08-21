@@ -8,7 +8,7 @@ export default async ({vm, item}) => {
     const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
     // 未定位直接pass
     if (!customPositioning) return;
-    const {lanIdInfo, custom, accType, accNum, callerNo, recordingId, callId} = customPositioning;
+    const {lanIdInfo, custom, accType, accNum, redirectInfo} = customPositioning;
 
     //查询是否有在途单
     const {res: qpRes} = await vm.$$api.complaint.queryPendingWorkOrderByAssetNum({params: {assetNum: accNum}});
@@ -25,37 +25,43 @@ export default async ({vm, item}) => {
       // 省内接口_设备产品信息查询
       vm.$$api.crm.devCustInfo({loading: !1, data: {accNum, lanId: lanIdInfo.lanid}}),
       //获取统一投诉编码和集团工单编号
-      // vm.$$api.srv.getUnifyComplaintCode({loading: !1, data: {complaintPhone: accNum, custName: custom.custName}}),
+      vm.$$api.srv.getUnifyComplaintCode({loading: !1, data: {complaintPhone: accNum, custName: custom.custName}}),
     ]);
 
     // 工单画像 // 省内接口_设备产品信息查询
-    const {res, err} = R1, {res: dciRes, err: dciErr} = R2;//, {res: idRes, err: idErr} = R3;
+    const {res, err} = R1, {res: dciRes, err: dciErr} = R2, {res: idRes, err: idErr} = R3;
 
-    if (err || dciErr) return;
+    if (err || dciErr || idErr) return;
 
-    return vm.initFormData({
+    vm.initFormData({
       // 投诉编码
-      'unifiedComplaintCode': +new Date(),// idRes.unifiedComplaintCode,
+      'unifiedComplaintCode': idRes.unifiedComplaintCode,
       // 集团工单编号
-      'complaintWorksheetId': +new Date(),// idRes.complaintWorksheetId,
-
-      'lanId': lanIdInfo.lanid ?? null,
-      'problemLanId': lanIdInfo.lanid ?? null,
+      'complaintWorksheetId': idRes.complaintWorksheetId,
 
       // 设备产品信息查询  发展渠道
       'developChannel': dciRes?.channelName ?? null,
       'developChannelCode': dciRes?.channelNbr ?? null,
       'controlChannel': dciRes?.controlOrgName ?? null,
 
+      //主叫号码 呼叫流水
+      'callerNo': redirectInfo?.callerNum ?? null,
+      'callId': redirectInfo?.callId ?? null,
+      //现象 产品 渠道
+      'complaintPhenomenonLevel': [redirectInfo?.phenomenonLevel1Code, redirectInfo?.phenomenonLevel2Code, redirectInfo?.phenomenonLevel3Code].filter(v => !!v),
+      'productLevel': [redirectInfo?.prodLevel1Code, redirectInfo?.prodLevel2Code, redirectInfo?.prodLevel3Code].filter(v => !!v),
+      'developChannelLevel': [redirectInfo?.channelLevel1Code, redirectInfo?.channelLevel2Code, redirectInfo?.channelLevel3Code].filter(v => !!v),
+
       //申诉日期
       'appealDate': vm.$$dateFormatterYMDHMS(vm.$$dayjs()),
+
+      // 归属地信息
+      'lanId': lanIdInfo.lanid ?? null,
+      'problemLanId': lanIdInfo.lanid ?? null,
 
       //基本客户信息
       'userStarLevel': custom.custLevel ?? null,
       'upgradeTrend': custom.complaintLevelUp ?? '无',
-      'callerNo': custom.callerNo ?? null,
-      'recordingId': custom.recordingId ?? null,
-      'callId': custom.callId ?? null,
       'contactPhone1': accNum ?? null,
       'phoneLocal': lanIdInfo.oneLevel ?? null,
       'complaintAssetNum': accNum ?? null,
@@ -75,6 +81,10 @@ export default async ({vm, item}) => {
       'satisfactionEstima30days': res?.thirtyDaysOrderSatisfied ?? null,
       'dissatisfactionEstima30days': res?.thirtyDaysOrderDissatisfied ?? null,
     });
+
+    //触发现象事件
+    if (vm.formData.complaintPhenomenonLevel?.length) vm.expandFormConfigItems.find(efci => efci.key === 'complaintPhenomenonLevel')?.onChange({vm});
+    return;
   }
 
   // 详情

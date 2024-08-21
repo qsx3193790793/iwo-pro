@@ -34,6 +34,8 @@ const apis = {
   importTemplate: {url: `${apiPrefix('system')}/user/importTemplate`, responseType: 'blob', contentType: 1},
   // 导出
   export: {url: `${apiPrefix('system')}/user/export`, responseType: 'blob', contentType: 1},
+  // 批量状态修改
+  updataStatus: {url: `${apiPrefix('system')}/user/batchChangeStatus`, method: 'put'},
 };
 
 export default apiGenerator(apis);

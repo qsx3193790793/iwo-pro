@@ -18,10 +18,14 @@
             </div>
           </template>
           <template #provinceCode="{ row }">
-             <div>  {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}</div>
-          </template>
-          <template #askSourceSrl="{ row }">
-             <div>  {{ $store.getters['dictionaries/MATCH_LABEL']('complaint_source_tree', row.askSourceSrl) }}</div>
+            <div>
+              {{
+                $store.getters["dictionaries/MATCH_LABEL"](
+                  "base_province_code",
+                  row.provinceCode
+                )
+              }}
+            </div>
           </template>
           <template #workorderType="scope">
             <div>
@@ -104,10 +108,10 @@ const submitForm = () => {
   FormRef.value.validate((valid) => {
     if (valid) {
       state.value.form.taskList = selectData.value.map((ele) => {
-        let item={
-          taskId:ele.taskId,
-          workorderId:ele.workorderId,
-        }
+        let item = {
+          taskId: ele.taskId,
+          workorderId: ele.workorderId,
+        };
         return item;
       });
       proxy.$$api.complaint
@@ -149,7 +153,7 @@ let state = ref({
       },
       {
         name: "投诉来源",
-        key: "askSourceSrl",
+        key: "sourceName",
         width: 150,
       },
       {
@@ -238,7 +242,8 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   }
   // 投诉来源的取值
   if (queryParams.askSourceSrl && queryParams.askSourceSrl.length > 1) {
-    queryParams.askSourceSrl = queryParams.askSourceSrl[queryParams.askSourceSrl.length-1];
+    queryParams.askSourceSrl =
+      queryParams.askSourceSrl[queryParams.askSourceSrl.length - 1];
   } else {
     if (queryParams.askSourceSrl && queryParams.askSourceSrl.length > 0) {
       queryParams.askSourceSrl = queryParams.askSourceSrl[0];
@@ -262,7 +267,7 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   if (res) {
     pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
     state.value.dataSource = res.rows;
-  }
+  } 
 };
 
 //列表选择
@@ -271,6 +276,7 @@ const selectionList = ref([]);
 //弹窗
 const isShowAddDialog = ref(!1);
 const select_pkid = ref(null);
+let complaint_source_tree = ref([]);
 
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
@@ -331,8 +337,7 @@ const formConfigItems = ref([
     value: "",
     col: 6,
     type: "cascader",
-    options: () =>
-      proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"),
+    options: () => complaint_source_tree.value,
     attrs: { props: { checkStrictly: !0 } },
     isDisable: !1,
     isRequire: !1,
@@ -347,10 +352,10 @@ const formConfigItems = ref([
     isDisable: !1,
     isRequire: !1,
   },
-  { col: 6, },
+  { col: 6 },
   {
     type: "buttons",
-    verticalAlign:'top',
+    verticalAlign: "top",
     align: "right",
     col: 6,
     items: [
@@ -408,22 +413,19 @@ const formConfigItems = ref([
 ]);
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
-  if (
-    proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree")
-      ?.length
-  )
-    return;
-  const { res, err } =
-    await proxy.$$api.complaintSource.listComplaintSourceTree();
-  if (err) return;
-  proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
-    complaint_source_tree: proxy.$$formatCascaderTree(
-      res?.list || [],
-      "sourceName",
-      "sourceCode",
-      "children"
-    ),
-  });
+  proxy.$$api.complaintSource
+    .listComplaintSourceTree({
+      data: { status: 1 },
+    })
+    .then((res, err) => {
+      if (err) return;
+      complaint_source_tree.value = proxy.$$formatCascaderTree(
+        res?.res.list || [],
+        "sourceName",
+        "sourceCode",
+        "children"
+      );
+    });
 }
 onMounted(() => {
   getList(1);
@@ -436,11 +438,7 @@ onBeforeMount(() => {
 <script>
 export default {
   name: "ComplaintForm",
-  cusDicts: [
-    "search_order_type",
-    "complaint_source_tree",
-    "base_province_code",
-  ],
+  cusDicts: ["search_order_type", "base_province_code"],
 };
 </script>
 <style lang="scss" scoped></style>

@@ -16,6 +16,7 @@ import requstFieldSelector from './requstFieldSelector.vue'
 import responseFieldSelector from './responseFieldSelector.vue'
 import sendRequst from './sendRequst.vue'
 import analysisParams from "./analysisParams.vue";
+
 const {proxy} = getCurrentInstance();
 
 const props = defineProps({
@@ -99,12 +100,13 @@ const formConfig = ref({
         {name: '接口描述', key: 'interfaceDesc', value: '', col: 12, type: 'textarea', isDisable: !1, isRequire: !0},
         {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !0},
         {name: '接口地址', key: 'interfaceUrl', value: '', placeholder: '', col: 12, type: 'input', isDisable: !1, isRequire: !0},
-        {name: '请确保下方入参填写无误再发送', key: '', value: '', placeholder: '', col: 6, type: 'component',component: sendRequst, isDisable: !1, isRequire: !0},
+        {name: '请确保下方入参填写无误再发送', key: '', value: '', placeholder: '', col: 6, type: 'component', component: sendRequst, isDisable: !1, isRequire: !0},
         {name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'monacoEditor', height: '2rem', isRequire: !0, col: 24,},
-        {name: '出参json', key: 'responseJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !1, isRequire: !0, col: 24},
-        {name: '入参出参确认无误后可将其解析至下方表格并填写描述', key: '', value: '', placeholder: '', col: 20, type: 'component',component: analysisParams, isDisable: !1, isRequire: !0,
+        {name: '出参json', key: 'responseJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !0, isRequire: !0, col: 24},
+        {
+          name: '入参出参确认无误后可将其解析至下方表格并填写描述', key: '', value: '', placeholder: '', col: 20, type: 'component', component: analysisParams, isDisable: !1, isRequire: !0,
           emitter({vm}) {
-             return {
+            return {
               hasSaveDiscribe(val) {
                 isSaveDiscribe.value = val
               }
@@ -114,8 +116,8 @@ const formConfig = ref({
         // 将请求响应参数暂存
         {name: '', key: 'stagingrequest', value: '', col: 1},
         {name: '', key: 'stagingresponse', value: '', col: 1},
-        {name: '入参列表', key: 'requestParam', value: [], placeholder: '', col: 24,attrs:{isEdit: true}, type: 'component', component: requstFieldSelector, isDisable: !1, isRequire: !1},
-        {name: '出参列表', key: 'responseParam', value: [], placeholder: '', col: 24, attrs:{isEdit: true}, type: 'component', component: responseFieldSelector, isRequire: !1, readOnly: !0}
+        {name: '入参列表', key: 'requestParam', value: [], placeholder: '', col: 24, attrs: {isEdit: true}, type: 'component', component: requstFieldSelector, isDisable: !1, isRequire: !1},
+        {name: '出参列表', key: 'responseParam', value: [], placeholder: '', col: 24, attrs: {isEdit: true}, type: 'component', component: responseFieldSelector, isRequire: !1, readOnly: !0}
       ]
     }
   ],

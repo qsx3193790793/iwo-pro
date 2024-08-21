@@ -44,8 +44,11 @@ let store = {
       state.activeTabs.forEach(at => at.isActive = payload);
     },
     SET_STORAGE(state, payload) {
-      console.log('SET_STORAGE', payload)
       state.storage[payload.key] = payload.value;
+      sessionStorage.setItem('__storage__', JSON.stringify(state.storage));
+    },
+    REMOVE_STORAGE(state, keys) {
+      (keys || []).forEach(k => delete state.storage[k]);
       sessionStorage.setItem('__storage__', JSON.stringify(state.storage));
     },
     CHECK_STORAGE(state, payload) {

@@ -16,7 +16,7 @@
             <i class="el-icon-arrow-right" :class="{'is-active':collapseActive.includes(props_bind.name||$attrs.cId)}"></i>
           </div>
         </template>
-        <Draggable :invertSwap="!1" :swapThreshold="0.2" direction="vertical" v-model="childrenModel" class="el-row" :class="{empty:!childrenModel.length}" handle=".drag-element-handler" ghostClass="ghost" :forceFallback="false" :group="{name:'comp',pull:!1,put:layoutPut}" :sort="true">
+        <Draggable :invertSwap="!1" :swapThreshold="0.2" direction="vertical" v-model="childrenModel" class="el-row" :class="{empty:!childrenModel.length}" handle=".drag-element-handler" ghostClass="ghost" :forceFallback="false" :group="{name:'comp',pull:!0,put:layoutPut}" :sort="true">
           <component v-for="(v,i) in childrenModel" v-on.stop="get$listeners()" :children.sync="v.children" :stage="children" :props="v.z_props" :node="v" :key="v.cId" :cId="v.cId" :is="v"></component>
         </Draggable>
       </el-collapse-item>

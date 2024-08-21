@@ -43,7 +43,7 @@ const {proxy} = getCurrentInstance();
 
 const props = defineProps({
   isQuote: {type: Boolean, default: false},//引用模式 从设计器中弹窗显示
-})
+});
 
 const isShowReleaseDialog = ref(false);
 const isShowAuditDialog = ref(false);

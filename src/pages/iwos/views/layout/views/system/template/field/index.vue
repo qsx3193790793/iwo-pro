@@ -3,7 +3,7 @@
     <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
-        <JsTable :dataSource="list" :columns="columns" @selectionChange="selectionChange">
+        <JsTable :dataSource="list" :columns="columns" @selectionChange="selectionList=$event">
           <template #updatedTime="{row}">
             {{ $$dateFormatter(row.updatedTime) }}
           </template>
@@ -35,6 +35,10 @@ import AddDialog from './components/AddDialog';
 import {onMounted} from "vue"
 
 const {proxy} = getCurrentInstance();
+
+const props = defineProps({
+  isBatchQuote: {type: Boolean, default: false},//引用模式 从设计器中弹窗显示
+});
 
 let columns = ref({
   selection: true,
@@ -72,7 +76,7 @@ let columns = ref({
       key: 'updatedTime',
     },
   ],
-  options: {
+  options: props.isBatchQuote ? null : {
     btns: [
       {
         label: '修改',
@@ -114,13 +118,9 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
 //列表选择
 const selectionList = ref([]);
 
-function selectionChange(value) {
-  selectionList.value = value.map(v => v.fieldId);
-}
-
 function handleDel(row) {
   proxy.$$Dialog.confirm('确认删除记录吗？', '提示').then(async () => {
-    const {res, err} = await proxy.$$api.modelFields.delTFieldConfig({fieldIds: row ? row.fieldId : selectionList.value});
+    const {res, err} = await proxy.$$api.modelFields.delTFieldConfig({fieldIds: row ? row.fieldId : selectionList.value.map(v => v.fieldId)});
     if (err) return;
     selectionList.value = [];
     getList(1);
@@ -138,35 +138,44 @@ const formConfigItems = ref([
   {name: '字段标题', key: 'title', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '字段名称', key: 'name', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {
-    type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, items: [
-      {
-        btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
-        onClick({vm}) {
-          vm.resetFormData();
-          getList(1)
-        }
-      },
-      {
-        btnName: '查询', type: 'button', attrs: {type: 'primary'}, col: 1,
-        onClick({vm}) {
-          getList(1)
-        }
-      },
-      {
-        btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
-        onClick({vm}) {
-          // 打开弹窗
-          select_pkid.value = null;
-          isShowAddDialog.value = !0;
-        }
-      },
-      {
-        btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
-        onClick({vm}) {
-          handleDel();
-        }
-      },
-    ]
+    type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, items: [].concat(
+        [
+          {
+            btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
+            onClick({vm}) {
+              vm.resetFormData();
+              getList(1)
+            }
+          },
+          {
+            btnName: '查询', type: 'button', attrs: {type: 'primary'}, col: 1,
+            onClick({vm}) {
+              getList(1)
+            }
+          }
+        ],
+        props.isBatchQuote ? [{
+          btnName: '确认选择', type: 'button', attrs: {type: 'success'}, col: 1,
+          onClick({vm}) {
+            if (!selectionList.value.length) proxy.$$Toast({message: `请先选择`, type: 'error'});
+            proxy.$emit('onBatchQuote', selectionList.value);
+          }
+        }] : [{
+          btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
+          onClick({vm}) {
+            // 打开弹窗
+            select_pkid.value = null;
+            isShowAddDialog.value = !0;
+          }
+        },
+          {
+            btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
+            onClick({vm}) {
+              handleDel();
+            }
+          }]
+    )
+
   }
 ]);
 

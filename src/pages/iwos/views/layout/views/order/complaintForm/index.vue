@@ -20,7 +20,7 @@
             {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}
           </template>
           <template #statusCd="scope">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("complaint_status_cd", scope.row.statusCd) }}
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", scope.row.statusCd) }}
           </template>
         </JsTable>
         <div class="pagination-area">
@@ -66,11 +66,12 @@ const columns = ref({
   props: [
     {
       name: "投诉编号",
-      width: 200,
+      width: 240,
       key: "unifiedComplaintCode",
     },
     {
       name: "申诉工单编号",
+      width: 200,
       key: "appealWorksheetId",
     },
 
@@ -84,7 +85,7 @@ const columns = ref({
     },
     {
       name: "投诉来源",
-      key: "askSourceSrl",
+      key: "askSourceSrlName",
     },
     {
       name: "工单类型",
@@ -99,13 +100,13 @@ const columns = ref({
     //   key: "orderType",
     // },
     {
-      name: "创建人",
-      key: "createdBy",
+      name: "更新人",
+      key: "updatedBy",
     },
     {
-      name: "创建时间",
+      name: "更新时间",
       width: 160,
-      key: "createdTime",
+      key: "updatedTime",
       el: "format",
       format: "default",
     },
@@ -120,16 +121,23 @@ const columns = ref({
       {
         label: '编辑',
         key: 'edit',
+        autoHidden: ({row}) => row.statusCd === 'C100001',
         event: row => {
-          console.log(row);
-          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}})
+          proxy.$router.push({name: 'ComplaintCreate', params: {workorderId: row.workorderId}})
         },
       },
       {
-        label: '删除',
-        key: 'del',
-        type: 'danger',
+        label: '详情',
+        key: 'detail',
+        event: row => {
+          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}})
+        },
       },
+      // {
+      //   label: '删除',
+      //   key: 'del',
+      //   type: 'danger',
+      // },
     ],
   },
 });
@@ -318,7 +326,7 @@ async function listComplaintSourceTree() {
   )
     return;
   const {res, err} =
-      await proxy.$$api.complaintSource.listComplaintSourceTree();
+      await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
     complaint_source_tree: proxy.$$formatCascaderTree(
@@ -345,7 +353,7 @@ export default {
     "search_order_type",
     "complaint_source_tree",
     "base_province_code",
-    "complaint_status_cd",
+    "jy_complaint_status_cd",
   ],
 };
 </script>

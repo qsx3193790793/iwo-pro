@@ -1,12 +1,14 @@
 <template>
   <div class="one-screen">
     <div class="Pagehead">
-      <CustomerProfile @change="change"></CustomerProfile>
+      <CustomerProfile @change="change" @diagnosisChange="diagnosisChange"></CustomerProfile>
     </div>
     <ELScrollbar class="one-screen-fg1 public-background create-order-container">
       <div class="create-order-header">投诉单</div>
       <div class="create-order-form">
-        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig"></FormModel>
+        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig">
+          <FileUploader></FileUploader>
+        </FormModel>
       </div>
     </ELScrollbar>
   </div>
@@ -14,6 +16,7 @@
 
 <script setup>
 import {getCurrentInstance, onMounted, ref} from "vue";
+import FileUploader from "../components/FileUploader";
 import CustomerProfile from "../../../../../../components/CustomerProfile.vue";
 import FormModel from "@/components/FMGenerator/FormModel";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config/index";
@@ -25,6 +28,10 @@ const formConfig = ref();
 
 function change() {
   FormModelRef.value?.init();
+}
+
+function diagnosisChange(v) {
+  FormModelRef.value?.initFormData(v);
 }
 
 onMounted(() => {

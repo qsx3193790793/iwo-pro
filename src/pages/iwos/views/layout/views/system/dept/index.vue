@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
-      <el-form-item label="部门名称" prop="deptName">
+      <el-form-item label="机构名称" prop="deptName">
         <el-input
             v-model="queryParams.deptName"
-            placeholder="请输入部门名称"
+            placeholder="请输入机构名称"
             clearable
             @keyup.enter.native="handleQuery"
         />
@@ -58,20 +58,20 @@
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         border
     >
-      <el-table-column prop="deptName" label="部门名称" width="260"></el-table-column>
-      <el-table-column prop="orderNum" label="排序" width="200"></el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
+      <el-table-column prop="deptName" label="机构名称" ></el-table-column>
+      <el-table-column prop="orderNum" label="排序"></el-table-column>
+      <el-table-column prop="status" label="状态" >
         <template slot-scope="{row}">
           <!--          <dict-tag :options="$$dictionaries.get('sys_normal_disable')" :value="scope.row.status"/>-->
            {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable',row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="200">
+      <el-table-column label="创建时间" align="center" prop="createTime" >
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" >
         <template slot-scope="scope">
           <el-button
               size="small"
@@ -125,8 +125,8 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="部门名称" prop="deptName">
-              <el-input v-model="form.deptName" placeholder="请输入部门名称"/>
+            <el-form-item label="机构名称" prop="deptName">
+              <el-input v-model="form.deptName" placeholder="请输入机构名称"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -237,7 +237,7 @@ export default {
           {required: true, message: "所属省份不能为空", trigger: "blur"}
         ],
         deptName: [
-          {required: true, message: "部门名称不能为空", trigger: "blur"}
+          {required: true, message: "机构名称不能为空", trigger: "blur"}
         ],
         orderNum: [
           {required: true, message: "显示排序不能为空", trigger: "blur"}
@@ -372,21 +372,36 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function () {
-      this.$refs["form"].validate(valid => {
+      let that=this;
+      that.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.deptId != undefined) {
-            this.$$api.dept.updateDept({data: this.form}).then(({res: response, err}) => {
-              if (err) return
-              this.$$Toast.success("修改成功");
-              this.open = false;
-              this.getList();
-            });
+          if (that.form.deptId != undefined) {
+            if(that.form.status=='1'){
+              that.$$Dialog.confirm('确定停用所选部门吗?停用后部门下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
+                confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
+              }).then(() =>{
+                that.$$api.dept.updateDept({data: that.form}).then(({res: response, err}) => {
+                  if (err) return
+                  that.$$Toast.success("修改成功");
+                  that.open = false;
+                  that.getList();
+                });
+              })
+            }else{
+              that.$$api.dept.updateDept({data: that.form}).then(({res: response, err}) => {
+                if (err) return
+                that.$$Toast.success("修改成功");
+                that.open = false;
+                that.getList();
+              });
+            }
+            
           } else {
-            this.$$api.dept.addDept({data: this.form}).then(({res: response, err}) => {
+            that.$$api.dept.addDept({data: that.form}).then(({res: response, err}) => {
               if (err) return
-              this.$$Toast.success("新增成功");
-              this.open = false;
-              this.getList();
+              that.$$Toast.success("新增成功");
+              that.open = false;
+              that.getList();
             });
           }
         }

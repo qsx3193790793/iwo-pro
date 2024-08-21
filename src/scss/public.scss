@@ -29,25 +29,33 @@
 
 .main-title {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  color: #7a7a7a;
-  line-height: 2;
   margin-bottom: 10px;
 
   &.noMb {
     margin-bottom: 0;
   }
 
-  &:before {
-    content: '';
-    display: inline-block;
-    height: 16px;
-    width: 4px;
-    background-color: rgb(76, 120, 228);
-    margin-right: 4px;
+  & > span {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #353535;
+    line-height: 2;
+
+    &:before {
+      content: '';
+      display: inline-block;
+      height: 16px;
+      width: 4px;
+      background-color: rgb(76, 120, 228);
+      margin-right: 4px;
+    }
   }
+
+
 }
 
 .main-container {
@@ -884,10 +892,10 @@
   }
 }
 
-.search_tree{
+.search_tree {
   //选中的背景色
-  .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content {
+  .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
     background-color: $tree-chance-background;
-    color:#ffffff !important;
+    color: #ffffff !important;
   }
 }

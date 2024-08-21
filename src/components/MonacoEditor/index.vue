@@ -5,6 +5,7 @@
 <script setup>
 import * as monaco from "monaco-editor";
 import {getCurrentInstance, ref, nextTick, watch} from "vue";
+import fj from "formatter-json";
 
 const {proxy} = getCurrentInstance();
 
@@ -20,7 +21,7 @@ const props = defineProps({
 
 // 当他进入时值为空情况 在监听变化赋值
 watch(() => props.value, (n, o) => {
-  !o && MonacoEditorInstant.value?.setValue(props.value)
+  !o && MonacoEditorInstant.value?.setValue(props.value ? fj(props.value) : '');
 });
 
 function init() {

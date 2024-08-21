@@ -1,23 +1,23 @@
 <template>
-  <div class="ComplaintDetail">
-    <ELScrollbar class="base-info public-background">
-      <div class="main-title-1">用户信息</div>
+  <div class="ComplaintDetail public-background">
+    <ELScrollbar class="base-info">
+      <div class="main-title">用户信息</div>
       <div class="cusName">{{ userInfo.custName || '客户姓名' }}</div>
       <el-rate v-model="userInfo.custLevel" class="rate" disabled-void-color="#C6D1DE" :max="7" score-template="{value}星用户" show-score disabled></el-rate>
       <template v-for="item in tagList1">
         <el-tag v-if="item.value" style="margin:0 0.2rem 0.1rem 0;" :key="item.label" type="warning" size="medium" color="#f49e47" effect="dark"> {{ item.value }}</el-tag>
       </template>
-      <TextLine labelColor="#a7abb4" labelWidth="1.36rem" :list="textLineList1" style="font-size: 14px;margin: 15px 0;"></TextLine>
+      <TextLine labelColor="#a7abb4" labelWidth="1.4rem" :list="textLineList1" style="font-size: 14px;margin: 15px 0;"></TextLine>
       <div class="tag-body" :style=" `border: 2px solid ${item.color}`" v-for="item in evaluateTagList" :key="item.label">
         <div class="tag-name" :style="`color:${item.color}`">{{ item.label }}</div>
         <div class="tag-number" :style="`background-color: ${item.color};`">{{ item.value || '0' }}</div>
       </div>
       <el-divider></el-divider>
       <!-- <UserTag class="UserTag" :userProfile="userProfile"></UserTag> -->
-      <div class="main-title-1">工单基本信息</div>
-      <TextLine labelWidth="1.36rem" :list="textLineList2" style="font-size: 14px;" labelColor="#a7abb4"></TextLine>
+      <div class="main-title">工单基本信息</div>
+      <TextLine labelWidth="1.4rem" :list="textLineList2" style="font-size: 14px;" labelColor="#a7abb4"></TextLine>
       <el-divider></el-divider>
-      <div class="main-title-1">服务轨迹</div>
+      <div class="main-title">服务轨迹</div>
       <div class="service-trajectory">
         <el-badge :value="200" :max="99" style="cursor: pointer;">
           <div> <i class="el-icon-document-copy service-trajectory-icon"></i></div>
@@ -29,11 +29,10 @@
         </el-badge>
       </div>
     </ELScrollbar>
-    <ELScrollbar class="create-order-container public-background">
-      <!--      <div class="create-order-header">投诉单</div>-->
+    <ELScrollbar class="create-order-container">
+      <div class="create-order-header">投诉单</div>
       <div class="create-order-form">
-        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" formStatus="view" @onFormLoaded="onFormLoaded"></FormModel>
-        <FileUploader></FileUploader>
+        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" @onFormLoaded="onFormLoaded"></FormModel>
       </div>
     </ELScrollbar>
 
@@ -42,11 +41,11 @@
 
 <script setup>
 import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
+import UserTag from "@/pages/iwos/components/UserTag.vue";
 import TextLine from "@/components/TextLine.vue";
-import FileUploader from "../components/FileUploader";
 import FormModel from "@/components/FMGenerator/FormModel";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config/index";
-import testJson from "@/components/FMGenerator/FMDesigner/components/jsonComps/投诉单详情模板.js";
+import testJson from "@/components/FMGenerator/FMDesigner/components/jsonComps/投诉单模板.js";
 
 const {proxy} = getCurrentInstance();
 const FormModelRef = ref();
@@ -103,15 +102,17 @@ const tagList1 = computed(() => {
   const custAge = proxy.$$lodash.get(formData.value, 'custAge');
   const cityFlag = proxy.$$lodash.get(formData.value, 'cityFlag');
   const governmentEnterprisekeyPerson = proxy.$$lodash.get(formData.value, 'governmentEnterprisekeyPerson');
+  const custType = proxy.$$lodash.get(formData.value, 'custType');
   const phoneLocal = proxy.$$lodash.get(formData.value, 'phoneLocal');
 
   return [
     {label: '归属地：', value: phoneLocal ? `归属地：${phoneLocal}` : null},
     {label: '网龄', value: !proxy.$$isEmpty(netAge) ? `网龄${netAge}年` : null},
-    {label: '城市', value: cityFlag ? proxy.$store.getters["dictionaries/MATCH_LABEL"]("cus_city", cityFlag) : null},
+    {label: '城市', value: cityFlag && proxy.$store.getters["dictionaries/MATCH_LABEL"]("cus_city", cityFlag)},
     {label: '重要客户', value: importantCustomer == '1' ? '重要客户' : null},
     {label: '关键政企客户', value: governmentEnterprisekeyPerson == '1' ? '关键政企客户' : null},
     {label: '年龄', value: !proxy.$$isEmpty(custAge) ? `${custAge}岁` : null},
+    {label: '客户投诉倾向', value: custType ? `${proxy.$store.getters["dictionaries/MATCH_LABEL"]("customer_strategy_grouping", custType)}` : null},
   ]
 })
 const evaluateTagList = computed(() => [
@@ -168,13 +169,11 @@ export default {
   justify-content: flex-start;
   align-items: stretch;
   height: 100%;
+  padding: 4px 16px !important;
   overflow: hidden;
 
-  .main-title-1 {
-    font-size: 0.18rem;
-    font-weight: bold;
-    color: #353535;
-    margin-bottom: 24px;
+  .main-title {
+    font-size: 18px;
   }
 
   .cusName {
@@ -183,6 +182,9 @@ export default {
     margin-bottom: 4px;
   }
 
+  .UserTag {
+    margin: 24px 0;
+  }
 
   .rate {
     margin-bottom: 12px;
@@ -194,11 +196,9 @@ export default {
   }
 
   .base-info {
-    padding: 16px 0 0 16px;
     width: 400px;
     flex-shrink: 0;
     flex-grow: 0;
-    margin-right: 16px;
   }
 
   .create-order-container {

@@ -34,6 +34,8 @@ const apis = {
   allocatedUserList: {url: `${apiPrefix('system')}/role/authUser/allocatedList`, method: 'get'},
   //导出
   export: {url: `${apiPrefix('system')}/role/export`, responseType: 'blob', contentType: 1},
+  // 批量状态修改
+  updataStatus: {url: `${apiPrefix('system')}/role/batchChangeStatus`, method: 'put'},
 
 };
 

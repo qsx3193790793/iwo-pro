@@ -25,6 +25,7 @@
     "deepmerge": "^4.1.1",
     "element-ui": "^2.15.14",
     "file-saver": "^2.0.5",
+    "formatter-json": "^0.1.1",
     "gcoord": "^1.0.5",
     "jsencrypt": "3.0.0-rc.1",
     "lodash": "^4.17.21",

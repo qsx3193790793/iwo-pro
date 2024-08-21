@@ -10,11 +10,12 @@
           {{ $store.getters['dictionaries/MATCH_LABEL']('template_field_type', row.type) }}
         </template>
       </el-table-column>
-      <el-table-column v-if="!root.vm.disabled" align="center" width="300">
+      <el-table-column v-if="!root.vm.disabled" align="center" width="440">
         <template #header="{ row }">
-          <el-select v-model="selectValue" placeholder="输入字段标题进行搜索，选择添加" :remote-method="remoteMethod" :loading="loading" filterable remote @change="handleChange">
+          <el-select v-model="selectValue" placeholder="输入字段标题进行搜索，选择添加" :remote-method="remoteMethod" :loading="loading" style="width: 260px;" filterable remote @change="handleChange">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
+          <el-button class="quote-trigger" type="text" icon="el-icon-files" @click="isBatchQuoteTemplateShow=!0" title="批量选择字段">批量</el-button>
           <el-button class="quote-trigger" type="text" icon="el-icon-document-copy" @click="isQuoteTemplateShow=!0" title="复用已配置的模板字段列表和模板内容">复用</el-button>
         </template>
         <template #default="{ row,$index }">
@@ -24,7 +25,10 @@
       </el-table-column>
     </el-table>
     <MDialog v-if="isQuoteTemplateShow" v-model="isQuoteTemplateShow" width="90%" height="70vh" title="选择模板" onScreen>
-      <QuoteComponent :is-quote="true" @onQuote="onQuote"></QuoteComponent>
+      <QuoteComponent is-quote @onQuote="onQuote"></QuoteComponent>
+    </MDialog>
+    <MDialog v-if="isBatchQuoteTemplateShow" v-model="isBatchQuoteTemplateShow" width="90%" height="70vh" title="选择字段" onScreen>
+      <BatchQuoteComponent is-batch-quote @onBatchQuote="onBatchQuote"></BatchQuoteComponent>
     </MDialog>
   </div>
 </template>
@@ -33,6 +37,7 @@
 import {computed, getCurrentInstance, ref} from "vue";
 import MDialog from '@/components/MDialog';
 import QuoteComponent from '../index';
+import BatchQuoteComponent from '../field/index';
 
 const {proxy} = getCurrentInstance();
 
@@ -44,6 +49,7 @@ const props = defineProps({
 const emitter = defineEmits([]);
 
 const isQuoteTemplateShow = ref(false);
+const isBatchQuoteTemplateShow = ref(false);
 const loading = ref(false);
 
 const list = computed({
@@ -59,8 +65,14 @@ const list = computed({
 
 function onQuote(data) {
   props.root.vm.formData.verbalTrickContent = data.verbalTrickContent || '';
-  list.value = data?.fieldConfigs || []
+  list.value = data?.fieldConfigs || [];
   isQuoteTemplateShow.value = !1;
+}
+
+function onBatchQuote(data) {
+  const exists = list.value.map(o => o.fieldId);
+  list.value = [].concat(list.value, (data || []).filter(d => !exists.includes(d.fieldId)));
+  isBatchQuoteTemplateShow.value = !1;
 }
 
 function handleInsert(row) {

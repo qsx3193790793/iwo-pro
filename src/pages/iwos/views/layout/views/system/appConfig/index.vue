@@ -52,9 +52,6 @@
       <template #provinceCode="{ row }">
        <div>  {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}</div>
       </template>
-      <template #sourceCode="{ row }">
-       <div>  {{ $store.getters['dictionaries/MATCH_LABEL']('complaint_source_tree', row.sourceCode) }}</div>
-      </template>
     </JsTable>
     <el-pagination
       :current-page.sync="state.queryParams.pageNum"
@@ -267,7 +264,7 @@ const autoEndHidden = (val) => {
 // 启用
 const handleStart = (row) => {
   proxy.$$Dialog
-    .confirm('是否确认启动渠道编码为"' + row.appId + '"的数据项？')
+    .confirm('是否确认启动应用系统编号为"' + row.clientId + '"的数据项？')
     .then(() => {
       let data = {
         appId: row.appId,
@@ -285,7 +282,7 @@ const handleStart = (row) => {
 // 停用
 const handleEnd = (row) => {
   proxy.$$Dialog
-    .confirm('是否确认停用渠道编码为"' + row.appId + '"的数据项？')
+    .confirm('是否确认停用应用系统编号为"' + row.clientId + '"的数据项？')
     .then(() => {
       let data = {
         appId: row.appId,
@@ -302,7 +299,7 @@ const handleEnd = (row) => {
 };
 /** 查询部门下拉树结构 */
 const getSourceTree = () => {
-  proxy.$$api.complaintSource.listComplaintSourceTree().then(({ res, err }) => {
+  proxy.$$api.complaintSource.listComplaintSourceTree({data:{status:1}}).then(({ res, err }) => {
     if (err) return;
     state.value.sourceTree = res?.list || [];
   });
@@ -326,7 +323,7 @@ const listComplaintSourceTree = async () => {
   )
     return;
   const { res, err } =
-    await proxy.$$api.complaintSource.listComplaintSourceTree();
+    await proxy.$$api.complaintSource.listComplaintSourceTree({data:{status:1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
     complaint_source_tree: proxy.$$formatCascaderTree(
@@ -345,8 +342,8 @@ const getList = () => {
     ...state.value.queryParams,
     ...PageSearchPanelRef.value.getFormData()
   }
-  if( params.sourceCode.length>0){
-    params.sourceCode=params.sourceCode[0]
+  if(params.sourceCode&& params.sourceCode.length>0){
+    params.sourceCode=params.sourceCode[params.sourceCode.length-1]
   }
   proxy.$$api.appconfigmanage
     .listappConfig({ params: params })
@@ -492,8 +489,8 @@ let state = ref({
         key: "appDesc",
       },
       {
-        name: "投诉来源编号",
-        key: "sourceCode",
+        name: "投诉来源",
+        key: "sourceName",
       },
       {
         name: "状态",

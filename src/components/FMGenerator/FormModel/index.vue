@@ -121,7 +121,10 @@
         </Collapse>
       </Form>
     </div>
-    <div v-if="formConfig.bottomButtons?.items?.length" class="bottomButtons" :class="formConfig.bottomButtons?.align">
+    <!--补充显示内容-->
+    <slot v-if="$slots.default"></slot>
+    <!--按钮区-->
+    <div v-if="formConfig.bottomButtons?.items?.length" class="bottomButtons" :class="[formConfig.bottomButtons?.align]">
       <template v-for="(bv,bi) in formConfig.bottomButtons?.items">
         <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="bv.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
         <!--        <Button v-if="(!item.isShow)||item.isShow({vm})" v-bind="item.attrs" :key="index" @click="item.onClick&&item.onClick({vm})">{{ item.name }}</Button>-->
@@ -292,7 +295,7 @@ export default {
         }, message: `JSON格式错误`, trigger: ['blur', 'change']
       });
       if (['input', 'FMInput', 'textarea', 'FMTextarea', 'number', 'FMNumber', 'inputAutocomplete', 'FMInputAutocomplete', 'monacoEditor', 'FMMonacoEditor'].includes(v.type)) return [].concat(v.isRequire ? [{required: true, message: '此项必填', trigger: ['blur', 'change']}] : [], v.rules || [], maxlengthRule)
-      return [].concat(v.isRequire ? [{required: true, message: '此项必选', trigger: 'change'}] : [], v.rules || [])
+      return [].concat(v.isRequire ? [{required: true, message: '此项必选', trigger: ['blur', 'change']}] : [], v.rules || [])
     },
     getName(name) {
       if (this.$$getVariableType(name) === '[object Function]') return name({vm: this});
@@ -307,7 +310,7 @@ export default {
       const items = [].concat(this.formConfig.items || [], this.appendItems || []);
       this.expandFormConfigItems = [].concat(...items?.map(ba => ba?.items || []));//展开
     },
-    init() {
+    init(value) {
       this.reqQuery = this.$route.query;
       //把isHidden隐藏字段放到最后 避免影响布局 并格式化name
       this.formConfig.items?.forEach(it => {
@@ -321,13 +324,14 @@ export default {
       // this.formData = this.expandFormConfigItems?.reduce((t, c) => (c.key && (this.$$lodash.set(t, c.key, c.value ?? null)), t), {});//初始化formData把数据key对应
       this.formData = [].concat(this.expandFormConfigItems, this.formConfig.hiddenFields || [])?.reduce((t, c) => (c.key && (t[c.key] = c.value ?? null), t), {});//初始化formData把数据key对应
 
-      this.formConfig.onLoad && this.formConfig.onLoad({$store: this.$store, vm: this});
+      this.formConfig.onLoad && this.formConfig.onLoad({$store: this.$store, vm: this, value});
       console.log('formModel init', this.formConfig, this.expandFormConfigItems, this.formData);
     }
   },
   created() {
     this.vm = this;
     this.init();
+    console.log('$slots', this.$slots)
   }
 }
 </script>

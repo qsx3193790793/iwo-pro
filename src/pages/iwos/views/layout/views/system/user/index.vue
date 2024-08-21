@@ -6,7 +6,7 @@
         <div class="head-container one-screen-fg0">
           <el-input
               v-model="deptName"
-              placeholder="请输入部门名称"
+              placeholder="请输入机构名称"
               clearable
               size="small"
               prefix-icon="el-icon-search"
@@ -30,12 +30,21 @@
       <!--用户数据-->
       <div class="one-screen one-screen-fg1">
         <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-          <el-form-item label="用户名称" prop="userName">
+          <el-form-item label="用户账号" prop="userName">
             <el-input
                 v-model="queryParams.userName"
+                placeholder="请输入用户账号"
+                clearable
+                class="queryItem"
+                @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item label="用户名称" prop="nickName">
+            <el-input
+                v-model="queryParams.nickName"
                 placeholder="请输入用户名称"
                 clearable
-                style="width: 240px"
+                class="queryItem"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -44,7 +53,7 @@
                 v-model="queryParams.phonenumber"
                 placeholder="请输入手机号码"
                 clearable
-                style="width: 240px"
+                class="queryItem"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -53,7 +62,7 @@
                 v-model="queryParams.status"
                 placeholder="用户状态"
                 clearable
-                style="width: 240px"
+                class="queryItem"
             >
               <el-option
                   v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
@@ -64,7 +73,7 @@
           <el-form-item label="创建时间">
             <el-date-picker
                 v-model="dateRange"
-                style="width: 240px"
+                class="queryItem"
                 value-format="yyyy-MM-dd"
                 type="daterange"
                 range-separator="-"
@@ -76,16 +85,26 @@
             <el-button size="small" @click="resetQuery">重置</el-button>
             <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
             <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:user:add']">新增</el-button>
-            <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button>
+            <!-- <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button> -->
             <el-button type="info" plain size="small" @click="handleImport" v-hasPermission="['system:user:import']">导入</el-button>
             <el-button type="warning" plain size="small" @click="handleExport" v-hasPermission="['system:user:export']">导出</el-button>
+            <el-dropdown @command="(command) => handleBatchClick(command)"  v-hasPermission="['system:user:edit']" :disabled="multiple">
+              <el-button type="danger">
+                批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="begin" >批量启用</el-dropdown-item>
+                <el-dropdown-item command="end" >批量停用</el-dropdown-item>
+                <el-dropdown-item command="delete" v-hasPermission="['system:user:remove']">批量删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-form-item>
         </el-form>
 
         <el-table v-loading="loading" class="one-screen-fg1" height="100%" :data="userList" border @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center"/>
           <!-- <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible"/> -->
-          <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true"/>
+          <el-table-column label="用户账号" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true"/>
           <el-table-column label="用户名称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true"/>
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true"/>
           <el-table-column label="班组" align="center" key="teamName" prop="dept.teamName" v-if="columns[7].visible" :show-overflow-tooltip="true"/>
@@ -191,6 +210,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
+            <el-form-item v-if="form.userId == undefined" label="确认密码" prop="confirmPassword">
+              <el-input v-model="form.confirmPassword" placeholder="请输入确认密码" type="password" maxlength="20" show-password/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio
@@ -292,6 +318,8 @@ export default {
       loading: false,
       // 选中数组
       ids: [],
+      // 用户名
+      nickNameList:[],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -379,6 +407,18 @@ export default {
           {min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur'},
           {pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur"}
         ],
+        confirmPassword: [
+          {
+            required: true,
+            trigger: 'blur',
+            message: '请再次输入新密码！'
+          },
+          {
+            trigger: ['blur'],
+            message: '两次输入密码不一致！',
+            validator: this.confirmPwdValidate
+          }
+        ],
         email: [
           {
             // required: true,
@@ -413,6 +453,49 @@ export default {
     // });
   },
   methods: {
+    handleBatchClick(type){
+      if(type=='end'){
+        this.$$Dialog.confirm(`确认要"停用""${this.nickNameList.join(',')}"用户吗？`, '提示', {
+          confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
+        }).then(() =>{
+          this.handleStatus('1')
+        })
+      }
+      if(type=='begin'){
+        this.$$Dialog.confirm(`确认要"启用""${this.nickNameList.join(',')}"用户吗？`, '提示', {
+          confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
+        }).then(() =>{
+          this.handleStatus('0')
+        })
+      }
+      if(type=='delete'){
+        this.handleDelete()
+      }
+      
+    },
+    handleStatus(type){
+      let showText=type=='0'?'启用成功':'停用成功'
+      let data={
+        "ids":this.ids,
+        status:type
+      }
+      this.$$api.user
+          .updataStatus({data: data})
+          .then(({ err}) => {
+            if (err) return this.loading = false;
+            this.getList();
+            this.$$Toast.success(showText);
+          });
+    }, 
+     // 确认密码校验
+     confirmPwdValidate (rul, value, callback){
+      if (value !== this.form.password) {
+        callback(new Error('两次输入密码不一致！'))
+      }
+      else if (value == this.form.password) {
+        callback()
+      }
+    },
     // 机构变动时清除选择的班组，班组名，角色，获取班组数据
     handelDeptIdChange(val) {
       this.form.parentId = undefined
@@ -525,6 +608,7 @@ export default {
         phonenumber: undefined,
         email: undefined,
         sex: undefined,
+        confirmPassword:undefined,
         status: "0",
         remark: undefined,
         // postIds: [],
@@ -549,6 +633,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.userId);
+      this.nickNameList=selection.map(item => item.nickName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
@@ -644,8 +729,14 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const userIds = row.userId || this.ids;
-      this.$$Dialog.confirm('是否确认删除用户名称为"' + row.nickName + '"的数据项？').then(() => {
+      const userIds = row?.userId || this.ids;
+      let showText=''
+      if(this.ids.length>0 && !row?.userId){
+        showText=this.nickNameList.join(',')
+      }else{
+        showText= row.nickName
+      }
+      this.$$Dialog.confirm('是否确认删除用户名称为"' + showText + '"的数据项？').then(() => {
         return this.$$api.user.delUser({userId: userIds});
       }).then(({res, err}) => {
         if (err) return;
@@ -691,3 +782,8 @@ export default {
   }
 };
 </script>
+<style scoped lang="scss">
+.queryItem {
+  width: 240px;
+}
+</style>

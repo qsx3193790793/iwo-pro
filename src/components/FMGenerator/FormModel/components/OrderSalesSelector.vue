@@ -11,11 +11,11 @@
       <!--      </div>-->
       <el-table v-loading="loading" :data="tableData" border style="width: 100%" max-height="320">
         <el-table-column type="index" label="序号" width="60"></el-table-column>
-        <el-table-column prop="offerName" label="销售品名称" width="220"></el-table-column>
+        <el-table-column prop="offerName" label="销售品名称" width="240"></el-table-column>
         <el-table-column prop="offerNbr" label="销售品编码"></el-table-column>
-        <el-table-column prop="prodName" label="产品名称" width="160"></el-table-column>
-        <el-table-column prop="effDate" label="生效时间"></el-table-column>
-        <el-table-column prop="expDate" label="失效时间"></el-table-column>
+        <el-table-column prop="prodName" label="产品名称"></el-table-column>
+        <el-table-column prop="effDate" label="生效时间" width="160"></el-table-column>
+        <el-table-column prop="expDate" label="失效时间" width="160"></el-table-column>
         <el-table-column label="操作" width="120" align="center">
           <template #default="{row}">
             <el-button type="text" size="mini" @click="confirm(row)">选择</el-button>
