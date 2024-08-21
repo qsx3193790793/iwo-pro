@@ -259,8 +259,6 @@ export default {
       open: false,
       // 部门名称
       deptName: undefined,
-      // 默认密码
-      initPassword: "123456",
       // 日期范围
       dateRange: [],
       // 岗位选项

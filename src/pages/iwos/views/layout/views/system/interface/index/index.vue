@@ -14,7 +14,10 @@
             {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_type', row.interfaceType) }}
           </template>
           <template #status="{row}">
-            <el-switch v-model="row.status" :inactive-value="0" :active-value="1" @change="handleStatusChange(row)"></el-switch>
+            <el-tag :type="row.status == 0?'danger':''">
+              {{ $store.getters['dictionaries/MATCH_LABEL']('start_stop', row.status) }}
+            </el-tag>
+            <!-- <el-switch v-model="row.status" :inactive-value="0" :active-value="1" @change="handleStatusChange(row)"></el-switch> -->
           </template>
         </JsTable>
         <div class="pagination-area">
@@ -105,14 +108,29 @@ let columns = ref({
       label: '选择', event: (row) => {
         proxy.$emit('onSelect', row);
       }
-    }] : [{
+    }] : [
+      {
       label: '编辑',
       key: 'edit',
       event: (row) => {
         select_pkid.value = {interfaceId: row.interfaceId};
         isShowAddDialog.value = !0;
       },
-    },
+     },
+     {
+       label: "启用",
+       key: "start",
+       type: "primary",
+       autoHidden: autoStartHidden,
+       event: handleStart,
+        },
+      {
+       label: "停用",
+       key: "end",
+       type: "danger",
+       autoHidden:autoEndHidden,
+       event: handleEnd,
+        },
     ],
   },
 })
@@ -131,7 +149,58 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
   list.value = res?.rows || [];
 };
-
+function autoStartHidden(val) {
+      if (val.row) {
+        return val.row.status == "0" ? true : false
+      } else {
+        return false;
+      }
+  }
+function autoEndHidden(val) {
+      if (val.row) {
+        return val.row.status == "1" ? true : false
+      } else {
+        return false;
+      }
+  }
+//启用
+function handleStart(row) {
+  proxy.$$Dialog
+    .confirm('是否确认启用接口名称为"' + row.interfaceName + '"的数据项？')
+    .then(() => {
+      let data = {
+        interfaceId: row.interfaceId,
+        status: 1
+      };
+      return proxy.$$api.interface.changeStatus({data: data});
+    })
+    .then(({res, err}) => {
+      if (err) return;
+      getList(1);
+      proxy.$$Toast.success("启用成功");
+    })
+    .catch(() => {
+    });
+}
+//停用
+function handleEnd(row) {
+  proxy.$$Dialog
+   .confirm('是否确认停用用接口名称为"' + row.interfaceName + '"的数据项？')
+   .then(() => {
+     let data = {
+      status: 0,
+      interfaceId: row.interfaceId
+     };
+     return proxy.$$api.interface.changeStatus({data: data});
+   })
+   .then(({res, err}) => {
+     if (err) return;
+     getList(1);
+     proxy.$$Toast.success("停用成功");
+   })
+   .catch(() => {
+   });
+}
 function handleSelectionChange(value) {
   selectionList.value = value
 }
@@ -148,19 +217,18 @@ function handleDel(row) {
   }).catch(proxy.$$emptyFn);
 }
 
-function handleStatusChange(row) {
-  let text = row.status === 1 ? "启用" : "停用";
-  proxy.$$Dialog.confirm('确认要"' + text + '""' + row.interfaceName + '"接口吗？').then(() => {
-    return proxy.$$api.interface.changeStatus({data: {status: row.status, interfaceId: row.interfaceId}});
-  }).then(({res, err}) => {
-    if (err) return;
-    getList(1);
-    proxy.$$Toast.success(text + "成功");
-  }).catch(function () {
-    row.status = row.status === 0 ? 1 : 0;
-  });
-}
-
+// function handleStatusChange(row) {
+//   let text = row.status === 1 ? "启用" : "停用";
+//   proxy.$$Dialog.confirm('确认要"' + text + '""' + row.interfaceName + '"接口吗？').then(() => {
+//     return proxy.$$api.interface.changeStatus({data: {status: row.status, interfaceId: row.interfaceId}});
+//   }).then(({res, err}) => {
+//     if (err) return;
+//     getList(1);
+//     proxy.$$Toast.success(text + "成功");
+//   }).catch(function () {
+//     row.status = row.status === 0 ? 1 : 0;
+//   });
+// }
 //弹窗
 const isShowAddDialog = ref(!1);
 const select_pkid = ref(null);

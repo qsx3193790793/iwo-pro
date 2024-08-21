@@ -276,8 +276,6 @@ export default {
       open: false,
       // 部门名称
       deptName: undefined,
-      // 默认密码
-      initPassword: "123456",
       // 日期范围
       dateRange: [],
       // 岗位选项
@@ -350,7 +348,7 @@ export default {
               key: "add",
               type: "success",
               autoHidden: ({row}) => {
-                return (row.level === 3 || row.level === 4) && row.isProvinceCustom === 1
+                return row.level === 3 || row.level === 4
               },
               event: this.handleAdd,
             },
@@ -358,7 +356,7 @@ export default {
               label: "编辑",
               key: "edit",
               autoHidden: ({row}) => {
-                return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                return row.level === 4 || row.level === 5
               },
               event: this.handleUpdate,
             },
@@ -371,7 +369,7 @@ export default {
                   key: "del",
                   type: "danger",
                   autoHidden: ({row}) => {
-                    return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                    return row.level === 4 || row.level === 5
                   },
                   event: this.handleDelete,
                 },
@@ -393,7 +391,7 @@ export default {
                   label: "详情",
                   key: "detail",
                   autoHidden: ({row}) => {
-                    return (row.level === 4 || row.level === 5) && row.isProvinceCustom === 1
+                    return row.level === 4 || row.level === 5 
                   },
                   event: this.handleDetail,
                 },
@@ -438,14 +436,14 @@ export default {
   methods: {
     autoStartHidden(val) {
       if (val.row) {
-        return (val.row.status == "0" ? true : false) && val.row.isProvinceCustom === 1;
+        return (val.row.status == "0" ? true : false) && (val.row.level === 4 || val.row.level === 5)
       } else {
         return false;
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return (val.row.status == "1" ? true : false) && val.row.isProvinceCustom === 1;
+        return (val.row.status == "1" ? true : false) && (val.row.level === 4 || val.row.level === 5)
       } else {
         return false;
       }
@@ -464,7 +462,7 @@ export default {
           .then(({res, err}) => {
             if (err) return;
             this.getList();
-            this.$$Toast.success("启动成功");
+            this.$$Toast.success("启用成功");
           })
           .catch(() => {
           });
@@ -558,8 +556,8 @@ export default {
       this.selectRow= selection[0]
       this.multiple = !selection.length
       this.single = selection.length != 1;
-      this.isAllowAdd=  !this.single && (selection[0]?.level === 2 && selection[0]?.isProvinceCustom === 1) ? false :true
-      this.isAllowDelet= !this.single &&( selection[0]?.level === 3 && selection[0]?.isProvinceCustom === 1)  ? false :true
+      this.isAllowAdd=  !this.single && selection[0]?.level === 2 ? false :true
+      this.isAllowDelet= !this.single && selection[0]?.level === 3  ? false :true
     },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {
