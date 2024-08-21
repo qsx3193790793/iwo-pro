@@ -754,7 +754,7 @@ export default {
     handleDelete(row) {
       const userIds = row.reasonId;
       this.$$Dialog
-          .confirm('是否确认删除投诉原因编码为"' + row.reasonCode + '"的数据项？')
+          .confirm('是否确认删除投诉原因编码为"' + row.reasonCode + '"的数据项？该层级下的子节点也将被删除')
           .then(() => {
             return this.$$api.complaintReason.delComplaintReason({params: {reasonId: userIds}});
           })

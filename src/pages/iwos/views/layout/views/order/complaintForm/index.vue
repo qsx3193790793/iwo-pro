@@ -38,6 +38,7 @@
       </div>
     </template>
     <el-empty v-else></el-empty>
+    <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog"  @success="getList(1)" v-bind="uploadConfig" ></importDialog>
     <!-- 添加或修改用户配置对话框 -->
     <!-- <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog> -->
   </div>
@@ -47,12 +48,18 @@
 import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
-
+import importDialog from './import/index.vue'
+import apiPrefix from "@/api/apiPrefix.js";
 const {proxy} = getCurrentInstance();
 const selectionChange = (val) => {
   console.log(val);
 };
-
+const uploadConfig=ref({
+  importUrl:`${apiPrefix("web")}/import/importWorkOrder`,
+  headers:{Authorization: "Bearer " + proxy.$$store.getters['user/GET_TOKEN']},
+  title:'工信部导入'
+})
+const isShowImportDialog=ref(false)
 const FormRef = ref();
 const submitForm = () => {
   FormRef.value.validate((valid) => {
@@ -337,6 +344,24 @@ const formConfigItems = ref([
           proxy.$router.push({name: 'ComplaintCreate'})
         },
       },
+      {
+        btnName: "工信部导入",
+        type: "button",
+        attrs: {type: "primary"},
+        col: 1,
+        onClick({vm}) {
+          isShowImportDialog.value= true
+        },
+      },
+      // {
+      //   btnName: "省管局导入",
+      //   type: "button",
+      //   attrs: {type: "primary"},
+      //   col: 1,
+      //   onClick({vm}) {
+      //     isShowImportDialog.value= true
+      //   },
+      // },
     ],
   },
 ]);

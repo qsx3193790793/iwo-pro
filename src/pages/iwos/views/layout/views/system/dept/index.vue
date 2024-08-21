@@ -165,6 +165,13 @@
           </el-col>
         </el-row>
         <el-row>
+          <el-col :span="24">
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="form.email" :placeholder="handleType=='detail'?'':'请输入邮箱'" maxlength="50"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
           <el-col :span="12">
             <el-form-item label="负责人" prop="leader">
               <el-input v-model="form.leader" :placeholder="handleType=='detail'?'':'请输入负责人'" maxlength="20"/>
@@ -178,10 +185,10 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" :placeholder="handleType=='detail'?'':'请输入邮箱'" maxlength="50"/>
+            <el-form-item label="显示排序" prop="orderNum">
+              <el-input-number v-model="form.orderNum" controls-position="right" :min="0"/>
             </el-form-item>
-          </el-col>
+        </el-col>
           <el-col :span="12">
             <el-form-item label="机构状态">
               <el-radio-group v-model="form.status">
@@ -254,6 +261,9 @@ export default {
         ],
         deptName: [
           {required: true, message: "机构名称不能为空", trigger: "blur"}
+        ],
+        orderNum: [
+          {required: true, message: "排序不能为空", trigger: "blur"}
         ],
         email: [
           {

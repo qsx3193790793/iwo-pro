@@ -6,6 +6,8 @@
         <JsTable :dataSource="list" :columns="columns">
           <template #updatedTime="{row}">
             {{ $$dateFormatter(row.updatedTime) }}
+          </template> <template #workorderType="{row}">
+            {{ $store.getters['dictionaries/MATCH_LABEL']('template_work_order_type', row.workorderType) }}
           </template>
           <template #bigType="{row}">
             {{ $store.getters['dictionaries/MATCH_LABEL']('template_big_type', row.bigType) }}
