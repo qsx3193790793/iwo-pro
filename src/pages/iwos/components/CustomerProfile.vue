@@ -105,6 +105,7 @@
 <script setup>
 import UserTag from "./UserTag.vue";
 import {getCurrentInstance, onBeforeMount, ref, watch} from "vue";
+import {getTypePrefix} from "@/pages/iwos/views/layout/views/system/template/config";
 
 const {proxy} = getCurrentInstance();
 const collapseHead = ref(['1']);
@@ -135,15 +136,14 @@ function reset() {
 
 const state = ref(reset());
 
+// '0': 'public',    '1': 'scene',    '2': 'ext',    '3': 'comm',
 async function diagnosisHandleInfo() {
-  if (!accNum.value) return;
+  if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
   const {res, err} = await proxy.$$api.complaint.diagnosisHandleInfo({data: {accNum: accNum.value}});
   if (res) {
     proxy.$emit('diagnosisChange', (res.fieldList || []).reduce((t, c) => {
-      // 场景字段type=1以$template$开头  通用扩展type=0&&ext.开头以$ext$开头 通用基础无前缀
-      if (c.type == 1) t[`$template$${c.name}`] = c.value;
-      else if (c.type == 0 && c.name.startsWith('ext.')) t[`$ext$${c.name.replace('ext.', '')}`] = c.value;
-      else t[`${c.name}`] = c.value;
+      if (c.type == 0) t[c.name] = c.value;
+      else t[`${getTypePrefix(c.type)}${c.name}`] = c.value;
       return t;
     }, {
       callId: res.callId, complaintDescription: res.complaintDescription
@@ -152,7 +152,7 @@ async function diagnosisHandleInfo() {
 }
 
 async function getInfo({isForce, from}) {
-  if (!accNum.value) return;
+  if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
   const {res, err} = await proxy.$$api.crm.getHNumber({params: {segment: accNum.value}});//segment
   if (res) {
     const [R1, R2] = await Promise.all([

@@ -125,7 +125,7 @@ export default {
       }
       this.$$api.role.authUserSelectAll({params: {roleId: roleId, userIds: userIds}}).then(({res, err}) => {
         if (err) return;
-        this.$$Toast.success(res.msg);
+        this.$$Toast.success('授权成功');
         this.visible = false;
         this.$emit("ok");
       });

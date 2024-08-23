@@ -47,6 +47,6 @@ export default async ({vm, item, value}) => {
   item.eventsFields.forEach(ef => {
     const v = vm.$$lodash.get(value || {}, ef.value);
     if (vm.$$isEmpty(v)) return;
-    vm.formData[`$template$${ef.label}`] = v;
+    vm.formData[`${ef.label}`] = v;
   });
 }

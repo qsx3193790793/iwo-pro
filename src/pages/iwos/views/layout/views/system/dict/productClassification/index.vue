@@ -226,6 +226,9 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
+        { col: 6, type: "divider-empty" },
+        { col: 6, type: "divider-empty" },
+        { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",
@@ -281,8 +284,8 @@ export default {
         selection: true,
         props: [
           {
-            name: "上级节点",
-            key: "parentNode",
+            name: "节点层级链",
+            key: "productChain",
           },
           {
             name: "投诉产品编码",
@@ -497,15 +500,7 @@ export default {
           })
           .then(({res: response, err}) => {
             if (err) return;
-            this.dataSource = response.rows.map((ele)=>{
-              if(this.currentNode?.productName){
-                ele.parentNode=this.currentNode?.productName
-              }else{
-                ele.parentNode='投诉产品'
-              }
-              return ele
-            })
-            // this.dataSource = response.rows;
+            this.dataSource = response.rows;
             this.total = response.total;
             this.loading = false;
           });

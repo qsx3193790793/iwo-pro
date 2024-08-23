@@ -207,6 +207,7 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
+        { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",

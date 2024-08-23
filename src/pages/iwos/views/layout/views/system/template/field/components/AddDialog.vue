@@ -12,7 +12,7 @@
 import Vue, {getCurrentInstance, ref, watch} from "vue";
 import MDialog from '@/components/MDialog';
 import FormModel from '@/components/FMGenerator/FormModel';
-import {options} from "@/pages/iwos/views/layout/views/system/template/config";
+import {options, optionsAll} from "@/pages/iwos/views/layout/views/system/template/config";
 
 const {proxy} = getCurrentInstance();
 
@@ -58,7 +58,7 @@ const formConfig = ref({
     {
       name: '',
       items: [
-        {name: '字段类型', key: 'type', value: '', col: 24, type: 'select', options, isDisable: !1, isRequire: !0},
+        {name: '字段类型', key: 'type', value: '', col: 24, type: 'select', options: props.pkid ? optionsAll : options, isDisable: props.pkid ? !0 : !1, isRequire: !0},
         {name: '字段标题', key: 'title', value: '', type: 'input', col: 24, isDisable: !1, isRequire: !0},
         {
           name: '字段名称', key: 'name', value: '', type: 'input', col: 24, isDisable: !1, isRequire: !0,

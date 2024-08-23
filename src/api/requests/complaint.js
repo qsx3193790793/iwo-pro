@@ -18,6 +18,10 @@ const apis = {
   listComplaint: {url: `${apiPrefix("web")}/createOrder/list`, method: "get"},
   //我的待办-待提交投诉单
   waitCommitList: {url: `${apiPrefix("web")}/createOrder/waitCommitList`, method: "get"},
+
+  // -------------------------------------------异常单--------------------------
+  abnormalformList: {url: `${apiPrefix("web")}/complaintWorkOrder/queryOrderReceiveFailList`, method: "get"},
+
   // -------------------------------------------归档--------------------------
   // 归档列表
   listOnFile: {url: `${apiPrefix("web")}/workOrder/archiveList`, method: "get"},
@@ -41,14 +45,14 @@ const apis = {
   updataOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/update`, method: 'post'},
   //修改启用、停用状态
   statusOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/updateStatus`, method: 'post'},
-   //工信部导入
-   miitImport: {url: `${apiPrefix('web')}/importWorkOrder/miit`, method: 'post'},
-   //省管局导入
-   provinceAuthorityImport: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthority`, method: 'post'},
+  //工信部导入
+  miitImport: {url: `${apiPrefix('web')}/importWorkOrder/miit`, method: 'post'},
+  //省管局导入
+  provinceAuthorityImport: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthority`, method: 'post'},
   //工信部模板下载
-  miitTemplate: {url: `${apiPrefix('web')}/importWorkOrder/miitTemplate`, method: 'post',responseType:'blob'},
+  miitTemplate: {url: `${apiPrefix('web')}/importWorkOrder/miitTemplate`, method: 'post', responseType: 'blob'},
   //省管局模板下载
-  provinceAuthorityTemplate: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthorityTemplate`, method: 'post',responseType:'blob'},
+  provinceAuthorityTemplate: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthorityTemplate`, method: 'post', responseType: 'blob'},
 };
 
 export default apiGenerator(apis);

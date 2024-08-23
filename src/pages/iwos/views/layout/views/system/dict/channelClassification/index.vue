@@ -238,6 +238,9 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
+        { col: 6, type: "divider-empty" },
+        { col: 6, type: "divider-empty" },
+        { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",
@@ -289,8 +292,8 @@ export default {
         selection: true,
         props: [
           {
-            name: "上级节点",
-            key: "parentNode",
+            name: "节点层级链",
+            key: "channelChain",
           },
           {
             name: "渠道编码",
@@ -441,15 +444,7 @@ export default {
           })
           .then(({res: response, err}) => {
             if (err) return;
-            this.dataSource = response.rows.map((ele)=>{
-              if(this.currentNode?.channelName){
-                ele.parentNode=this.currentNode?.channelName
-              }else{
-                ele.parentNode='发展渠道'
-              }
-              return ele
-            })
-            // this.dataSource = response.rows;
+            this.dataSource = response.rows;
             this.total = response.total;
             this.loading = false;
           });

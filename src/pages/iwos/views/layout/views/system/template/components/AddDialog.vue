@@ -34,6 +34,7 @@ import FormModel from '@/components/FMGenerator/FormModel';
 import FMDesigner from "@/components/FMGenerator/FMDesigner";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config";
 import QuoteComponent from '../index';
+import {getTypePrefix} from "../config";
 
 const {proxy} = getCurrentInstance();
 
@@ -47,7 +48,6 @@ const emitter = defineEmits(['success']);
 const tabActive = ref('基本信息');
 
 function tabBeforeLeave(activeName, oldActiveName) {
-  console.log(activeName, oldActiveName)
   return new Promise((rs, rj) => {
     if (activeName === '表单设计') return FormModelRef.value?.validator(rs, () => {
       proxy.$$Toast({message: `请先完整填写基本信息`, type: 'error'});
@@ -65,9 +65,15 @@ const quoteTemplateList = ref([]);
 async function getSceneForm(vm) {
   const formData = vm.getFormData();
   // 场景编码：投诉来源或投诉现象的编码，如果选择了产品需要合并一起。例如：现象编码末级:产品编码(10001:2010)
-  const sceneCode = [formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0], formData.productCode?.[0]].filter(v => !!v).join(':');
+  const sceneCode = [
+    formData.workorderType,
+    formData.bigType,
+    formData.smallType,
+    formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0],
+    formData.productCode?.[0]
+  ].filter(v => !!v).join(':');
   if (!sceneCode) return quoteTemplateList.value = [];
-  const {res, err} = await proxy.$$api.template.getSceneForm({sceneCode});
+  const {res, err} = await proxy.$$api.template.getSceneForm({sceneCode, smallType: formData.smallType, workorderType: formData.workorderType});
   quoteTemplateList.value = (res?.list || []).map(r => ({title: r.formName, json: JSON.parse(r.formContent || 'null')}));
 }
 
@@ -76,10 +82,7 @@ const detailFormConfig = ref(null);//详情json
 //设计器获取字段名下拉
 function getFieldsArray() {
   return FormModelRef.value?.formData?.fieldList?.map(r => {
-    let name = r.name;
-    // 场景字段type=1无开头  通用扩展type=0&&ext.开头以$ext$开头 通用基础$public$
-    if (r.type == 0 && r.name.startsWith('ext.')) name = `$ext$${r.name.replace('ext.', '')}`;
-    else if (r.type == 0) name = `$public$${r.name}`;
+    let name = `${getTypePrefix(r.type)}${r.name}`;
     return {label: `${r.title}(${name})`, value: name}
   }) || [];
 }
@@ -123,8 +126,7 @@ async function handleRelease(DialogRef, formData) {
 const onRelease = DialogRef => {
   proxy.$$Dialog.confirm('确认发布吗？', '提示').then(async () => {
     const formData = FormModelRef.value?.getFormData();
-    console.log(formData)
-    const {res, err} = await proxy.$$api.template.releaseCheck({sceneCode: formData.sceneCode, templateType: formData.bigType});
+    const {res, err} = await proxy.$$api.template.releaseCheck({sceneCode: formData.sceneCode, bigType: formData.bigType, workorderType: formData.workorderType});
     if (err) return;
     if (res.value) return proxy.$$Dialog.confirm('存在已经发布的模板，是否继续发布？', '提示').then(async () => {
       handleRelease(DialogRef, formData);
@@ -156,9 +158,15 @@ const onSubmit = DialogRef => {
           const {res, err} = await proxy.$$api.template[props.pkid ? 'update' : 'create']({
             data: Object.assign({}, formData, {
               fieldList: formData.fieldList.map(fl => fl.fieldId),
-              // 场景编码：投诉来源或投诉现象的编码，如果选择了产品需要合并一起。例如：现象编码末级:产品编码(10001:2010)
-              sceneCode: [formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0], formData.productCode?.[0]].filter(v => !!v).join(':'),
-              formContent: JSON.stringify(FMDesignerRef.value.getJson())
+              formContent: JSON.stringify(FMDesignerRef.value.getJson()),
+              // 场景编码：工单类型：大类：小类：现象或来源末级:产品编码(111:1111:111:10001:2010)
+              sceneCode: [
+                formData.workorderType,
+                formData.bigType,
+                formData.smallType,
+                formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0],
+                formData.productCode?.[0]
+              ].filter(v => !!v).join(':') || null,
             })
           });
           if (err) return proxy.$$Toast({message: res?.msg || `操作失败`, type: 'error'});
@@ -211,18 +219,21 @@ const formConfig = ref({
         {name: '工单类型', key: 'workorderType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_work_order_type'), isDisable: !1, isRequire: !0},
         {name: '模板大类', key: 'bigType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !0},
         {
-          name: '模板小类', key: 'smallType', value: '0', type: 'radio', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !0,
+          name: '模板小类', key: 'smallType', value: 'TPL0100', type: 'radio', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !0,
           onChange({vm}) {
             vm.formData.productCode = [];
             vm.formData.sceneLevelCode = [];
           }
         },
         {
-          name: ({vm}) => (vm.formData.smallType === '0' ? '投诉现象' : '投诉来源'), key: 'sceneLevelCode', value: [], type: 'cascader', isDisable: !1, isRequire: !0,
-          options: ({vm}) => vm.formData.smallType === '0' ? proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree') : proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree'),
+          name: ({vm}) => (vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'), key: 'sceneLevelCode', value: [], type: 'cascader', isDisable: !1, isRequire: !0,
+          options: ({vm}) => vm.formData.smallType === 'TPL0100' ? proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree') : proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree'),
           attrs: {props: {checkStrictly: !0}},
           onChange({vm}) {
             getSceneForm(vm);
+          },
+          isShow({vm}) {
+            return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
           }
         },
         {
@@ -230,7 +241,7 @@ const formConfig = ref({
           options: ({vm}) => proxy.$store.getters['dictionaries/GET_DICT']('complaint_product_tree_level_1'),
           attrs: {props: {checkStrictly: !0}},
           isShow({vm}) {
-            return vm.formData.smallType === '0';
+            return ['TPL0100'].includes(vm.formData.smallType);
           },
           onChange({vm}) {
             getSceneForm(vm);
@@ -240,8 +251,18 @@ const formConfig = ref({
         {name: '表单模板名称', key: 'formName', value: '', placeholder: '', type: 'input', isDisable: !1, isRequire: !0},
         {name: '描述', key: 'templateDesc', value: '', placeholder: '', type: 'input', isDisable: !1, isRequire: !0},
         {name: '字段列表', key: 'fieldList', value: [], placeholder: '', col: 24, type: 'component', component: FieldSelector, isDisable: !1, isRequire: !1},
-        {type: 'alert', col: 24, description: '请在字段列表中点击插入按钮，会自动插入到模板内容光标停留处。', title: '提示'},
-        {name: '模板内容', key: 'verbalTrickContent', value: '', type: 'textarea', rows: 5, col: 24, isDisable: !1, isRequire: !0},
+        {
+          type: 'alert', col: 24, description: '请在字段列表中点击插入按钮，会自动插入到模板内容光标停留处。', title: '提示',
+          isShow({vm}) {
+            return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
+          }
+        },
+        {
+          name: '模板内容', key: 'verbalTrickContent', value: '', type: 'textarea', rows: 5, col: 24, isDisable: !1, isRequire: !0,
+          isShow({vm}) {
+            return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
+          }
+        },
       ]
     }
   ],

@@ -12,7 +12,7 @@ export default ({vm, item}) => {
       verbalTrickContent = verbalTrickContent.replace(key, vm.$$lodash.get(formData, `${rk.replace('$public$', ``)}`) ?? '');
       return;
     }
-    verbalTrickContent = verbalTrickContent.replace(key, formData[`$template$${rk}`] ?? '');
+    verbalTrickContent = verbalTrickContent.replace(key, formData[`${rk}`] ?? '');
   });
   vm.formData['complaintInfo'] = verbalTrickContent;
 }

@@ -1,3 +1,5 @@
+import {getTypePrefix} from "@/pages/iwos/views/layout/views/system/template/config";
+
 export const key = 'complaint_init';
 export const label = '投诉单_初始化';
 
@@ -101,7 +103,7 @@ export default async ({vm, item}) => {
     vm.$emit('onFormLoaded', vm.getFormData());
     await vm.expandFormConfigItems.find(efci => efci.key === 'complaintPhenomenonLevel')?.onChange({
       vm,
-      value: complaintAssistVoList.reduce((t, c) => ((t[`$template$${c.fieldName}`] = c.fieldValue ?? null), t), {})
+      value: complaintAssistVoList.reduce((t, c) => ((t[`${c.fieldType == '0' ? '' : getTypePrefix(c.fieldType || '1')}${c.fieldName}`] = c.fieldValue ?? null), t), {})
     });
     vm.expandFormConfigItems.find(efci => efci.key === 'workorderStrictest')?.onChange({vm, value: {workorderStrictestScene: vm.formData.workorderStrictestScene}});
   }

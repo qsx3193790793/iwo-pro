@@ -7,7 +7,7 @@
       <el-table-column label="字段说明" prop="comment" show-overflow-tooltip resizable></el-table-column>
       <el-table-column label="字段类型" prop="type" show-overflow-tooltip resizable>
         <template #default="{row}">
-          {{ $store.getters['dictionaries/MATCH_LABEL']('template_field_type', row.type) }}
+          {{ type2name(row.type) }}
         </template>
       </el-table-column>
       <el-table-column v-if="!root.vm.disabled" align="center" width="440">
@@ -19,7 +19,7 @@
           <el-button class="quote-trigger" type="text" icon="el-icon-document-copy" @click="isQuoteTemplateShow=!0" title="复用已配置的模板字段列表和模板内容">复用</el-button>
         </template>
         <template #default="{ row,$index }">
-          <el-button type="primary" @click="handleInsert(row)">插入</el-button>
+          <el-button v-if="['TPL0100', 'TPL0101'].includes(root.vm.formData.smallType)" type="primary" @click="handleInsert(row)">插入</el-button>
           <el-button type="danger" @click="handleDelete(row,$index)">删除</el-button>
         </template>
       </el-table-column>
@@ -38,9 +38,9 @@ import {computed, getCurrentInstance, ref} from "vue";
 import MDialog from '@/components/MDialog';
 import QuoteComponent from '../index';
 import BatchQuoteComponent from '../field/index';
+import {getTypePrefix, type2name} from "../config";
 
 const {proxy} = getCurrentInstance();
-
 const props = defineProps({
   root: {type: Object, default: null},
   value: {type: Array, default: () => []},
@@ -79,7 +79,7 @@ function handleInsert(row) {
   const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[0]?.$refs?.textarea;
   if (!textarea) return;
   const arr = textarea.value.split('');
-  arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, `{{${row.type == '0' ? '$public$' : ''}${row.name}}}`);
+  arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, `{{${getTypePrefix(row.type)}${row.name}}}`);
   props.root.vm.formData.verbalTrickContent = arr.join('');
 }
 

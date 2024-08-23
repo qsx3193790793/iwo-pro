@@ -36,14 +36,13 @@ export default async ({vm, value = null}) => {
   if (complaintPhenomenonLevel) {
     const sceneCode = [complaintPhenomenonLevel, productLevel].filter(v => !!v).join(':');
     // const formModel = parseFormModel(testT);
-    // 将模板key和其他表单区分开 把key加个$template$
-    const {res, err} = await vm.$$api.template.formMock({loading: false, sceneCode, templateType: '0'});
+    const {res, err} = await vm.$$api.template.formMock({loading: false, sceneCode, bigType: 'TPL0001', workorderType: 'BUS0001'});
     if (res?.formContent) {
       const formModel = parseFormModel(JSON.parse(res.formContent));
       vm.formData.verbalTrickContent = res.verbalTrickContent || '';
-      vm.formConfig.appendItems = formModel.items.map(it => (it.items.forEach(itt => itt.key = `$template$${itt.key}`), it));
-      await formModel?.onLoad({vm});
-      value && vm.$nextTick(() => vm.initFormData(value));//若详情有值才会赋值操作
+      vm.formConfig.appendItems = formModel.items.map(it => (it.items.forEach(itt => itt.key = `${itt.key}`), it));
+      //若详情有值才会赋值操作 否则onload
+      value ? vm.$nextTick(() => vm.initFormData(value)) : await formModel?.onLoad({vm});
       return;
     }
   }

@@ -37,6 +37,17 @@
               }}
             </div>
           </template>
+          <template #statusCd="scope">
+            <div>
+              {{
+                $store.getters["dictionaries/MATCH_LABEL"](
+                  "jy_complaint_status_cd",
+                  scope.row.statusCd
+                )
+              }}
+            </div>
+          </template>
+          
         </JsTable>
         <div class="pagination-area">
           <el-pagination
@@ -110,7 +121,7 @@ const submitForm = () => {
       state.value.form.taskList = selectData.value.map((ele) => {
         let item = {
           taskId: ele.taskId,
-          workorderId: ele.workorderId,
+          complaintWorksheetId: ele.complaintWorksheetId,
         };
         return item;
       });
@@ -162,7 +173,7 @@ let state = ref({
       },
       {
         name: "工单状态",
-        key: "orderStatus",
+        key: "statusCd",
       },
       {
         name: "省",
@@ -184,40 +195,9 @@ let state = ref({
       //   format: 'default',
       // },
     ],
-    // options: {
-    //   width:120,
-    //   btns: [
-    //     {
-    //       label: '开启路由',
-    //       key: 'change',
-    //       event: change,
-    //     },
-    //     {
-    //       label: '编辑',
-    //       key: 'eidt',
-    //       event: edit,
-    //     },
-    //   ],
-    // },
   },
   dataSource: [],
 });
-// onMounted(() => {
-//   state.value.dataSource = [
-//     {
-//       id: "8888888888888",
-//       ordernumber: "TS202600025205",
-//       createTime: "1",
-//       complaintNumber: "1",
-//       phone: "1",
-//       orderStatus: "1",
-//       orderType: "1",
-//       phenomenon: "1",
-//       acceptanceContent: "1",
-//       closingContent: "1",
-//     },
-//   ];
-// });
 const PageSearchPanelRef = ref();
 const pageInfo = ref({ pageNum: 1, pageSize: 15, rowCount: 0 });
 
@@ -438,7 +418,7 @@ onBeforeMount(() => {
 <script>
 export default {
   name: "ComplaintForm",
-  cusDicts: ["search_order_type", "base_province_code"],
+  cusDicts: ["search_order_type", "base_province_code",'jy_complaint_status_cd'],
 };
 </script>
 <style lang="scss" scoped></style>

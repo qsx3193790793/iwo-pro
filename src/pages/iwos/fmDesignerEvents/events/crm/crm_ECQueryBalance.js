@@ -48,6 +48,6 @@ export default async ({vm, eventsFields}) => {
   eventsFields.forEach(ef => {
     const v = vm.$$lodash.get(res?.accountInfoList?.[0] || {}, ef.value);
     if (vm.$$isEmpty(v)) return;
-    vm.formData[`$template$${ef.label}`] = v;
+    vm.formData[`${ef.label}`] = v;
   });
 }

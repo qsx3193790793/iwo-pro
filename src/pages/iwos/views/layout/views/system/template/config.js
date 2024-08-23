@@ -21,8 +21,13 @@ export const TYPE_PREFIX = {
 export const options = [
   {label: '通用', value: '3'},
   {label: '场景', value: '1'},
-  // {label: '0', value: '0'},
-  // {label: '2', value: '2'},
+];
+
+export const optionsAll = [
+  {label: '通用', value: '3'},
+  {label: '场景', value: '1'},
+  {label: '通用', value: '0'},
+  {label: '通用', value: '2'},
 ];
 
 export const type2name = function (type) {

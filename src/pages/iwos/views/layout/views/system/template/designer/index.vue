@@ -6,6 +6,7 @@
 import FMDesigner from "@/components/FMGenerator/FMDesigner";
 import {getCurrentInstance, onBeforeMount, ref} from "vue";
 import QuoteComponent from '../index';
+import {getTypePrefix} from "../config";
 
 const {proxy} = getCurrentInstance();
 
@@ -16,18 +17,15 @@ const detail = ref()
 //设计器获取字段名下拉
 function getFieldsArray() {
   return detail.value?.fieldConfigs?.map(r => {
-    let name = r.name;
-    // 场景字段type=1无开头  通用扩展type=0&&ext.开头以$ext$开头 通用基础$public$
-    if (r.type == 0 && r.name.startsWith('ext.')) name = `$ext$${r.name.replace('ext.', '')}`;
-    else if (r.type == 0) name = `$public$${r.name}`;
+    let name = `${getTypePrefix(r.type)}${r.name}`;
     return {label: `${r.title}(${name})`, value: name}
   }) || [];
 }
 
 const quoteTemplateList = ref([]);
 
-async function getSceneForm(sceneCode) {
-  const {res, err} = await proxy.$$api.template.getSceneForm({sceneCode});
+async function getSceneForm(sceneCode, smallType, workorderType) {
+  const {res, err} = await proxy.$$api.template.getSceneForm({sceneCode, smallType, workorderType});
   quoteTemplateList.value = (res?.list || []).map(r => ({title: r.formName, json: JSON.parse(r.formContent || 'null')}));
 }
 
@@ -35,7 +33,7 @@ async function getDetail() {
   const {res, err} = await proxy.$$api.template.detail(proxy.$route.params)
   if (err) return;
   detail.value = res;
-  if (detail.value.sceneCode) getSceneForm(detail.value.sceneCode);
+  if (detail.value.sceneCode) getSceneForm(detail.value.sceneCode, detail.value.smallType, detail.value.workorderType);
   if (res?.formTemplateConfig?.formContent) {
     FMDesignerRef.value.loadJson(JSON.parse(res.formTemplateConfig.formContent));
   }

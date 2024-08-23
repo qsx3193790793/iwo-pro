@@ -1,38 +1,10 @@
 <template>
   <div class="app-container one-screen">
+    <!-- noBackground -->
     <PageSearchPanel
       ref="PageSearchPanelRef"
       :formConfigItems="formConfigItems"
-      noBackground
     ></PageSearchPanel>
-
-    <!-- <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermission="['system:dict:add']"
-          >新增
-        </el-button>
-      </el-col>
-
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="state.multiple"
-          @click="handleDelete"
-          v-hasPermission="['system:dict:remove']"
-          >删除
-        </el-button>
-      </el-col> -->
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    <!-- </el-row> -->
     <JsTable
       :dataSource="state.dataSource"
       :columns="state.columns"
@@ -178,12 +150,13 @@ const formConfigItems = ref([
     col: 6,
     type: "cascader",
     options: () =>
-      proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"),
+      proxy.$store.getters["dictionaries/GET_DICT"]("complaintSourceTree"),
     attrs: { props: { checkStrictly: !0 } },
     isDisable: !1,
     isRequire: !1,
   },
-  // { col: 6, type: "divider-empty" },
+  { col: 6, type: "divider-empty" },
+  { col: 6, type: "divider-empty" },
   {
     type: "buttons",
     verticalAlign:'top',
@@ -326,7 +299,7 @@ const listComplaintSourceTree = async () => {
     await proxy.$$api.complaintSource.listComplaintSourceTree({data:{status:1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
-    complaint_source_tree: proxy.$$formatCascaderTree(
+    complaintSourceTree: proxy.$$formatCascaderTree(
       res?.list || [],
       "sourceName",
       "sourceCode",

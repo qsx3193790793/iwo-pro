@@ -44,7 +44,7 @@
           <el-form-item label="状态" prop="status">
             <el-select
                 v-model="queryParams.status"
-                placeholder="用户状态"
+                placeholder="班组状态"
                 clearable
                 class="queryItem"
             >
@@ -64,9 +64,8 @@
         </el-form>
 
         <el-table v-if="refreshTable" v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="teamList" row-key="teamId" :default-expand-all="isExpandAll" :tree-props="{children: 'children', hasChildren: 'hasChildren'}" border>
-          <el-table-column label="机构名称" align="center" prop="dept.deptName"/>
           <el-table-column label="班组名称" align="center" prop="teamName"/>
-        
+          <el-table-column label="所属机构" align="center" prop="dept.deptName"/>
           <el-table-column label="状态" align="center" prop="status">
             <template slot-scope="{row}">
               {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', row.status) }}

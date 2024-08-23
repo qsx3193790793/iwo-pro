@@ -33,8 +33,7 @@ export const interfaceCompiler = async ({vm, value, item, opts}) => {
       requestParam: JSON.stringify((opts.interfaceReqParams || []).reduce((t, c) => {
         // 目前模板配置三类型取值 $public$开头-通用字段  $ext$开头-扩展字段 其他默认场景字段
         if (c.value.startsWith('$public$')) vm.$$lodash.set(t, c.label, formData[c.value.replace('$public$', '')]);
-        else if (c.value.startsWith('$ext$')) vm.$$lodash.set(t, c.label, formData[c.value]);
-        else vm.$$lodash.set(t, c.label, formData[`$template$${c.value}`]);
+        else vm.$$lodash.set(t, c.label, formData[c.value]);
         return t;
       }, {}))
     }
@@ -44,8 +43,7 @@ export const interfaceCompiler = async ({vm, value, item, opts}) => {
     const v = vm.$$lodash.get(res || {}, ef.value);
     if (vm.$$isEmpty(v)) return;
     if (ef.label.startsWith('$public$')) formData[ef.label.replace('$public$', '')] = v;
-    else if (ef.label.startsWith('$ext$')) vm.formData[ef.label] = v;
-    else vm.formData[`$template$${ef.label}`] = v;
+    else vm.formData[ef.label] = v;
   });
 }
 

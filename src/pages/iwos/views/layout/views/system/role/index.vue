@@ -52,8 +52,9 @@
             end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item>
-        
+      <el-row type="flex"  justify="end">
+        <el-col :span="6">
+          <el-form-item>
         <el-button  size="small" @click="resetQuery"
         >重置
         </el-button
@@ -103,6 +104,9 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-form-item>
+        </el-col>
+      </el-row>
+    
     </el-form>
 
     <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">

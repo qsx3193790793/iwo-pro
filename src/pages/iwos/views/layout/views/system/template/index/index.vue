@@ -191,7 +191,7 @@ let columns = ref({
                 autoHidden: ({row}) => row.statusName === '上架',
                 event: (row) => {
                   proxy.$$Dialog.confirm('确认下架吗？', '提示').then(async () => {
-                    const {res, err} = await proxy.$$api.template.soldOut({data: {versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.bigType, unsanctionedDesc: ''}});
+                    const {res, err} = await proxy.$$api.template.soldOut({data: {versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.bigType, workorderType: row.workorderType, unsanctionedDesc: ''}});
                     if (err) return;
                     getList(1);
                     proxy.$$Toast({message: `操作成功`, type: 'success'});

@@ -33,9 +33,10 @@
 <script>
 import importDialog from '../import/index.vue'
 import apiPrefix from "@/api/apiPrefix.js";
+
 export default {
   name: "FileUploader",
-  components:{
+  components: {
     importDialog
   },
   props: {
@@ -44,20 +45,23 @@ export default {
     requirementType: {type: String, default: ''},
     accept: {type: Array, default: () => ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'image/gif', 'image/jpeg', 'image/png', 'image/jpeg', 'application/pdf', 'text/plain']},
     acceptNames: {type: Array, default: () => ['png', 'jpg', 'jpeg', 'gif', 'pdf', 'xlsx', 'xls', 'doc', 'docx', 'txt']},
-    root:{type:Object, default:()=>{}}
+    root: {
+      type: Object, default: () => {
+      }
+    }
   },
   data() {
     return {
       loading: false,
       fileData: [],
       isShowImportDialog: false,
-      attachDesc:'',
-      uploadConfig:{
-        uploadTip:"提示:仅允许导入'png','jpg', 'jpeg', 'gif', 'pdf', 'xlsx', 'xls', 'doc', 'docx', 'txt'格式文件!",
+      attachDesc: '',
+      uploadConfig: {
+        uploadTip: "提示:仅允许导入'png','jpg', 'jpeg', 'gif', 'pdf', 'xlsx', 'xls', 'doc', 'docx', 'txt'格式文件!",
         title: '附件上传',
         showTemplateDownload: false,
-        sureBtnName:'上传',
-        httpRequest:(e)=>{
+        sureBtnName: '上传',
+        httpRequest: (e) => {
           this.fileUpload(e)
         }
       }
@@ -65,14 +69,14 @@ export default {
   },
   methods: {
     async getFileList() {
-      if(this.$route.params.workorderId){
+      if (this.$route.params.workorderId) {
         this.loading = true;
-        const {res} = await this.$$api.file.fileList({workorderId:this.$route.params.workorderId});
+        const {res} = await this.$$api.file.fileList({workorderId: this.$route.params.workorderId});
         this.fileData = res?.list || [];
         this.loading = false;
       }
     },
-    addFile(){
+    addFile() {
       this.attachDesc = ''
       this.isShowImportDialog = true
     },
@@ -84,25 +88,25 @@ export default {
       formdata.append('workOrderType', this.root.root.vm.formData.workorderType)
       formdata.append('workOrderStage', this.root.root.vm.formData.statusCd ? this.root.root.vm.formData.statusCd : 'C100001')
       const {res, err} = await this.$$api.file.fileUpload({data: formdata});
-      if(err) return  this.$message({message: err?.message || '附件上传失败', type: 'error'});
-      this.fileData.push({...res,isNewUpload:true})
+      if (err) return this.$message({message: err?.message || '附件上传失败', type: 'error'});
+      this.fileData.push({...res, isNewUpload: true})
       //更新表单附件ids
       this.root.root.vm.initFormData({
-          workOrderAttachmentIdList: this.fileData.map(item=>item.attId)
+        workOrderAttachmentIdList: this.fileData.map(item => item.attId)
       });
       this.isShowImportDialog = false
     },
-    async fileDownload({attId,attachName,attachFileType}) {
+    async fileDownload({attId, attachName, attachFileType}) {
       this.$message({message: '正在下载，请稍后查看', type: 'success'})
-      const {res, err} = await this.$$api.file.fileDownload({params: {attachmentId:attId}});
-      console.log('res',res);
-      this.$$downloadFile(URL.createObjectURL(res.blob), attachName+attachFileType);
+      const {res, err} = await this.$$api.file.fileDownload({params: {attachmentId: attId}});
+      console.log('res', res);
+      this.$$downloadFile(URL.createObjectURL(res.blob), attachName + attachFileType);
     },
     async fileDelete(row) {
-      const {res,err} = await this.$$api.file.fileDelete({attIds:row.attId});
-      if(err) return  this.$message({message: err?.message || '附件删除失败', type: 'error'});
+      const {res, err} = await this.$$api.file.fileDelete({attIds: row.attId});
+      if (err) return this.$message({message: err?.message || '附件删除失败', type: 'error'});
       this.$message({message: '附件删除成功', type: 'success'})
-      this.fileData=this.fileData.filter(item=> item.attId!==row.attId) 
+      this.fileData = this.fileData.filter(item => item.attId !== row.attId)
     }
   },
   created() {

@@ -4,6 +4,7 @@ export const key = 'complaint_submit';
 export const label = '投诉单_提交';
 
 export default ({vm, item}) => {
+  console.log('vm', vm)
   const formData = vm.getFormData();
   // 发展渠道
   const {path: developChannelLevelPath, pathLabels: developChannelLevelPathLabels} = vm.$refs.developChannelLevel?.[0]?.getCheckedNodes()?.[0] || {};
@@ -42,29 +43,34 @@ export default ({vm, item}) => {
   // 状态
   vm.$$lodash.set(formData, 'statusCd', 'C200001');//处理中
 
+  // 扩展字段
+  const ext = {};
+  vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$ext$')).reduce((t, efci) => ((t[efci.key.replace('$ext$', '')] = formData[efci.key] ?? null), t), ext);
 
   //场景字段
-  const complaintAssistList = vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$template$')).map(efci => ({
-    fieldTitle: efci.name, fieldName: efci.key.replace('$template$', ''), fieldValue: formData[efci.key] ?? null
+  const complaintAssistList = vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$scene$') || efci.key?.startsWith('$comm$')).map(efci => ({
+    fieldTitle: efci.name, fieldName: efci.key.replace(/\$scene\$|\$comm\$/g, ''), fieldValue: formData[efci.key] ?? null, fieldType: efci.key?.startsWith('$comm$') ? '3' : '1'
   }));
-   
+
+  // 附件
+  const workOrderAttachmentIdList = formData.workOrderAttachmentIdList || [];
+
   console.log('complaint_submit', formData)
   vm.validator(
     () => {
       vm.$$Dialog.confirm(`你确定要提交吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
-         // 获取流程id并赋值
-        const {res:ProcessRes, err:ProcessRrr} =await  vm.$$api.complaint.getProcessDefinitionId({
-          params:{
-           code: formData?.workorderType
-         }
-       });
-       if (ProcessRrr) return vm.$$Toast({message: `获取流程ID失败`, type: 'error'});
+        // 获取流程id并赋值
+        const {res: ProcessRes, err: ProcessRrr} = await vm.$$api.complaint.getProcessDefinitionId({
+          params: {
+            code: formData?.workorderType
+          }
+        });
+        if (ProcessRrr) return vm.$$Toast({message: `获取流程ID失败`, type: 'error'});
         // 提交参数
         const {res, err} = await vm.$$api.complaint.saveComplaintWorkOrder({
           data: {
-            complaint: formData,
-            processDefinitionId:ProcessRes.processDefinitionId,
-            complaintAssistList
+            complaint: formData, ext, complaintAssistList, workOrderAttachmentIdList,
+            processDefinitionId: ProcessRes.processDefinitionId,
           }
         });
         if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});

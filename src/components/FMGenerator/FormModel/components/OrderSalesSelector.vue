@@ -59,9 +59,7 @@ function confirm(row) {
 function open() {
   const bindKeys = proxy.root.item.reqFields?.[0];
   const formData = proxy.root.vm.getFormData();
-  //取模板字段 +上$template$
-  const orderId = proxy.$$lodash.get(formData, `$template$${bindKeys.value}`);
-  console.log('orderId', bindKeys, orderId, proxy.root.vm.formData);
+  const orderId = proxy.$$lodash.get(formData, bindKeys.value);
   if (!orderId) return proxy.$$Toast({message: `请先填写订单编号或订单流水`, type: 'error'});
   modelIsShow.value = !0
 }
@@ -73,9 +71,7 @@ const getList = async () => {
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   const bindKeys = proxy.root.item.reqFields?.[0];
   const formData = proxy.root.vm.getFormData();
-  //取模板字段 +上$template$
-  const orderId = proxy.$$lodash.get(formData, `$template$${bindKeys?.value || ''}`);
-  console.log('orderId', bindKeys, orderId, proxy.root.vm.formData);
+  const orderId = proxy.$$lodash.get(formData, bindKeys.value);
   const {res, err} = await proxy.$$api.crm.customerOrderDetail({
     data: Object.assign({orderId}, {lanId: lanIdInfo.lanid, prodClass: accType})
   });

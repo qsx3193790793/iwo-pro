@@ -8,13 +8,13 @@ const apis = {
   // 详细
   detail: {url: (args) => `${apiPrefix('config')}/template/detail/${args.templateId ?? ''}/${args.versionId ?? ''}`, method: 'get'},
   // 查询模板表单
-  form: {url: (args) => `${apiPrefix('config')}/template/form/${args.sceneCode ?? ''}/${args.bigType ?? ''}`, method: 'get'},
+  form: {url: (args) => `${apiPrefix('config')}/template/form/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
   // 查询模板表单 测试用 无视审核
-  formMock: {url: (args) => `${apiPrefix("config")}/template/formMock/${args.sceneCode ?? ''}/${args.templateType ?? '0'}`, method: "get"},
+  formMock: {url: (args) => `${apiPrefix("config")}/template/formMock/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: "get"},
   // 上架模板校验
-  releaseCheck: {url: (args) => `${apiPrefix('config')}/template/releaseCheck/${args.sceneCode ?? ''}/${args.templateType ?? ''}`, method: 'get'},
+  releaseCheck: {url: (args) => `${apiPrefix('config')}/template/releaseCheck/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
   // 创建模板校验
-  createCheck: {url: (args) => `${apiPrefix('config')}/template/createCheck/${args.sceneCode ?? ''}/${args.templateType ?? ''}`, method: 'get'},
+  createCheck: {url: (args) => `${apiPrefix('config')}/template/createCheck/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
   // 创建模板
   create: {url: `${apiPrefix('config')}/template/create`},
   // 修改
@@ -34,7 +34,7 @@ const apis = {
   // 回退
   rollback: {url: `${apiPrefix('config')}/template/rollback`},
   // 根据投诉现象或投诉来源查询模板表单信息
-  getSceneForm: {url: (args) => `${apiPrefix('config')}/template/sceneForm/${args?.sceneCode ?? ''}`, method: 'get'},
+  getSceneForm: {url: (args) => `${apiPrefix('config')}/template/sceneForm/${args?.sceneCode ?? ''}/${args?.smallType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
 };
 
 export default apiGenerator(apis);

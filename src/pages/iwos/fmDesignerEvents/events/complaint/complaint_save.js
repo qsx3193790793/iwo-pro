@@ -42,19 +42,26 @@ export default ({vm, item}) => {
   // 状态
   vm.$$lodash.set(formData, 'statusCd', 'C100001');//新建
 
+  // 扩展字段
+  const ext = {};
+  vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$ext$')).reduce((t, efci) => ((t[efci.key.replace('$ext$', '')] = formData[efci.key] ?? null), t), ext);
+
   //场景字段
-  const complaintAssistList = vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$template$')).map(efci => ({
-    fieldTitle: efci.name, fieldName: efci.key.replace('$template$', ''), fieldValue: formData[efci.key] ?? null
+  const complaintAssistList = vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$scene$') || efci.key?.startsWith('$comm$')).map(efci => ({
+    fieldTitle: efci.name, fieldName: efci.key.replace(/\$scene\$|\$comm\$/g, ''), fieldValue: formData[efci.key] ?? null, fieldType: efci.key?.startsWith('$comm$') ? '3' : '1'
   }));
 
+  // 附件
+  const workOrderAttachmentIdList = formData.workOrderAttachmentIdList || [];
+
   console.log('complaint_submit', formData)
+
   vm.validator(
     () => {
       vm.$$Dialog.confirm(`你确定要暂存吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
         const {res, err} = await vm.$$api.complaint.temporarySaveComplaintWorkOrder({
           data: {
-            complaint: formData,
-            complaintAssistList
+            complaint: formData, ext, complaintAssistList, workOrderAttachmentIdList
           }
         });
         if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});

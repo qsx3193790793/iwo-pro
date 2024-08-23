@@ -18,7 +18,6 @@ export default (apis) => Object.keys(apis).reduce((t, key) => ((t[key] = (args =
     successMessage: args.successMessage,
     isOnErrorBack: args.isOnErrorBack,
     downloadFile: args.downloadFile,
-    requestType: args.responseType,
     headers: apis[key].headers,
   });
 

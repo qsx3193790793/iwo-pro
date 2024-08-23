@@ -41,9 +41,9 @@ export default async ({vm, eventsFields}) => {
   vm.$nextTick(() => {
     eventsFields.forEach(ef => {
       const value = vm.$$lodash.get(custom || {}, ef.value);
-      console.log(`$template$${ef.label}`, value, vm.$$isEmpty(value))
+      console.log(`${ef.label}`, value, vm.$$isEmpty(value))
       if (vm.$$isEmpty(value)) return;
-      vm.formData[`$template$${ef.label}`] = value;
+      vm.formData[`${ef.label}`] = value;
     });
   });
 }

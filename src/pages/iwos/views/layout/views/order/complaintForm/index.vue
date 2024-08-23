@@ -38,7 +38,7 @@
       </div>
     </template>
     <el-empty v-else></el-empty>
-    <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog"  v-bind="uploadConfig" @templateDownload="onTemplateDownload"></importDialog>
+    <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog" v-bind="uploadConfig" @templateDownload="onTemplateDownload"></importDialog>
     <!-- 添加或修改用户配置对话框 -->
     <!-- <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog> -->
   </div>
@@ -290,7 +290,7 @@ const formConfigItems = ref([
     col: 6,
     type: "cascader",
     options: () =>
-        proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"),
+        proxy.$store.getters["dictionaries/GET_DICT"]("complaintSourceTree"),
     attrs: {props: {checkStrictly: !0}},
     isDisable: !1,
     isRequire: !1,
@@ -304,12 +304,11 @@ const formConfigItems = ref([
     isDisable: !1,
     isRequire: !1,
   },
-  {col: 6, type: "divider-empty"},
   {
     type: "buttons",
     align: "right",
     verticalAlign: 'top',
-    col: 6,
+    col: 24,
     items: [
       {
         btnName: "重置",
@@ -342,22 +341,28 @@ const formConfigItems = ref([
         },
       },
       {
-        btnName: "工信部导入",
-        type: "button",
-        attrs: {type: "primary"},
-        col: 1,
-        onClick({vm}) {
-          importFile('工信部导入')
-        },
-      },
-      {
-        btnName: "省管局导入",
-        type: "button",
-        attrs: {type: "primary"},
-        col: 1,
-        onClick({vm}) {
-          importFile('省管局导入')
-        },
+        btnName: "xxxxx",
+        type: "buttonGroup",
+        attrs: {type: "success"},
+        items: [
+          {
+            btnName: "工信部导入",
+            type: "button",
+            attrs: {type: "primary"},
+            onClick({vm}) {
+              importFile('工信部导入')
+            },
+          },
+          {
+            btnName: "省管局导入",
+            type: "button",
+            attrs: {type: "primary"},
+            col: 1,
+            onClick({vm}) {
+              importFile('省管局导入')
+            },
+          },
+        ]
       },
     ],
   },
@@ -374,7 +379,7 @@ async function listComplaintSourceTree() {
       await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
-    complaint_source_tree: proxy.$$formatCascaderTree(
+    complaintSourceTree: proxy.$$formatCascaderTree(
         res?.list || [],
         "sourceName",
         "sourceCode",
@@ -383,39 +388,43 @@ async function listComplaintSourceTree() {
   });
 }
 
-function importFile(title){
-  uploadConfig.value= {
-    uploadTip:'提示：仅允许导入"xls"或“xlsx"格式文件!',
-    accept:'xls,xlsx',
-    httpRequest:(e)=>{
-          fileUpload(e)
-        },
-   title,
+function importFile(title) {
+  uploadConfig.value = {
+    uploadTip: '提示：仅允许导入"xls"或“xlsx"格式文件!',
+    accept: 'xls,xlsx',
+    httpRequest: (e) => {
+      fileUpload(e)
+    },
+    title,
   }
-  isShowImportDialog.value= true
+  isShowImportDialog.value = true
 }
-const  acceptNames=ref(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ,'application/vnd.ms-excel']) 
-async function fileUpload(e){
+
+const acceptNames = ref(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
+
+async function fileUpload(e) {
   if (!acceptNames.value.includes(e.file.type)) return proxy.$message({message: `只能上传${uploadConfig.value.accept}格式文件`, type: 'error'});
-      const formdata = new FormData()
-      formdata.append('file', e.file)
-      const {res, err} = await uploadConfig.value.title==="工信部导入"? proxy.$$api.complaint.miitImport({data: formdata}):proxy.$$api.complaint.provinceAuthorityImport({data: formdata});
-      if(err) return  proxy.$message({message: err?.message || '导入失败', type: 'error'});
-      getList(1)
-      isShowImportDialog.value = false
+  const formdata = new FormData()
+  formdata.append('file', e.file)
+  const {res, err} = await uploadConfig.value.title === "工信部导入" ? proxy.$$api.complaint.miitImport({data: formdata}) : proxy.$$api.complaint.provinceAuthorityImport({data: formdata});
+  if (err) return proxy.$message({message: err?.message || '导入失败', type: 'error'});
+  getList(1)
+  isShowImportDialog.value = false
 }
-async function onTemplateDownload(){
-  if(uploadConfig.value.title==='工信部导入'){
+
+async function onTemplateDownload() {
+  if (uploadConfig.value.title === '工信部导入') {
     const {res, err} = await proxy.$$api.complaint.miitTemplate();
-    if(err) return
-    proxy.$$downloadFile(URL.createObjectURL(res.blob),'工信部批量导入模板');
-  }else{
+    if (err) return
+    proxy.$$downloadFile(URL.createObjectURL(res.blob), '工信部批量导入模板');
+  } else {
     const {res, err} = await proxy.$$api.complaint.provinceAuthorityTemplate();
-    if(err) return
-    proxy.$$downloadFile(URL.createObjectURL(res.blob),'省管局批量导模板');
+    if (err) return
+    proxy.$$downloadFile(URL.createObjectURL(res.blob), '省管局批量导模板');
   }
-  
+
 }
+
 onMounted(() => {
   listComplaintSourceTree();
   getList(1);

@@ -227,6 +227,9 @@ export default {
           isRequire: !1,
         },
         {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
+        { col: 6, type: "divider-empty" },
+        { col: 6, type: "divider-empty" },
+        { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",

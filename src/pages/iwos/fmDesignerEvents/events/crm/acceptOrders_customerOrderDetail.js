@@ -34,11 +34,11 @@ export default async ({vm, item, value}) => {
     }
   });
   console.log('eventsFields', vm, item?.eventsFields)
-  // 模板会字段统一会加$template$前缀用来区分
+  // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
   item?.eventsFields.forEach(ef => {
     const r = res || {};
     const v = vm.$$lodash.get(Object.assign({}, r, r.orderItems?.[0] || {}), ef.value);
     if (vm.$$isEmpty(v)) return;
-    vm.formData[`$template$${ef.label}`] = v;
+    vm.formData[`${ef.label}`] = v;
   });
 }

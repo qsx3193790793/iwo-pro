@@ -15,7 +15,6 @@ const service = {
   config: getProxy('config'),
   web: getProxy('web'),
   srv: getProxy('srv'),
-  file: getProxy('file'),
   ruoyi: getProxy(),
 };
 

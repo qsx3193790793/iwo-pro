@@ -9,10 +9,10 @@ export default ({vm, item, value}) => {
   if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   console.log('eventsFields', item?.eventsFields)
-  // 模板会字段统一会加$template$前缀用来区分
+  // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
   item?.eventsFields.forEach(ef => {
     const v = vm.$$lodash.get(value || {}, ef.value);
     if (vm.$$isEmpty(value)) return;
-    vm.formData[`$template$${ef.label}`] = v;
+    vm.formData[`${ef.label}`] = v;
   });
 }

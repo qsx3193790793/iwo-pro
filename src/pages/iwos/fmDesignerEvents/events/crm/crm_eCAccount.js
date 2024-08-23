@@ -22,11 +22,11 @@ export default async ({vm, eventsFields}) => {
     }
   });
   // if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});
-  // 模板会字段统一会加$template$前缀用来区分
+  // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
   eventsFields.forEach(ef => {
     const value = vm.$$lodash.get(res || {}, ef.value);
     if (vm.$$isEmpty(value)) return;
-    vm.formData[`$template$${ef.label}`] = value;
+    vm.formData[`${ef.label}`] = value;
   });
   // console.log(res)
 }

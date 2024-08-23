@@ -111,6 +111,7 @@ let store = {
         if (err) return reject();
         sessionStorage.clear();
         localStorage.clear();
+        commit('storage/CLEAR_TABS', null, {root: !0});
         Vue.prototype.$$router.replace({name: 'Login'});
         return resolve();
       })
