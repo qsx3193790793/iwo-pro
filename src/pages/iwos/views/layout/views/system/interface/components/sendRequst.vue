@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<script setup lang='ts'>
+<script setup >
 import { ref, getCurrentInstance } from 'vue'
 const { proxy } = getCurrentInstance();
 const props = defineProps({

@@ -82,8 +82,8 @@ let columns = ref({
       width: 120
     },
     {
-      name: '省编码',
-      key: 'provinceCode',
+      name: '省份',
+      key: 'provinceName',
     },
     {
       name: '创建人',
