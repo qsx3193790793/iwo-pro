@@ -103,5 +103,6 @@ export default async ({vm, item}) => {
       vm,
       value: complaintAssistVoList.reduce((t, c) => ((t[`$template$${c.fieldName}`] = c.fieldValue ?? null), t), {})
     });
+    vm.expandFormConfigItems.find(efci => efci.key === 'workorderStrictest')?.onChange({vm, value: {workorderStrictestScene: vm.formData.workorderStrictestScene}});
   }
 }

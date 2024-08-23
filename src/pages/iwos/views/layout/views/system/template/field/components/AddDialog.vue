@@ -1,5 +1,5 @@
 <template>
-  <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="80%" :title="`${props.pkid?'编辑':'新增'}字段`">
+  <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="30%" :title="`${props.pkid?'编辑':'新增'}字段`">
     <FormModel ref="FormModelRef" :formConfig="formConfig" :formStatus="props?.isDetail?'view':'create'"></FormModel>
     <template #footer="{DialogRef}">
       <el-button type="primary" plain @click="DialogRef?.handleClose()">返回</el-button>
@@ -12,6 +12,7 @@
 import Vue, {getCurrentInstance, ref, watch} from "vue";
 import MDialog from '@/components/MDialog';
 import FormModel from '@/components/FMGenerator/FormModel';
+import {options} from "@/pages/iwos/views/layout/views/system/template/config";
 
 const {proxy} = getCurrentInstance();
 
@@ -57,32 +58,13 @@ const formConfig = ref({
     {
       name: '',
       items: [
+        {name: '字段类型', key: 'type', value: '', col: 24, type: 'select', options, isDisable: !1, isRequire: !0},
+        {name: '字段标题', key: 'title', value: '', type: 'input', col: 24, isDisable: !1, isRequire: !0},
         {
-          name: '字段类型', key: 'type', value: '', col: 8, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_field_type'), isDisable: !1, isRequire: !0,
-          async onChange({vm}) {
-            vm.formData.title = '', vm.formData.name = '';
-            if (vm.formData.type == '0') {
-              const {res, err} = await proxy.$$api.modelFields.names();
-              if (err) return;
-              const finder = vm.expandFormConfigItems.find(efci => efci.key === 'name' && efci.type === 'select');
-              return finder.options = (res?.list || []).map(r => ({label: r.name, value: r.name, disabled: r.weatherUse === '1'}))
-            }
-          }
+          name: '字段名称', key: 'name', value: '', type: 'input', col: 24, isDisable: !1, isRequire: !0,
+          rules: [{validator: (rule, value, cb) => Vue.prototype.$$validator.isVariable(value) ? cb() : cb(new Error('不符合变量规范[A~Z、a~z、0~9、_、$]，不允许数字开头）')), trigger: 'blur'}]
         },
-        {name: '字段标题', key: 'title', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0},
-        {
-          name: '字段名称', key: 'name', value: '', type: 'input', col: 8, isDisable: !1, isRequire: !0,
-          rules: [{validator: (rule, value, cb) => Vue.prototype.$$validator.isVariable(value) ? cb() : cb(new Error('不符合变量规范[A~Z、a~z、0~9、_]不允许数字开头）')), trigger: 'blur'}],
-          isShow({vm}) {
-            return vm.formData.type == '1'
-          }
-        },
-        {
-          name: '字段名称', key: 'name', value: '', type: 'select', options: [], col: 8, isDisable: !1, isRequire: !0, placeholder: '请从下拉表中选择',
-          isShow({vm}) {
-            return vm.formData.type == '0'
-          }
-        },
+        {name: '是否省自定义', key: 'isProvinceCustom', value: '1', col: 24, options: () => proxy.$store.getters['dictionaries/GET_DICT']('yes_no'), type: 'select', isDisable: !0, isRequire: !1},
         {name: '字段描述', key: 'comment', value: '', type: 'textarea', row: 4, col: 24, maxlength: 100, isDisable: !1, isRequire: !1},
         {name: '是否必填', key: 'required', value: '1', type: 'input', isHidden: !0, isDisable: !0, isRequire: !0},
       ]
@@ -92,6 +74,11 @@ const formConfig = ref({
   bottomButtons: []
 });
 
+</script>
+<script>
+export default {
+  cusDicts: ['yes_no']
+}
 </script>
 <style lang="scss" scoped>
 </style>

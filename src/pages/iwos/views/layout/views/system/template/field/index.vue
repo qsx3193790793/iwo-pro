@@ -8,7 +8,7 @@
             {{ $$dateFormatter(row.updatedTime) }}
           </template>
           <template #type="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('template_field_type', row.type) }}
+            {{ type2name(row.type) }}
           </template>
           <template #isProvinceCustom="{row}">
             {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
@@ -33,6 +33,7 @@ import JsTable from '@/components/js-table/index.vue';
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 import AddDialog from './components/AddDialog';
 import {onMounted} from "vue"
+import {options, type2name} from "@/pages/iwos/views/layout/views/system/template/config";
 
 const {proxy} = getCurrentInstance();
 
@@ -43,10 +44,6 @@ const props = defineProps({
 let columns = ref({
   selection: true,
   props: [
-    {
-      name: '字段类型',
-      key: 'type',
-    },
     {
       name: '字段标题',
       key: 'title',
@@ -60,7 +57,11 @@ let columns = ref({
       key: 'comment',
     },
     {
-      name: '是否自定义',
+      name: '字段类型',
+      key: 'type',
+    },
+    {
+      name: '是否省自定义',
       key: 'isProvinceCustom',
     },
     {
@@ -134,7 +135,7 @@ const select_pkid = ref(null);
 
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
-  {name: '字段类型', key: 'type', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_field_type'), isDisable: !1, isRequire: !1},
+  {name: '字段类型', key: 'type', value: '', col: 6, type: 'select', options, isDisable: !1, isRequire: !1},
   {name: '字段标题', key: 'title', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '字段名称', key: 'name', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {
@@ -190,7 +191,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'FieldIndex',
-  cusDicts: ['template_field_type', 'yes_no', 'base_province_code']
+  cusDicts: ['yes_no', 'base_province_code']
 }
 </script>
 <style lang="scss" scoped>

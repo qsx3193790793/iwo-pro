@@ -122,7 +122,7 @@
       </Form>
     </div>
     <!--补充显示内容-->
-    <slot v-if="$slots.default"></slot>
+    <slot name="ext" :root="{vm}"></slot>
     <!--按钮区-->
     <div v-if="formConfig.bottomButtons?.items?.length" class="bottomButtons" :class="[formConfig.bottomButtons?.align]">
       <template v-for="(bv,bi) in formConfig.bottomButtons?.items">
@@ -223,6 +223,7 @@ export default {
     },
     //赋值数据
     initFormData(res) {
+      console.log('initFormData', res);
       if (!res) return;
       const formDataKeys = Object.keys(this.formData), resDataKeys = Object.keys(this.$$object2pathObject(res || {}));
       const expandFormConfigItemsKeyMap = this.expandFormConfigItems.reduce((t, c) => ((c.key && (t[c.key] = c)), t), {});//配置地图
@@ -331,7 +332,6 @@ export default {
   created() {
     this.vm = this;
     this.init();
-    console.log('$slots', this.$slots)
   }
 }
 </script>

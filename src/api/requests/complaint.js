@@ -6,6 +6,10 @@ const apis = {
   saveComplaintWorkOrder: {url: `${apiPrefix("web")}/complaintWorkOrder/saveComplaintWorkOrder`},
   // 暂存
   temporarySaveComplaintWorkOrder: {url: `${apiPrefix("web")}/complaintWorkOrder/temporarySaveComplaintWorkOrder`},
+  // 办结
+  temporaryCompletedComplaintWorkOrder: {url: `${apiPrefix("srv")}/completedWorkOrder`},
+  // 查询流程定义ID
+  getProcessDefinitionId: {url: `${apiPrefix("web")}/complaintWorkOrder/getProcessDefinitionId`, method: "get"},
   // 详情
   complaintWorkOrderDetail: {url: (args) => `${apiPrefix("web")}/complaintWorkOrder/complaintWorkOrderDetail/${args.workorderId}`, method: "get"},
   // 查询是否存在在途单 0==不存在在途工单 1==存在在途工单
@@ -37,7 +41,14 @@ const apis = {
   updataOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/update`, method: 'post'},
   //修改启用、停用状态
   statusOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/updateStatus`, method: 'post'},
-
+   //工信部导入
+   miitImport: {url: `${apiPrefix('web')}/importWorkOrder/miit`, method: 'post'},
+   //省管局导入
+   provinceAuthorityImport: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthority`, method: 'post'},
+  //工信部模板下载
+  miitTemplate: {url: `${apiPrefix('web')}/importWorkOrder/miitTemplate`, method: 'post',responseType:'blob'},
+  //省管局模板下载
+  provinceAuthorityTemplate: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthorityTemplate`, method: 'post',responseType:'blob'},
 };
 
 export default apiGenerator(apis);

@@ -686,7 +686,7 @@ export default {
     // 启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启用渠道编码为"' + row.channelId + '"的数据项？')
+          .confirm('是否确认启用渠道编码为"' + row.channelCode + '"的数据项？')
           .then(() => {
             let data = {
               channelId: row.channelId,

@@ -42,18 +42,28 @@ export default ({vm, item}) => {
   // 状态
   vm.$$lodash.set(formData, 'statusCd', 'C200001');//处理中
 
+
   //场景字段
   const complaintAssistList = vm.expandFormConfigItems.filter(efci => efci.key?.startsWith('$template$')).map(efci => ({
     fieldTitle: efci.name, fieldName: efci.key.replace('$template$', ''), fieldValue: formData[efci.key] ?? null
   }));
-
+   
   console.log('complaint_submit', formData)
   vm.validator(
     () => {
       vm.$$Dialog.confirm(`你确定要提交吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
+         // 获取流程id并赋值
+        const {res:ProcessRes, err:ProcessRrr} =await  vm.$$api.complaint.getProcessDefinitionId({
+          params:{
+           code: formData?.workorderType
+         }
+       });
+       if (ProcessRrr) return vm.$$Toast({message: `获取流程ID失败`, type: 'error'});
+        // 提交参数
         const {res, err} = await vm.$$api.complaint.saveComplaintWorkOrder({
           data: {
             complaint: formData,
+            processDefinitionId:ProcessRes.processDefinitionId,
             complaintAssistList
           }
         });

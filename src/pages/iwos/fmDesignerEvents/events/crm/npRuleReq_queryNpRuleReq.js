@@ -25,8 +25,9 @@ export default async ({vm, eventsFields}) => {
   });
   console.log('eventsFields', eventsFields)
   // 模板会字段统一会加$template$前缀用来区分
+  const r = Object.assign(res || {}, {reasons: res?.reasons?.join(',')});
   eventsFields.forEach(ef => {
-    const value = vm.$$lodash.get(res || {}, ef.value);
+    const value = vm.$$lodash.get(r, ef.value);
     if (vm.$$isEmpty(value)) return;
     vm.formData[`$template$${ef.label}`] = value;
   });

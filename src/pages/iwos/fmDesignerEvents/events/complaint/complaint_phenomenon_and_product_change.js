@@ -18,14 +18,18 @@ export default async ({vm, value = null}) => {
   const productLevel = vm.formData.productLevel?.[vm.formData.productLevel.length - 1];
 
   //市场最严工单场景 逻辑
-  const [level1, level2] = vm.formData.complaintPhenomenonLevel || [];
-  const workorderStrictestScene = phenomenon2StrictestMap[level2] || phenomenon2StrictestMap[level1];
-  if (workorderStrictestScene) {
-    vm.formData.workorderStrictest = '1';//市场最严工单
-    vm.formData.workorderStrictestScene = workorderStrictestScene;//市场最严工单场景
-  } else {
-    vm.formData.workorderStrictest = '0';//市场最严工单
-    vm.formData.workorderStrictestScene = null;//市场最严工单场景
+  if (!value) {//详情不触发
+    const [level1, level2] = vm.formData.complaintPhenomenonLevel || [];
+    const workorderStrictestScene = phenomenon2StrictestMap[level2] || phenomenon2StrictestMap[level1];
+    const finder_workorderStrictest = vm.expandFormConfigItems.find(efci => efci.key === 'workorderStrictest');
+    if (workorderStrictestScene) {
+      vm.formData.workorderStrictest = '1';//市场最严工单
+      vm.formData.workorderStrictestScene = workorderStrictestScene;//市场最严工单场景
+    } else {
+      vm.formData.workorderStrictest = '0';//市场最严工单
+      vm.formData.workorderStrictestScene = null;//市场最严工单场景
+    }
+    finder_workorderStrictest?.onChange({vm, value: {workorderStrictestScene: vm.formData.workorderStrictestScene}});
   }
 
   //必须要有现象 通过 (现象:产品) 进行查询场景模板
@@ -38,8 +42,8 @@ export default async ({vm, value = null}) => {
       const formModel = parseFormModel(JSON.parse(res.formContent));
       vm.formData.verbalTrickContent = res.verbalTrickContent || '';
       vm.formConfig.appendItems = formModel.items.map(it => (it.items.forEach(itt => itt.key = `$template$${itt.key}`), it));
+      await formModel?.onLoad({vm});
       value && vm.$nextTick(() => vm.initFormData(value));//若详情有值才会赋值操作
-      formModel?.onLoad({vm});
       return;
     }
   }

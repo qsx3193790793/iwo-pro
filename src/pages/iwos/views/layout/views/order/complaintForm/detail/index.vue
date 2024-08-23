@@ -32,8 +32,11 @@
     <ELScrollbar class="create-order-container public-background">
       <!--      <div class="create-order-header">投诉单</div>-->
       <div class="create-order-form">
-        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" formStatus="view" @onFormLoaded="onFormLoaded"></FormModel>
-        <FileUploader></FileUploader>
+        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" formStatus="view" @onFormLoaded="onFormLoaded">
+          <template #ext="root">
+            <FileUploader :root="root"></FileUploader>
+          </template>
+        </FormModel>
       </div>
     </ELScrollbar>
 

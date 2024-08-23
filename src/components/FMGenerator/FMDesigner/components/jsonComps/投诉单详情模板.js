@@ -485,6 +485,54 @@ export default {
             "children": []
           }
         ]
+      },
+      {
+        "cId": "FMBlock_ID_7FFD4A365790C54551BB5E95BFA20FFAE67A",
+        "name": "FMBlock",
+        "compType": "",
+        "z_props": {
+          "isBtnBlock": "按钮组",
+          "name": "",
+          "subName": ""
+        },
+        "children": [
+          {
+            "cId": "FMButtons_ID_CF437E1C00607344D849F63836F72A0116AD",
+            "name": "FMButtons",
+            "compType": "FMButtons",
+            "z_props": {
+              "col": 24,
+              "align": "center",
+              "verticalAlign": "form"
+            },
+            "children": [
+              {
+                "cId": "FMButton_ID_0CD1C96846D961484F2915FF7B487A467E44",
+                "name": "FMButton",
+                "compType": "FMButton",
+                "z_props": {
+                  "isDisable": false,
+                  "showCondition": [],
+                  "type": "FMButton",
+                  "btnName": "办结",
+                  "btnType": "success",
+                  "eventsType": "事件",
+                  "interfaceName": "",
+                  "interfaceReqParams": [],
+                  "interfaceResParams": [],
+                  "interfaceCode": "",
+                  "interfaceReqParamsArray": [],
+                  "interfaceResParamsArray": [],
+                  "events": [
+                    "complaint_completed"
+                  ],
+                  "eventsFields": []
+                },
+                "children": []
+              },
+            ]
+          }
+        ]
       }
     ]
   }

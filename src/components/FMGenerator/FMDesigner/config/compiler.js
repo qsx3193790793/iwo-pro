@@ -105,7 +105,7 @@ export const selectCompiler = (j, isView) => {
             //如果需要重置 清空下拉，表单  ； 详情回填时不需要清空的
             if (resetNextValue) vm.formData[k] = null, finder.options && (finder.options = []);
             //如果为空 触发关联关系 将级联传递下去
-            if (!vm.formData[j.z_props.key]) return finder.onChange?.({vm, item: finder, resetNextValue});
+            if (!vm.formData[j.z_props.key]) return finder.onChange?.({vm, value, item: finder, resetNextValue});
             // //如果不为空 调用接口
             // if (finder.apiName) {
             //   console.log('FMSelect onChange 调用接口', finder.key, finder.apiName, finder.apiParams, vm);
@@ -116,7 +116,7 @@ export const selectCompiler = (j, isView) => {
       }
       //触发关联事件
       if (isView) return;
-      (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, item}));
+      (j.z_props.events || []).forEach(evk => events[evk]?.fn?.({vm, value, item}));
     }
   }
 };

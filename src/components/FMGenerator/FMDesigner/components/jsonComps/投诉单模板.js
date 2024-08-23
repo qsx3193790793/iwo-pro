@@ -456,7 +456,7 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "events": [],
+              "events": ["complaint_workorderStrictest_change"],
               "eventsFields": [],
               "optionsType": "字典",
               "optionsStaticValue": [],
