@@ -7,7 +7,7 @@
       <div class="create-order-header">投诉单</div>
       <div class="create-order-form">
         <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig">
-          <template #ext="root">
+          <template #ext="{root}">
             <FileUploader :root="root"></FileUploader>
           </template>
         </FormModel>

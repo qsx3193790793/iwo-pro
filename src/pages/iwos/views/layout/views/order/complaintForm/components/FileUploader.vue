@@ -85,13 +85,13 @@ export default {
       const formdata = new FormData()
       formdata.append('attachFile', e.file)
       formdata.append('attachDesc', this.attachDesc)
-      formdata.append('workOrderType', this.root.root.vm.formData.workorderType)
-      formdata.append('workOrderStage', this.root.root.vm.formData.statusCd ? this.root.root.vm.formData.statusCd : 'C100001')
+      formdata.append('workOrderType', this.root.vm.formData.workorderType)
+      formdata.append('workOrderStage', this.root.vm.formData.statusCd ? this.root.vm.formData.statusCd : 'C100001')
       const {res, err} = await this.$$api.file.fileUpload({data: formdata});
       if (err) return this.$message({message: err?.message || '附件上传失败', type: 'error'});
       this.fileData.push({...res, isNewUpload: true})
       //更新表单附件ids
-      this.root.root.vm.initFormData({
+      this.root.vm.initFormData({
         workOrderAttachmentIdList: this.fileData.map(item => item.attId)
       });
       this.isShowImportDialog = false

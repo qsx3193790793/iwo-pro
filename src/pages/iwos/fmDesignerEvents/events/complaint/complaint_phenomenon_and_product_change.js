@@ -32,9 +32,9 @@ export default async ({vm, value = null}) => {
     finder_workorderStrictest?.onChange({vm, value: {workorderStrictestScene: vm.formData.workorderStrictestScene}});
   }
 
-  //必须要有现象 通过 (现象:产品) 进行查询场景模板
+  //必须要有现象 通过 (工单类型:大类:小类:现象:产品) 进行查询场景模板
   if (complaintPhenomenonLevel) {
-    const sceneCode = [complaintPhenomenonLevel, productLevel].filter(v => !!v).join(':');
+    const sceneCode = ['BUS0001', 'TPL0001', 'TPL0100', complaintPhenomenonLevel, productLevel].filter(v => !!v).join(':');
     // const formModel = parseFormModel(testT);
     const {res, err} = await vm.$$api.template.formMock({loading: false, sceneCode, bigType: 'TPL0001', workorderType: 'BUS0001'});
     if (res?.formContent) {

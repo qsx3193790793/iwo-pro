@@ -341,12 +341,12 @@ const formConfigItems = ref([
         },
       },
       {
-        btnName: "xxxxx",
+        btnName: "导入",
         type: "buttonGroup",
-        attrs: {type: "success"},
+        attrs: {type: "warning"},
         items: [
           {
-            btnName: "工信部导入",
+            btnName: "工信部",
             type: "button",
             attrs: {type: "primary"},
             onClick({vm}) {
@@ -354,7 +354,7 @@ const formConfigItems = ref([
             },
           },
           {
-            btnName: "省管局导入",
+            btnName: "省管局",
             type: "button",
             attrs: {type: "primary"},
             col: 1,

@@ -102,7 +102,7 @@
                         <div class="form-buttons" :class="v.align||'left'">
                           <template v-for="(bv,bi) in v.items">
                             <!-- 更多下拉按钮-->
-                            <el-dropdown v-if="bv.type==='buttonGroup'&&bv.items.filter(bgb=>(!bgb.isShow)||bgb.isShow({vm})).length" class="public-el-dropdown" trigger="click">
+                            <el-dropdown v-if="bv.type==='buttonGroup'&&bv.items.filter(bgb=>((!bgb.isShow)||bgb.isShow({vm}))).length" class="public-el-dropdown" trigger="click">
                               <Button v-bind="bv.attrs">
                                 {{ bv.btnName || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
                               </Button>
@@ -114,7 +114,7 @@
                                 </div>
                               </el-dropdown-menu>
                             </el-dropdown>
-                            <Button v-else-if="bv.type==='button'&&(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
+                            <Button v-else-if="bv.type==='button'&&((!bv.isShow)||bv.isShow({vm}))" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
                           </template>
                         </div>
                       </template>
