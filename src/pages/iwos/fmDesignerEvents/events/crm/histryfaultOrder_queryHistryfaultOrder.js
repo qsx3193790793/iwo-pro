@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'histryfaultOrder_queryHistryfaultOrder';
 export const label = '省内接口_故障历史查询';
 export const resFields = [
@@ -22,7 +22,8 @@ export default async ({vm, eventsFields}) => {
     data: {
       accNum: accNum,//   手机号码
       lanId: lanIdInfo.lanid,//  本地网标识
-    }
+    },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   console.log('eventsFields', eventsFields)
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'

@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'complaint_listChannelTree';
 export const label = '投诉单_发展渠道_下拉树';
 

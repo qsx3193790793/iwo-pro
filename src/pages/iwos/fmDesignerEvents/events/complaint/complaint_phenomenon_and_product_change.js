@@ -36,15 +36,20 @@ export default async ({vm, value = null}) => {
   if (complaintPhenomenonLevel) {
     const sceneCode = ['BUS0001', 'TPL0001', 'TPL0100', complaintPhenomenonLevel, productLevel].filter(v => !!v).join(':');
     // const formModel = parseFormModel(testT);
-    const {res, err} = await vm.$$api.template.formMock({loading: false, sceneCode, bigType: 'TPL0001', workorderType: 'BUS0001'});
+    const {res, err} = await vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK ? 'formMock' : 'form']({
+      loading: false, sceneCode, bigType: 'TPL0001', workorderType: 'BUS0001',
+      headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
+    });
     if (res?.formContent) {
+      vm.removeAppendItems(['complaint_scene_form']);
       const formModel = parseFormModel(JSON.parse(res.formContent));
       vm.formData.verbalTrickContent = res.verbalTrickContent || '';
-      vm.formConfig.appendItems = formModel.items.map(it => (it.items.forEach(itt => itt.key = `${itt.key}`), it));
+      vm.setAppendItems([{key: 'complaint_scene_form', items: formModel.items.map((it, i) => ((it.sort = (100 + i)), it))}]);//排序到最后
+      // vm.formConfig.appendItems = formModel.items; //.map(it => (it.items.forEach(itt => itt.key = `${itt.key}`), it));
       //若详情有值才会赋值操作 否则onload
       value ? vm.$nextTick(() => vm.initFormData(value)) : await formModel?.onLoad({vm});
       return;
     }
   }
-  vm.formConfig.appendItems = [];//失败
+  vm.removeAppendItems(['complaint_scene_form']);//失败
 }

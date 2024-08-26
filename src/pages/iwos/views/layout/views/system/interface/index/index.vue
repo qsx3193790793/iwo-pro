@@ -185,7 +185,7 @@ function handleStart(row) {
 //停用
 function handleEnd(row) {
   proxy.$$Dialog
-   .confirm('是否确认停用用接口名称为"' + row.interfaceName + '"的数据项？')
+   .confirm('是否确认停用接口名称为"' + row.interfaceName + '"的数据项？')
    .then(() => {
      let data = {
       status: 0,

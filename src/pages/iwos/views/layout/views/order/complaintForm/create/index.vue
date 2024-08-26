@@ -1,14 +1,14 @@
 <template>
   <div class="one-screen">
     <div class="Pagehead">
-      <CustomerProfile @change="change" @diagnosisChange="diagnosisChange"></CustomerProfile>
+      <CustomerProfile @change="change" @diagnosisChange="diagnosisChange" @reset="reset"></CustomerProfile>
     </div>
     <ELScrollbar class="one-screen-fg1 public-background create-order-container">
       <div class="create-order-header">投诉单</div>
       <div class="create-order-form">
         <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig">
           <template #ext="{root}">
-            <FileUploader :root="root"></FileUploader>
+            <FileUploader ref="FileUploaderRef" :root="root"></FileUploader>
           </template>
         </FormModel>
       </div>
@@ -22,14 +22,21 @@ import FileUploader from "../components/FileUploader";
 import CustomerProfile from "../../../../../../components/CustomerProfile.vue";
 import FormModel from "@/components/FMGenerator/FormModel";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config/index";
-import testJson from "@/components/FMGenerator/FMDesigner/components/jsonComps/投诉单模板.js";
+import template from "@/pages/iwos/fmDesignerComps/template/投诉单模板.js";
 
 const {proxy} = getCurrentInstance();
 const FormModelRef = ref();
+const FileUploaderRef = ref();
 const formConfig = ref();
 
 function change() {
   FormModelRef.value?.init();
+}
+
+function reset() {
+  FormModelRef.value?.removeAllAppendItems();
+  FormModelRef.value?.resetFormData();
+  FileUploaderRef.value?.reset();
 }
 
 function diagnosisChange(v) {
@@ -37,7 +44,7 @@ function diagnosisChange(v) {
 }
 
 onMounted(() => {
-  formConfig.value = parseFormModel(proxy.$$deepmerge(testJson.json));
+  formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
 });
 </script>
 <script>

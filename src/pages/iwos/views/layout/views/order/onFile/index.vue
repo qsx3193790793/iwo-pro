@@ -79,7 +79,7 @@
       >
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="审核意见" prop="auditOpinion">
+            <el-form-item label="归档意见" prop="auditOpinion">
               <el-input
                 type="textarea"
                 v-model="state.form.auditOpinion"
@@ -113,7 +113,7 @@ const selectionChange = (val) => {
 //   proxy.$$router.push({ name: "ComplaintDetail", query: { ID: val.id } });
 // };
 const FormRef = ref();
-// 归档审核
+// 归档归档
 const submitForm = () => {
   state.value.form.taskList = [];
   FormRef.value.validate((valid) => {
@@ -148,7 +148,7 @@ let state = ref({
   },
   rules: {
     auditOpinion: [
-      { required: true, message: "审核意见不能为空", trigger: "blur" },
+      { required: true, message: "归档意见不能为空", trigger: "blur" },
     ],
   },
   columns: {
@@ -189,12 +189,18 @@ let state = ref({
         el: "format",
         format: "default",
       },
-      // {
-      //   name: '状态',
-      //   key: 'state',
-      //   format: 'default',
-      // },
     ],
+    options: {
+    btns: [
+      {
+        label: '详情',
+        key: 'detail',
+        event: row => {
+          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+        },
+      },
+    ],
+  },
   },
   dataSource: [],
 });
@@ -368,7 +374,7 @@ const formConfigItems = ref([
       //   }
       // },
       {
-        btnName: "审核",
+        btnName: "归档",
         type: "button",
         attrs: { type: "success" },
         col: 1,

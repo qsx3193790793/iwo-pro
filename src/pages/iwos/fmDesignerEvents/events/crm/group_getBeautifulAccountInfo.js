@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'group_getBeautifulAccountInfo';
 export const label = '集团接口_靓号资产信息查询';
 export const resFields = [
@@ -18,7 +18,8 @@ export default async ({vm, eventsFields}) => {
       accNum: accNum,//   手机号码
       lanId: lanIdInfo.lanid,//  本地网标识
       prodClass: accType
-    }
+    },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   console.log('eventsFields', eventsFields)
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'

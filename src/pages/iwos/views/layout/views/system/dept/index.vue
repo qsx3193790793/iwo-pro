@@ -1,6 +1,6 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+  <div class="app-container one-screen">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="机构名称" prop="deptName">
         <el-input
             v-model="queryParams.deptName"
@@ -20,7 +20,7 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button  size="small" @click="resetQuery">重置</el-button>
+        <el-button size="small" @click="resetQuery">重置</el-button>
         <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
         <el-button
             type="success"
@@ -41,16 +41,18 @@
 
     <!-- <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-       
+
       </el-col>
       <el-col :span="1.5">
-       
+
       </el-col>
     </el-row> -->
 
     <el-table
         v-if="refreshTable"
         v-loading="loading"
+        class="one-screen-fg1"
+        height="100%"
         ref="table"
         :data="deptList"
         row-key="deptId"
@@ -58,21 +60,21 @@
         :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         border
     >
-      <el-table-column prop="deptName" label="机构名称" ></el-table-column>
-      <el-table-column prop="deptAbbreviate" label="机构简称" ></el-table-column>
-      <el-table-column prop="deptCode" label="机构编码" ></el-table-column>
-      <el-table-column prop="status" label="状态" >
+      <el-table-column prop="deptName" label="机构名称"></el-table-column>
+      <el-table-column prop="deptAbbreviate" label="机构简称"></el-table-column>
+      <el-table-column prop="deptCode" label="机构编码"></el-table-column>
+      <el-table-column prop="status" label="状态">
         <template slot-scope="{row}">
           <!--          <dict-tag :options="$$dictionaries.get('sys_normal_disable')" :value="scope.row.status"/>-->
-           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable',row.status) }}
+          {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" >
+      <el-table-column label="创建时间" align="center" prop="createTime">
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" >
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="small"
@@ -82,14 +84,14 @@
           >修改
           </el-button>
           <el-dropdown size="small">
-                <el-button size="small" type="primary" style="margin-left:5px">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-                <el-dropdown-menu slot="dropdown"  class="table-dropdown-menu">
-                  <div class="inner">
-                    <el-button  v-hasPermission="['system:dept:add']" type="success"  size="small" @click="handleAdd(scope.row)">新增</el-button>
-                    <el-button  v-hasPermission="['system:dept:remove']" type="danger"  size="small" @click="handleDelete(scope.row)">删除</el-button>
-                    <el-button  v-hasPermission="['system:dept:query']" type="primary"  size="small" @click="handleDetail(scope.row)">详情</el-button>
-                  </div>
-                </el-dropdown-menu>
+            <el-button size="small" type="primary" style="margin-left:5px">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+            <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
+              <div class="inner">
+                <el-button v-hasPermission="['system:dept:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
+                <el-button v-hasPermission="['system:dept:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+                <el-button v-hasPermission="['system:dept:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
+              </div>
+            </el-dropdown-menu>
           </el-dropdown>
 
 
@@ -114,26 +116,26 @@
 
     <!-- 添加或修改机构对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body @close="handleType=''">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px"  label-position="left" :disabled="handleType=='detail'">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="left" :disabled="handleType=='detail'">
         <el-row>
           <el-col :span="24" v-if="form.parentId !== 0">
             <el-form-item label="上级机构" prop="parentId">
-              <treeselect v-model="form.parentId" :disabled="handleType=='detail'" :options="deptOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级机构'"  @select="handelDeptIdChange"/>
+              <treeselect v-model="form.parentId" :disabled="handleType=='detail'" :options="deptOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级机构'" @select="handelDeptIdChange"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24" v-if="deptParentId == 0">
             <el-form-item label="所属省份" prop="provinceCode">
-              <el-select v-model="form.provinceCode" :placeholder="handleType=='detail'?'':'请选择所属省份'" style="width:100%" clearable >
+              <el-select v-model="form.provinceCode" :placeholder="handleType=='detail'?'':'请选择所属省份'" style="width:100%" clearable>
                 <el-option
                     v-for="province in $store.getters['dictionaries/GET_DICT']('base_province_code')"
-                     :key="province.value"
-                     :label="province.label"
-                     :value="province.value"
+                    :key="province.value"
+                    :label="province.label"
+                    :value="province.value"
                 />
               </el-select>
-              </el-form-item>
+            </el-form-item>
           </el-col>
         </el-row>
         <el-row>
@@ -146,20 +148,20 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="角色">
-          <el-select v-model="form.roleIds" :placeholder="handleType=='detail'?'':'请选择角色'" style="width:100%" clearable multiple>
-            <el-option
-                v-for="role in roleOptions"
-                :key="role.roleId"
-                :label="role.roleName"
-                :value="role.roleId"
-            />
-          </el-select>
-        </el-form-item>
+              <el-select v-model="form.roleIds" :placeholder="handleType=='detail'?'':'请选择角色'" style="width:100%" clearable multiple>
+                <el-option
+                    v-for="role in roleOptions"
+                    :key="role.roleId"
+                    :label="role.roleName"
+                    :value="role.roleId"
+                />
+              </el-select>
+            </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="机构描述" >
+            <el-form-item label="机构描述">
               <el-input v-model="form.deptDescribe" type="textarea" maxlength="100" :placeholder="handleType=='detail'?'':'请输入机构描述'"/>
             </el-form-item>
           </el-col>
@@ -188,7 +190,7 @@
             <el-form-item label="显示排序" prop="orderNum">
               <el-input-number v-model="form.orderNum" controls-position="right" :min="0"/>
             </el-form-item>
-        </el-col>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="机构状态">
               <el-radio-group v-model="form.status">
@@ -202,7 +204,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        
+
       </el-form>
       <div slot="footer" class="dialog-footer" v-show="handleType!='detail'">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -218,12 +220,12 @@ import Treeselect from "@riophae/vue-treeselect";
 export default {
   name: "Dept",
   dicts: ['sys_normal_disable'],
-  cusDicts:['base_province_code'],
+  cusDicts: ['base_province_code'],
   components: {Treeselect},
   data() {
     return {
       // 新增编辑选机构时所选机构的父级id
-      deptParentId:null,
+      deptParentId: null,
       // 遮罩层
       loading: true,
       // 显示搜索条件
@@ -231,13 +233,13 @@ export default {
       // 表格树数据
       deptList: [],
       // 用户角色
-      roleOptions:[],
+      roleOptions: [],
       // 机构树选项
       deptOptions: [],
       // 弹出层标题
       title: "",
       // 判断是否详情页
-      handleType:'',
+      handleType: '',
       // 是否显示弹出层
       open: false,
       // 是否展开，默认全部展开
@@ -254,7 +256,7 @@ export default {
       // 表单校验
       rules: {
         parentId: [
-          {required: true, message: "上级机构不能为空", trigger: ["blur",'change']}
+          {required: true, message: "上级机构不能为空", trigger: ["blur", 'change']}
         ],
         provinceCode: [
           {required: true, message: "所属省份不能为空", trigger: "blur"}
@@ -289,13 +291,13 @@ export default {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
-    handleDetail(row){
-      this.handleType='detail'
+    handleDetail(row) {
+      this.handleType = 'detail'
       this.reset();
       this.$$api.dept.getDept({deptId: row.deptId}).then(({res: response, err}) => {
         if (err) return
         this.form = response;
-        this.roleOptions=response.roles
+        this.roleOptions = response.roles
         this.open = true;
         this.title = "机构详情";
       });
@@ -305,17 +307,17 @@ export default {
       });
     },
     // 机构变动时清除选择的班组，班组名，角色，获取班组数据
-    handelDeptIdChange(val){
-      this.deptParentId=val.parentId
-      this.form.roleIds=null
-      this.roleOptions=[]
+    handelDeptIdChange(val) {
+      this.deptParentId = val.parentId
+      this.form.roleIds = null
+      this.roleOptions = []
       this.getDeptRoleInfo(val.deptId)
     },
     // 获取角色列表
-    getDeptRoleInfo(deptId){
-      this.$$api.team.getDeptRoleTree({deptId:deptId}).then(({res: response, err}) => {
+    getDeptRoleInfo(deptId) {
+      this.$$api.team.getDeptRoleTree({deptId: deptId}).then(({res: response, err}) => {
         if (err) return
-          this.roleOptions = response.rows
+        this.roleOptions = response.rows
       });
     },
     /** 查询机构列表 */
@@ -324,7 +326,7 @@ export default {
       this.$$api.dept.listDept({params: this.queryParams}).then(({res: response, err}) => {
         if (err) return this.loading = false;
         this.deptList = this.$$handleTree(response.list, "deptId");
-        console.log( this.deptList,'---999')
+        console.log(this.deptList, '---999')
         this.loading = false;
       });
     },
@@ -356,7 +358,7 @@ export default {
         deptDescribe: undefined,
         email: undefined,
         status: "0",
-        roleIds:[]
+        roleIds: []
       };
       this.$$resetForm("form", this.$refs);
     },
@@ -374,8 +376,8 @@ export default {
       this.reset();
       if (row != undefined) {
         this.form.parentId = row.deptId;
-        if(row.parentId==0){
-          this.deptParentId=0
+        if (row.parentId == 0) {
+          this.deptParentId = 0
         }
       }
       this.open = true;
@@ -399,7 +401,7 @@ export default {
       this.$$api.dept.getDept({deptId: row.deptId}).then(({res: response, err}) => {
         if (err) return
         this.form = response;
-        this.roleOptions=response.roles
+        this.roleOptions = response.roles
         this.open = true;
         this.title = "修改机构";
       });
@@ -410,14 +412,14 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function () {
-      let that=this;
+      let that = this;
       that.$refs["form"].validate(valid => {
         if (valid) {
           if (that.form.deptId != undefined) {
-            if(that.form.status=='1'){
+            if (that.form.status == '1') {
               that.$$Dialog.confirm('确定停用所选机构吗?停用后机构下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
                 confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
-              }).then(() =>{
+              }).then(() => {
                 that.$$api.dept.updateDept({data: that.form}).then(({res: response, err}) => {
                   if (err) return
                   that.$$Toast.success("修改成功");
@@ -425,7 +427,7 @@ export default {
                   that.getList();
                 });
               })
-            }else{
+            } else {
               that.$$api.dept.updateDept({data: that.form}).then(({res: response, err}) => {
                 if (err) return
                 that.$$Toast.success("修改成功");
@@ -433,7 +435,7 @@ export default {
                 that.getList();
               });
             }
-            
+
           } else {
             that.$$api.dept.addDept({data: that.form}).then(({res: response, err}) => {
               if (err) return

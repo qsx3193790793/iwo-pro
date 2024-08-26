@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'crm_ecAccuUseQry';
 export const label = '服务一致性_量本使用查询';
 export const resFields =[];

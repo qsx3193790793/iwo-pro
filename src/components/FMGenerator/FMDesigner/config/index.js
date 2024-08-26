@@ -81,7 +81,7 @@ export const parseFormModel = (json, isView = false) => {
             datePickerCompiler(j, isView), //日期选择编译
             cascaderCompiler(j, isView), //级联编译
             customizationCompsCompiler(j, isView), //自定义组件编译
-            showConditionCompiler(j, isView), //显示条件编译
+            showConditionCompiler(j), //显示条件编译
           );
         })
       })),

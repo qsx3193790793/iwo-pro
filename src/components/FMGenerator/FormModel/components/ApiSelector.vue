@@ -2,7 +2,7 @@
   <div class="ApiSelector">
     <el-input v-model="value" disabled>
       <template #append>
-        <el-button icon="el-icon-search" @click="modelIsShow=!0"/>
+        <el-button v-if="!root.vm.disabled" icon="el-icon-search" @click="modelIsShow=!0"/>
       </template>
     </el-input>
     <MDialog v-model="modelIsShow" title="接口查询" width="80%" onScreen>
@@ -23,6 +23,7 @@ const props = defineProps({
   value: {type: String, default: ''},//v-model绑定
   valueKey: {type: String, default: ''},//v-model绑定 所在数据key 如果没有就不进行双向绑定 通过onConfirm自己赋值
   title: {type: String, default: ''},
+  root: {type: Object, default: () => ({})},
 });
 
 const modelIsShow = ref(false);

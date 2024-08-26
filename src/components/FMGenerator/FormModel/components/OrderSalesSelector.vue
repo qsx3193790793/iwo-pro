@@ -2,7 +2,7 @@
   <div class="OrderSalesSelector">
     <el-input v-model="value" disabled>
       <template #append>
-        <el-button icon="el-icon-search" @click="open"/>
+        <el-button v-if="!root.vm.disabled" icon="el-icon-search" @click="open"/>
       </template>
     </el-input>
     <MDialog v-model="modelIsShow" title="订单销售品查询" width="86%" @opened="init">
@@ -68,12 +68,13 @@ function open() {
 const getList = async () => {
   const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   if (!customPositioning) return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  const {lanIdInfo, complaintWorksheetId, accType, accNum} = customPositioning;
   const bindKeys = proxy.root.item.reqFields?.[0];
   const formData = proxy.root.vm.getFormData();
   const orderId = proxy.$$lodash.get(formData, bindKeys.value);
   const {res, err} = await proxy.$$api.crm.customerOrderDetail({
-    data: Object.assign({orderId}, {lanId: lanIdInfo.lanid, prodClass: accType})
+    data: Object.assign({orderId}, {lanId: lanIdInfo.lanid, prodClass: accType}),
+    headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   if (err) return;
   tableData.value = (res?.orderItems || []).map(r => (Object.assign({
@@ -110,20 +111,4 @@ function init() {
 
 </script>
 <style lang="scss" scoped>
-.main-container {
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  flex-direction: column;
-  padding: 1% 5% 0;
-
-  .search-bar {
-    width: 100%;
-    font-size: 0;
-  }
-
-  .btns {
-    text-align: right;
-  }
-}
 </style>

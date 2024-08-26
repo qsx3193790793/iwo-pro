@@ -270,7 +270,7 @@ const handleEnd = (row) => {
     })
     .catch(() => {});
 };
-/** 查询部门下拉树结构 */
+/** 查询机构下拉树结构 */
 const getSourceTree = () => {
   proxy.$$api.complaintSource.listComplaintSourceTree({data:{status:1}}).then(({ res, err }) => {
     if (err) return;

@@ -7,9 +7,9 @@ const apis = {
     url: `${apiPrefix("system")}/tProduct/productTree`,
     method: "get",
   },
-  //   // 查询部门列表（排除节点）
+  //   // 查询机构列表（排除节点）
   //   listDeptExcludeChild: {url: (args) => `${apiPrefix('system')}/dept/list/exclude/${args?.deptId || ''}`, method: 'get'},
-  //   // 查询部门详细
+  //   // 查询机构详细
   //   getDept: {url: (args) => `${apiPrefix('system')}/dept/${args?.deptId || ''}`, method: 'get'},
   // 查询产品分类
   getProduct: {

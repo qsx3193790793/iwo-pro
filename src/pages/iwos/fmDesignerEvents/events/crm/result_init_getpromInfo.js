@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'result_init_getpromInfo';
 export const label = '服务一致性_销售品列表结果赋值';
 export const resFields = [

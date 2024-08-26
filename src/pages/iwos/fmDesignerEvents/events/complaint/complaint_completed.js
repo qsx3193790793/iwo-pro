@@ -1,4 +1,4 @@
-//测试
+
 
 export const key = "complaint_completed";
 export const label = "投诉单_办结";
@@ -16,7 +16,8 @@ export default ({ vm, item }) => {
     para: {
       unifiedComplaintCode: formData.unifiedComplaintCode,
       distributionDate: "2024-07-31 15:45:00",
-      worksheetFinishTime: "2024-07-31 15:45:00",
+      // 办结时间
+      worksheetFinishTime: vm.$$dayjs().format("YYYY-MM-DD HH:mm:ss"),
       isOvertime: 0,
       complaintInfo: "Customer complaint about...",
       complaintPhenomenonType: "10201",
@@ -49,7 +50,6 @@ export default ({ vm, item }) => {
       processingTime: 12,
     },
   };
-
   (async function () {
     let { res, err } =
       await vm.$$api.complaint.temporaryCompletedComplaintWorkOrder({

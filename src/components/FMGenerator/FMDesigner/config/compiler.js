@@ -8,6 +8,14 @@ function dictReqCompiler(dictType) {
   }
 }
 
+function createOptions(j) {
+  const events = useEvents();
+  if (j.z_props.optionsType === '静态数据') return j.z_props.optionsStaticValue || [];
+  if (j.z_props.optionsType === '字典' && j.z_props.optionsDictName) return dictReqCompiler(j.z_props.optionsDictName);
+  if (j.z_props.optionsType === '事件') return events[j.z_props['optionsEvent']]?.fn;
+  return [];
+}
+
 function baseOnChange(j, isView) {
   const events = useEvents();
   return function ({vm, item, value}) {
@@ -86,12 +94,7 @@ export const selectCompiler = (j, isView) => {
   const events = useEvents();
   return {
     // 选项
-    options: (() => {
-      if (j.z_props.optionsType === '静态数据') return j.z_props.optionsStaticValue || [];
-      if (j.z_props.optionsType === '字典' && j.z_props.optionsDictName) return dictReqCompiler(j.z_props.optionsDictName);
-      if (j.z_props.optionsType === '事件') return events[j.z_props['optionsEvent']]?.fn;
-      return [];
-    })(),
+    options: createOptions(j),
     //resetNextValue 是否重置关联表单
     onChange: function ({vm, item, value, resetNextValue = true}) {
       //处理关联字段
@@ -148,7 +151,9 @@ export const buttonCompiler = (j, isView) => {
       disabled: j.z_props.isDisable,
       type: j.z_props.btnType,
     },
+    type: 'button',
     btnName: j.z_props.btnName,
+    ...showConditionCompiler(j),
     onClick: async function ({vm, value, item}) {
       console.log('onClick', vm, j.z_props);
       //触发关联事件
@@ -165,7 +170,7 @@ export const buttonCompiler = (j, isView) => {
 export const buttonsCompiler = (j, isView) => {
   if (!['FMButtons', 'FMApi'].includes(j.name)) return {};
   return {
-    items: j.children.map(btn => Object.assign(buttonCompiler(btn, isView), showConditionCompiler(btn))),
+    items: j.children.map(btn => buttonCompiler(btn, isView)),
     isShow({vm}) {
       return !!this.items.filter(bv => (!bv.isShow) || bv.isShow({vm})).length;
     }
@@ -176,10 +181,13 @@ export const buttonsCompiler = (j, isView) => {
 export const customizationCompsCompiler = (j, isView) => {
   if (![
     'FMAddressSelector', 'FMSalesSelector', 'FMPaymentSelector',
-    'FMDingDanSelector', 'FMOrderSalesSelector', 'FMPointCosHisSelector'
+    'FMDingDanSelector', 'FMOrderSalesSelector', 'FMPointCosHisSelector', 'FMDisputeChannelSelector'
   ].includes(j.name)) return {};
   const events = useEvents();
   return {
+    // 选项
+    options: j.name === 'FMDisputeChannelSelector' ? events[j.z_props['optionsEvent']]?.fn : null,
+    attrs: j.name === 'FMDisputeChannelSelector' ? {props: {checkStrictly: j.z_props['checkStrictly']}} : null,
     emitter({vm, item}) {
       return {
         //确认触发

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container one-screen">
     <div class="app-container-inner">
-      <!--部门数据-->
+      <!--机构数据-->
       <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
         <div class="head-container one-screen-fg0">
           <el-input
@@ -253,11 +253,11 @@ export default {
       title: "",
       //投诉现象树形列表
       complaintPhenomenonTreeOptions: undefined,
-      // 部门树选项
+      // 机构树选项
       deptOptions: undefined,
       // 是否显示弹出层
       open: false,
-      // 部门名称
+      // 机构名称
       deptName: undefined,
       // 日期范围
       dateRange: [],
@@ -403,7 +403,7 @@ export default {
     };
   },
   watch: {
-    // 根据名称筛选部门树
+    // 根据名称筛选机构树
     treePhenomName(val) {
       this.$refs.tree.filter(val);
     },

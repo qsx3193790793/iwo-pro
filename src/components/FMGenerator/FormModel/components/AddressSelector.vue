@@ -2,7 +2,7 @@
   <div class="AddressSelector">
     <el-input v-model="value" disabled>
       <template #append>
-        <el-button icon="el-icon-search" @click="modelIsShow=!0"/>
+        <el-button v-if="!root.vm.disabled" icon="el-icon-search" @click="modelIsShow=!0"/>
       </template>
     </el-input>
     <MDialog v-model="modelIsShow" title="选择地址" width="80%">
@@ -39,6 +39,7 @@ const props = defineProps({
   value: {type: String, default: ''},//v-model绑定
   valueKey: {type: String, default: ''},//v-model绑定 所在数据key 如果没有就不进行双向绑定 通过onConfirm自己赋值
   title: {type: String, default: ''},
+  root: {type: Object, default: () => ({})},
 });
 
 const modelIsShow = ref(false);
@@ -59,9 +60,14 @@ function confirm(row) {
 
 // 列表请求
 const getList = async (page = pageInfo.value.page) => {
+  const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
+  const {complaintWorksheetId, accNum} = customPositioning;
   pageInfo.value.page = page;
   const formData = PageSearchPanelRef.value.getFormData();
-  const {res, err} = await proxy.$$api.crm.getGisAddressList({params: Object.assign({page: pageInfo.value.page - 1, rows: pageInfo.value.rows}, formData)});
+  const {res, err} = await proxy.$$api.crm.getGisAddressList({
+    params: Object.assign({page: pageInfo.value.page - 1, rows: pageInfo.value.rows}, formData),
+    headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
+  });
   if (err) return;
   pageInfo.value.rowCount = Number(res?.records ?? pageInfo.value.rowCount);
   tableData.value = res?.rows || [];
@@ -90,20 +96,4 @@ const StaffSelectorSearchFormItems = [
 
 </script>
 <style lang="scss" scoped>
-.main-container {
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  flex-direction: column;
-  padding: 1% 5% 0;
-
-  .search-bar {
-    width: 100%;
-    font-size: 0;
-  }
-
-  .btns {
-    text-align: right;
-  }
-}
 </style>

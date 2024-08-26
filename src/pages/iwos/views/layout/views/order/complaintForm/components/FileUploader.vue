@@ -3,7 +3,7 @@
     <div class="main-title">
       <span>附件</span>
       <div class="file-btns">
-        <el-button type="success" icon="el-icon-plus" size="mini" @click="addFile">添加附件</el-button>
+        <el-button v-if="!root.vm.disabled" type="success" icon="el-icon-plus" size="small" @click="addFile">添加附件</el-button>
         <!-- <el-button type="success" icon="el-icon-plus" size="mini" @click="()=>($refs.FileInput.value = null,$refs.FileInput.click())">添加附件</el-button>
         <input ref="FileInput" type="file" multiple style="display: none;" @change="fileUpload"/> -->
       </div>
@@ -17,7 +17,7 @@
         <el-table-column label="操作" width="120px" align="center">
           <template #default="{row}">
             <el-button type="text" size="mini" @click="fileDownload(row)">下载</el-button>
-            <el-button type="text" size="mini" @click="fileDelete(row)">删除</el-button>
+            <el-button v-if="!root.vm.disabled" type="text" size="mini" @click="fileDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -32,7 +32,6 @@
 
 <script>
 import importDialog from '../import/index.vue'
-import apiPrefix from "@/api/apiPrefix.js";
 
 export default {
   name: "FileUploader",
@@ -68,6 +67,9 @@ export default {
     };
   },
   methods: {
+    reset() {
+      this.fileData = [];
+    },
     async getFileList() {
       if (this.$route.params.workorderId) {
         this.loading = true;

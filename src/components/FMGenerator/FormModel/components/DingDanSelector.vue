@@ -2,7 +2,7 @@
   <div class="DingDanSelector">
     <el-input v-model="value" disabled>
       <template #append>
-        <el-button icon="el-icon-search" @click="modelIsShow=!0"/>
+        <el-button v-if="!root.vm.disabled" icon="el-icon-search" @click="modelIsShow=!0"/>
       </template>
     </el-input>
     <MDialog v-model="modelIsShow" title="订单查询" width="80%" @opened="init">
@@ -47,6 +47,7 @@ const props = defineProps({
   value: {type: String, default: ''},//v-model绑定
   valueKey: {type: String, default: ''},//v-model绑定 所在数据key 如果没有就不进行双向绑定 通过onConfirm自己赋值
   title: {type: String, default: ''},
+  root: {type: Object, default: () => ({})},
 });
 
 const modelIsShow = ref(false);
@@ -73,7 +74,8 @@ const getList = async (offset = pageInfo.value.offset) => {
   const formData = PageSearchPanelRef.value.getFormData();
   // const {res, err} = await proxy.$$api.crm.customerOrderList({params: Object.assign({pageInfo: pageInfo.value}, formData)});
   const {res, err} = await proxy.$$api.crm.orderInfo({
-    params: Object.assign(formData, proxy.$$formatELDateTimeRange(formData.timeRange, ['beginDate', 'endDate']))
+    params: Object.assign(formData, proxy.$$formatELDateTimeRange(formData.timeRange, ['beginDate', 'endDate'])),
+    headers: {'complaintWorksheetId': formData.complaintWorksheetId ?? '', 'complaintAssetNum': formData.serialNumber ?? ''}
   });
   if (err) return;
   // pageInfo.value.rowCount = Number(res?.pageInfo?.totalCount ?? pageInfo.value.rowCount);
@@ -85,6 +87,7 @@ const StaffSelectorSearchFormItems = [
   {name: '创建时间', key: 'timeRange', value: ['2020-08-01', '2024-08-01'], type: 'dateRangePicker', col: 9},
   {name: 'prodClass', key: 'prodClass', value: '', type: 'input', isHidden: !0},
   {name: 'lanId', key: 'lanId', value: '', type: 'input', isHidden: !0},
+  {name: 'complaintWorksheetId', key: 'complaintWorksheetId', value: '', type: 'input', isHidden: !0},
   {
     type: 'buttons', align: 'left', verticalAlign: 'top', col: 9, items: [
       {
@@ -99,7 +102,10 @@ const StaffSelectorSearchFormItems = [
         btnName: '查询', type: 'button', attrs: {type: 'primary'}, col: 1,
         async onClick({vm}) {
           if (!vm.formData.serialNumber) return;
-          const {res, err} = await proxy.$$api.crm.getHNumber({params: {segment: vm.formData.serialNumber}});//segment
+          const {res, err} = await proxy.$$api.crm.getHNumber({
+            params: {segment: vm.formData.serialNumber},
+            headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.serialNumber ?? ''}
+          });//segment
           if (res?.lanid) {
             vm.formData.lanId = res.lanid;
             return getList(1);
@@ -114,9 +120,9 @@ const StaffSelectorSearchFormItems = [
 function init() {
   const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   if (!customPositioning) return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  const {lanIdInfo, complaintWorksheetId, accType, accNum} = customPositioning;
   PageSearchPanelRef.value.initFormData({
-    serialNumber: accNum, prodClass: accType, lanId: lanIdInfo.lanid,
+    serialNumber: accNum, prodClass: accType, lanId: lanIdInfo.lanid, complaintWorksheetId,
     timeRange: ['2020-08-01', '2024-08-01']
   });
   getList(1);
@@ -124,20 +130,4 @@ function init() {
 
 </script>
 <style lang="scss" scoped>
-.main-container {
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  flex-direction: column;
-  padding: 1% 5% 0;
-
-  .search-bar {
-    width: 100%;
-    font-size: 0;
-  }
-
-  .btns {
-    text-align: right;
-  }
-}
 </style>

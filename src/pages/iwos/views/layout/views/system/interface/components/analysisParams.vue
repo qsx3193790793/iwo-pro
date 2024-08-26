@@ -16,15 +16,15 @@ const canEdit = computed(() => {
     return props.root.vm.formData.responseParam.length <= 0 || props.root.vm.formData.requestParam.length <= 0
 })
 const isEditDescribe = computed(() => {
-    return props.root.vm.expandFormConfigItems[14].attrs.isEdit && props.root.vm.expandFormConfigItems[15].attrs.isEdit
+    return props.root.vm.expandFormConfigItems[17].attrs.isEdit && props.root.vm.expandFormConfigItems[18].attrs.isEdit
 })
 function analysis() {
     props.root.vm.formData.requestParam = props.root.vm.formData.stagingrequest
     props.root.vm.formData.responseParam = props.root.vm.formData.stagingresponse
 }
 function editDescribe() {
-    props.root.vm.expandFormConfigItems[14].attrs.isEdit = false
-    props.root.vm.expandFormConfigItems[15].attrs.isEdit = false
+    props.root.vm.expandFormConfigItems[17].attrs.isEdit = false
+    props.root.vm.expandFormConfigItems[18].attrs.isEdit = false
 }
 function saveDescribe() {
     if (props.root.vm.formData.responseParam.some(item => item.label === "") || props.root.vm.formData.requestParam.some(item => item.label === "")) {
@@ -32,8 +32,8 @@ function saveDescribe() {
         proxy.$emit('hasSaveDiscribe', false)
         return
     }
-    props.root.vm.expandFormConfigItems[14].attrs.isEdit = true
-    props.root.vm.expandFormConfigItems[15].attrs.isEdit = true
+    props.root.vm.expandFormConfigItems[17].attrs.isEdit = true
+    props.root.vm.expandFormConfigItems[18].attrs.isEdit = true
     proxy.$emit('hasSaveDiscribe', true)
 }
 </script>

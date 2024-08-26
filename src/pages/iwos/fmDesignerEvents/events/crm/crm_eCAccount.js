@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'crm_eCAccount';
 export const label = '服务一致性_账户信息查询';
 export const resFields = [
@@ -19,7 +19,8 @@ export default async ({vm, eventsFields}) => {
     params: {
       serialNumber: accNum,//   手机号码
       lanId: lanIdInfo.lanid,//  本地网标识
-    }
+    },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   // if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'

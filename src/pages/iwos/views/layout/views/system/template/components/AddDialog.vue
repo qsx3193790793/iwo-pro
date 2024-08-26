@@ -64,6 +64,7 @@ const quoteTemplateList = ref([]);
 
 async function getSceneForm(vm) {
   const formData = vm.getFormData();
+  if (!formData.workorderType || !formData.smallType) return;
   // 场景编码：投诉来源或投诉现象的编码，如果选择了产品需要合并一起。例如：现象编码末级:产品编码(10001:2010)
   const sceneCode = [
     formData.workorderType,
@@ -116,7 +117,7 @@ const onAuditBack = DialogRef => {
 
 //发布
 async function handleRelease(DialogRef, formData) {
-  const {res, err} = await proxy.$$api.template.release({data: {templateId: formData.templateId, versionId: formData.versionId, sceneCode: formData.sceneCode, templateType: formData.bigType}});
+  const {res, err} = await proxy.$$api.template.release({data: {templateId: formData.templateId, versionId: formData.versionId, sceneCode: formData.sceneCode, templateType: formData.bigType, workorderType: formData.workorderType}});
   if (err) return;
   emitter('success');
   DialogRef?.handleClose();
@@ -216,18 +217,29 @@ const formConfig = ref({
     {
       name: '',
       items: [
-        {name: '工单类型', key: 'workorderType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_work_order_type'), isDisable: !1, isRequire: !0},
-        {name: '模板大类', key: 'bigType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !0},
+        {
+          name: '工单类型', key: 'workorderType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_work_order_type'), isDisable: !1, isRequire: !0,
+          onChange({vm}) {
+            getSceneForm(vm);
+          }
+        },
+        {
+          name: '模板大类', key: 'bigType', value: '', type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !0,
+          onChange({vm}) {
+            getSceneForm(vm);
+          }
+        },
         {
           name: '模板小类', key: 'smallType', value: 'TPL0100', type: 'radio', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !0,
           onChange({vm}) {
             vm.formData.productCode = [];
             vm.formData.sceneLevelCode = [];
+            getSceneForm(vm);
           }
         },
         {
           name: ({vm}) => (vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'), key: 'sceneLevelCode', value: [], type: 'cascader', isDisable: !1, isRequire: !0,
-          options: ({vm}) => vm.formData.smallType === 'TPL0100' ? proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree') : proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree'),
+          options: ({vm}) => vm.formData.smallType === 'TPL0100' ? proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree') : proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'),
           attrs: {props: {checkStrictly: !0}},
           onChange({vm}) {
             getSceneForm(vm);
@@ -280,10 +292,10 @@ async function listComplaintPhenomenonTree() {
 
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
-  if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree')?.length) return;
-  const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
+  if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid')?.length) return;
+  const {res, err} = await proxy.$$api.complaintSource.getAskSourceSrlByUid({});
   if (err) return;
-  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree: proxy.$$formatCascaderTree(res?.list || [], 'sourceName', 'sourceCode', 'children')});
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree(res?.list || [], 'sourceName', 'sourceCode', 'children')});
 }
 
 //产品下拉菜单

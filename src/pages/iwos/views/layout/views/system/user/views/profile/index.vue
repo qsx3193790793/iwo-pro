@@ -22,7 +22,7 @@
                 <div class="pull-right">{{ user.email || '-' }}</div>
               </li>
               <li class="list-group-item">
-                所属部门
+                所属机构
                 <div class="pull-right" v-if="user.dept">{{ user.dept.deptName || '-' }} / {{ postGroup || '-' }}</div>
               </li>
               <li class="list-group-item">

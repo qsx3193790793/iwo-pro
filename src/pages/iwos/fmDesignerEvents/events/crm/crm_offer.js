@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'crm_offer';
 export const label = '服务一致性_销售品信息查询';
 export const resFields = [
@@ -33,6 +33,7 @@ export default async ({vm, item, value}) => {
       offerNbr: value.offerNbr,
       provinceId: lanIdInfo.lanid
     },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   console.log('eventsFields', vm, item?.eventsFields)
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'

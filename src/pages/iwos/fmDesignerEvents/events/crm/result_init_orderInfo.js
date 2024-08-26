@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'result_init_orderInfo';
 export const label = '服务一致性_订单列表查询结果赋值';
 export const resFields = [

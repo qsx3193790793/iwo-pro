@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'crm_ECQryCustBill';
 export const label = '服务一致性_账单查询';
 export const resFields =[];

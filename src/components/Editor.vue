@@ -105,6 +105,9 @@ export default {
   watch: {
     value: {
       handler(val) {
+        // if (this.Quill) {
+        //   this.$emit('getNoticeText', this.Quill.getText())
+        // }
         if (val !== this.currentValue) {
           this.currentValue = val === null ? "" : val;
           if (this.Quill) {
@@ -117,6 +120,9 @@ export default {
   },
   mounted() {
     this.init();
+    // if (this.Quill) {
+    //   this.$emit('getNoticeText', this.Quill.getText())
+    // }
   },
   beforeDestroy() {
     this.Quill = null;
@@ -192,6 +198,9 @@ export default {
     handleUploadError() {
       this.$message.error("图片插入失败");
     },
+    getText() {
+      return this.Quill.getText().replace(/\n/g, "");
+    }
   },
 };
 </script>

@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'public_customization_comps_event';
 export const label = '定制化组件_选择赋值';
 

@@ -49,7 +49,7 @@ import TextLine from "@/components/TextLine.vue";
 import FileUploader from "../components/FileUploader";
 import FormModel from "@/components/FMGenerator/FormModel";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config/index";
-import testJson from "@/components/FMGenerator/FMDesigner/components/jsonComps/投诉单详情模板.js";
+import template from "@/pages/iwos/fmDesignerComps/template/投诉单详情模板.js";
 
 const {proxy} = getCurrentInstance();
 const FormModelRef = ref();
@@ -68,8 +68,9 @@ async function onFormLoaded(v) {
   const {res, err} = await proxy.$$api.crm.queryCommonCustInfo({
     loading: !1, data: {
       accNumber: proxy.$$lodash.get(formData.value, 'complaintAssetNum'),
-      lanId: proxy.$$lodash.get(formData.value, 'lanId')
-    }
+      lanId: proxy.$$lodash.get(formData.value, 'lanId'),
+    },
+    headers: {'complaintWorksheetId': proxy.$$lodash.get(formData.value, 'complaintWorksheetId') ?? '', 'complaintAssetNum': proxy.$$lodash.get(formData.value, 'complaintAssetNum') ?? ''}
   });
   userInfo.value = {
     custName: proxy.$$lodash.get(formData.value, 'custName'),
@@ -153,7 +154,7 @@ const textLineList2 = computed(() => [
 watch(() => proxy.$route.params.workorderId, () => FormModelRef.value?.init())
 
 onMounted(() => {
-  formConfig.value = parseFormModel(proxy.$$deepmerge(testJson.json));
+  formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
 });
 </script>
 <script>

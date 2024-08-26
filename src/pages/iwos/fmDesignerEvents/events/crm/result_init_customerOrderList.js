@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'result_init_customerOrderList';
 export const label = '省内接口_订单列表查询结果赋值';
 export const resFields = [

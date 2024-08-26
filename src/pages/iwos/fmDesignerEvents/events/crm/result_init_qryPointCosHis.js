@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'result_init_qryPointCosHis';
 export const label = '集团接口_积分消费历史列表结果赋值';
 export const resFields = [

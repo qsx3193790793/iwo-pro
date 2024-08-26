@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'result_init_ECQryPayment';
 export const label = '服务一致性_充值缴费列表结果赋值';
 export const resFields = [

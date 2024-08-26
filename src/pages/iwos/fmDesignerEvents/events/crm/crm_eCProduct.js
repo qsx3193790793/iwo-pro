@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'crm_eCProduct';
 export const label = '服务一致性_用户信息查询';
 export const resFields = [
@@ -37,7 +37,8 @@ export default async ({vm, eventsFields}) => {
       account: '',//账号
       prodClass: '',//接入产品产品大类
       iccid: '',//ICCID
-    }
+    },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   console.log('eventsFields', vm, eventsFields)
   eventsFields.forEach(ef => {

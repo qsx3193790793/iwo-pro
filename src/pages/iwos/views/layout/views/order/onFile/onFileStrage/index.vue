@@ -156,7 +156,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
-      // 部门名称
+      // 机构名称
       deptName: undefined,
       // 日期范围
       dateRange: [],
@@ -374,7 +374,7 @@ export default {
           );
         });
     },
-    /** 查询部门下拉树结构 */
+    /** 查询机构下拉树结构 */
     getSourceTree() {
       this.$$api.complaintSource
         .listComplaintSourceTree({ data: { status: 1 } })

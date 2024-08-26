@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'crm_ECQueryBalance';
 export const label = '服务一致性_余额查询';
 export const resFields = [
@@ -42,7 +42,8 @@ export default async ({vm, eventsFields}) => {
       "lanId": lanIdInfo.lanid,
       "objValue": accNum,
       "objAttr": accType,
-    }
+    },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   console.log('eventsFields', vm, eventsFields)
   eventsFields.forEach(ef => {

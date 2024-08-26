@@ -122,6 +122,7 @@ let store = {
     GET_URL_PARAMS_BY_KEY: state => key => state.urlParams[key] || null,
     GET_TOKEN: state => state.token,
     GET_USER_INFO: state => state.userInfo || null,
+    GET_USER_PROVINCE_CODE: state => state.userInfo?.userProvince,
     GET_BIZ_DATA: state => state.bizData || null,
     GET_PERMISSIONS: state => state.permissions || [],
   }

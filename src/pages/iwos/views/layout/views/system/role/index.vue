@@ -201,13 +201,13 @@
                   更多<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item
+              <!-- <el-dropdown-item
                   command="handleDataScope"
                   icon="el-icon-circle-check"
                   v-hasPermission="['system:role:edit']"
               >数据权限
               </el-dropdown-item
-              >
+              > -->
               <el-dropdown-item
                   command="handleAuthUser"
                   icon="el-icon-user"
@@ -301,6 +301,7 @@
           </el-checkbox
           >
           <el-checkbox
+              disabled
               v-model="form.complaintSourceCheckStrictly"
               @change="handleCheckedTreeConnect($event, 'complaintSource')"
           >父子联动
@@ -445,11 +446,11 @@ export default {
         },
         {
           value: "3",
-          label: "本部门数据权限",
+          label: "本机构数据权限",
         },
         {
           value: "4",
-          label: "本部门及以下数据权限",
+          label: "本机构及以下数据权限",
         },
         {
           value: "5",
@@ -460,7 +461,7 @@ export default {
       menuOptions: [],
       // 投诉来源
       complaintSourceOptions: [],
-      // 部门列表
+      // 机构列表
       deptOptions: [],
       // 查询参数
       queryParams: {
@@ -574,20 +575,20 @@ export default {
       checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
       return checkedKeys;
     },
-    // 所有部门节点数据
+    // 所有机构节点数据
     getDeptAllCheckedKeys() {
-      // 目前被选中的部门节点
+      // 目前被选中的机构节点
       let checkedKeys = this.$refs.dept.getCheckedKeys();
-      // 半选中的部门节点
+      // 半选中的机构节点
       let halfCheckedKeys = this.$refs.dept.getHalfCheckedKeys();
       checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
       return checkedKeys;
     },
     // 所有投诉来源数据
     getComplaintSourceAllCheckedKeys() {
-      // 目前被选中的部门节点
+      // 目前被选中的机构节点
       let checkedKeys = this.$refs.complaintSource.getCheckedKeys();
-      // 半选中的部门节点
+      // 半选中的机构节点
       let halfCheckedKeys = this.$refs.complaintSource.getHalfCheckedKeys();
       checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
       return checkedKeys;
@@ -600,7 +601,7 @@ export default {
         return response;
       });
     },
-    /** 根据角色ID查询部门树结构 */
+    /** 根据角色ID查询机构树结构 */
     getDeptTree(roleId) {
       return this.$$api.role.deptTreeSelect({roleId}).then(({res: response, err}) => {
         if (err) return [];
@@ -727,7 +728,7 @@ export default {
       } else if (type == "dept") {
         this.form.deptCheckStrictly = value ? true : false;
       } else if (type == "complaintSource") {
-        this.form.complaintSourceCheckStrictly = value ? true : false;
+        this.form.complaintSourceCheckStrictly = value ? true  : false;
       }
     },
     /** 新增按钮操作 */
@@ -749,6 +750,7 @@ export default {
       this.$$api.role.getRole({roleId}).then(({res: response, err}) => {
         if (err) return;
         this.form = response;
+        this.form.complaintSourceCheckStrictly =true;
         this.open = true;
         this.$nextTick(() => {
           roleMenu.then((res) => {

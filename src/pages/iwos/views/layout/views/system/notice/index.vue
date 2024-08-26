@@ -1,11 +1,11 @@
 <template>
   <div class="app-container one-screen">
     <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="公告标题" prop="noticeTitle">
+      <el-form-item label="标题" prop="noticeTitle">
         <el-input
             class="queryItem"
             v-model="queryParams.noticeTitle"
-            placeholder="请输入公告标题"
+            placeholder="请输入标题"
             clearable
             @keyup.enter.native="handleQuery"
         />
@@ -30,10 +30,10 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button><el-button
-            type="primary"
-            plain
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
+        <el-button
+            type="success"
             size="small"
             @click="handleAdd"
             v-hasPermission="['system:notice:add']"
@@ -41,7 +41,6 @@
         </el-button>
         <el-button
             type="success"
-            plain
             size="small"
             :disabled="single"
             @click="handleUpdate"
@@ -50,7 +49,6 @@
         </el-button>
         <el-button
             type="danger"
-            plain
             size="small"
             :disabled="multiple"
             @click="handleDelete"
@@ -62,21 +60,21 @@
 
     <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
     </el-row> -->
 
     <el-table v-loading="loading" class="one-screen-fg1" height="100%" :data="noticeList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="序号" align="center" prop="noticeId" width="100"/>
+      <!-- <el-table-column label="序号" align="center" prop="noticeId" width="100"/> -->
       <el-table-column
-          label="公告标题"
+          label="标题"
           align="center"
           prop="noticeTitle"
           :show-overflow-tooltip="true"
@@ -92,6 +90,7 @@
         </template>
       </el-table-column>
       <el-table-column label="创建者" align="center" prop="createBy" width="100"/>
+      <el-table-column label="发布部门" align="center" prop="publishDeptName" width="100"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -121,16 +120,11 @@
 
     <!-- 添加或修改公告对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
-      <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="公告标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入公告标题"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="form.noticeType" placeholder="请选择公告类型">
+              <el-select v-model="form.noticeType" placeholder="请选择公告类型" style="width: 100%;">
                 <el-option
                     v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')"
                     :key="dict.value"
@@ -138,6 +132,11 @@
                     :value="dict.value"
                 ></el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="标题" prop="noticeTitle">
+              <el-input v-model="form.noticeTitle" placeholder="请输入标题"/>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -153,8 +152,36 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
+            <el-form-item label="接收者类型">
+              <el-radio-group v-model="form.recipientType">
+                <!-- <el-radio
+                    v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_status')"
+                    :key="dict.value"
+                    :label="dict.value"
+                >{{ dict.label }}
+                </el-radio> -->
+                <el-radio
+                    v-for="dict in [{value:'1', label:'机构'},{value:'2', label:'班组'},{value:'3', label:'个人'}]"
+                    :key="dict.value"
+                    :label="dict.value"
+                >{{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="接收机构" prop="deptId">
+              <treeselect v-model="form.deptId" :multiple="form.recipientType==='1'" :options="deptOptions" :show-count="true" placeholder="请选择机构" @select="handelDeptIdChange"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" v-if="form.recipientType!=='1'">
+            <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
+              <treeselect v-model="form.recipientIds" :multiple="true" :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`"/>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
             <el-form-item label="内容">
-              <Editor v-model="form.noticeContent" :min-height="192"/>
+              <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -169,11 +196,12 @@
 
 <script>
 import Editor from '@/components/Editor.vue';
+import Treeselect from "@riophae/vue-treeselect";
 
 export default {
   name: "NoticeIndex",
   dicts: ['sys_notice_status', 'sys_notice_type'],
-  components: {Editor},
+  components: {Editor, Treeselect},
   data() {
     return {
       // 遮罩层
@@ -194,6 +222,8 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      deptOptions: [],
+      recipientOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -204,19 +234,41 @@ export default {
       },
       // 表单参数
       form: {},
+      // noticeText:'',
       // 表单校验
       rules: {
         noticeTitle: [
-          {required: true, message: "公告标题不能为空", trigger: "blur"}
+          {required: true, message: "标题不能为空", trigger: "blur"}
         ],
         noticeType: [
           {required: true, message: "公告类型不能为空", trigger: "change"}
+        ],
+        deptId: [
+          {required: true, message: "接收机构不能为空", trigger: "change"}
+        ],
+        recipientIds: [
+          {required: true, message: `接收班组或人员不能为空`, trigger: "change"}
         ]
       }
     };
   },
   created() {
     this.getList();
+    this.getDeptTree()
+  },
+  computed: {
+    recipientLabel() {
+      switch (this.form.recipientType) {
+        case '1':
+          return '机构'
+        case '2':
+          return '班组'
+        case '3':
+          return '人员'
+        default:
+          return '机构'
+      }
+    }
   },
   methods: {
     /** 查询公告列表 */
@@ -228,6 +280,26 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    //查询机构树
+    getDeptTree() {
+      this.$$api.user.deptTreeSelect().then(({res, err}) => {
+        if (err) return;
+        this.deptOptions = res?.list || [];
+      });
+    },
+    handelDeptIdChange() {
+      if (this.form.recipientType === '2') {
+        this.$$api.user.deptTreeSelect().then(({res, err}) => {
+          if (err) return;
+          this.recipientOptions = res?.list || [];
+        });
+      } else if (this.form.recipientType === '3') {
+        this.$$api.user.deptTreeSelect().then(({res, err}) => {
+          if (err) return;
+          this.recipientOptions = res?.list || [];
+        });
+      }
     },
     // 取消按钮
     cancel() {
@@ -241,7 +313,9 @@ export default {
         noticeTitle: undefined,
         noticeType: undefined,
         noticeContent: undefined,
-        status: "0"
+        deptId: undefined,
+        status: "0",
+        recipientType: '1'
       };
       this.$refs['form']?.resetFields();
     },
@@ -282,15 +356,18 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          if (this.form.recipientType === "1") {
+            this.form.recipientIds = this.form.deptId
+          }
           if (this.form.noticeId != undefined) {
-            this.$$api.notice.updateNotice({data: this.form}).then(({res: response, err}) => {
+            this.$$api.notice.updateNotice({data: {noticeText: this.$refs.editorRef.getText(), ...this.form}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.$$api.notice.addNotice({data: this.form}).then(({res: response, err}) => {
+            this.$$api.notice.addNotice({data: {noticeText: this.$refs.editorRef.getText(), ...this.form}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("新增成功");
               this.open = false;
@@ -311,6 +388,13 @@ export default {
         this.$$Toast.success("删除成功");
       }).catch(() => {
       });
+    },
+    // getNoticeText(val){
+    //    this.noticeText = val.replace(/\n/g, "")
+    //    console.log('this.noticeText',this.noticeText)
+    // },
+    chooseRecipient() {
+
     }
   }
 };

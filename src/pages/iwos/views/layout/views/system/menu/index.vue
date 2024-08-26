@@ -20,8 +20,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button>
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
         <el-button
             type="success"
             size="small"
@@ -41,10 +41,10 @@
 
     <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
     </el-row> -->
 
@@ -81,7 +81,7 @@
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column  label="操作" align="center" width="220" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="small"

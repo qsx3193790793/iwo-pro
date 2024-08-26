@@ -38,7 +38,6 @@
       </div>
     </template>
     <el-empty v-else></el-empty>
-    <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog" v-bind="uploadConfig" @templateDownload="onTemplateDownload"></importDialog>
     <!-- 添加或修改用户配置对话框 -->
     <!-- <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog> -->
   </div>
@@ -48,15 +47,12 @@
 import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
-import importDialog from './import/index.vue'
 import apiPrefix from "@/api/apiPrefix.js";
 
 const {proxy} = getCurrentInstance();
 const selectionChange = (val) => {
   console.log(val);
 };
-const uploadConfig = ref({})
-const isShowImportDialog = ref(false)
 const FormRef = ref();
 const submitForm = () => {
   FormRef.value.validate((valid) => {
@@ -131,19 +127,19 @@ const columns = ref({
   ],
   options: {
     btns: [
-      {
-        label: '编辑',
-        key: 'edit',
-        autoHidden: ({row}) => row.statusCd === 'C100001',
-        event: row => {
-          proxy.$router.push({name: 'ComplaintCreate', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
-        },
-      },
+      // {
+      //   label: '编辑',
+      //   key: 'edit',
+      //   autoHidden: ({row}) => row.statusCd === 'C100001',
+      //   event: row => {
+      //     proxy.$router.push({name: 'ComplaintCreate', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
+      //   },
+      // },
       {
         label: '详情',
         key: 'detail',
         event: row => {
-          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
         },
       },
       // {
@@ -304,11 +300,12 @@ const formConfigItems = ref([
     isDisable: !1,
     isRequire: !1,
   },
+  {col: 6, type: "divider-empty"},
   {
     type: "buttons",
     align: "right",
     verticalAlign: 'top',
-    col: 24,
+    col: 6,
     items: [
       {
         btnName: "重置",
@@ -330,40 +327,7 @@ const formConfigItems = ref([
           getList(1);
         },
       },
-      {
-        btnName: "新增",
-        type: "button",
-        attrs: {type: "success"},
-        col: 1,
-        onClick({vm}) {
-          console.time('open');
-          proxy.$router.push({name: 'ComplaintCreate'})
-        },
-      },
-      {
-        btnName: "导入",
-        type: "buttonGroup",
-        attrs: {type: "warning"},
-        items: [
-          {
-            btnName: "工信部",
-            type: "button",
-            attrs: {type: "primary"},
-            onClick({vm}) {
-              importFile('工信部导入')
-            },
-          },
-          {
-            btnName: "省管局",
-            type: "button",
-            attrs: {type: "primary"},
-            col: 1,
-            onClick({vm}) {
-              importFile('省管局导入')
-            },
-          },
-        ]
-      },
+     
     ],
   },
 ]);
@@ -388,42 +352,9 @@ async function listComplaintSourceTree() {
   });
 }
 
-function importFile(title) {
-  uploadConfig.value = {
-    uploadTip: '提示：仅允许导入"xls"或“xlsx"格式文件!',
-    accept: 'xls,xlsx',
-    httpRequest: (e) => {
-      fileUpload(e)
-    },
-    title,
-  }
-  isShowImportDialog.value = true
-}
 
-const acceptNames = ref(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
 
-async function fileUpload(e) {
-  if (!acceptNames.value.includes(e.file.type)) return proxy.$message({message: `只能上传${uploadConfig.value.accept}格式文件`, type: 'error'});
-  const formdata = new FormData()
-  formdata.append('file', e.file)
-  const {res, err} = await uploadConfig.value.title === "工信部导入" ? proxy.$$api.complaint.miitImport({data: formdata}) : proxy.$$api.complaint.provinceAuthorityImport({data: formdata});
-  if (err) return proxy.$message({message: err?.message || '导入失败', type: 'error'});
-  getList(1)
-  isShowImportDialog.value = false
-}
 
-async function onTemplateDownload() {
-  if (uploadConfig.value.title === '工信部导入') {
-    const {res, err} = await proxy.$$api.complaint.miitTemplate();
-    if (err) return
-    proxy.$$downloadFile(URL.createObjectURL(res.blob), '工信部批量导入模板');
-  } else {
-    const {res, err} = await proxy.$$api.complaint.provinceAuthorityTemplate();
-    if (err) return
-    proxy.$$downloadFile(URL.createObjectURL(res.blob), '省管局批量导模板');
-  }
-
-}
 
 onMounted(() => {
   listComplaintSourceTree();

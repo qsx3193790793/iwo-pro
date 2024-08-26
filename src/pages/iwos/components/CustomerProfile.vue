@@ -42,7 +42,7 @@
               <el-col :span="6">
                 <div>
                   号码归属地：
-                  <span class="showData">{{ state.userInfo.twoLevel }}</span>
+                  <span class="showData">{{ state.userInfo.phoneLocal }}</span>
                 </div>
               </el-col>
               <el-col :span="6">
@@ -122,7 +122,7 @@ function reset() {
       thirtyDaysOrderSatisfied: '-',//      30天工单评价-满意
       thirtyDaysOrderDissatisfied: '-',//   30天工单评价-不满意
       refundValue: "-",
-      twoLevel: "-",
+      phoneLocal: "-",
       custLevel: 0,
       custName: "客户姓名",
     },
@@ -136,10 +136,22 @@ function reset() {
 
 const state = ref(reset());
 
+// 工单编号 进来先调用 后续接口都要
+const complaintWorksheetId = ref(null);
+
+async function getComplaintWorksheetId() {
+  const {res, err} = await proxy.$$api.complaint.getComplaintWorksheetId({});
+  if (res?.value) complaintWorksheetId.value = res.value;
+}
+
 // '0': 'public',    '1': 'scene',    '2': 'ext',    '3': 'comm',
 async function diagnosisHandleInfo() {
+  if (!complaintWorksheetId.value) return;
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
-  const {res, err} = await proxy.$$api.complaint.diagnosisHandleInfo({data: {accNum: accNum.value}});
+  const {res, err} = await proxy.$$api.complaint.diagnosisHandleInfo({
+    data: {accNum: accNum.value},
+    headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
+  });
   if (res) {
     proxy.$emit('diagnosisChange', (res.fieldList || []).reduce((t, c) => {
       if (c.type == 0) t[c.name] = c.value;
@@ -152,36 +164,66 @@ async function diagnosisHandleInfo() {
 }
 
 async function getInfo({isForce, from}) {
+  if (!complaintWorksheetId.value) return;
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
-  const {res, err} = await proxy.$$api.crm.getHNumber({params: {segment: accNum.value}});//segment
+  let res, err;
+  if (accType.value === '12') {//移动设备才需要调用H码查询 其他没有
+    [res, err] = await proxy.$$api.crm.getHNumber({
+      params: {segment: accNum.value},
+      headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
+    });
+  }
+  if (err) return;
+  if (!res) res = {lanid: proxy.$store.getters['user/GET_USER_PROVINCE_CODE']};//如果没查到 默认赋值工号对应省
   if (res) {
-    const [R1, R2] = await Promise.all([
-      proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({data: {accNumber: accNum.value, lanId: res.lanid}}),
-      proxy.$$api.crm.sourceCountUserPicuture({params: {complaintAssetNum: accNum.value}})
+    const [R1, R2, R3] = await Promise.all([
+      proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({
+        data: {accNumber: accNum.value, lanId: res.lanid},
+        headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
+      }),
+      proxy.$$api.crm.sourceCountUserPicuture({
+        params: {complaintAssetNum: accNum.value},
+        headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
+      }),
+      proxy.$$api.crm.eCProduct({
+        params: {lanId: res.lanid, serialNumber: accNum.value, prodClass: accType.value},
+        headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
+      })
     ]);
+    const {res: ecpRes, err: ecpErr} = R3;//设备信息
+    if (ecpRes) {
+      ecpRes.phoneLocal = [ecpRes.province, ecpRes.city].join('-');
+      state.value.userInfo.phoneLocal = ecpRes.phoneLocal || '-';
+    }
+
     const {res: scupRes, err: scupErr} = R2;
     if (scupRes) {
-      state.value.userInfo.repeatedComplaintsThirtyDays = scupRes?.repeatedComplaintsThirtyDays || '-';
-      state.value.userInfo.complaintsExceedingLevelThirtyDays = scupRes?.complaintsExceedingLevelThirtyDays || '-';
-      state.value.userInfo.ninetyDaysRefundRecord = scupRes?.ninetyDaysRefundRecord || '-';
-      state.value.userInfo.thirtyDaysOrderSatisfied = scupRes?.thirtyDaysOrderSatisfied || '-';
-      state.value.userInfo.thirtyDaysOrderDissatisfied = scupRes?.thirtyDaysOrderDissatisfied || '-';
+      state.value.userInfo.repeatedComplaintsThirtyDays = scupRes?.repeatedComplaintsThirtyDays ?? '-';
+      state.value.userInfo.complaintsExceedingLevelThirtyDays = scupRes?.complaintsExceedingLevelThirtyDays ?? '-';
+      state.value.userInfo.ninetyDaysRefundRecord = scupRes?.ninetyDaysRefundRecord ?? '-';
+      state.value.userInfo.thirtyDaysOrderSatisfied = scupRes?.thirtyDaysOrderSatisfied ?? '-';
+      state.value.userInfo.thirtyDaysOrderDissatisfied = scupRes?.thirtyDaysOrderDissatisfied ?? '-';
     }
+
     const {res: iRes, err: iErr} = R1;
     if (iRes) {
       //带m_自己算的 和接口区分开
       iRes.m_netAge = iRes?.netAccess ? proxy.$$dayjs().diff(iRes.netAccess, 'year') : null;
 
       // 存储定位后数据 后续用
-      proxy.$store.commit('storage/SET_STORAGE', {key: 'customPositioning', value: {lanIdInfo: res, custom: iRes, accType: accType.value, accNum: accNum.value, redirectInfo: redirectInfo.value}});
+      proxy.$store.commit('storage/SET_STORAGE', {
+        key: 'customPositioning', value: {
+          complaintWorksheetId: complaintWorksheetId.value, accType: accType.value, accNum: accNum.value,
+          eCProductInfo: ecpRes, lanIdInfo: res, custom: iRes, redirectInfo: redirectInfo.value
+        }
+      });
 
       if (from !== '详情') proxy.$emit('change');//变化通知 详情时不触发
 
-      state.value.userInfo.complaintLevelUp = iRes?.complaintLevelUp || '-';
-      state.value.userInfo.custLevel = parseInt(iRes?.custLevel ?? '0') || 0;
+      state.value.userInfo.complaintLevelUp = iRes?.complaintLevelUp ?? '-';
+      state.value.userInfo.custLevel = parseInt(iRes?.custLevel ?? '0') ?? 0;
       state.value.userInfo.custName = iRes?.custName || '-';
-      state.value.userInfo.twoLevel = res?.twoLevel || '-';
-      state.value.userInfo.recmplntTimesDays = iRes?.recmplntTimesDays || '-';
+      state.value.userInfo.recmplntTimesDays = iRes?.recmplntTimesDays ?? '-';
       state.value.userProfile.gender = iRes?.gender;
       // iRes.birth = '2022-09-07'
       state.value.userProfile.birthdayFlag = iRes?.birth ? proxy.$$dayjs(proxy.$$dateFormatterYMD(proxy.$$dayjs())).isSame(iRes.birth) : false;
@@ -205,23 +247,31 @@ async function getInfo({isForce, from}) {
 async function getDetail() {
   if (proxy.$route.query.complaintAssetNum) {
     accNum.value = proxy.$route.query.complaintAssetNum;
+    complaintWorksheetId.value = proxy.$route.query.complaintWorksheetId;
     return getInfo({from: '详情'});
   }
-  const {res, err} = await proxy.$$api.complaint.complaintWorkOrderDetail({workorderId: proxy.$route.params.workorderId});
+  const {res, err} = await proxy.$$api.complaint.complaintWorkOrderDetail({
+    workorderId: proxy.$route.params.workorderId,
+    headers: {'complaintWorksheetId': proxy.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': proxy.$route.query.complaintAssetNum ?? ''}
+  });
   if (res) {
     accNum.value = res?.complaintAssetNum;
+    complaintWorksheetId.value = res?.complaintWorksheetId;
     getInfo({from: '详情'});
   }
 }
 
 watch(() => proxy.$route.params.workorderId, () => {
-  reset();
+  console.log('watch proxy.$route.params.workorderId', proxy.$route.params.workorderId)
+  state.value = reset();
+  proxy.$emit('reset');
   if (proxy.$route.params.workorderId) getDetail();
 });
 
 onBeforeMount(() => {
   proxy.$store.commit('storage/REMOVE_STORAGE', ['customPositioning']);
   if (proxy.$route.params.workorderId) return getDetail();
+  getComplaintWorksheetId();
   try {
     redirectInfo.value = JSON.parse(decodeURIComponent(proxy.$route.query.p || null));
     console.log('p', redirectInfo.value);

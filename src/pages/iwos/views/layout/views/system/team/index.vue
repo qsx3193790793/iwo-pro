@@ -1,7 +1,7 @@
 <template>
   <div class="app-container one-screen">
     <div class="app-container-inner">
-      <!--部门数据-->
+      <!--机构数据-->
       <div class="one-screen one-screen-fg0" style="width: 260px;margin-right: 16px;">
         <div class="head-container one-screen-fg0">
           <el-input
@@ -98,7 +98,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body @close="handleType=''">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" :disabled="handleType=='detail'">
         <el-form-item label="机构" prop="deptId">
-          <treeselect v-model="form.deptId" :disabled="handleType=='detail'" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属部门'" @select="handelDeptIdChange"/>
+          <treeselect v-model="form.deptId" :disabled="handleType=='detail'" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属机构'" @select="handelDeptIdChange"/>
         </el-form-item>
         <el-form-item label="上级班组">
           <treeselect v-model="form.parentId" :disabled="handleType=='detail'" :options="teamOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级班组'" @select="handelparentIdChange"/>
@@ -119,7 +119,7 @@
         <el-form-item label="班组描述" prop="teamDescribe">
           <el-input v-model="form.teamDescribe" type="textarea" maxlength="100" :placeholder="handleType=='detail'?'':'请输入班组描述'"/>
         </el-form-item>
-        <el-form-item label="部门状态">
+        <el-form-item label="机构状态">
           <el-radio-group v-model="form.status">
             <el-radio
                 v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
@@ -170,14 +170,14 @@ export default {
       teamOptions: [],
       // 角色选项
       roleOptions: [],
-      // 部门树选项
+      // 机构树选项
       deptOptions: undefined,
       // el-tree的转换
       defaultProps: {
         children: "children",
         label: "label"
       },
-      // 部门名称
+      // 机构名称
       deptName: undefined,
       // 弹出层标题
       title: "",
@@ -208,7 +208,7 @@ export default {
     };
   },
   watch: {
-    // 根据名称筛选部门树
+    // 根据名称筛选机构树
     deptName(val) {
       this.$refs.tree.filter(val);
     }
@@ -291,7 +291,7 @@ export default {
       this.form.roleIds = []
       this.getTeamRoleInfo(val.teamId)
     },
-    /** 查询部门下拉树结构 */
+    /** 查询机构下拉树结构 */
     getDeptTree() {
       this.$$api.user.deptTreeSelect().then(({res, err}) => {
         if (err) return;
@@ -407,7 +407,7 @@ export default {
         if (valid) {
           if (that.form.teamId != null) {
             if(that.form.status=='1'){
-              that.$$Dialog.confirm('确定停用所选部门吗?停用后部门下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
+              that.$$Dialog.confirm('确定停用所选机构吗?停用后机构下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
                 confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
               }).then(() =>{
                   that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {

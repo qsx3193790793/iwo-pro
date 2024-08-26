@@ -8,6 +8,10 @@ const apis = {
   temporarySaveComplaintWorkOrder: {url: `${apiPrefix("web")}/complaintWorkOrder/temporarySaveComplaintWorkOrder`},
   // 办结
   temporaryCompletedComplaintWorkOrder: {url: `${apiPrefix("srv")}/completedWorkOrder`},
+  
+  // 取消
+  temporaryCancelComplaintWorkOrder: {url: `${apiPrefix("web")}/createOrder/updStatusCd`, method: "put"},
+
   // 查询流程定义ID
   getProcessDefinitionId: {url: `${apiPrefix("web")}/complaintWorkOrder/getProcessDefinitionId`, method: "get"},
   // 详情

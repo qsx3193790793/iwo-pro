@@ -1,4 +1,4 @@
-//测试
+
 
 export const key = 'complaint_save';
 export const label = '投诉单_暂存';
@@ -59,10 +59,22 @@ export default ({vm, item}) => {
   vm.validator(
     () => {
       vm.$$Dialog.confirm(`你确定要暂存吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
+        // 获取流程id并赋值
+        const {res: ProcessRes, err: ProcessRrr} = await vm.$$api.complaint.getProcessDefinitionId({
+          params: {
+            code: formData?.workorderType
+          },
+          headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
+        });
+        if (ProcessRrr) return vm.$$Toast({message: `获取流程ID失败`, type: 'error'});
+        // 执行暂存操作
         const {res, err} = await vm.$$api.complaint.temporarySaveComplaintWorkOrder({
           data: {
-            complaint: formData, ext, complaintAssistList, workOrderAttachmentIdList
-          }
+            complaint: formData, ext, complaintAssistList, workOrderAttachmentIdList,
+            // 流程id
+            processDefinitionId: ProcessRes.processDefinitionId,
+          },
+          headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
         });
         if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});
         return vm.$$Toast({message: `操作成功`, type: 'success'});

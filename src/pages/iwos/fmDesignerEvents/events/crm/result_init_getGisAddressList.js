@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'result_init_getGisAddressList';
 export const label = '服务一致性_GIS地址列表结果赋值';
 export const resFields = [

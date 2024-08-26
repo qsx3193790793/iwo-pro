@@ -45,7 +45,7 @@ import UserTag from "@/pages/iwos/components/UserTag.vue";
 import TextLine from "@/components/TextLine.vue";
 import FormModel from "@/components/FMGenerator/FormModel";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config/index";
-import testJson from "@/components/FMGenerator/FMDesigner/components/jsonComps/投诉单模板.js";
+import template from "@/pages/iwos/fmDesignerComps/template/投诉单模板.js";
 
 const {proxy} = getCurrentInstance();
 const FormModelRef = ref();
@@ -151,7 +151,7 @@ const textLineList2 = computed(() => [
 watch(() => proxy.$route.params.workorderId, () => FormModelRef.value?.init())
 
 onMounted(() => {
-  formConfig.value = parseFormModel(proxy.$$deepmerge(testJson.json));
+  formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
 });
 </script>
 <script>

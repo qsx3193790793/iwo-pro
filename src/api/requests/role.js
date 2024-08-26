@@ -20,7 +20,7 @@ const apis = {
   authUserCancel: {url: `${apiPrefix('system')}/role/authUser/cancel`, method: 'put'},
   // 批量取消用户授权角色 用的params
   authUserCancelAll: {url: `${apiPrefix('system')}/role/authUser/cancelAll`, method: 'put'},
-  // 根据角色ID查询部门树结构
+  // 根据角色ID查询机构树结构
   deptTreeSelect: {url: (args) => `${apiPrefix('system')}/role/deptTree/${args?.roleId || ''}`, method: 'get'},
 
   // 获取角色投诉来源

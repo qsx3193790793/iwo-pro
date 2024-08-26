@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'result_init_eCCustomer';
 export const label = '服务一致性_客户基本信息结果赋值';
 export const resFields = [

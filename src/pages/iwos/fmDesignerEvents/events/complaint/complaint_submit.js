@@ -1,5 +1,3 @@
-//测试
-
 export const key = 'complaint_submit';
 export const label = '投诉单_提交';
 
@@ -63,7 +61,8 @@ export default ({vm, item}) => {
         const {res: ProcessRes, err: ProcessRrr} = await vm.$$api.complaint.getProcessDefinitionId({
           params: {
             code: formData?.workorderType
-          }
+          },
+          headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
         });
         if (ProcessRrr) return vm.$$Toast({message: `获取流程ID失败`, type: 'error'});
         // 提交参数
@@ -71,7 +70,8 @@ export default ({vm, item}) => {
           data: {
             complaint: formData, ext, complaintAssistList, workOrderAttachmentIdList,
             processDefinitionId: ProcessRes.processDefinitionId,
-          }
+          },
+          headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
         });
         if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});
         return vm.$$Toast({message: `操作成功`, type: 'success'});

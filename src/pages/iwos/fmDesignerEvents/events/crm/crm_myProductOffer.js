@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'crm_myProductOffer';
 export const label = '服务一致性_我的套餐';
 export const resFields = [
@@ -27,7 +27,8 @@ export default async ({vm, eventsFields}) => {
       lanId: lanIdInfo.lanid,//  本地网标识
       custId: '',//客户ID
       account: '',//账号
-    }
+    },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   console.log('eventsFields', eventsFields)
   const r = (res?.list || []).find(tc => ['10', '11'].includes(tc.type)) || {};

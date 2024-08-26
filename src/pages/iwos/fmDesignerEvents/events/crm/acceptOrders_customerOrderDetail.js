@@ -1,4 +1,4 @@
-//测试
+
 export const key = 'acceptOrders_customerOrderDetail';
 export const label = '省内接口_订单详情查询';
 export const resFields = [
@@ -31,7 +31,8 @@ export default async ({vm, item, value}) => {
   const {res, err} = await vm.$$api.crm.customerOrderDetail({
     data: {
       orderId: value.orderId || value.provCustOrderId, lanId: lanIdInfo.lanid, prodClass: accType
-    }
+    },
+    headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
   console.log('eventsFields', vm, item?.eventsFields)
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'

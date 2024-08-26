@@ -1,6 +1,6 @@
 <template>
   <DragElement v-bind="$attrs" v-on="$listeners">
-    <el-select   v-bind.sync="props_bind" :disabled="props_bind?.isDisable"/>
+    <el-select v-bind.sync="props_bind" :disabled="props_bind?.isDisable"/>
   </DragElement>
 </template>
 <script setup>

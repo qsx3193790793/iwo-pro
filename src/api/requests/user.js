@@ -28,7 +28,7 @@ const apis = {
   getAuthRole: {url: (args) => `${apiPrefix('system')}/user/authRole/${args?.userId || ''}`, method: 'get'},
   // 保存授权角色
   updateAuthRole: {url: `${apiPrefix('system')}/user/authRole`, method: 'put'},
-  // 查询部门下拉树结构
+  // 查询机构下拉树结构
   deptTreeSelect: {url: `${apiPrefix('system')}/user/deptTree`, method: 'get'},
   // 下载模板操作
   importTemplate: {url: `${apiPrefix('system')}/user/importTemplate`, responseType: 'blob', contentType: 1},

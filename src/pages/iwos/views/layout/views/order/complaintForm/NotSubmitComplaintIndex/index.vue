@@ -16,9 +16,9 @@
           <template #workorderType="scope">
             {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", scope.row.workorderType) }}
           </template>
-          <template #provinceCode="scope">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}
-          </template>
+<!--          <template #provinceCode="scope">-->
+<!--            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}-->
+<!--          </template>-->
           <template #statusCd="scope">
             {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", scope.row.statusCd) }}
           </template>
@@ -38,16 +38,17 @@
       </div>
     </template>
     <el-empty v-else></el-empty>
-    <!-- 添加或修改用户配置对话框 -->
-    <!-- <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog> -->
+    <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog" v-bind="uploadConfig" @templateDownload="onTemplateDownload"></importDialog>
   </div>
 </template>
 
 <script setup>
+import importDialog from '../import/index.vue'
 import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
-
+const isShowImportDialog = ref(false)
+const uploadConfig = ref({})
 const {proxy} = getCurrentInstance();
 const selectionChange = (val) => {
   console.log(val);
@@ -61,7 +62,22 @@ const submitForm = () => {
     }
   });
 };
-
+const cancelOrder=(row)=>{
+  proxy.$$Dialog.confirm(`是否确定取消投诉编号为: ${row.unifiedComplaintCode} 的数据项？`).then(() => {
+    console.log(row)
+    let data={
+      workorderId:row.workorderId,
+      statusCd:'C100002',
+      complaintWorksheetId:row.complaintWorksheetId,
+    }
+        return proxy.$$api.complaint.temporaryCancelComplaintWorkOrder({data: data});
+      }).then(({res: response, err}) => {
+        if (err) return
+        getList();
+        proxy.$$Toast.success("取消成功");
+      }
+    )
+}
 const columns = ref({
   props: [
     {
@@ -89,10 +105,10 @@ const columns = ref({
       width: 120,
       key: "complaintAssetNum",
     },
-    {
-      name: "省",
-      key: "provinceCode",
-    },
+    // {
+    //   name: "省",
+    //   key: "provinceCode",
+    // },
     {
       name: "投诉来源",
       key: "askSourceSrlName",
@@ -109,14 +125,14 @@ const columns = ref({
     //   name: "派单单位",
     //   key: "orderType",
     // },
+    // {
+    //   name: "更新人",
+    //   key: "updatedBy",
+    // },
     {
-      name: "更新人",
-      key: "updatedBy",
-    },
-    {
-      name: "更新时间",
+      name: "创建时间",
       width: 160,
-      key: "updatedTime",
+      key: "createdTime",
       el: "format",
       format: "default",
     },
@@ -143,6 +159,14 @@ const columns = ref({
           proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
         },
       },
+      {
+        label: '取消',
+        key: 'del',
+        type: 'danger',
+        // 只有新建状态的数据,才能够执行取消操作
+        autoHidden: ({row}) => row.statusCd == 'C100001',
+        event:cancelOrder
+      },
       // {
       //   label: '删除',
       //   key: 'del',
@@ -166,9 +190,9 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   if (queryParams.provinceOrderCreateTime && queryParams.provinceOrderCreateTime.length > 0) {
     dataTime.beginTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[0]).format("YYYY-MM-DD HH:mm:ss");
     if (new Date(queryParams.provinceOrderCreateTime[0]).getTime() == new Date(queryParams.provinceOrderCreateTime[1]).getTime()) {
-        dataTime.endTime = proxy.$$dayjs(new Date(queryParams.provinceOrderCreateTime[1]).getTime() + 24 * 60 * 60 * 1000 - 1).format('YYYY-MM-DD HH:mm:ss')
-         } else {
-        dataTime.endTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[1]).format("YYYY-MM-DD HH:mm:ss");
+      dataTime.endTime = proxy.$$dayjs(new Date(queryParams.provinceOrderCreateTime[1]).getTime() + 24 * 60 * 60 * 1000 - 1).format('YYYY-MM-DD HH:mm:ss')
+    } else {
+      dataTime.endTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[1]).format("YYYY-MM-DD HH:mm:ss");
     }
   }
   // 投诉来源的取值
@@ -301,9 +325,78 @@ const formConfigItems = ref([
           getList(1);
         },
       },
+      {
+        btnName: "新增",
+        type: "button",
+        attrs: {type: "success"},
+        col: 1,
+        onClick({vm}) {
+          console.time('open');
+          proxy.$router.push({name: 'ComplaintCreate'})
+        },
+      },
+      {
+        btnName: "导入",
+        type: "buttonGroup",
+        attrs: {type: "warning"},
+        items: [
+          // {
+          //   btnName: "工信部",
+          //   type: "button",
+          //   attrs: {type: "primary"},
+          //   onClick({vm}) {
+          //     importFile('工信部导入')
+          //   },
+          // },
+          {
+            btnName: "省管局",
+            type: "button",
+            attrs: {type: "primary"},
+            col: 1,
+            onClick({vm}) {
+              importFile('省管局导入')
+            },
+          },
+        ]
+      },
     ],
   },
 ]);
+
+function importFile(title) {
+  uploadConfig.value = {
+    uploadTip: '提示：仅允许导入"xls"或“xlsx"格式文件!',
+    accept: 'xls,xlsx',
+    httpRequest: (e) => {
+      fileUpload(e)
+    },
+    title,
+  }
+  isShowImportDialog.value = true
+}
+const acceptNames = ref(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
+
+async function fileUpload(e) {
+  if (!acceptNames.value.includes(e.file.type)) return proxy.$message({message: `只能上传${uploadConfig.value.accept}格式文件`, type: 'error'});
+  const formdata = new FormData()
+  formdata.append('file', e.file)
+  const {res, err} = await uploadConfig.value.title === "工信部导入" ? proxy.$$api.complaint.miitImport({data: formdata}) : proxy.$$api.complaint.provinceAuthorityImport({data: formdata});
+  if (err) return proxy.$message({message: err?.message || '导入失败', type: 'error'});
+  getList(1)
+  isShowImportDialog.value = false
+}
+async function onTemplateDownload() {
+  if (uploadConfig.value.title === '工信部导入') {
+    const {res, err} = await proxy.$$api.complaint.miitTemplate();
+    if (err) return
+    proxy.$$downloadFile(URL.createObjectURL(res.blob), '工信部批量导入模板');
+  } else {
+    const {res, err} = await proxy.$$api.complaint.provinceAuthorityTemplate();
+    if (err) return
+    proxy.$$downloadFile(URL.createObjectURL(res.blob), '省管局批量导模板');
+  }
+}
+
 
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {

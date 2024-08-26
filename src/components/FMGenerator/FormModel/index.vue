@@ -8,7 +8,7 @@
     <div class="form-model-inner" :style="[formConfig.maxHeight&&{maxHeight:`${formConfig.maxHeight}`,overflow:'auto'}]">
       <Form :model="formData" ref="Form" :inline="true" :label-position="formConfig.labelPosition||'top'" :label-width="formConfig.labelWidth" hide-required-asterisk scroll-to-error>
         <Collapse v-model="collapseActive">
-          <template v-for="(item,index) in [].concat(formConfig.items,appendItems)">
+          <template v-for="(item,index) in resultItems">
             <CollapseItem v-if="!item.isShow||item.isShow({vm})" :key="item.name+`${index}`" :class="{'is-disabled':!item.name}" :name="item.name||`${index}`">
               <template v-if="item.name" #title>
                 <div class="main-form-title" @click.stop="collapseActiveToggle(item.name||`${index}`)">
@@ -33,7 +33,7 @@
                           <div v-html="getName(v.subName)" class="sub-name"></div>
                         </div>
                       </template>
-                      <Input v-if="['input','FMInput'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" autocomplete="off" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})" @keydown.enter.native="v.onChange&&v.onChange({vm,item:v})">
+                      <Input v-if="['input','FMInput'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :maxlength="v.maxlength??30" autocomplete="off" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})" @keydown.enter.native="v.onChange&&v.onChange({vm,item:v})">
                         <template v-if="!disabled&&v.dialog&&(!v.dialog.isShow||v.dialog.isShow({vm}))" #append>
                           <Button icon="Search" @click="v.dialog.beforeOpen?(v.dialog.isOpen=v.dialog.beforeOpen({vm})):(v.dialog.isOpen=!0)" :disabled="!!v.btnDisabled"/>
                           <Modal v-model="v.dialog.isOpen" :title="v.dialog.title" @onOpen="v.dialog.onOpen&&v.dialog.onOpen({vm})">
@@ -92,7 +92,7 @@
                       <Slider v-else-if="['slider','FMSlider'].includes(v.type)" v-model="formData[v.key]" :min="v.min??0" :max="v.max??100" :disabled="v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"></Slider>
                       <MonacoEditor v-else-if="['monacoEditor','FMMonacoEditor'].includes(v.type)" v-model="formData[v.key]" :height="v.height||'1.2rem'" @change="v.onChange&&v.onChange({vm,item:v})" :disabled="v.isDisable"></MonacoEditor>
                       <!-- v.component可以为字符串使用components导入的组件，或直接为组件对象-->
-                      <component v-else-if="['component','FMComponent'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" v-on="v.emitter?.({vm,item:v})" v-bind="v.attrs||{}" :ref="v.key" :root="{vm,item:v}" :is="v.component" :disabled="disabled||v.isDisable"></component>
+                      <component v-else-if="['component','FMComponent'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" v-on="v.emitter?.({vm,item:v})" v-bind="v.attrs||{}" :options="v.options&&getSelectOptions(v)" :ref="v.key" :root="{vm,item:v}" :is="v.component" :disabled="disabled||v.isDisable"></component>
                       <template v-else-if="['button','FMButton'].includes(v.type)">
                         <div v-if="v.verticalAlign!=='top'" style="height: 0.28rem;"></div>
                         <Button v-bind="v.attrs" :loading="v.loading" :disabled="$$getVariableType(v.attrs?.disabled)==='[object Function]'?v.attrs.disabled({vm}):v.attrs?.disabled" @click="v.onClick&&v.onClick({vm,item:v})">{{ v.btnName }}</Button>
@@ -159,6 +159,7 @@ import SalesSelector from "./components/SalesSelector";
 import PaymentSelector from "./components/PaymentSelector";
 import OrderSalesSelector from "./components/OrderSalesSelector";
 import PointCosHisSelector from "./components/PointCosHisSelector";
+import DisputeChannelSelector from "./components/DisputeChannelSelector";
 import ApiSelector from "./components/ApiSelector";
 
 export default {
@@ -166,7 +167,7 @@ export default {
   components: {
     DingDanSelector, MonacoEditor, ApiSelector,
     PaymentSelector, SalesSelector, AddressSelector, PointCosHisSelector,
-    TimePicker, OptionSelector, ConditionSelector, OrderSalesSelector,
+    TimePicker, OptionSelector, ConditionSelector, OrderSalesSelector, DisputeChannelSelector,
     TimerSelector, Modal,
     Cascader, Slider, Alert, InputNumber, Checkbox, RadioButton, CheckboxGroup, CheckboxButton, Icon, Input, Button, Collapse, CollapseItem, Form, FormItem, Col, Row, RadioGroup, Radio, DatePicker, Select, OptionGroup, Option, Autocomplete
   },
@@ -182,6 +183,7 @@ export default {
       collapseActive: [],
       reqQuery: {},//浏览器跳转参数
       expandFormConfigItems: [],
+      appendItems: {},//追加的列表集合对象
       formData: {},
       isSaved: !0//是否保存过
     };
@@ -197,30 +199,24 @@ export default {
       },
       deep: !0
     },
-    appendItems: {
-      handler(nV, oV) {
-        this.loadExpandFormConfigItems();
-        this.appendItems.forEach(ai => {
-          !this.collapseActive.includes(ai.name) && this.collapseActive.push(ai.name);
-        });
-        // 先删除旧的 formData
-        oV.forEach(v => (v.items || []).forEach(vi => {
-          if (vi.key) delete this.formData[vi.key]
-        }));
-        // 再添加新的 formData
-        nV.forEach(v => (v.items || []).forEach(vi => {
-          vi.key && this.$set(this.formData, vi.key, vi.value ?? null);
-        }));
-      }
-    }
   },
   computed: {
     disabled() {
       //表单禁用
       return this.formStatus === 'view';
     },
-    appendItems() {
-      return this.formConfig.appendItems?.length ? this.formConfig.appendItems : [];
+    resultItems() {
+      console.log('resultItems action');
+      const result = [].concat(this.formConfig.items || [], ...(Object.values(this.appendItems || {}) || [])).map((it, index) => {
+        it.sort = it.sort ?? index;//排序
+        it.name = this.getName(it.name);
+        // 把.key path转换成  a.b.c -》  a$dot$b$dot$c 不然与v-model不好绑定
+        (it?.items || []).forEach(iti => iti.key && (iti.key = iti.key.replace(/\./g, '$dot$')));
+        return it;
+      }).sort((a, b) => a.sort - b.sort);
+      console.log('resultItems', result);
+      return result;
+      // return this.formConfig.appendItems?.length ? this.formConfig.appendItems : [];
     }
   },
   methods: {
@@ -235,7 +231,6 @@ export default {
     },
     //赋值数据
     initFormData(res) {
-      console.log('initFormData', res);
       if (!res) return;
       const formDataKeys = Object.keys(this.formData), resDataKeys = Object.keys(this.$$object2pathObject(res || {}));
       const expandFormConfigItemsKeyMap = this.expandFormConfigItems.reduce((t, c) => ((c.key && (t[c.key] = c)), t), {});//配置地图
@@ -245,7 +240,7 @@ export default {
         let v = this.$$lodash.get(res || {}, key);
         const k = formDataKeys.includes(key) ? key : (formDataKeys.includes(rk) ? rk : null);
 
-        if (!k) return this.formData[key] = v ?? null;//key不在formData里 往里面补一个 以便提交用到
+        if (!k) return this.$set(this.formData, key, v ?? null);//key不在formData里 往里面补一个 以便提交用到
 
         //如果下拉匹配类型  把数字转为字符串
         if (['radio', 'FMRadio', 'checkbox', 'FMCheckbox', 'select', 'FMSelect', 'groupSelect', 'FMGroupSelect', 'multipleSelect', 'FMMultipleSelect', 'cascader', 'FMCascader'].includes(expandFormConfigItemsKeyMap[k]?.type)) {
@@ -274,11 +269,48 @@ export default {
         return t;
       }, {});
     },
-    appendFormData(formData) {
-      Object.assign(this.formData, formData);
+    //追加板块  items=[{key:'xxx',items:板块对象组}]
+    setAppendItems(items = []) {
+      const appendItems = [];//记录新追加的板块 初始化用
+      items.forEach(it => {
+        if (!this.appendItems[it.key]) {
+          this.appendItems[it.key] = it.items;
+          appendItems.push(...it.items);
+        }
+      });
+      this.appendItems = {...this.appendItems};//为了更新视图
+      // 初始化新板块
+      this.loadExpandFormConfigItems();
+      appendItems.forEach(ai => {
+        !this.collapseActive.includes(ai.name) && this.collapseActive.push(ai.name);
+      });
+      // 添加新的 formData
+      appendItems.forEach(v => (v.items || []).forEach(vi => {
+        vi.key && this.$set(this.formData, vi.key, vi.value ?? null);
+      }));
+      console.log('setAppendItems', this.appendItems, appendItems, this);
     },
-    removeFormData(keys = []) {
-      keys.forEach(k => delete this.formData[k]);
+    removeAllAppendItems() {
+      this.removeAppendItems(Object.keys(this.appendItems));
+    },
+    removeAppendItems(keys = []) {
+      const appendItems = [];//记录板块
+      keys.forEach(key => {
+        if (this.appendItems[key]) {
+          appendItems.push(...this.appendItems[key]);
+          delete this.appendItems[key];
+        }
+      });
+      this.appendItems = {...this.appendItems};//为了更新视图
+      // 删除板块
+      this.loadExpandFormConfigItems();
+      const ca = appendItems.map(ai => ai.name);
+      this.collapseActive = this.collapseActive.filter(n => !ca.includes(n));
+      // 先删除旧的 formData
+      appendItems.forEach(v => (v.items || []).forEach(vi => {
+        if (vi.key) delete this.formData[vi.key]
+      }));
+      console.log('removeAppendItems', this.appendItems, appendItems, this);
     },
     validator(cb, err) {
       console.log('validator', this.formData, this.getFormData());
@@ -286,7 +318,8 @@ export default {
     },
     resetFormData(filterKeys = []) {
       this.$$resetFormFields({fields: this.formData, filterKeys});
-      this.expandFormConfigItems.filter(efci => filterKeys.length ? filterKeys.includes(efci.key) : !0).forEach(efci => efci.onChange?.({vm: this}));
+      this.$nextTick(() => this.$refs.Form?.clearValidate());
+      // this.expandFormConfigItems.filter(efci => filterKeys.length ? filterKeys.includes(efci.key) : !0).forEach(efci => efci.onChange?.({vm: this}));
     },
     getSelectOptions(v) {
       if (this.$$getVariableType(v.options) === '[object Function]') {
@@ -320,25 +353,26 @@ export default {
       this.collapseActive.splice(finderIndex, 1);
     },
     loadExpandFormConfigItems() {
-      const items = [].concat(this.formConfig.items || [], this.appendItems || []);
-      this.expandFormConfigItems = [].concat(...items?.map(ba => ba?.items || []));//展开
+      // const items = [].concat(this.formConfig.items || [], this.appendItems || []);
+      this.expandFormConfigItems = [].concat(...this.resultItems?.map(ba => ba?.items || []));//展开
     },
     init(value) {
       this.reqQuery = this.$route.query;
       //把isHidden隐藏字段放到最后 避免影响布局 并格式化name
-      this.formConfig.items?.forEach(it => {
-        it.name = this.getName(it.name);
-        // 把.key path转换成  a.b.c -》  a$dot$b$dot$c 不然与v-model不好绑定
-        (it?.items || []).forEach(iti => iti.key && (iti.key = iti.key.replace(/\./g, '$dot$')));
-      });
+      //
+      // this.formConfig.items?.forEach(it => {
+      //   it.name = this.getName(it.name);
+      //   // 把.key path转换成  a.b.c -》  a$dot$b$dot$c 不然与v-model不好绑定
+      //   (it?.items || []).forEach(iti => iti.key && (iti.key = iti.key.replace(/\./g, '$dot$')));
+      // });
       // 模式mode为collapse可伸缩展开，collapsed是否默认展开 ，默认使用name||否则使用index
-      this.collapseActive = this.formConfig.items?.map((fci, i) => fci.mode === 'collapse' ? (fci.collapsed ? (fci.name || `${i}`) : null) : (fci.name || `${i}`)).filter(f => f);
+      this.collapseActive = this.resultItems.map((fci, i) => fci.mode === 'collapse' ? (fci.collapsed ? (fci.name || `${i}`) : null) : (fci.name || `${i}`)).filter(f => f);
       this.loadExpandFormConfigItems();//展开
       // this.formData = this.expandFormConfigItems?.reduce((t, c) => (c.key && (this.$$lodash.set(t, c.key, c.value ?? null)), t), {});//初始化formData把数据key对应
       this.formData = [].concat(this.expandFormConfigItems, this.formConfig.hiddenFields || [])?.reduce((t, c) => (c.key && (t[c.key] = c.value ?? null), t), {});//初始化formData把数据key对应
 
       this.formConfig.onLoad && this.formConfig.onLoad({$store: this.$store, vm: this, value});
-      console.log('formModel init', this.formConfig, this.expandFormConfigItems, this.formData);
+      console.log('formModel init', this.formConfig, this.resultItems, this.expandFormConfigItems, this.formData);
     }
   },
   created() {
