@@ -356,7 +356,7 @@ export default {
               label: "编辑",
               key: "edit",
               autoHidden: ({row}) => {
-                return row.level === 4 || row.level === 5
+                return (row.level === 4 || row.level === 5) && row.isProvinceCustom == 1
               },
               event: this.handleUpdate,
             },
@@ -369,7 +369,7 @@ export default {
                   key: "del",
                   type: "danger",
                   autoHidden: ({row}) => {
-                    return row.level === 4 || row.level === 5
+                    return (row.level === 4 || row.level === 5) && row.isProvinceCustom == 1
                   },
                   event: this.handleDelete,
                 },
@@ -436,14 +436,14 @@ export default {
   methods: {
     autoStartHidden(val) {
       if (val.row) {
-        return (val.row.status == "0" ? true : false) && (val.row.level === 4 || val.row.level === 5)
+        return (val.row.status == "0" ? true : false) && (val.row.level === 4 || val.row.level === 5) && val.row.isProvinceCustom ==1
       } else {
         return false;
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return (val.row.status == "1" ? true : false) && (val.row.level === 4 || val.row.level === 5)
+        return (val.row.status == "1" ? true : false) && (val.row.level === 4 || val.row.level === 5) && val.row.isProvinceCustom ==1
       } else {
         return false;
       }
@@ -451,7 +451,7 @@ export default {
     //启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？')
+          .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点不会被启用')
           .then(() => {
             let data = {
               reasonId: row.reasonId,
@@ -470,7 +470,7 @@ export default {
     //停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用用投诉原因名称为"' + row.reasonName + '"的数据项？')
+          .confirm('是否确认停用用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点也将被停用')
           .then(() => {
             let data = {
               reasonId: row.reasonId,
