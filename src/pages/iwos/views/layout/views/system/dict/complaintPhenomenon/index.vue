@@ -42,6 +42,7 @@
             <el-input
                 v-model="queryParams.phenomCode"
                 placeholder="请输入投诉现象编码"
+                maxlength="30"
                 clearable
                 style="width: 240px"
                 @keyup.enter.native="handleQuery"
@@ -51,6 +52,7 @@
             <el-input
                 v-model="queryParams.phenomName"
                 placeholder="请输入投诉现象名称"
+                maxlength="30"
                 clearable
                 style="width: 240px"
                 @keyup.enter.native="handleQuery"

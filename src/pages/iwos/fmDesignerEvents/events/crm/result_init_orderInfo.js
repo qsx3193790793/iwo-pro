@@ -7,6 +7,7 @@ export const resFields = [
   {"label": "省份订单号", "value": "provCustOrderId"},
   {"label": "号码", "value": "serialNumber"},
   {"label": "订单状态", "value": "orderStatus"},
+  {"label": "订单状态名称", "value": "orderStatusName"},
   {"label": "状态时间", "value": "statusDate"},
   {"label": "订单受理渠道", "value": "channelNbr"},
   {"label": "受理员工编码", "value": "staffCode"},

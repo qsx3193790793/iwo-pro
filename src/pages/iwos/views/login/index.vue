@@ -6,34 +6,18 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">智慧客服工单系统</h3>
       <el-form-item prop="username">
-        <el-input
-            v-model="loginForm.username"
-            type="text"
-            auto-complete="off"
-            placeholder="请输入账号"
-        >
+        <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="请输入账号" :maxlength="30">
           <!--          <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon"/>-->
         </el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input
-            v-model="loginForm.password"
-            type="password"
-            auto-complete="off"
-            placeholder="请输入密码"
-            @keyup.enter.native="handleLogin"
-        >
+        <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="请输入密码" :maxlength="30" @keyup.enter.native="handleLogin">
           <!--          <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon"/>-->
         </el-input>
       </el-form-item>
       <el-form-item prop="code" v-if="captchaEnabled">
         <div class="VerificationCode">
-          <el-input
-              v-model="loginForm.code"
-              auto-complete="off"
-              placeholder="验证码"
-              @keyup.enter.native="handleLogin"
-          >
+          <el-input v-model="loginForm.code" auto-complete="off" placeholder="验证码" :maxlength="30" @keyup.enter.native="handleLogin">
             <!--            <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon"/>-->
           </el-input>
           <div class="login-code">
@@ -44,13 +28,7 @@
       </el-form-item>
       <!--      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>-->
       <el-form-item style="width:100%;">
-        <el-button
-            :loading="loading"
-            size="medium"
-            type="primary"
-            style="width:100%;"
-            @click.native.prevent="handleLogin"
-        >
+        <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
           <span v-if="!loading">登 录</span>
           <span v-else>登 录 中...</span>
         </el-button>
@@ -63,9 +41,9 @@
       <img src="../../../../assets/images/login/logo_user_icon.png" alt="" class="img">
     </div>
     <!--  底部  -->
-    <div class="el-login-footer">
-      <span>Copyright © xxxxxxxxxx All Rights Reserved.</span>
-    </div>
+    <!--    <div class="el-login-footer">-->
+    <!--      <span>Copyright © xxxxxxxxxx All Rights Reserved.</span>-->
+    <!--    </div>-->
   </div>
 </template>
 

@@ -42,8 +42,9 @@ export default {
     hasUpload: {type: Boolean, default: false},//是否可以上传
     requirementId: {type: [String, Number], default: ''},
     requirementType: {type: String, default: ''},
-    accept: {type: Array, default: () => ['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'image/gif', 'image/jpeg', 'image/png', 'image/jpeg', 'application/pdf', 'text/plain']},
-    acceptNames: {type: Array, default: () => ['png', 'jpg', 'jpeg', 'gif', 'pdf', 'xlsx', 'xls', 'doc', 'docx', 'txt']},
+    // accept: {type: Array, default: () => ['text/plain','image/png','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    // 'application/vnd.ms-excel','image/bmp','video/x-ms-wmv','video/mp4','audio/mpeg','image/png','video/avi','application/x-zip-compressed']},
+    acceptNames: {type: Array, default: () => ['txt', 'jpg', 'doc', 'docx', 'xlsx', 'xls', 'bmp', 'wmv', 'mp4', 'mp3', 'png', 'dat', 'rm', 'avi', 'zip', 'rar']},
     root: {
       type: Object, default: () => {
       }
@@ -56,7 +57,7 @@ export default {
       isShowImportDialog: false,
       attachDesc: '',
       uploadConfig: {
-        uploadTip: "提示:仅允许导入'png','jpg', 'jpeg', 'gif', 'pdf', 'xlsx', 'xls', 'doc', 'docx', 'txt'格式文件!",
+        uploadTip: "提示:仅允许导入 'txt','jpg','doc','docx','xlsx','xls','bmp','wmv','mp4','mp3','png','dat','rm','avi','zip','rar'格式文件!",
         title: '附件上传',
         showTemplateDownload: false,
         sureBtnName: '上传',
@@ -83,7 +84,9 @@ export default {
       this.isShowImportDialog = true
     },
     async fileUpload(e) {
-      if (!this.accept.includes(e.file.type)) return this.$message({message: `只能上传[${this.acceptNames.join(',')}]格式文件`, type: 'error'});
+      if (e.file.size > 20971520) return this.$message({message: `只能上传小于20M大小的文件`, type: 'error'});
+      const fileType = e.file.name.match(/\.([^.]+)$/)[1]
+      if (!this.acceptNames.includes(fileType)) return this.$message({message: `只能上传[${this.acceptNames.join(',')}]格式文件`, type: 'error'});
       const formdata = new FormData()
       formdata.append('attachFile', e.file)
       formdata.append('attachDesc', this.attachDesc)

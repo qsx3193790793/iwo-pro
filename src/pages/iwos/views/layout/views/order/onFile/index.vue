@@ -47,7 +47,7 @@
               }}
             </div>
           </template>
-          
+
         </JsTable>
         <div class="pagination-area">
           <el-pagination
@@ -84,6 +84,7 @@
                 type="textarea"
                 v-model="state.form.auditOpinion"
                 placeholder="请输入"
+                :maxlength="80"
               />
             </el-form-item>
           </el-col>
@@ -253,7 +254,7 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   if (res) {
     pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
     state.value.dataSource = res.rows;
-  } 
+  }
 };
 
 //列表选择

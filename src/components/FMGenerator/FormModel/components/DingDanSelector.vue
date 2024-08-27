@@ -14,7 +14,7 @@
         <!--        <el-table-column prop="extCustOrderId" label="合作商订单号" width="120"></el-table-column>-->
         <!--        <el-table-column prop="custOrderId" label="集团订单号" width="120"></el-table-column>-->
         <el-table-column prop="provCustOrderId" label="订单号"></el-table-column>
-        <el-table-column prop="orderStatus" label="订单状态"></el-table-column>
+        <el-table-column prop="orderStatusName" label="订单状态"></el-table-column>
         <el-table-column prop="channelNbr" label="订单受理渠道"></el-table-column>
         <el-table-column prop="staffCode" label="受理员工编码"></el-table-column>
         <el-table-column prop="acceptDate" label="受理时间" width="160">
@@ -105,12 +105,9 @@ const StaffSelectorSearchFormItems = [
           const {res, err} = await proxy.$$api.crm.getHNumber({
             params: {segment: vm.formData.serialNumber},
             headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.serialNumber ?? ''}
-          });//segment
-          if (res?.lanid) {
-            vm.formData.lanId = res.lanid;
-            return getList(1);
-          }
-          proxy.$$Toast({message: `查询失败`, type: 'error'});
+          });
+          vm.formData.lanId = res?.lanid || proxy.$store.getters['user/GET_USER_PROVINCE_CODE'];
+          getList(1);
         }
       },
     ]

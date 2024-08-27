@@ -139,9 +139,16 @@ const state = ref(reset());
 // 工单编号 进来先调用 后续接口都要
 const complaintWorksheetId = ref(null);
 
-async function getComplaintWorksheetId() {
+async function getComplaintWorksheetId(cb) {
+  if (proxy.$route.query.complaintWorksheetId) {
+    complaintWorksheetId.value = proxy.$route.query.complaintWorksheetId;//保持complaintWorksheetId
+    return cb && cb();
+  }
   const {res, err} = await proxy.$$api.complaint.getComplaintWorksheetId({});
-  if (res?.value) complaintWorksheetId.value = res.value;
+  if (res?.value) {
+    complaintWorksheetId.value = res.value;
+    return cb && cb();
+  }
 }
 
 // '0': 'public',    '1': 'scene',    '2': 'ext',    '3': 'comm',
@@ -164,14 +171,23 @@ async function diagnosisHandleInfo() {
 }
 
 async function getInfo({isForce, from}) {
+  // 如果在详情内重新查询 那么重新重置表单数据初始化 并保持complaintWorksheetId不变
+  if (from === '手动' && proxy.$route.params.workorderId && accNum.value) return proxy.$router.replace({
+    name: 'ComplaintCreate', query: {
+      accNum: accNum.value,
+      complaintWorksheetId: complaintWorksheetId.value,
+    }
+  });
   if (!complaintWorksheetId.value) return;
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
   let res, err;
   if (accType.value === '12') {//移动设备才需要调用H码查询 其他没有
-    [res, err] = await proxy.$$api.crm.getHNumber({
+    const R = await proxy.$$api.crm.getHNumber({
       params: {segment: accNum.value},
       headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
     });
+    res = R?.res;
+    err = R?.err;
   }
   if (err) return;
   if (!res) res = {lanid: proxy.$store.getters['user/GET_USER_PROVINCE_CODE']};//如果没查到 默认赋值工号对应省
@@ -190,7 +206,8 @@ async function getInfo({isForce, from}) {
         headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
       })
     ]);
-    const {res: ecpRes, err: ecpErr} = R3;//设备信息
+
+    const {res: ecpRes, err: ecpErr} = {res: R3?.res?.list?.[0], err: R3?.err};//设备信息
     if (ecpRes) {
       ecpRes.phoneLocal = [ecpRes.province, ecpRes.city].join('-');
       state.value.userInfo.phoneLocal = ecpRes.phoneLocal || '-';
@@ -245,11 +262,11 @@ async function getInfo({isForce, from}) {
 }
 
 async function getDetail() {
-  if (proxy.$route.query.complaintAssetNum) {
-    accNum.value = proxy.$route.query.complaintAssetNum;
-    complaintWorksheetId.value = proxy.$route.query.complaintWorksheetId;
-    return getInfo({from: '详情'});
-  }
+  // if (proxy.$route.query.complaintAssetNum) {
+  //   accNum.value = proxy.$route.query.complaintAssetNum;
+  //   complaintWorksheetId.value = proxy.$route.query.complaintWorksheetId;
+  //   return getInfo({from: '详情'});
+  // }
   const {res, err} = await proxy.$$api.complaint.complaintWorkOrderDetail({
     workorderId: proxy.$route.params.workorderId,
     headers: {'complaintWorksheetId': proxy.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': proxy.$route.query.complaintAssetNum ?? ''}
@@ -262,21 +279,33 @@ async function getDetail() {
 }
 
 watch(() => proxy.$route.params.workorderId, () => {
-  console.log('watch proxy.$route.params.workorderId', proxy.$route.params.workorderId)
   state.value = reset();
   proxy.$emit('reset');
-  if (proxy.$route.params.workorderId) getDetail();
+  if (proxy.$route.params.workorderId) return getDetail();
+
+  //有进入设备号
+  if (proxy.$route.query.accNum) {
+    accNum.value = proxy.$route.query.accNum;
+    getComplaintWorksheetId(() => getInfo({from: '手动'}));
+  }
 });
 
 onBeforeMount(() => {
   proxy.$store.commit('storage/REMOVE_STORAGE', ['customPositioning']);
+
   if (proxy.$route.params.workorderId) return getDetail();
-  getComplaintWorksheetId();
+
+  //有进入设备号
+  if (proxy.$route.query.accNum) {
+    accNum.value = proxy.$route.query.accNum;
+    return getComplaintWorksheetId(() => getInfo({from: '手动'}));
+  }
+
   try {
     redirectInfo.value = JSON.parse(decodeURIComponent(proxy.$route.query.p || null));
-    console.log('p', redirectInfo.value);
     if (redirectInfo.value) {
       accNum.value = redirectInfo.value.accNum;
+      if (accNum.value) getComplaintWorksheetId(() => getInfo({from: '手动'}));
     }
   } catch (e) {
     console.log('parse err', e);

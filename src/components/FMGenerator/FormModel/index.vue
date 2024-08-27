@@ -34,14 +34,15 @@
                         </div>
                       </template>
                       <Input v-if="['input','FMInput'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :maxlength="v.maxlength??30" autocomplete="off" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})" @keydown.enter.native="v.onChange&&v.onChange({vm,item:v})">
-                        <template v-if="!disabled&&v.dialog&&(!v.dialog.isShow||v.dialog.isShow({vm}))" #append>
-                          <Button icon="Search" @click="v.dialog.beforeOpen?(v.dialog.isOpen=v.dialog.beforeOpen({vm})):(v.dialog.isOpen=!0)" :disabled="!!v.btnDisabled"/>
-                          <Modal v-model="v.dialog.isOpen" :title="v.dialog.title" @onOpen="v.dialog.onOpen&&v.dialog.onOpen({vm})">
-                            <template #default="slotProps">
-                              <component v-on="v.dialog.emitter?.({vm})" v-bind="v.dialog.attrs||{}" :ref="v.key" :root="{...slotProps,vm}" :is="v.dialog.component"></component>
-                            </template>
-                          </Modal>
-                        </template>
+                        <template v-if="v.suffix" slot="append">{{ v.suffix }}</template>
+                        <!--                        <template v-if="!disabled&&v.dialog&&(!v.dialog.isShow||v.dialog.isShow({vm}))" #append>-->
+                        <!--                          <Button icon="Search" @click="v.dialog.beforeOpen?(v.dialog.isOpen=v.dialog.beforeOpen({vm})):(v.dialog.isOpen=!0)" :disabled="!!v.btnDisabled"/>-->
+                        <!--                          <Modal v-model="v.dialog.isOpen" :title="v.dialog.title" @onOpen="v.dialog.onOpen&&v.dialog.onOpen({vm})">-->
+                        <!--                            <template #default="slotProps">-->
+                        <!--                              <component v-on="v.dialog.emitter?.({vm})" v-bind="v.dialog.attrs||{}" :ref="v.key" :root="{...slotProps,vm}" :is="v.dialog.component"></component>-->
+                        <!--                            </template>-->
+                        <!--                          </Modal>-->
+                        <!--                        </template>-->
                       </Input>
                       <Input v-else-if="['textarea','FMTextarea'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :ref="v.key" type="textarea" :rows="v.rows??2" :maxlength="v.maxlength==0?null:v.maxlength" :show-word-limit="!!v.maxlength" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :clearable="v.clearable??true" :resize="v.resize||'none'" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"/>
                       <InputNumber v-else-if="['number','FMNumber'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :precision="v.precision??0" :min="$$getVariableType(v.min)==='[object Function]'?v.min({vm}):v.min" :max="$$getVariableType(v.max)==='[object Function]'?v.max({vm}):v.max" :controls="!0" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请输入')" :clearable="v.clearable??true" :required="v.isRequire" :disabled="disabled||v.isDisable" @change="v.onChange&&v.onChange({vm,item:v})"/>

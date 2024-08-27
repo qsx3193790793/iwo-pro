@@ -11,7 +11,7 @@ export default async ({vm, item}) => {
     const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
     // 未定位直接pass
     if (!customPositioning) return;
-    const {lanIdInfo, custom, complaintWorksheetId, accNum, redirectInfo} = customPositioning;
+    const {lanIdInfo, custom, complaintWorksheetId, accNum, redirectInfo,eCProductInfo} = customPositioning;
 
     //查询是否有在途单
     const {res: qpRes} = await vm.$$api.complaint.queryPendingWorkOrderByAssetNum({
@@ -88,7 +88,7 @@ export default async ({vm, item}) => {
       // 归属地信息
       'lanId': lanIdInfo.lanid ?? null,
       'problemLanId': lanIdInfo.lanid ?? null,
-      'phoneLocal': lanIdInfo.phoneLocal ?? null,
+      'phoneLocal': eCProductInfo.phoneLocal ?? null,
 
       //基本客户信息
       'userStarLevel': custom.custLevel ?? null,

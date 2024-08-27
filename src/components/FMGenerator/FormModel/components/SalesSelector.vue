@@ -94,11 +94,8 @@ const StaffSelectorSearchFormItems = [
             params: {segment: vm.formData.accNum},
             headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.accNum ?? ''}
           });//segment
-          if (res?.lanid) {
-            vm.formData.lanId = res.lanid;
-            return getList(1);
-          }
-          proxy.$$Toast({message: `查询失败`, type: 'error'});
+          vm.formData.lanId = res?.lanid || proxy.$store.getters['user/GET_USER_PROVINCE_CODE'];
+          getList(1);
         }
       },
     ]

@@ -30,6 +30,7 @@ const FileUploaderRef = ref();
 const formConfig = ref();
 
 function change() {
+  reset();
   FormModelRef.value?.init();
 }
 

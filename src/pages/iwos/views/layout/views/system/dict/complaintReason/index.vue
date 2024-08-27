@@ -24,6 +24,7 @@
             <el-input
                 v-model="queryParams.reasonCode"
                 placeholder="请输入投诉原因编码"
+                maxlength="30"
                 clearable
                 style="width: 240px"
                 @keyup.enter.native="handleQuery"
@@ -34,6 +35,7 @@
                 v-model="queryParams.reasonName"
                 placeholder="请输入投诉原因名称"
                 clearable
+                maxlength="30"
                 style="width: 240px"
                 @keyup.enter.native="handleQuery"
             />
