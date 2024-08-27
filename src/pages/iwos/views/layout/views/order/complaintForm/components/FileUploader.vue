@@ -24,6 +24,7 @@
     </div>
     <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog" v-bind="uploadConfig">
       <template>
+        <div v-html="'附件描述'" class="require"></div>
         <el-input v-model="attachDesc" type="textarea" placeholder="请输入附件描述"></el-input>
       </template>
     </importDialog>
@@ -84,6 +85,7 @@ export default {
       this.isShowImportDialog = true
     },
     async fileUpload(e) {
+      if(!this.attachDesc.trim()) return this.$message({message: `请输入附件描述`, type: 'error'});
       if (e.file.size > 20971520) return this.$message({message: `只能上传小于20M大小的文件`, type: 'error'});
       const fileType = e.file.name.match(/\.([^.]+)$/)[1]
       if (!this.acceptNames.includes(fileType)) return this.$message({message: `只能上传[${this.acceptNames.join(',')}]格式文件`, type: 'error'});
@@ -128,5 +130,10 @@ export default {
 .file-btns {
   text-align: right;
 }
+.require:before {
+    content: '*';
+    color: red;
+    padding-right: 4px;
+  }
 
 </style>
