@@ -9,6 +9,7 @@
               placeholder="请输入原因名称"
               clearable
               size="small"
+              maxlength="30"
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
           />

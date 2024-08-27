@@ -7,6 +7,7 @@
             v-model="queryParams.noticeTitle"
             placeholder="请输入标题"
             clearable
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -16,6 +17,7 @@
             v-model="queryParams.createBy"
             placeholder="请输入操作人员"
             clearable
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -136,7 +138,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入标题"/>
+              <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="30"/>
             </el-form-item>
           </el-col>
           <el-col :span="24">

@@ -6,6 +6,7 @@
             v-model="queryParams.deptName"
             placeholder="请输入机构名称"
             clearable
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -141,7 +142,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="机构名称" prop="deptName">
-              <el-input v-model="form.deptName" :placeholder="handleType=='detail'?'':'请输入机构名称'"/>
+              <el-input v-model="form.deptName" :placeholder="handleType=='detail'?'':'请输入机构名称'"  maxlength="30"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -176,7 +177,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="负责人" prop="leader">
-              <el-input v-model="form.leader" :placeholder="handleType=='detail'?'':'请输入负责人'" maxlength="20"/>
+              <el-input v-model="form.leader" :placeholder="handleType=='detail'?'':'请输入负责人'" maxlength="30"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">

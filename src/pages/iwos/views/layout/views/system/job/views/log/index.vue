@@ -7,6 +7,7 @@
             placeholder="请输入任务名称"
             clearable
             style="width: 240px"
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>

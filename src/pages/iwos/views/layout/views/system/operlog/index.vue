@@ -7,6 +7,7 @@
             placeholder="请输入操作地址"
             clearable
             class="queryItem"
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -16,6 +17,7 @@
             placeholder="请输入系统模块"
             clearable
             class="queryItem"
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -25,6 +27,7 @@
             placeholder="请输入操作人员"
             clearable
             class="queryItem"
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>

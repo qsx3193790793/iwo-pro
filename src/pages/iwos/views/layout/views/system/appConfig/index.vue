@@ -55,7 +55,7 @@
               <el-input
                 v-model="state.form.appName"
                 placeholder="请输入"
-                maxlength="50"
+                maxlength="30"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -85,6 +85,7 @@
                 v-model="state.form.appDesc"
                 placeholder="请输入"
                 type="textarea"
+                 maxlength="30"
               />
             </el-form-item>
           </el-col>

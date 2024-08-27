@@ -6,7 +6,7 @@
         <el-table-column label="label(描述)" prop="label"  show-overflow-tooltip resizable>
           <template slot-scope="scope">
             <span v-show="isEdit">  {{ scope.row.label }}</span>
-            <el-input v-show="!isEdit" v-model="scope.row.label" placeholder="请输入内容"></el-input>
+            <el-input v-show="!isEdit" v-model="scope.row.label" placeholder="请输入内容" maxlength="30"></el-input>
           </template>
         </el-table-column>
     </el-table>

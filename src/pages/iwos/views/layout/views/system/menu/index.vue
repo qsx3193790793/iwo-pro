@@ -7,6 +7,7 @@
             placeholder="请输入菜单名称"
             clearable
             @keyup.enter.native="handleQuery"
+            maxlength="30"
         />
       </el-form-item>
       <el-form-item label="状态" prop="status">
@@ -162,7 +163,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="菜单名称" prop="menuName">
-              <el-input v-model="form.menuName" placeholder="请输入菜单名称"/>
+              <el-input v-model="form.menuName" placeholder="请输入菜单名称" maxlength="30"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -192,7 +193,7 @@
                 </el-tooltip>
                 路由地址
               </span>
-              <el-input v-model="form.path" placeholder="请输入路由地址"/>
+              <el-input v-model="form.path" placeholder="请输入路由地址" maxlength="30"/>
             </el-form-item>
           </el-col>
           <!--          <el-col :span="12" v-if="form.menuType == 'C'">-->
@@ -208,7 +209,7 @@
           <!--          </el-col>-->
           <el-col :span="12" v-if="form.menuType != 'M'">
             <el-form-item prop="perms">
-              <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100"/>
+              <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
               <span slot="label">
                 <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermission('system:user:list')`)" placement="top">
                 <i class="el-icon-question"></i>

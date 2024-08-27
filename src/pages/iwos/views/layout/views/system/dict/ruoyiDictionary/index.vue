@@ -7,6 +7,7 @@
             placeholder="请输入字典名称"
             clearable
             class="queryItem"
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -16,6 +17,7 @@
             placeholder="请输入字典类型"
             clearable
             class="queryItem"
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -122,10 +124,10 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="80px">
         <el-form-item label="字典名称" prop="dictName">
-          <el-input v-model="form.dictName" placeholder="请输入字典名称"/>
+          <el-input v-model="form.dictName" placeholder="请输入字典名称" maxlength="30"/>
         </el-form-item>
         <el-form-item label="字典类型" prop="dictType">
-          <el-input v-model="form.dictType" placeholder="请输入字典类型"/>
+          <el-input v-model="form.dictType" placeholder="请输入字典类型" maxlength="30"/>
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">

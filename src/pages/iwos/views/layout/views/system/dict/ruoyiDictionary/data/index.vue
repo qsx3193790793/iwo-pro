@@ -16,6 +16,7 @@
             v-model="queryParams.dictLabel"
             placeholder="请输入字典标签"
             clearable
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -134,16 +135,16 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="80px">
         <el-form-item label="字典类型">
-          <el-input v-model="form.dictType" :disabled="true"/>
+          <el-input v-model="form.dictType" :disabled="true" maxlength="30"/>
         </el-form-item>
         <el-form-item label="数据标签" prop="dictLabel">
-          <el-input v-model="form.dictLabel" placeholder="请输入数据标签"/>
+          <el-input v-model="form.dictLabel" placeholder="请输入数据标签" maxlength="30"/>
         </el-form-item>
         <el-form-item label="数据键值" prop="dictValue">
-          <el-input v-model="form.dictValue" placeholder="请输入数据键值"/>
+          <el-input v-model="form.dictValue" placeholder="请输入数据键值" maxlength="30"/>
         </el-form-item>
         <el-form-item label="样式属性" prop="cssClass">
-          <el-input v-model="form.cssClass" placeholder="请输入样式属性"/>
+          <el-input v-model="form.cssClass" placeholder="请输入样式属性" maxlength="30"/>
         </el-form-item>
         <el-form-item label="显示排序" prop="dictSort">
           <el-input-number v-model="form.dictSort" controls-position="right" :min="0"/>
