@@ -112,6 +112,7 @@ let columns = ref({
       {
       label: '编辑',
       key: 'edit',
+      permission:['config:interfaceInfo:edit'],
       event: (row) => {
         select_pkid.value = {interfaceId: row.interfaceId};
         isShowAddDialog.value = !0;
@@ -121,6 +122,7 @@ let columns = ref({
        label: "启用",
        key: "start",
        type: "primary",
+       permission:['config:interfaceInfo:edit'],
        autoHidden: autoStartHidden,
        event: handleStart,
         },
@@ -128,6 +130,7 @@ let columns = ref({
        label: "停用",
        key: "end",
        type: "danger",
+       permission:['config:interfaceInfo:edit'],
        autoHidden:autoEndHidden,
        event: handleEnd,
         },
@@ -253,12 +256,14 @@ const formConfigItems = ref([
       },
       {
         btnName: '查询', type: 'button', attrs: {type: 'primary'}, col: 1,
+        permission:['config:interfaceInfo:query'],
         onClick({vm}) {
           getList(1);
         }
       },
       {
         btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
+        permission:['config:interfaceInfo:remove'],
         onClick({vm}) {
           handleDel();
         },
@@ -268,6 +273,7 @@ const formConfigItems = ref([
       },
       {
         btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
+        permission:['config:interfaceInfo:add'],
         onClick({vm}) {
           // 打开弹窗
           select_pkid.value = null;

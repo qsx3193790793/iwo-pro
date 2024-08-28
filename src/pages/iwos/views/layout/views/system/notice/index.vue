@@ -288,7 +288,7 @@ export default {
       if (val=='2'){
         this.form.recipientIds= []
         this.recipientOptions=[]
-      }  
+      }
     },
     //查询机构树
     getDeptTree() {
@@ -370,6 +370,12 @@ export default {
       this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
         if (err) return
         this.form = response;
+        if(this.form.recipientType==1){
+          this.form.deptId = response.recipientIds
+        }else if(this.form.recipientType==2){
+          this.form.deptId = response.deptArr[0]
+          this.recipientOptions= response.teamList
+        }
         this.open = true;
         this.title = "修改公告";
       });

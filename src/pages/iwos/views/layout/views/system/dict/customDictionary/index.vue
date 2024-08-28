@@ -174,11 +174,13 @@ export default {
               label: "编辑",
               key: "edit",
               event: this.handleUpdate,
+              permission:['config:dictionary:update'],
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
+              permission:['config:dictionary:remove'],
               event: this.handleDelete,
             },
           ],
@@ -251,12 +253,14 @@ export default {
               type: "button",
               attrs: {type: "primary"},
               col: 1,
+              permission:['config:dictionary:pageList'],
               onClick: ({vm}) => {
                 this.getList();
               },
             },
             {
               btnName: '刷新缓存', type: 'button', attrs: {type: 'danger'}, col: 1,
+              permission:['config:dictionary:refreshCache'],
               onClick: ({vm}) => {
                 this.handleCache();
               }
@@ -264,6 +268,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
+              permission:['config:dictionary:add'],
               attrs: {type: "success"},
               col: 1,
               onClick: ({vm}) => {

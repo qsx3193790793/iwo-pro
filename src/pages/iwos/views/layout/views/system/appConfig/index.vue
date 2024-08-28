@@ -169,6 +169,7 @@ const formConfigItems = ref([
         type: "button",
         attrs: {type: "primary"},
         col: 1,
+        permission:['config:appInfo:query'],
         onClick({vm}) {
           handleQuery();
         },
@@ -187,6 +188,7 @@ const formConfigItems = ref([
         btnName: "新增",
         type: "button",
         attrs: {type: "success"},
+        permission:['config:appInfo:add'],
         col: 1,
         onClick({vm}) {
           handleAdd();
@@ -200,6 +202,7 @@ const formConfigItems = ref([
             return state.value.multiple
           }
         },
+        permission:['config:appInfo:remove'],
         col: 1,
         onClick({vm}) {
           handleDelete();
@@ -494,18 +497,21 @@ let state = ref({
         {
           label: "编辑",
           key: "edit",
+          permission:['config:appInfo:edit'],
           event: handleUpdate,
         },
         {
           label: "删除",
           key: "del",
           type: "danger",
+          permission:['config:appInfo:remove'],
           event: handleDelete,
         },
         {
           label: "启用",
           key: "start",
           type: "primary",
+          permission:['config:appInfo:edit'],
           autoHidden: autoStartHidden,
           event: handleStart,
         },
@@ -513,6 +519,7 @@ let state = ref({
           label: "停用",
           key: "end",
           type: "danger",
+          permission:['config:appInfo:edit'],
           autoHidden: autoEndHidden,
           event: handleEnd,
         },

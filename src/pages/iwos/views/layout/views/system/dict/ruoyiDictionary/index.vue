@@ -49,7 +49,7 @@
       </el-form-item>
       <el-form-item style="width: 100%;text-align: right;">
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['general:dict:list']">搜索</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:dict:add']">新增 </el-button>
    <!-- <el-button type="success"  size="small"  :disabled="single"  @click="handleUpdate"  v-hasPermission="['system:dict:edit']">修改   </el-button> -->
         <el-button type="danger"  size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:dict:remove']" >删除 </el-button>

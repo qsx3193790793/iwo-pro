@@ -76,9 +76,9 @@
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
-            <el-button type="primary" size="mini" @click="handleQuery">查询</el-button>
-            <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)">新增</el-button>
-            <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)">删除</el-button>
+            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:reason:detailList']">查询</el-button>
+            <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:reason:add']">新增</el-button>
+            <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button>
           </el-form-item>
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
@@ -350,6 +350,7 @@ export default {
               label: "新增",
               key: "add",
               type: "success",
+              permission:['config:reason:add'],
               autoHidden: ({row}) => {
                 return row.level === 3 || row.level === 4
               },
@@ -358,6 +359,7 @@ export default {
             {
               label: "编辑",
               key: "edit",
+              permission:['config:reason:update'],
               autoHidden: ({row}) => {
                 return (row.level === 4 || row.level === 5) && row.isProvinceCustom == 1
               },
@@ -371,6 +373,7 @@ export default {
                   label: "删除",
                   key: "del",
                   type: "danger",
+                  permission:['config:reason:delete'],
                   autoHidden: ({row}) => {
                     return (row.level === 4 || row.level === 5) && row.isProvinceCustom == 1
                   },
@@ -380,6 +383,7 @@ export default {
                   label: "启用",
                   key: "start",
                   type: "primary",
+                  permission:['config:reason:update'],
                   autoHidden: this.autoStartHidden,
                   event: this.handleStart,
                 },
@@ -387,12 +391,14 @@ export default {
                   label: "停用",
                   key: "end",
                   type: "danger",
+                  permission:['config:reason:update'],
                   autoHidden: this.autoEndHidden,
                   event: this.handleEnd,
                 },
                 {
                   label: "详情",
                   key: "detail",
+                  permission:['config:reason:detailList'],
                   autoHidden: ({row}) => {
                     return row.level === 4 || row.level === 5
                   },

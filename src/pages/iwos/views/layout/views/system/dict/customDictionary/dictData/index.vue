@@ -266,12 +266,14 @@ export default {
             {
               label: "编辑",
               key: "edit",
+              permission:['config:dictionaryItem:edit'],
               event: this.handleUpdate,
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
+              permission:['config:dictionaryItem:remove'],
               event: this.handleDelete,
             },
           ],
@@ -346,6 +348,7 @@ export default {
               type: "button",
               attrs: {type: "primary"},
               col: 1,
+              permission:['config:dictionaryItem:pageList'],
               onClick: ({vm}) => {
                 this.getList();
               },
@@ -355,6 +358,7 @@ export default {
               type: "button",
               attrs: {type: "success"},
               col: 1,
+              permission:['config:dictionaryItem:add'],
               onClick: ({vm}) => {
                 this.handleAdd()
               },

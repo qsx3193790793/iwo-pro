@@ -275,6 +275,7 @@ export default {
             {
               btnName: "查询",
               type: "button",
+              permission:['config:source:list'],
               attrs: {type: "primary"},
               col: 1,
               onClick: ({vm}) => {
@@ -284,6 +285,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
+              permission:['config:source:add'],
               attrs: {
                 type: "success", disabled: () => {
                   return this.currentNode.level === 3 || this.currentNode.level === 0;
@@ -296,6 +298,7 @@ export default {
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
+              permission:['config:source:remove'],
               onClick: ({vm}) => {
                 this.handleDelete();
               }
@@ -345,6 +348,7 @@ export default {
               label: "编辑",
               key: "edit",
               event: this.handleUpdate,
+              permission:['config:source:edit'],
               autoHidden: this.autoHandleHidden,
             },
             {
@@ -352,6 +356,7 @@ export default {
               key: "del",
               type: "danger",
               autoHidden: this.autoHandleHidden,
+              permission:['config:source:remove'],
               event: (val) => {
                 this.handleDelete(val)
               }
@@ -361,6 +366,7 @@ export default {
               key: "start",
               type: "primary",
               autoHidden: this.autoStartHidden,
+              permission:['config:source:edit'],
               event: this.handleStart,
             },
             {
@@ -368,6 +374,7 @@ export default {
               key: "end",
               type: "danger",
               autoHidden: this.autoEndHidden,
+              permission:['config:source:edit'],
               event: this.handleEnd,
             },
           ],

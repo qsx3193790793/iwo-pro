@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:dept:query']" >搜索</el-button>
         <el-button
             type="success"
             size="small"

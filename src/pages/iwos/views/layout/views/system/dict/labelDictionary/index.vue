@@ -145,12 +145,14 @@ export default {
             {
               label: "编辑",
               key: "edit",
+              permission:['config:dictTag:edit'],
               event: this.handleUpdate,
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
+              permission:['config:dictTag:remove'],
               event: (val) => {
                 this.handleDelete(val)
               },
@@ -159,6 +161,7 @@ export default {
               label: "启用",
               key: "start",
               type: "primary",
+              permission:['config:dictTag:edit'],
               autoHidden: this.autoStartHidden,
               event: this.handleStart,
             },
@@ -166,6 +169,7 @@ export default {
               label: "停用",
               key: "end",
               type: "danger",
+              permission:['config:dictTag:edit'],
               autoHidden: this.autoEndHidden,
               event: this.handleEnd,
             },
@@ -227,6 +231,7 @@ export default {
             {
               btnName: "查询",
               type: "button",
+              permission:['config:dictTag:list'],
               attrs: {type: "primary"},
               col: 1,
               onClick: ({vm}) => {
@@ -236,6 +241,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
+              permission:['config:dictTag:add'],
               attrs: {type: "success"},
               col: 1,
               onClick: ({vm}) => {
@@ -244,6 +250,7 @@ export default {
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
+              permission:['config:dictTag:remove'],
               onClick: ({vm}) => {
                 this.handleDelete();
               }
