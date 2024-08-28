@@ -1,4 +1,3 @@
-
 export const key = 'result_init_eCCustomer';
 export const label = '服务一致性_客户基本信息结果赋值';
 export const resFields = [
@@ -9,6 +8,7 @@ export const resFields = [
   {"label": "客户姓名", "value": "custName"},
   {"label": "性别", "value": "gender"},
   {"label": "联系地址", "value": "contactAddress"},
+  {"label": "客户地址", "value": "custAddr"},
   {"label": "联系邮箱", "value": "email"},
   {"label": "客户类型", "value": "custType"},
   {"label": "客户类型名称", "value": "custTypeName"},

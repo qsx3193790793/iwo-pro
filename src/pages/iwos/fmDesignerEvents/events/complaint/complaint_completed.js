@@ -19,8 +19,8 @@ export default ({ vm, item }) => {
       // 办结时间
       worksheetFinishTime: vm.$$dayjs().format("YYYY-MM-DD HH:mm:ss"),
       isOvertime: 0,
-      complaintInfo: "Customer complaint about...",
-      complaintPhenomenonType: "10201",
+      complaintInfo:formData.complaintInfo,
+      complaintPhenomenonType: 1,
       complaintPhenomenonName: "移动业务-业务生效",
       custType: "1100",
       netAge: 24,

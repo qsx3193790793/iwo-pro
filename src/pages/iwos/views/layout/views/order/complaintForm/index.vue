@@ -1,9 +1,6 @@
 <template>
   <div class="one-screen">
-    <PageSearchPanel
-        ref="PageSearchPanelRef"
-        :formConfigItems="formConfigItems"
-    ></PageSearchPanel>
+    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems" :mainSize="11"></PageSearchPanel>
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
         <JsTable :dataSource="list" :columns="columns">
@@ -50,9 +47,7 @@ import JsTable from "@/components/js-table/index.vue";
 import apiPrefix from "@/api/apiPrefix.js";
 
 const {proxy} = getCurrentInstance();
-const selectionChange = (val) => {
-  console.log(val);
-};
+
 const FormRef = ref();
 const submitForm = () => {
   FormRef.value.validate((valid) => {
@@ -203,120 +198,45 @@ const select_pkid = ref(null);
 
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
-  {
-    name: "投诉编号",
-    key: "unifiedComplaintCode",
-    value: "",
-    col: 6,
-    type: "input",
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "申诉工单编号",
-    key: "appealWorksheetId",
-    value: "",
-    col: 6,
-    type: "input",
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "客户名称",
-    key: "appealUserName",
-    value: "",
-    col: 6,
-    type: "input",
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "来电号码",
-    key: "callerNo",
-    value: "",
-    col: 6,
-    type: "input",
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "业务号码",
-    key: "complaintAssetNum",
-    value: "",
-    col: 6,
-    type: "input",
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "创建人",
-    key: "createdBy",
-    value: "",
-    col: 6,
-    type: "input",
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "省",
-    key: "provinceCode",
-    value: "",
-    col: 6,
-    type: "select",
-    options: () =>
-        proxy.$store.getters["dictionaries/GET_DICT"]("base_province_code"),
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "工单类型",
-    key: "workorderType",
-    value: "",
-    col: 6,
-    type: "select",
-    options: () =>
-        proxy.$store.getters["dictionaries/GET_DICT"]("search_order_type"),
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "投诉来源",
-    key: "askSourceSrl",
-    value: "",
-    col: 6,
-    type: "cascader",
-    options: () =>
-        proxy.$store.getters["dictionaries/GET_DICT"]("complaintSourceTree"),
-    attrs: {props: {checkStrictly: !0}},
-    isDisable: !1,
-    isRequire: !1,
-  },
-  {
-    name: "建单时间",
-    key: "provinceOrderCreateTime",
-    value: [],
-    col: 6,
-    type: "dateRangePicker",
-    isDisable: !1,
-    isRequire: !1,
-  },
+  // 首屏
+  {name: "投诉编号", key: "unifiedComplaintCode", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "集团工单编号", key: "complaintWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "省内建单时间", key: "provinceOrderCreateTime", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
+  {name: "主叫号码", key: "callerNo", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "业务号码", key: "complaintAssetNum", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "联系电话1", key: "contactPhone1", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "联系电话2", key: "contactPhone2", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "投诉来源", key: "askSourceSrl", value: "", col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
+  {name: "客户升级投诉倾向", key: "upgradeTrend", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "工单超时状态", key: "timeoutFlag", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "工单流转状态", key: "nodeCode", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+
+  // 展开
+  {name: "投诉现象", key: "complaintPhenomenonLevel", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
+  {name: "产品", key: "productLevel", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_product_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
+  {name: "申诉日期", key: "provinceOrderCreateTime", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
+  {name: "申诉工单编号", key: "appealWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "号码归属地", key: "phoneLocal", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "受理工号", key: "createStaff", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "30天重复投诉次数", key: "recmplntTimes30days", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "是否市场最严工单", key: "workorderStrictest", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("yes_no"), isDisable: !1, isRequire: !1,},
+  {name: "市场最严工单场景", key: "workorderStrictestScene", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("workorder_strictest_scene"), isDisable: !1, isRequire: !1,},
+
+  {col: 6, type: "divider-empty"},
+  {col: 6, type: "divider-empty"},
   {col: 6, type: "divider-empty"},
   {
-    type: "buttons",
-    align: "right",
-    verticalAlign: 'top',
-    col: 6,
-    items: [
-      {
-        btnName: "重置",
-        type: "button",
-        attrs: {type: ""},
-        col: 1,
-        onClick({vm}) {
-          vm.resetFormData();
-          getList(1);
-        },
+    type: "buttons", align: "right", verticalAlign: 'top', col: 6,
+    items: [{
+      btnName: "重置",
+      type: "button",
+      attrs: {type: ""},
+      col: 1,
+      onClick({vm}) {
+        vm.resetFormData();
+        getList(1);
       },
+    },
       {
         btnName: "查询",
         type: "button",
@@ -326,24 +246,17 @@ const formConfigItems = ref([
           console.log(vm);
           getList(1);
         },
-      },
-     
-    ],
+      }],
   },
 ]);
 
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
-  if (
-      proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree")
-          ?.length
-  )
-    return;
-  const {res, err} =
-      await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
+  if (proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree")?.length) return;
+  const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
-    complaintSourceTree: proxy.$$formatCascaderTree(
+    complaint_source_tree: proxy.$$formatCascaderTree(
         res?.list || [],
         "sourceName",
         "sourceCode",
@@ -352,12 +265,36 @@ async function listComplaintSourceTree() {
   });
 }
 
+//现象
+async function listComplaintPhenomenonTree() {
+  if (proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree")?.length) return;
+  const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree({params: {status: 1}});
+  if (err) return;
+  proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
+    complaint_phenomenon_tree: proxy.$$formatCascaderTree(
+        res?.phenomList || [],
+        'phenomName', 'phenomCode', 'phenomList'
+    ),
+  });
+}
 
-
-
+//产品
+async function listProductTree() {
+  if (proxy.$store.getters["dictionaries/GET_DICT"]("complaint_product_tree")?.length) return;
+  const {res, err} = await proxy.$$api.productClassification.listProductTree({params: {status: 1}});
+  if (err) return;
+  proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
+    complaint_product_tree: proxy.$$formatCascaderTree(
+        res?.list || [],
+        'productName', 'productCode', 'children'
+    ),
+  });
+}
 
 onMounted(() => {
   listComplaintSourceTree();
+  listComplaintPhenomenonTree();
+  listProductTree();
   getList(1);
 });
 
@@ -369,9 +306,9 @@ export default {
   cusDicts: [
     "yes_no",
     "search_order_type",
-    "complaint_source_tree",
     "base_province_code",
     "jy_complaint_status_cd",
+    "workorder_strictest_scene",
   ],
 };
 </script>

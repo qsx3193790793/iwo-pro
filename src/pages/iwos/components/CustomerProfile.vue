@@ -190,7 +190,10 @@ async function getInfo({isForce, from}) {
     err = R?.err;
   }
   if (err) return;
-  if (!res) res = {lanid: proxy.$store.getters['user/GET_USER_PROVINCE_CODE']};//如果没查到 默认赋值工号对应省
+  if (!res) res = {//如果没查到 默认赋值工号对应省
+    lanid: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'],
+    provinceCode: proxy.$store.getters['user/GET_USER_PROVINCE_CODE']
+  };
   if (res) {
     const [R1, R2, R3] = await Promise.all([
       proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({
@@ -301,15 +304,19 @@ onBeforeMount(() => {
     return getComplaintWorksheetId(() => getInfo({from: '手动'}));
   }
 
-  try {
-    redirectInfo.value = JSON.parse(decodeURIComponent(proxy.$route.query.p || null));
-    if (redirectInfo.value) {
-      accNum.value = redirectInfo.value.accNum;
-      if (accNum.value) getComplaintWorksheetId(() => getInfo({from: '手动'}));
+  if (proxy.$route.query.p) {
+    try {
+      redirectInfo.value = JSON.parse(decodeURIComponent(proxy.$route.query.p || null));
+      if (redirectInfo.value) {
+        accNum.value = redirectInfo.value.accNum;
+        if (accNum.value) getComplaintWorksheetId(() => getInfo({from: '手动'}));
+      }
+    } catch (e) {
+      console.log('parse err', e);
     }
-  } catch (e) {
-    console.log('parse err', e);
+    return;
   }
+  getComplaintWorksheetId();
 });
 
 </script>

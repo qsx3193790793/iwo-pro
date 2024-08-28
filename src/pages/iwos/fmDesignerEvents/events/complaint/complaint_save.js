@@ -1,5 +1,3 @@
-
-
 export const key = 'complaint_save';
 export const label = '投诉单_暂存';
 
@@ -33,8 +31,10 @@ export default ({vm, item}) => {
   vm.$$lodash.set(formData, 'productLevel2Code', productLevelPath?.[1] ?? null);
 
   //投诉来源
-  const {path: askSourceSrlChainPath, pathLabels: askSourceSrlChainPathLabels} = vm.$refs.askSourceSrlChain?.[0]?.getCheckedNodes()?.[0] || {};
-  vm.$$lodash.set(formData, 'askSourceSrl', askSourceSrlChainPath?.[askSourceSrlChainPath?.length - 1] ?? null);
+  vm.$$lodash.set(formData, 'askSourceSrl', formData.askSourceSrlChain?.[formData.askSourceSrlChain?.length - 1] ?? null);
+
+  // 申告地
+  vm.$$lodash.set(formData, 'problemLanId', formData.problemLanIdChain?.[formData.problemLanIdChain?.length - 1] ?? null);
 
   //省内建单时间
   vm.$$lodash.set(formData, 'provinceOrderCreateTime', vm.$$dateFormatterYMDHMS(vm.$$dayjs()));
@@ -77,7 +77,8 @@ export default ({vm, item}) => {
           headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
         });
         if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});
-        return vm.$$Toast({message: `操作成功`, type: 'success'});
+        vm.$$Toast({message: `操作成功`, type: 'success'});
+        return vm.$store.commit('storage/REMOVE_TAB', vm.$route.meta.name);
       }).catch(vm.$$emptyFn);
     }
   );

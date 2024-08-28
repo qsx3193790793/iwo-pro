@@ -378,12 +378,12 @@ export default {
             "children": []
           },
           {
-            "cId": "FMSelect_ID_7578EC13F740FB4DDEABDB89E64B9D1F0CD7",
-            "name": "FMSelect",
-            "compType": "FMSelect",
+            "cId": "FMCascader_ID_7578EC13F740FB4DDEABDB89E64B9D1F0CD7",
+            "name": "FMCascader",
+            "compType": "FMCascader",
             "z_props": {
               "col": 6,
-              "key": "problemLanId",
+              "key": "problemLanIdChain",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
@@ -392,16 +392,17 @@ export default {
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
-              "events": [],
+              "events": [
+                "complaint_source_change"
+              ],
               "eventsFields": [],
-              "optionsType": "字典",
-              "optionsStaticValue": [],
-              "optionsDictName": "base_province_code",
+              "type": "FMCascader",
               "optionsEvent": "",
-              "type": "FMSelect"
+              "checkStrictly": true,
+              "valueType": "array"
             },
             "children": []
-          }
+          },
         ]
       },
       {
@@ -482,38 +483,9 @@ export default {
               "relevance": [],
               "events": [],
               "eventsFields": [],
-              "optionsType": "静态数据",
-              "optionsStaticValue": [
-                {
-                  "label": "业务退订",
-                  "value": "业务退订"
-                },
-                {
-                  "label": "套餐变更",
-                  "value": "套餐变更"
-                },
-                {
-                  "label": "销户退网",
-                  "value": "销户退网"
-                },
-                {
-                  "label": "携号转网",
-                  "value": "携号转网"
-                },
-                {
-                  "label": "靓号低消",
-                  "value": "靓号低消"
-                },
-                {
-                  "label": "费用争议",
-                  "value": "费用争议"
-                },
-                {
-                  "label": "其他",
-                  "value": "其他"
-                }
-              ],
-              "optionsDictName": "",
+              "optionsType": "字典",
+              "optionsStaticValue": [],
+              "optionsDictName": "workorder_strictest_scene",
               "optionsEvent": "",
               "type": "FMSelect"
             },
@@ -571,7 +543,7 @@ export default {
             "z_props": {
               "col": 6,
               "key": "complaintWorksheetId",
-              "isRequire": false,
+              "isRequire": true,
               "isDisable": true,
               "clearable": true,
               "value": "",

@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container one-screen-fg1 search_tree">
+        <div class="head-container one-screen-fg1 search_tree" style="overflow: scroll;">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -35,6 +35,7 @@
                 v-model="queryParams.teamName"
                 placeholder="请输入班组名称"
                 clearable
+                maxlength="30"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -78,11 +79,13 @@
               </el-button>
               <el-dropdown size="small">
                 <el-button size="small" type="primary" style="margin-left:5px">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
-                <el-dropdown-menu slot="dropdown"  class="table-dropdown-menu">
+                <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
                   <div class="inner">
-                    <el-button  v-hasPermission="['system:team:edit']" type="success"  size="small" @click="handleAdd(scope.row)">新增</el-button>
-                    <el-button  v-hasPermission="['system:team:remove']" type="danger"  size="small" @click="handleDelete(scope.row)">删除</el-button>
-                    <el-button  v-hasPermission="['monitor:job:query']" type="primary"  size="small" @click="handleDetail(scope.row)">详情</el-button>
+                    <el-button v-hasPermission="['system:team:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
+                    <el-button v-hasPermission="['system:team:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+                    <el-button v-hasPermission="['system:team:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
+                    <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='0'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
+                    <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
                   </div>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -104,7 +107,7 @@
           <treeselect v-model="form.parentId" :disabled="handleType=='detail'" :options="teamOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级班组'" @select="handelparentIdChange"/>
         </el-form-item>
         <el-form-item label="班组名称" prop="teamName">
-          <el-input v-model="form.teamName" :placeholder="handleType=='detail'?'':'请输入班组名称'"/>
+          <el-input v-model="form.teamName" :placeholder="handleType=='detail'?'':'请输入班组名称'" maxlength="30"/>
         </el-form-item>
         <el-form-item label="角色" prop="roleIds">
           <el-select v-model="form.roleIds" :placeholder="handleType=='detail'?'':'请选择角色'" style="width:100%" clearable multiple>
@@ -118,16 +121,6 @@
         </el-form-item>
         <el-form-item label="班组描述" prop="teamDescribe">
           <el-input v-model="form.teamDescribe" type="textarea" maxlength="100" :placeholder="handleType=='detail'?'':'请输入班组描述'"/>
-        </el-form-item>
-        <el-form-item label="机构状态">
-          <el-radio-group v-model="form.status">
-            <el-radio
-                v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
-                :key="dict.value"
-                :label="dict.value"
-            >{{ dict.label }}
-            </el-radio>
-          </el-radio-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-show="handleType!='detail'">
@@ -182,7 +175,7 @@ export default {
       // 弹出层标题
       title: "",
       // 详情时隐藏按钮，表单不可编辑
-      handleType:'',
+      handleType: '',
       // 是否显示弹出层
       open: false,
       // 查询参数
@@ -220,9 +213,47 @@ export default {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
-    handleDetail(row){
+    // 启用
+    handleStart(row) {
+      this.$$Dialog
+          .confirm('是否确认启用班组名称为"' + row.teamName + '"的数据项？')
+          .then(() => {
+            let data = {
+              teamId: row.teamId,
+              status: 0,
+            }
+            return this.$$api.team.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("启用成功");
+          })
+          .catch(() => {
+          });
+    },
+    // 停用
+    handleEnd(row) {
+      this.$$Dialog
+          .confirm('是否确认停用班组名称为"' + row.teamName + '"的数据项？')
+          .then(() => {
+            let data = {
+              teamId: row.teamId,
+              status: 1,
+            }
+            return this.$$api.team.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("停用成功");
+          })
+          .catch(() => {
+          });
+    },
+    handleDetail(row) {
       this.reset();
-      this.handleType='detail'
+      this.handleType = 'detail'
       const teamId = row.teamId || this.ids
       this.getDeptTree()
       this.$$api.team.getTeam({teamId: teamId}).then(({res: response, err}) => {
@@ -232,10 +263,10 @@ export default {
         if (deptId) {
           this.getTeamTreeInfo(deptId)
         }
-        if(parentId=='0'){
-          parentId=undefined
+        if (parentId == '0') {
+          parentId = undefined
         }
-        this.form = {parentId, deptId, teamName, teamId, status, roleIds} 
+        this.form = {parentId, deptId, teamName, teamId, status, roleIds}
         this.roleOptions = response.roles
         this.open = true;
         this.title = "班组详情";
@@ -337,10 +368,9 @@ export default {
       this.form = {
         teamId: null,
         teamName: null,
-        teamDescribe:null,
+        teamDescribe: null,
         deptId: null,
         parentId: null,
-        status: "0",
         roleIds: []
       };
       this.$$resetForm("form", this.$refs);
@@ -386,14 +416,14 @@ export default {
       this.$$api.team.getTeam({teamId: teamId}).then(({res: response, err}) => {
         if (err) return
         // this.form = response.data;
-        let {parentId, deptId, teamName,teamDescribe, teamId, status, roleIds} = {...response}
+        let {parentId, deptId, teamName, teamDescribe, teamId, status, roleIds} = {...response}
         if (deptId) {
           this.getTeamTreeInfo(deptId)
         }
-        if(parentId=='0'){
-          parentId=undefined
+        if (parentId == '0') {
+          parentId = undefined
         }
-        this.form = {parentId, deptId, teamName,teamDescribe, teamId, status, roleIds}
+        this.form = {parentId, deptId, teamName, teamDescribe, teamId, status, roleIds}
         this.roleOptions = response.roles
         this.open = true;
         this.title = "修改班组";
@@ -402,28 +432,28 @@ export default {
 
     /** 提交按钮 */
     submitForm() {
-      let that=this;
+      let that = this;
       that.$refs["form"].validate(valid => {
         if (valid) {
           if (that.form.teamId != null) {
-            if(that.form.status=='1'){
+            if (that.form.status == '1') {
               that.$$Dialog.confirm('确定停用所选机构吗?停用后机构下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
                 confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
-              }).then(() =>{
-                  that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
+              }).then(() => {
+                that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
+                  if (err) return
+                  that.$$Toast.success("修改成功");
+                  that.open = false;
+                  that.getList();
+                });
+              })
+            } else {
+              that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
                 if (err) return
                 that.$$Toast.success("修改成功");
                 that.open = false;
-                that.getList(); 
+                that.getList();
               });
-              })
-            }else{
-              that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
-              if (err) return
-              that.$$Toast.success("修改成功");
-              that.open = false;
-              that.getList();
-            });
             }
           } else {
             that.$$api.team.addTeam({data: that.form}).then(({res: response, err}) => {

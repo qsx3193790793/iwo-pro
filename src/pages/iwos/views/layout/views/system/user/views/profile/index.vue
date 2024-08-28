@@ -11,7 +11,7 @@
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
                 用户名称
-                <div class="pull-right">{{ user.userName || '-' }}</div>
+                <div class="pull-right">{{ user.nickName || '-' }}</div>
               </li>
               <li class="list-group-item">
                 手机号码
@@ -42,7 +42,7 @@
           <div slot="header" class="main-title noMb">个人信息</div>
           <el-tabs v-model="activeTab">
             <el-tab-pane label="基本资料" name="userinfo">
-              <userInfo :user="user"/>
+              <userInfo :user="user" @update="getUser"/>
             </el-tab-pane>
             <el-tab-pane label="修改密码" name="resetPwd">
               <resetPwd/>

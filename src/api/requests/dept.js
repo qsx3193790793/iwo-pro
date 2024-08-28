@@ -14,6 +14,8 @@ const apis = {
   updateDept: {url: `${apiPrefix('system')}/dept`, method: 'put'},
   // 删除机构
   delDept: {url: (args) => `${apiPrefix('system')}/dept/${args?.deptId || ''}`, method: 'delete'},
+  // 修改状态（启用/停用）
+  updStatus: {url: `${apiPrefix('system')}/dept/deptStatusChange`, method: 'post'},
 };
 
 export default apiGenerator(apis);

@@ -88,10 +88,10 @@
             </el-select>
           </el-form-item>
           <el-form-item>
-            <el-button size="mini" @click="resetQuery">重置  </el-button>
-            <el-button  type="primary" size="mini" @click="handleQuery">查询 </el-button>
-            <el-button  type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)">新增 </el-button>
-            <el-button  type="danger" size="mini"  :disabled="isAllowDelet"  @click="handleDelete(selectRow)">删除 </el-button>
+            <el-button size="mini" @click="resetQuery">重置</el-button>
+            <el-button type="primary" size="mini" @click="handleQuery">查询</el-button>
+            <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)">新增</el-button>
+            <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)">删除</el-button>
           </el-form-item>
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
@@ -245,7 +245,7 @@ export default {
       //是否可以新增
       isAllowAdd: true,
       //是否可以删除
-      isAllowDelet:true,
+      isAllowDelet: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -275,7 +275,7 @@ export default {
       //上级现象名称
       superiorName: undefined,
       //选中行数据
-      selectRow:{},
+      selectRow: {},
       // 表单参数
       form: {},
       defaultProps: {
@@ -571,12 +571,11 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.selectRow= selection[0]
+      this.selectRow = selection[0]
       this.multiple = !selection.length
       this.single = selection.length != 1;
-      this.isAllowAdd=  !this.single && (selection[0]?.level === 2 && selection[0]?.isProvinceCustom === 1) ? false :true
-      this.isAllowDelet= !this.single &&( selection[0]?.level === 3 && selection[0]?.isProvinceCustom === 1)  ? false :true
-
+      this.isAllowAdd = !this.single && (selection[0]?.level === 2 && selection[0]?.isProvinceCustom === 1) ? false : true
+      this.isAllowDelet = !this.single && (selection[0]?.level === 3 && selection[0]?.isProvinceCustom === 1) ? false : true
 
     },
     /** 新增按钮操作 */
@@ -700,7 +699,7 @@ export default {
 <style scoped lang="scss">
 .nodeTree {
   overflow: scroll;
-  height: 74vh;
+  //height: 74vh;
 }
 
 ::v-deep .component {

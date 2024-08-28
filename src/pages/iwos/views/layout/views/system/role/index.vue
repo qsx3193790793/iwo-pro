@@ -14,6 +14,7 @@
             placeholder="请输入角色名称"
             clearable
             class="queryItem"
+            maxlength="30"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -22,6 +23,7 @@
             v-model="queryParams.roleKey"
             placeholder="请输入权限字符"
             clearable
+            maxlength="30"
             class="queryItem"
             @keyup.enter.native="handleQuery"
         />
@@ -52,61 +54,61 @@
             end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-row type="flex"  justify="end">
+      <el-row type="flex" justify="end">
         <el-col :span="6">
           <el-form-item>
-        <el-button  size="small" @click="resetQuery"
-        >重置
-        </el-button
-        >
-        <el-button
-            type="primary"
+            <el-button size="small" @click="resetQuery"
+            >重置
+            </el-button
+            >
+            <el-button
+                type="primary"
 
-            size="small"
-            @click="handleQuery"
-        >搜索
-        </el-button
-        >
-        <el-button
-            type="success"
-            size="small"
-            @click="handleAdd"
-            v-hasPermission="['system:role:add']"
-        >新增
-        </el-button
-        >
-        <!-- <el-button
-            type="danger"
-            plain
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermission="['system:role:remove']"
-        >删除
-        </el-button
-        > -->
-        <el-button
-            type="warning"
-            plain
-            size="small"
-            @click="handleExport"
-            v-hasPermission="['system:role:export']"
-        >导出
-        </el-button>
-        <el-dropdown @command="(command) => handleBatchClick(command)"  v-hasPermission="['system:role:edit']" :disabled="multiple">
-          <el-button type="danger">
-            批量操作<i class="el-icon-arrow-down el-icon--right"></i>
-          </el-button>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="begin" >批量启用</el-dropdown-item>
-            <el-dropdown-item command="end" >批量停用</el-dropdown-item>
-            <el-dropdown-item command="delete" v-hasPermission="['system:role:remove']">批量删除</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-      </el-form-item>
+                size="small"
+                @click="handleQuery"
+            >搜索
+            </el-button
+            >
+            <el-button
+                type="success"
+                size="small"
+                @click="handleAdd"
+                v-hasPermission="['system:role:add']"
+            >新增
+            </el-button
+            >
+            <!-- <el-button
+                type="danger"
+                plain
+                size="small"
+                :disabled="multiple"
+                @click="handleDelete"
+                v-hasPermission="['system:role:remove']"
+            >删除
+            </el-button
+            > -->
+            <el-button
+                type="warning"
+                plain
+                size="small"
+                @click="handleExport"
+                v-hasPermission="['system:role:export']"
+            >导出
+            </el-button>
+            <el-dropdown trigger="click" @command="(command) => handleBatchClick(command)" v-hasPermission="['system:role:edit']" :disabled="multiple">
+              <el-button type="danger" size="small" class="dropdownBtn" :disabled="multiple">
+                批量操作<i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="begin">批量启用</el-dropdown-item>
+                <el-dropdown-item command="end">批量停用</el-dropdown-item>
+                <el-dropdown-item command="delete" v-hasPermission="['system:role:remove']">批量删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-form-item>
         </el-col>
       </el-row>
-    
+
     </el-form>
 
     <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
@@ -139,16 +141,16 @@
           label="角色名称"
           prop="roleName"
           :show-overflow-tooltip="true"
-          
+
       />
       <el-table-column
           label="权限字符"
           prop="roleKey"
           :show-overflow-tooltip="true"
-          
+
       />
       <!-- <el-table-column label="显示顺序" prop="roleSort" /> -->
-      <el-table-column label="状态" align="center" >
+      <el-table-column label="状态" align="center">
         <template slot-scope="scope">
           <el-switch
               v-model="scope.row.status"
@@ -158,27 +160,27 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="创建人" prop="createBy" />
+      <el-table-column label="创建人" prop="createBy"/>
       <el-table-column
           label="创建时间"
           align="center"
           prop="createTime"
-          
+
       >
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column
-              label="操作"
-              align="center"
-              width="220"
-              class-name="small-padding fixed-width"
+          label="操作"
+          align="center"
+          width="220"
+          class-name="small-padding fixed-width"
       >
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
           <el-button
               size="small"
-             type="primary"
+              type="primary"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['system:role:edit']"
           >修改
@@ -186,47 +188,58 @@
           >
           <el-button
               size="small"
-             type="danger"
-              @click="{handleDelete(scope.row)}"
+              type="danger"
+              @click="handleDelete(scope.row)"
               v-hasPermission="['system:role:remove']"
           >删除
           </el-button
           >
-          <el-dropdown
-              size="small"
-              @command="(command) => handleCommand(command, scope.row)"
-              v-hasPermission="['system:role:edit']"
-          >
+          <el-dropdown v-hasPermission="['system:role:edit']" class="public-el-dropdown" trigger="click">
             <el-button type="primary">
-                  更多<i class="el-icon-arrow-down el-icon--right"></i>
+              更多<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <!-- <el-dropdown-item
-                  command="handleDataScope"
-                  icon="el-icon-circle-check"
-                  v-hasPermission="['system:role:edit']"
-              >数据权限
-              </el-dropdown-item
-              > -->
-              <el-dropdown-item
-                  command="handleAuthUser"
-                  icon="el-icon-user"
-                  v-hasPermission="['system:role:edit']"
-              >分配用户
-              </el-dropdown-item
-              >
+            <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
+              <div class="inner">
+                <el-button v-hasPermission="['system:role:edit']" type="primary" size="small" @click="handleAuthUser(scope.row)">分配用户</el-button>
+              </div>
             </el-dropdown-menu>
           </el-dropdown>
+          <!--          <el-dropdown-->
+          <!--              size="small"-->
+          <!--              @command="(command) => handleCommand(command, scope.row)"-->
+          <!--              v-hasPermission="['system:role:edit']"-->
+          <!--              style="margin-left: 6px;"-->
+          <!--          >-->
+          <!--            <el-button type="primary">-->
+          <!--              更多<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>-->
+          <!--            </el-button>-->
+          <!--            <el-dropdown-menu slot="dropdown">-->
+          <!--              &lt;!&ndash; <el-dropdown-item-->
+          <!--                  command="handleDataScope"-->
+          <!--                  icon="el-icon-circle-check"-->
+          <!--                  v-hasPermission="['system:role:edit']"-->
+          <!--              >数据权限-->
+          <!--              </el-dropdown-item-->
+          <!--              > &ndash;&gt;-->
+          <!--              <el-dropdown-item-->
+          <!--                  command="handleAuthUser"-->
+          <!--                  icon="el-icon-user"-->
+          <!--                  v-hasPermission="['system:role:edit']"-->
+          <!--              >分配用户-->
+          <!--              </el-dropdown-item-->
+          <!--              >-->
+          <!--            </el-dropdown-menu>-->
+          <!--          </el-dropdown>-->
         </template>
       </el-table-column>
     </el-table>
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left">
         <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入角色名称"/>
+          <el-input v-model="form.roleName" placeholder="请输入角色名称" maxlength="30"/>
         </el-form-item>
         <el-form-item prop="roleKey">
           <span slot="label">
@@ -238,7 +251,7 @@
             </el-tooltip>
             权限字符
           </span>
-          <el-input v-model="form.roleKey" placeholder="请输入权限字符"/>
+          <el-input v-model="form.roleKey" placeholder="请输入权限字符" maxlength="30"/>
         </el-form-item>
         <el-form-item label="角色顺序" prop="roleSort">
           <el-input-number
@@ -338,13 +351,14 @@
         :visible.sync="openDataScope"
         width="500px"
         append-to-body
+        :close-on-click-modal="false"
     >
       <el-form :model="form" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
-          <el-input v-model="form.roleName" :disabled="true"/>
+          <el-input v-model="form.roleName" :disabled="true" maxlength="30"/>
         </el-form-item>
         <el-form-item label="权限字符">
-          <el-input v-model="form.roleKey" :disabled="true"/>
+          <el-input v-model="form.roleKey" :disabled="true" maxlength="30"/>
         </el-form-item>
         <el-form-item label="权限范围">
           <el-select v-model="form.dataScope" @change="dataScopeSelectChange">
@@ -393,17 +407,105 @@
         <el-button @click="cancelDataScope">取 消</el-button>
       </div>
     </el-dialog>
+
+    <!-- 分配用户 -->
+    <el-dialog title="分配用户" :visible.sync="authUser.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
+      <div class="one-screen" style="height: 50vh;">
+        <el-form class="one-screen-fg0" :model="authUser.queryParams" ref="queryAuthUserForm" size="small" :inline="true">
+          <el-form-item label="用户名称" prop="userName">
+            <el-input
+                v-model="authUser.queryParams.userName"
+                placeholder="请输入用户名称"
+                clearable
+                style="width: 240px"
+                maxlength="30"
+                @keyup.enter.native="handleQuery"
+            />
+          </el-form-item>
+          <el-form-item label="手机号码" prop="phonenumber">
+            <el-input
+                v-model="authUser.queryParams.phonenumber"
+                placeholder="请输入手机号码"
+                clearable
+                style="width: 240px"
+                maxlength="30"
+                @keyup.enter.native="handleAuthUserQuery"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button size="small" @click="resetAuthUserQuery">重置</el-button>
+            <el-button type="primary" size="small" @click="handleAuthUserQuery">搜索</el-button>
+            <el-button type="success" size="small" @click="openSelectUser" v-hasPermission="['system:role:add']">添加用户</el-button>
+            <el-button type="danger" size="small" :disabled="authUser.multiple" @click="cancelAuthUserAll" v-hasPermission="['system:role:remove']">批量取消授权</el-button>
+          </el-form-item>
+        </el-form>
+
+        <el-table v-loading="authUser.loading" class="one-screen-fg1" height="100%" ref="authUserTable" :data="authUser.userList" border @selection-change="handleAuthUserSelectionChange">
+          <el-table-column type="selection" width="55" align="center"/>
+          <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true"/>
+          <el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true"/>
+          <el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true"/>
+          <el-table-column label="手机" prop="phonenumber" :show-overflow-tooltip="true"/>
+          <el-table-column label="状态" align="center" prop="status">
+            <template slot-scope="{row}">
+              <!--          <dict-tag :options="$$dictionaries.get('sys_normal_disable')" :value="scope.row.status"/>-->
+              {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', row.status) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+            <template slot-scope="scope">
+              <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+            <template slot-scope="scope">
+              <el-button size="small" type="text" @click="cancelAuthUser(scope.row)" v-hasPermission="['system:role:remove']">取消授权</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-pagination class="one-screen-fg0" :current-page.sync="authUser.queryParams.pageNum" :page-size.sync="authUser.queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="authUser.total" @size-change="getAuthUserList" @current-change="getAuthUserList"/>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="authUser.open=!1">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <select-user ref="selectUser" :roleId="queryParams.roleId" @ok="handleQuery"/>
+
   </div>
 </template>
 
 <script>
+import selectUser from "./selectUser";
 
 export default {
   name: "RoleIndex",
   dicts: ["sys_normal_disable"],
-  components: {},
+  components: {selectUser},
   data() {
     return {
+      authUser: {
+        open: false,
+        // 遮罩层
+        loading: false,
+        // 选中用户组
+        userIds: [],
+        // 非多个禁用
+        multiple: true,
+        // 总条数
+        total: 0,
+        // 用户表格数据
+        userList: [],
+        // 查询参数
+        queryParams: {
+          pageNum: 1,
+          pageSize: 15,
+          roleId: undefined,
+          userName: undefined,
+          phonenumber: undefined
+        }
+      },
       // 遮罩层
       loading: false,
       // 选中数组
@@ -501,41 +603,41 @@ export default {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
-    handleBatchClick(type){
+    handleBatchClick(type) {
       // 确认要"停用""上海管理员"角色吗？
-      if(type=='end'){
+      if (type == 'end') {
         this.$$Dialog.confirm(`确认要"停用""${this.roleNameList.join(',')}"角色吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
-        }).then(() =>{
+        }).then(() => {
           this.handleStatus('1')
         })
       }
-      if(type=='begin'){
+      if (type == 'begin') {
         this.$$Dialog.confirm(`确认要"启用""${this.roleNameList.join(',')}"角色吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
-        }).then(() =>{
+        }).then(() => {
           this.handleStatus('0')
         })
       }
-      if(type=='delete'){
+      if (type == 'delete') {
         this.handleDelete()
       }
-      
+
     },
-    handleStatus(type){
-      let showText=type=='0'?'启用成功':'停用成功'
-      let data={
-        "ids":this.ids,
-        status:type
+    handleStatus(type) {
+      let showText = type == '0' ? '启用成功' : '停用成功'
+      let data = {
+        "ids": this.ids,
+        status: type
       }
       this.$$api.role
           .updataStatus({data: data})
-          .then(({ err}) => {
+          .then(({err}) => {
             if (err) return this.loading = false;
             this.getList();
             this.$$Toast.success(showText);
           });
-    },  
+    },
     /** 查询角色列表 */
     getList() {
       // this.roleList = Array.from({length: 20}).map((r, i) => ({roleId: i}));
@@ -675,23 +777,23 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.roleId);
-      this.roleNameList=selection.map((item) => item.roleName);
+      this.roleNameList = selection.map((item) => item.roleName);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
     },
     // 更多操作触发
-    handleCommand(command, row) {
-      switch (command) {
-        case "handleDataScope":
-          this.handleDataScope(row);
-          break;
-        case "handleAuthUser":
-          this.handleAuthUser(row);
-          break;
-        default:
-          break;
-      }
-    },
+    // handleCommand(command, row) {
+    //   switch (command) {
+    //     case "handleDataScope":
+    //       this.handleDataScope(row);
+    //       break;
+    //     case "handleAuthUser":
+    //       this.handleAuthUser(row);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // },
     // 树权限（展开/折叠）
     handleCheckedTreeExpand(value, type) {
       if (type == "menu") {
@@ -728,7 +830,7 @@ export default {
       } else if (type == "dept") {
         this.form.deptCheckStrictly = value ? true : false;
       } else if (type == "complaintSource") {
-        this.form.complaintSourceCheckStrictly = value ? true  : false;
+        this.form.complaintSourceCheckStrictly = value ? true : false;
       }
     },
     /** 新增按钮操作 */
@@ -750,7 +852,7 @@ export default {
       this.$$api.role.getRole({roleId}).then(({res: response, err}) => {
         if (err) return;
         this.form = response;
-        this.form.complaintSourceCheckStrictly =true;
+        this.form.complaintSourceCheckStrictly = true;
         this.open = true;
         this.$nextTick(() => {
           roleMenu.then((res) => {
@@ -804,8 +906,11 @@ export default {
     },
     /** 分配用户操作 */
     handleAuthUser: function (row) {
-      const roleId = row.roleId;
-      this.$router.push({name: 'RoleAuthUser', params: {roleId}});
+      if (row.roleId) {
+        this.authUser.queryParams.roleId = row.roleId;
+        this.getAuthUserList();
+      }
+      this.$nextTick(() => this.$refs.authUserTable?.doLayout());
     },
     /** 提交按钮 */
     submitForm: function () {
@@ -830,7 +935,7 @@ export default {
               this.getList();
             });
           }
-        }else{
+        } else {
           this.$$Toast.warning("有必填项未填写");
         }
       });
@@ -850,12 +955,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const roleIds = row?.roleId || this.ids
-      let showText=''
-      if(this.ids.length>0 && !row?.roleId){
-        showText=this.roleNameList.join(',')
-      }else{
-        this.roleNameList=[]
-        showText= row.roleName
+      let showText = ''
+      if (this.ids.length > 0 && !row?.roleId) {
+        showText = this.roleNameList.join(',')
+      } else {
+        this.roleNameList = []
+        showText = row.roleName
       }
       if (roleIds?.length) {
         this.$$Dialog
@@ -884,11 +989,74 @@ export default {
       //   `role_${new Date().getTime()}.xlsx`
       // );
     },
+
+    //authUser
+    getAuthUserList() {
+      // this.userList = Array.from({length: 20}).map((r, i) => ({userId: i}));
+      // return this.total = 100;
+      this.authUser.loading = true;
+      this.$$api.role.allocatedUserList({params: this.authUser.queryParams}).then(({res: response, err, total}) => {
+            if (err) return this.authUser.loading = false;
+            this.authUser.userList = response.rows || [];
+            this.authUser.total = response.total;
+            this.authUser.loading = false;
+            this.authUser.open = true;
+          }
+      );
+    },
+    /** 搜索按钮操作 */
+    handleAuthUserQuery() {
+      this.authUser.queryParams.pageNum = 1;
+      this.getAuthUserList();
+    },
+    /** 重置按钮操作 */
+    resetAuthUserQuery() {
+      this.$refs['queryAuthUserForm']?.resetFields();
+      this.handleAuthUserQuery();
+    },
+    // 多选框选中数据
+    handleAuthUserSelectionChange(selection) {
+      this.authUser.userIds = selection.map(item => item.userId)
+      this.authUser.multiple = !selection.length
+    },
+    /** 打开授权用户表弹窗 */
+    openSelectUser() {
+      this.$refs.selectUser.show();
+    },
+    /** 取消授权按钮操作 */
+    cancelAuthUser(row) {
+      const roleId = this.authUser.queryParams.roleId;
+      this.$$Dialog.confirm('确认要取消该用户"' + row.userName + '"角色吗？').then(() => {
+        return this.$$api.role.authUserCancel({data: {userId: row.userId, roleId: roleId}});
+      }).then(({res, err}) => {
+        if (err) return;
+        this.getAuthUserList();
+        this.$$Toast.success("取消授权成功");
+      }).catch(() => {
+      });
+    },
+    /** 批量取消授权按钮操作 */
+    cancelAuthUserAll(row) {
+      const roleId = this.authUser.queryParams.roleId;
+      const userIds = this.authUser.userIds.join(",");
+      this.$$Dialog.confirm('是否取消选中用户授权数据项？').then(() => {
+        return this.$$api.role.authUserCancelAll({params: {roleId: roleId, userIds: userIds}});
+      }).then(({res, err}) => {
+        if (err) return;
+        this.getAuthUserList();
+        this.$$Toast.success("取消授权成功");
+      }).catch(() => {
+      });
+    }
   },
 };
 </script>
 <style scoped lang="scss">
 .queryItem {
   width: 240px;
+}
+
+.dropdownBtn {
+  margin-left: 6px
 }
 </style>

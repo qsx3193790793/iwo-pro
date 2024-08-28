@@ -2,13 +2,13 @@
   <div class="app-container one-screen">
     <!-- noBackground -->
     <PageSearchPanel
-      ref="PageSearchPanelRef"
-      :formConfigItems="formConfigItems"
+        ref="PageSearchPanelRef"
+        :formConfigItems="formConfigItems"
     ></PageSearchPanel>
     <JsTable
-      :dataSource="state.dataSource"
-      :columns="state.columns"
-      @selectionChange="handleSelectionChange"
+        :dataSource="state.dataSource"
+        :columns="state.columns"
+        @selectionChange="handleSelectionChange"
     >
       <template #status="{ row }">
         <div v-show="row.status == 0">
@@ -22,40 +22,40 @@
         </div>
       </template>
       <template #provinceCode="{ row }">
-       <div>  {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}</div>
+        <div> {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}</div>
       </template>
     </JsTable>
     <el-pagination
-      :current-page.sync="state.queryParams.pageNum"
-      :page-size.sync="state.queryParams.pageSize"
-      :page-sizes="[15, 30, 40, 50]"
-      background
-      layout=" ->,total, sizes, prev, pager, next, jumper"
-      :total="state.total"
-      @size-change="getList"
-      @current-change="getList"
+        :current-page.sync="state.queryParams.pageNum"
+        :page-size.sync="state.queryParams.pageSize"
+        :page-sizes="[15, 30, 40, 50]"
+        background
+        layout=" ->,total, sizes, prev, pager, next, jumper"
+        :total="state.total"
+        @size-change="getList"
+        @current-change="getList"
     />
 
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog
-      :title="state.title"
-      :visible.sync="state.open"
-      width="6rem"
-      append-to-body
+        :title="state.title"
+        :visible.sync="state.open"
+        width="6rem"
+        append-to-body
     >
       <el-form
-        ref="form"
-        :model="state.form"
-        :rules="state.rules"
-        label-width="auto"
+          ref="form"
+          :model="state.form"
+          :rules="state.rules"
+          label-width="auto"
       >
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="应用系统名称" prop="appName">
               <el-input
-                v-model="state.form.appName"
-                placeholder="请输入"
-                maxlength="30"
+                  v-model="state.form.appName"
+                  placeholder="请输入"
+                  maxlength="30"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -69,11 +69,11 @@
                 maxlength="50"
               ></el-input> -->
               <treeselect
-                v-model="state.form.sourceCode"
-                :options="state.sourceTree"
-                :show-count="true"
-                placeholder="请选择投诉来源"
-                :normalizer="normalizer"
+                  v-model="state.form.sourceCode"
+                  :options="state.sourceTree"
+                  :show-count="true"
+                  placeholder="请选择投诉来源"
+                  :normalizer="normalizer"
               />
             </el-form-item>
           </el-col>
@@ -82,10 +82,10 @@
           <el-col :span="24">
             <el-form-item label="应用系统描述">
               <el-input
-                v-model="state.form.appDesc"
-                placeholder="请输入"
-                type="textarea"
-                 maxlength="30"
+                  v-model="state.form.appDesc"
+                  placeholder="请输入"
+                  type="textarea"
+                  maxlength="30"
               />
             </el-form-item>
           </el-col>
@@ -102,7 +102,7 @@
 <script setup>
 import JsTable from "@/components/js-table/index.vue";
 import Treeselect from "@riophae/vue-treeselect";
-import { computed, getCurrentInstance, onMounted, ref, watch } from "vue";
+import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
@@ -140,7 +140,7 @@ const formConfigItems = ref([
     col: 6,
     type: "select",
     options: () =>
-      proxy.$store.getters["dictionaries/GET_DICT"]("start_stop"),
+        proxy.$store.getters["dictionaries/GET_DICT"]("start_stop"),
     isDisable: !1,
     isRequire: !1,
   },
@@ -151,34 +151,34 @@ const formConfigItems = ref([
     col: 6,
     type: "cascader",
     options: () =>
-      proxy.$store.getters["dictionaries/GET_DICT"]("complaintSourceTree"),
-    attrs: { props: { checkStrictly: !0 } },
+        proxy.$store.getters["dictionaries/GET_DICT"]("complaintSourceTree"),
+    attrs: {props: {checkStrictly: !0}},
     isDisable: !1,
     isRequire: !1,
   },
-  { col: 6, type: "divider-empty" },
-  { col: 6, type: "divider-empty" },
+  {col: 6, type: "divider-empty"},
+  {col: 6, type: "divider-empty"},
   {
     type: "buttons",
-    verticalAlign:'top',
+    verticalAlign: 'top',
     align: "right",
     col: 6,
     items: [
       {
         btnName: "查询",
         type: "button",
-        attrs: { type: "primary" },
+        attrs: {type: "primary"},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           handleQuery();
         },
       },
       {
         btnName: "重置",
         type: "button",
-        attrs: { type: "" },
+        attrs: {type: ""},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           vm.resetFormData();
           resetQuery();
         },
@@ -186,20 +186,22 @@ const formConfigItems = ref([
       {
         btnName: "新增",
         type: "button",
-        attrs: { type: "success" },
+        attrs: {type: "success"},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           handleAdd();
         },
       },
       {
         btnName: "删除",
         type: "button",
-        attrs: { type: "danger" ,disabled:()=>{
-          return state.value.multiple
-        }},
+        attrs: {
+          type: "danger", disabled: () => {
+            return state.value.multiple
+          }
+        },
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           handleDelete();
         },
       },
@@ -215,7 +217,7 @@ const formConfigItems = ref([
     ],
   },
 ]);
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 
 onMounted(() => {
   getList(1);
@@ -238,42 +240,44 @@ const autoEndHidden = (val) => {
 // 启用
 const handleStart = (row) => {
   proxy.$$Dialog
-    .confirm('是否确认启用应用系统编号为"' + row.clientId + '"的数据项？')
-    .then(() => {
-      let data = {
-        appId: row.appId,
-        status: 1,
-      };
-      return proxy.$$api.appconfigmanage.updStatusappConfig({ data: data });
-    })
-    .then(({ res, err }) => {
-      if (err) return;
-      handleQuery();
-      proxy.$$Toast.success("启用成功");
-    })
-    .catch(() => {});
+      .confirm('是否确认启用应用系统编号为"' + row.clientId + '"的数据项？')
+      .then(() => {
+        let data = {
+          appId: row.appId,
+          status: 1,
+        };
+        return proxy.$$api.appconfigmanage.updStatusappConfig({data: data});
+      })
+      .then(({res, err}) => {
+        if (err) return;
+        handleQuery();
+        proxy.$$Toast.success("启用成功");
+      })
+      .catch(() => {
+      });
 };
 // 停用
 const handleEnd = (row) => {
   proxy.$$Dialog
-    .confirm('是否确认停用应用系统编号为"' + row.clientId + '"的数据项？')
-    .then(() => {
-      let data = {
-        appId: row.appId,
-        status: 0,
-      };
-      return proxy.$$api.appconfigmanage.updStatusappConfig({ data: data });
-    })
-    .then(({ res, err }) => {
-      if (err) return;
-      handleQuery();
-      proxy.$$Toast.success("停用成功");
-    })
-    .catch(() => {});
+      .confirm('是否确认停用应用系统编号为"' + row.clientId + '"的数据项？')
+      .then(() => {
+        let data = {
+          appId: row.appId,
+          status: 0,
+        };
+        return proxy.$$api.appconfigmanage.updStatusappConfig({data: data});
+      })
+      .then(({res, err}) => {
+        if (err) return;
+        handleQuery();
+        proxy.$$Toast.success("停用成功");
+      })
+      .catch(() => {
+      });
 };
 /** 查询机构下拉树结构 */
 const getSourceTree = () => {
-  proxy.$$api.complaintSource.listComplaintSourceTree({data:{status:1}}).then(({ res, err }) => {
+  proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}}).then(({res, err}) => {
     if (err) return;
     state.value.sourceTree = res?.list || [];
   });
@@ -292,41 +296,41 @@ const normalizer = (node) => {
 //投诉来源下拉菜单
 const listComplaintSourceTree = async () => {
   if (
-    proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree")
-      ?.length
+      proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree")
+          ?.length
   )
     return;
-  const { res, err } =
-    await proxy.$$api.complaintSource.listComplaintSourceTree({data:{status:1}});
+  const {res, err} =
+      await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
     complaintSourceTree: proxy.$$formatCascaderTree(
-      res?.list || [],
-      "sourceName",
-      "sourceCode",
-      "children"
+        res?.list || [],
+        "sourceName",
+        "sourceCode",
+        "children"
     ),
   });
 };
-let PageSearchPanelRef=ref()
+let PageSearchPanelRef = ref()
 const getList = () => {
   state.value.loading = true;
-  
-  let params={
+
+  let params = {
     ...state.value.queryParams,
     ...PageSearchPanelRef.value.getFormData()
   }
-  if(params.sourceCode&& params.sourceCode.length>0){
-    params.sourceCode=params.sourceCode[params.sourceCode.length-1]
+  if (params.sourceCode && params.sourceCode.length > 0) {
+    params.sourceCode = params.sourceCode[params.sourceCode.length - 1]
   }
   proxy.$$api.appconfigmanage
-    .listappConfig({ params: params })
-    .then(({ res: response, err, total }) => {
-      if (err) return (state.value.loading = false);
-      state.value.dataSource = response.rows;
-      state.value.total = response.total;
-      state.value.loading = false;
-    });
+      .listappConfig({params: params})
+      .then(({res: response, err, total}) => {
+        if (err) return (state.value.loading = false);
+        state.value.dataSource = response.rows;
+        state.value.total = response.total;
+        state.value.loading = false;
+      });
 };
 // 取消按钮
 const cancel = () => {
@@ -373,13 +377,13 @@ const handleUpdate = (row) => {
   reset();
   getSourceTree();
   proxy.$$api.appconfigmanage
-    .appConfigDetail({ appId: row.appId })
-    .then(({ res: response, err }) => {
-      if (err) return;
-      state.value.form = response;
-      state.value.open = true;
-      state.value.title = "修改应用系统";
-    });
+      .appConfigDetail({appId: row.appId})
+      .then(({res: response, err}) => {
+        if (err) return;
+        state.value.form = response;
+        state.value.open = true;
+        state.value.title = "修改应用系统";
+      });
 };
 /** 提交按钮 */
 const submitForm = () => {
@@ -387,22 +391,22 @@ const submitForm = () => {
     if (valid) {
       if (state.value.form.appId != undefined) {
         proxy.$$api.appconfigmanage
-          .updateappConfig({ data: state.value.form })
-          .then(({ res: response, err }) => {
-            if (err) return;
-            proxy.$$Toast.success("修改成功");
-            state.value.open = false;
-            getList();
-          });
+            .updateappConfig({data: state.value.form})
+            .then(({res: response, err}) => {
+              if (err) return;
+              proxy.$$Toast.success("修改成功");
+              state.value.open = false;
+              getList();
+            });
       } else {
         proxy.$$api.appconfigmanage
-          .addappConfig({ data: state.value.form })
-          .then(({ res: response, err }) => {
-            if (err) return;
-            proxy.$$Toast.success("新增成功");
-            state.value.open = false;
-            getList();
-          });
+            .addappConfig({data: state.value.form})
+            .then(({res: response, err}) => {
+              if (err) return;
+              proxy.$$Toast.success("新增成功");
+              state.value.open = false;
+              getList();
+            });
       }
     }
   });
@@ -411,19 +415,20 @@ const submitForm = () => {
 const handleDelete = (row) => {
   const appIds = row?.appId || state.value.ids;
   proxy.$$Dialog
-    .confirm('是否确认删除应用系统编码为"' + appIds + '"的数据项？')
-    .then(() => {
-      let data = {
-        appIds: Array.isArray(appIds) ? appIds.join(",") : appIds,
-      };
-      return proxy.$$api.appconfigmanage.delappConfig(data);
-    })
-    .then(({ res, err }) => {
-      if (err) return;
-      getList();
-      proxy.$$Toast.success("删除成功");
-    })
-    .catch(() => {});
+      .confirm('是否确认删除应用系统编码为"' + appIds + '"的数据项？')
+      .then(() => {
+        let data = {
+          appIds: Array.isArray(appIds) ? appIds.join(",") : appIds,
+        };
+        return proxy.$$api.appconfigmanage.delappConfig(data);
+      })
+      .then(({res, err}) => {
+        if (err) return;
+        getList();
+        proxy.$$Toast.success("删除成功");
+      })
+      .catch(() => {
+      });
 };
 let state = ref({
   // 遮罩层
@@ -431,7 +436,7 @@ let state = ref({
   //投诉来源数据
   complaintSourceTree: [],
   // 省数据
-  provinceOptions:[],
+  provinceOptions: [],
   sourceTree: [],
   // 选中数组
   ids: [],
@@ -531,10 +536,10 @@ let state = ref({
   // 表单校验
   rules: {
     appName: [
-      { required: true, message: "应用系统名称不能为空", trigger: "blur" },
+      {required: true, message: "应用系统名称不能为空", trigger: "blur"},
     ],
     sourceCode: [
-      { required: true, message: "投诉来源不能为空", trigger: "blur" },
+      {required: true, message: "投诉来源不能为空", trigger: "blur"},
     ],
   },
 });
@@ -544,8 +549,7 @@ export default {
   name: "AppConfigManage",
   cusDicts: [
     "start_stop",
-    "complaint_source_tree",
-    "base_province_code",    
+    "base_province_code",
   ],
 };
 </script>

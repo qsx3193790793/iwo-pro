@@ -13,7 +13,7 @@
               style="margin-bottom: 20px"
           />
         </div>
-        <div class="head-container one-screen-fg1 search_tree">
+        <div class="head-container one-screen-fg1 search_tree" style="overflow: scroll;">
           <el-tree
               :data="deptOptions"
               :props="defaultProps"
@@ -35,6 +35,7 @@
                 v-model="queryParams.userName"
                 placeholder="请输入用户账号"
                 clearable
+                maxlength="30"
                 class="queryItem"
                 @keyup.enter.native="handleQuery"
             />
@@ -44,6 +45,7 @@
                 v-model="queryParams.nickName"
                 placeholder="请输入用户名称"
                 clearable
+                maxlength="30"
                 class="queryItem"
                 @keyup.enter.native="handleQuery"
             />
@@ -54,6 +56,7 @@
                 placeholder="请输入手机号码"
                 clearable
                 class="queryItem"
+                maxlength="30"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -88,8 +91,8 @@
             <!-- <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button> -->
             <el-button type="info" plain size="small" @click="handleImport" v-hasPermission="['system:user:import']">导入</el-button>
             <el-button type="warning" plain size="small" @click="handleExport" v-hasPermission="['system:user:export']">导出</el-button>
-            <el-dropdown @command="(command) => handleBatchClick(command)" v-hasPermission="['system:user:edit']" :disabled="multiple">
-              <el-button type="danger">
+            <el-dropdown trigger="click" @command="(command) => handleBatchClick(command)" v-hasPermission="['system:user:edit']" :disabled="multiple">
+              <el-button type="danger" size="small" class="dropdownBtn" :disabled="multiple">
                 批量操作<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
               <el-dropdown-menu slot="dropdown">
@@ -152,7 +155,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="90px">
         <el-row>
           <el-col :span="12">
@@ -206,12 +209,12 @@
         <el-row>
           <el-col :span="24">
             <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password/>
+              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="30" show-password/>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item v-if="form.userId == undefined" label="确认密码" prop="confirmPassword">
-              <el-input v-model="form.confirmPassword" placeholder="请输入确认密码" type="password" maxlength="20" show-password/>
+              <el-input v-model="form.confirmPassword" placeholder="请输入确认密码" type="password" maxlength="30" show-password/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -272,7 +275,7 @@
     </el-dialog>
 
     <!-- 用户导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
+    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body :close-on-click-modal="false">
       <el-upload
           ref="upload"
           :limit="1"
@@ -299,6 +302,45 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
         <el-button @click="upload.open = false">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="authRole.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
+      <div class="one-screen" style="height: 50vh;">
+        <h4 class="main-title one-screen-fg0">基本信息</h4>
+        <el-form class="one-screen-fg0" ref="form" :model="authRole.form" label-width="80px">
+          <el-row>
+            <el-col :span="8" :offset="2">
+              <el-form-item label="用户昵称" prop="nickName">
+                <el-input v-model="authRole.form.nickName" disabled maxlength="30"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8" :offset="2">
+              <el-form-item label="登录账号" prop="userName">
+                <el-input v-model="authRole.form.userName" disabled maxlength="30"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+
+        <h4 class="main-title one-screen-fg0">角色信息</h4>
+        <el-table v-loading="authRole.loading" class="one-screen-fg1" height="100%" :row-key="getRowKey" border @row-click="clickRow" ref="authRoleTable" @selection-change="handleAuthRoleSelectionChange" :data="authRole.roles">
+          <el-table-column label="序号" type="index" align="center"></el-table-column>
+          <el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
+          <el-table-column label="角色编号" align="center" prop="roleId"/>
+          <el-table-column label="角色名称" align="center" prop="roleName"/>
+          <el-table-column label="权限字符" align="center" prop="roleKey"/>
+          <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+            <template slot-scope="scope">
+              <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitAuthRoleForm">确 定</el-button>
+        <el-button @click="authRole.open=!1">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -376,6 +418,21 @@ export default {
         // 上传的地址
         url: `${apiPrefix('system')}/user/importData`,
         // url2: process.env.VUE_APP_BASE_API + "/system/user/importData"
+      },
+      authRole: {
+        open: false,
+        // 遮罩层
+        loading: true,
+        // 分页信息
+        total: 0,
+        pageNum: 1,
+        pageSize: 15,
+        // 选中角色编号
+        roleIds: [],
+        // 角色信息
+        roles: [],
+        // 用户信息
+        form: {}
       },
       // 查询参数
       queryParams: {
@@ -698,7 +755,25 @@ export default {
     },
     /** 分配角色操作 */
     handleAuthRole: function (row) {
-      this.$router.push({name: 'UserAuthRole', params: {userId: row.userId}});
+      if (row.userId) {
+        this.authRole.loading = true;
+        this.$$api.user.getAuthRole({userId: row.userId}).then(({res: response, err}) => {
+          if (err) return this.authRole.loading = false;
+          this.authRole.form = response.user;
+          this.authRole.roles = response.roles;
+          // this.total = this.roles.length;
+          this.authRole.open = !0;
+          this.$nextTick(() => {
+            this.authRole.roles.forEach((v) => {
+              if (v.flag) {
+                this.$refs.authRoleTable.toggleRowSelection(v);
+              }
+            });
+          });
+          this.authRole.loading = false;
+        });
+      }
+      this.$nextTick(() => this.$refs.authRoleTable?.doLayout());
     },
     /** 提交按钮 */
     submitForm: function () {
@@ -773,12 +848,39 @@ export default {
     // 提交上传文件
     submitFileForm() {
       this.$refs.upload.submit();
-    }
+    },
+    //authrole
+    /** 单击选中行数据 */
+    clickRow(row) {
+      this.$refs.authRoleTable.toggleRowSelection(row);
+    },
+    // 多选框选中数据
+    handleAuthRoleSelectionChange(selection) {
+      this.authRole.roleIds = selection.map((item) => item.roleId);
+    },
+    // 保存选中的数据编号
+    getRowKey(row) {
+      return row.roleId;
+    },
+    /** 提交按钮 */
+    submitAuthRoleForm() {
+      const userId = this.authRole.form.userId;
+      const roleIds = this.authRole.roleIds.join(",");
+      this.$$api.user.updateAuthRole({params: {userId: userId, roleIds: roleIds}}).then(({res, err}) => {
+        if (err) return;
+        this.$$Toast.success("授权成功");
+        this.authRole.open = !1;
+      });
+    },
   }
 };
 </script>
 <style scoped lang="scss">
 .queryItem {
   width: 240px;
+}
+
+.dropdownBtn {
+  margin-left: 6px
 }
 </style>

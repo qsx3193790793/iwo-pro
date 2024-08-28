@@ -141,7 +141,7 @@
               <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="30"/>
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <!-- <el-col :span="24">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio
@@ -152,10 +152,10 @@
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="24">
             <el-form-item label="接收者类型">
-              <el-radio-group v-model="form.recipientType">
+              <el-radio-group v-model="form.recipientType"  @change="recipientTypeChange">
                 <!-- <el-radio
                     v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_status')"
                     :key="dict.value"
@@ -163,7 +163,7 @@
                 >{{ dict.label }}
                 </el-radio> -->
                 <el-radio
-                    v-for="dict in [{value:'1', label:'机构'},{value:'2', label:'班组'},{value:'3', label:'个人'}]"
+                    v-for="dict in [{value:'1', label:'机构'},{value:'2', label:'班组'}]"
                     :key="dict.value"
                     :label="dict.value"
                 >{{ dict.label }}
@@ -178,7 +178,7 @@
           </el-col>
           <el-col :span="12" v-if="form.recipientType!=='1'">
             <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
-              <treeselect v-model="form.recipientIds" :multiple="true" :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`"/>
+              <treeselect v-model="form.recipientIds" noOptionsText='该机构下无数据' :multiple="true" :normalizer="normalizer" :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`"/>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -249,7 +249,7 @@ export default {
           {required: true, message: "接收机构不能为空", trigger: "change"}
         ],
         recipientIds: [
-          {required: true, message: `接收班组或人员不能为空`, trigger: "change"}
+          {required: true, message: `接收班组不能为空`, trigger: "change"}
         ]
       }
     };
@@ -265,8 +265,8 @@ export default {
           return '机构'
         case '2':
           return '班组'
-        case '3':
-          return '人员'
+        // case '3':
+        //   return '人员'
         default:
           return '机构'
       }
@@ -283,6 +283,13 @@ export default {
         this.loading = false;
       });
     },
+    recipientTypeChange(val){
+      this.form.deptId= undefined
+      if (val=='2'){
+        this.form.recipientIds= []
+        this.recipientOptions=[]
+      }  
+    },
     //查询机构树
     getDeptTree() {
       this.$$api.user.deptTreeSelect().then(({res, err}) => {
@@ -290,18 +297,31 @@ export default {
         this.deptOptions = res?.list || [];
       });
     },
-    handelDeptIdChange() {
+    handelDeptIdChange({id}) {
       if (this.form.recipientType === '2') {
-        this.$$api.user.deptTreeSelect().then(({res, err}) => {
+        this.$$api.team.getDeptTeamTree({deptId: id}).then(({res, err}) => {
           if (err) return;
-          this.recipientOptions = res?.list || [];
+          this.form.recipientIds= []
+          this.recipientOptions = res?.rows || [];
         });
-      } else if (this.form.recipientType === '3') {
-        this.$$api.user.deptTreeSelect().then(({res, err}) => {
-          if (err) return;
-          this.recipientOptions = res?.list || [];
-        });
+      } 
+      // else if (this.form.recipientType === '3') {
+      //   this.$$api.user.deptTreeSelect().then(({res, err}) => {
+      //     if (err) return;
+      //     this.recipientOptions = res?.list || [];
+      //   });
+      // }
+    },
+    /** 转换班组数据结构 */
+    normalizer(node) {
+      if (node.children && !node.children.length) {
+        delete node.children;
       }
+      return {
+        id: node.teamId,
+        label: node.teamName,
+        children: node.children
+      };
     },
     // 取消按钮
     cancel() {
@@ -316,7 +336,7 @@ export default {
         noticeType: undefined,
         noticeContent: undefined,
         deptId: undefined,
-        status: "0",
+        recipientIds:undefined,
         recipientType: '1'
       };
       this.$refs['form']?.resetFields();
@@ -358,18 +378,19 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.recipientType === "1") {
+          if (this.form.recipientType == "1") {
             this.form.recipientIds = this.form.deptId
           }
           if (this.form.noticeId != undefined) {
-            this.$$api.notice.updateNotice({data: {noticeText: this.$refs.editorRef.getText(), ...this.form}}).then(({res: response, err}) => {
+           console.log('this.$refs.editorRef.getText()',this.$refs.editorRef.getText());
+            this.$$api.notice.updateNotice({data: { ...this.form,noticeText: this.$refs.editorRef.getText()}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.$$api.notice.addNotice({data: {noticeText: this.$refs.editorRef.getText(), ...this.form}}).then(({res: response, err}) => {
+            this.$$api.notice.addNotice({data: {...this.form,noticeText: this.$refs.editorRef.getText()}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("新增成功");
               this.open = false;

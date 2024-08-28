@@ -103,19 +103,19 @@
                         <div class="form-buttons" :class="v.align||'left'">
                           <template v-for="(bv,bi) in v.items">
                             <!-- 更多下拉按钮-->
-                            <el-dropdown v-if="bv.type==='buttonGroup'&&bv.items.filter(bgb=>((!bgb.isShow)||bgb.isShow({vm}))).length" class="public-el-dropdown" trigger="click">
+                            <el-dropdown v-if="bv.type==='buttonGroup'&&bv.items.filter(bgb=>((!bgb.isShow)||bgb.isShow({vm}))).length" v-hasPermission="bv.permission" class="public-el-dropdown" trigger="click">
                               <Button v-bind="bv.attrs">
                                 {{ bv.btnName || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
                               </Button>
                               <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
                                 <div class="inner">
                                   <template v-for="(bgb,bgbi) in bv.items">
-                                    <Button v-if="(!bgb.isShow)||bgb.isShow({vm})" v-bind="bgb.attrs" :loading="bgb.loading" :key="bgbi" :disabled="$$getVariableType(bgb.attrs?.disabled)==='[object Function]'?bgb.attrs.disabled({vm}):bgb.attrs?.disabled" @click="bgb.onClick&&bgb.onClick({vm,item:bgb})">{{ bgb.btnName }}</Button>
+                                    <Button v-if="(!bgb.isShow)||bgb.isShow({vm})" v-hasPermission="bgb.permission" v-bind="bgb.attrs" :loading="bgb.loading" :key="bgbi" :disabled="$$getVariableType(bgb.attrs?.disabled)==='[object Function]'?bgb.attrs.disabled({vm}):bgb.attrs?.disabled" @click="bgb.onClick&&bgb.onClick({vm,item:bgb})">{{ bgb.btnName }}</Button>
                                   </template>
                                 </div>
                               </el-dropdown-menu>
                             </el-dropdown>
-                            <Button v-else-if="bv.type==='button'&&((!bv.isShow)||bv.isShow({vm}))" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
+                            <Button v-else-if="bv.type==='button'&&((!bv.isShow)||bv.isShow({vm}))" v-hasPermission="bv.permission" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
                           </template>
                         </div>
                       </template>
@@ -140,7 +140,7 @@
     <!--按钮区-->
     <div v-if="formConfig.bottomButtons?.items?.length" class="bottomButtons" :class="[formConfig.bottomButtons?.align]">
       <template v-for="(bv,bi) in formConfig.bottomButtons?.items">
-        <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-bind="bv.attrs" :loading="bv.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
+        <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-hasPermission="bv.permission" v-bind="bv.attrs" :loading="bv.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
       </template>
     </div>
   </div>
@@ -207,7 +207,7 @@ export default {
       return this.formStatus === 'view';
     },
     resultItems() {
-      console.log('resultItems action');
+      // console.log('resultItems action');
       const result = [].concat(this.formConfig.items || [], ...(Object.values(this.appendItems || {}) || [])).map((it, index) => {
         it.sort = it.sort ?? index;//排序
         it.name = this.getName(it.name);
@@ -215,7 +215,7 @@ export default {
         (it?.items || []).forEach(iti => iti.key && (iti.key = iti.key.replace(/\./g, '$dot$')));
         return it;
       }).sort((a, b) => a.sort - b.sort);
-      console.log('resultItems', result);
+      // console.log('resultItems', result);
       return result;
       // return this.formConfig.appendItems?.length ? this.formConfig.appendItems : [];
     }

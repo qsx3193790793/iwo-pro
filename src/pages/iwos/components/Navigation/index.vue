@@ -39,8 +39,8 @@ const router = {};
 const {proxy} = getCurrentInstance();
 
 function checkRoute() {
-  console.log('checkRoute', proxy.$route)
-  proxy.$$store.commit('storage/ADD_TAB', {
+
+  const tab = {
     name: proxy.$route.meta.name,
     routeName: proxy.$route.name,
     query: proxy.$route.query,
@@ -49,7 +49,9 @@ function checkRoute() {
     path: proxy.$route.path,
     closable: !0,//是否可关闭
     isActive: !0,//活动状态
-  });
+  };
+  console.log('checkRoute', proxy.$route, tab);
+  proxy.$$store.commit('storage/ADD_TAB', tab);
 }
 
 function handleSelect(name) {

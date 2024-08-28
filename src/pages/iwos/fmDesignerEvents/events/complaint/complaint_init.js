@@ -5,13 +5,21 @@ export const key = 'complaint_init';
 export const label = '投诉单_初始化';
 
 export default async ({vm, item}) => {
+  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
 
   if (!vm.$route.params.workorderId) { // 新建
-
     const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
+
     // 未定位直接pass
     if (!customPositioning) return;
-    const {lanIdInfo, custom, complaintWorksheetId, accNum, redirectInfo,eCProductInfo} = customPositioning;
+    const {lanIdInfo, custom, complaintWorksheetId, accNum, redirectInfo, eCProductInfo} = customPositioning;
+
+    if (lanIdInfo?.lanid) {
+      //申告地
+      vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: lanIdInfo.lanid}}).then(({res, err}) => {
+        vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
+      });
+    }
 
     //查询是否有在途单
     const {res: qpRes} = await vm.$$api.complaint.queryPendingWorkOrderByAssetNum({
@@ -46,7 +54,7 @@ export default async ({vm, item}) => {
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
       // 拉取通用模板
-      vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK ? 'formMock' : 'form']({
+      vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? 'formMock' : 'form']({
         loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
@@ -87,7 +95,6 @@ export default async ({vm, item}) => {
 
       // 归属地信息
       'lanId': lanIdInfo.lanid ?? null,
-      'problemLanId': lanIdInfo.lanid ?? null,
       'phoneLocal': eCProductInfo.phoneLocal ?? null,
 
       //基本客户信息
@@ -124,13 +131,18 @@ export default async ({vm, item}) => {
       headers: {'complaintWorksheetId': vm.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': vm.$route.query.complaintAssetNum ?? ''}
     }),
     // 拉取通用模板
-    vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK ? 'formMock' : 'form']({
+    vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? 'formMock' : 'form']({
       loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
       headers: {'complaintWorksheetId': vm.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': vm.$route.query.complaintAssetNum ?? ''}
     }),
   ]);
   const {res, err} = R1, {res: pbtRes, err: pbtErr} = R2;
   if (res) {
+    //申告地
+    vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: res.lanId}}).then(({res, err}) => {
+      vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
+    });
+
     //当unifiedComplaintCode为空时 获取统一投诉编码
     let unifiedComplaintCode = res.unifiedComplaintCode ?? null;
     if (unifiedComplaintCode) {

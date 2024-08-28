@@ -1,7 +1,7 @@
 <template>
   <div class="PageSearchPanel query-form one-screen-fg0" :class="{noBackground}">
     <FormModel ref="FormModelRef" :formConfig="formConfig"></FormModel>
-    <div v-if="hasExpand&&props.formConfigItems.length > 8" class="expand" @click="isExpand=!isExpand">
+    <div v-if="hasExpand&&props.formConfigItems.length > mainSize+1" class="expand" @click="isExpand=!isExpand">
       <i :class="isExpand?'el-icon-arrow-up':'el-icon-arrow-down'"></i>
     </div>
   </div>
@@ -14,6 +14,7 @@ const {proxy} = getCurrentInstance();
 
 const props = defineProps({
   hasExpand: {type: Boolean, default: true},//是否有收起展开
+  mainSize: {type: Number, default: 7},//首屏数量
   formConfigItems: {type: Array, default: () => []},// 表单配置项目
   labelWidth: {type: String, default: '1rem'},// 表单label宽度
   noBackground: {type: Boolean, default: false},// 表单label宽度
@@ -25,8 +26,8 @@ const FormModelRef = ref();
 
 const formConfig = computed(() => {
   // 展开截取前7个+最后按钮组 保证按钮组在最后一个
-  const items = props.hasExpand && !isExpand.value && props.formConfigItems.length > 7
-      ? ([].concat(props.formConfigItems.slice(0, 7), [props.formConfigItems[props.formConfigItems.length - 1]]))
+  const items = props.hasExpand && !isExpand.value && props.formConfigItems.length > props.mainSize
+      ? ([].concat(props.formConfigItems.slice(0, props.mainSize), [props.formConfigItems[props.formConfigItems.length - 1]]))
       : props.formConfigItems;
   return {
     formName: '',

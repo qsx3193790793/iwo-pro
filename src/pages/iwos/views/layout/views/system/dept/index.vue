@@ -91,6 +91,8 @@
                 <el-button v-hasPermission="['system:dept:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
                 <el-button v-hasPermission="['system:dept:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
                 <el-button v-hasPermission="['system:dept:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
+                <el-button  v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='0'"  type="danger"  size="small" @click="handleEnd(scope.row)">停用</el-button>
+                <el-button  v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='1'" type="primary"  size="small" @click="handleStart(scope.row)">启用</el-button>
               </div>
             </el-dropdown-menu>
           </el-dropdown>
@@ -116,17 +118,17 @@
     </el-table>
 
     <!-- 添加或修改机构对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body @close="handleType=''">
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body @close="handleType='';deptParentId=null">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="left" :disabled="handleType=='detail'">
         <el-row>
-          <el-col :span="24" v-if="form.parentId !== 0">
+          <el-col :span="24" v-if="form.parentId != 0">
             <el-form-item label="上级机构" prop="parentId">
               <treeselect v-model="form.parentId" :disabled="handleType=='detail'" :options="deptOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级机构'" @select="handelDeptIdChange"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="24" v-if="deptParentId == 0">
+          <el-col :span="24" v-if="deptParentId == 0 && form.parentId != 0">
             <el-form-item label="所属省份" prop="provinceCode">
               <el-select v-model="form.provinceCode" :placeholder="handleType=='detail'?'':'请选择所属省份'" style="width:100%" clearable>
                 <el-option
@@ -186,26 +188,6 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0"/>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="机构状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                    v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
-                    :key="dict.value"
-                    :label="dict.value"
-                >{{ dict.label }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
       </el-form>
       <div slot="footer" class="dialog-footer" v-show="handleType!='detail'">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -292,6 +274,44 @@ export default {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
+    // 启用
+    handleStart(row) {
+      this.$$Dialog
+          .confirm('是否确认启用机构名称为"' + row.deptName + '"的数据项？')
+          .then(() => {
+            let data = {
+              deptId: row.deptId,
+              status: 0,
+            }
+            return this.$$api.dept.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("启用成功");
+          })
+          .catch(() => {
+          });
+    },
+    // 停用
+    handleEnd(row) {
+      this.$$Dialog
+          .confirm('是否确认停用机构名称为"' + row.deptName + '"的数据项？停用后机构下的事项目录，事项子目录和目录下的事项一同被停用!')
+          .then(() => {
+            let data = {
+              deptId: row.deptId,
+              status: 1,
+            }
+            return this.$$api.dept.updStatus({data: data});
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            this.getList();
+            this.$$Toast.success("停用成功");
+          })
+          .catch(() => {
+          });
+    },
     handleDetail(row) {
       this.handleType = 'detail'
       this.reset();

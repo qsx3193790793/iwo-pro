@@ -16,9 +16,9 @@
           <template #workorderType="scope">
             {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", scope.row.workorderType) }}
           </template>
-<!--          <template #provinceCode="scope">-->
-<!--            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}-->
-<!--          </template>-->
+          <!--          <template #provinceCode="scope">-->
+          <!--            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}-->
+          <!--          </template>-->
           <template #statusCd="scope">
             {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", scope.row.statusCd) }}
           </template>
@@ -47,6 +47,7 @@ import importDialog from '../import/index.vue'
 import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
+
 const isShowImportDialog = ref(false)
 const uploadConfig = ref({})
 const {proxy} = getCurrentInstance();
@@ -62,21 +63,21 @@ const submitForm = () => {
     }
   });
 };
-const cancelOrder=(row)=>{
+const cancelOrder = (row) => {
   proxy.$$Dialog.confirm(`是否确定取消投诉编号为: ${row.unifiedComplaintCode} 的数据项？`).then(() => {
     console.log(row)
-    let data={
-      workorderId:row.workorderId,
-      statusCd:'C100002',
-      complaintWorksheetId:row.complaintWorksheetId,
+    let data = {
+      workorderId: row.workorderId,
+      statusCd: 'C100002',
+      complaintWorksheetId: row.complaintWorksheetId,
     }
-        return proxy.$$api.complaint.temporaryCancelComplaintWorkOrder({data: data});
-      }).then(({res: response, err}) => {
+    return proxy.$$api.complaint.temporaryCancelComplaintWorkOrder({data: data});
+  }).then(({res: response, err}) => {
         if (err) return
         getList();
         proxy.$$Toast.success("取消成功");
       }
-    )
+  )
 }
 const columns = ref({
   props: [
@@ -149,14 +150,14 @@ const columns = ref({
         key: 'edit',
         autoHidden: ({row}) => row.statusCd === 'C100001',
         event: row => {
-          proxy.$router.push({name: 'ComplaintCreate', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+          proxy.$router.push({name: 'ComplaintCreate', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
         },
       },
       {
         label: '详情',
         key: 'detail',
         event: row => {
-          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
         },
       },
       {
@@ -165,7 +166,7 @@ const columns = ref({
         type: 'danger',
         // 只有新建状态的数据,才能够执行取消操作
         autoHidden: ({row}) => row.statusCd == 'C100001',
-        event:cancelOrder
+        event: cancelOrder
       },
       // {
       //   label: '删除',
@@ -374,6 +375,7 @@ function importFile(title) {
   }
   isShowImportDialog.value = true
 }
+
 const acceptNames = ref(['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'])
 
 async function fileUpload(e) {
@@ -385,6 +387,7 @@ async function fileUpload(e) {
   getList(1)
   isShowImportDialog.value = false
 }
+
 async function onTemplateDownload() {
   if (uploadConfig.value.title === '工信部导入') {
     const {res, err} = await proxy.$$api.complaint.miitTemplate();
@@ -396,7 +399,6 @@ async function onTemplateDownload() {
     proxy.$$downloadFile(URL.createObjectURL(res.blob), '省管局批量导模板');
   }
 }
-
 
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
@@ -427,11 +429,10 @@ onMounted(() => {
 
 <script>
 export default {
-  name: "ComplaintForm",
+  name: "NotSubmitComplaintIndex",
   cusDicts: [
     "yes_no",
     "search_order_type",
-    "complaint_source_tree",
     "base_province_code",
     "jy_complaint_status_cd",
   ],

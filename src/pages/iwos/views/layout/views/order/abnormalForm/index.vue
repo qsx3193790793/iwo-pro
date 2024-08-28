@@ -40,9 +40,9 @@
   const columns = ref({
     props: [
       {
-        name: "投诉编号",
+        name: "集团工单编号",
         width: 240,
-        key: "unifiedComplaintCode",
+        key: "complaintWorksheetId",
       },
       {
         name: "失败次数",
@@ -118,8 +118,8 @@
   //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
   const formConfigItems = ref([
     {
-      name: "投诉编号",
-      key: "unifiedComplaintCode",
+      name: "集团工单编号",
+      key: "complaintWorksheetId", 
       value: "",
       col: 6,
       type: "input",

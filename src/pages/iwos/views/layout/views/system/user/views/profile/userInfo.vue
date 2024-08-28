@@ -74,8 +74,10 @@ export default {
           this.$$api.user.updateUserProfile({data: this.form}).then(({res, err}) => {
             if (err) return;
             this.$$Toast.success("修改成功");
-            this.user.phonenumber = this.form.phonenumber;
-            this.user.email = this.form.email;
+            this.$store.dispatch('user/DO_GET_USERINFO');
+            this.$emit('update');
+            // this.user.phonenumber = this.form.phonenumber;
+            // this.user.email = this.form.email;
           });
         }
       });

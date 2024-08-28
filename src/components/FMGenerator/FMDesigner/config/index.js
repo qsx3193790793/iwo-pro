@@ -48,6 +48,7 @@ export const parseStageFormConfig = (formConfig, json) => {
 
 //json配置转表单渲染 isView预览？
 export const parseFormModel = (json, isView = false) => {
+  if (process.env.NODE_ENV === "development") isView = !1;//开发环境不跳过预览
   return {
     formName: '',
     loading: false,

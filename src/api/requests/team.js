@@ -20,6 +20,8 @@ const apis = {
   updateTeam: {url: `${apiPrefix('system')}/team`, method: 'put'},
   // 删除班组
   delTeam: {url: (args) => `${apiPrefix('system')}/team/${args?.teamId || ''}`, method: 'delete'},
+  // 修改状态（启用/停用）
+  updStatus: {url: `${apiPrefix('system')}/team/teamStatusChange`, method: 'post'},
 };
 
 export default apiGenerator(apis);

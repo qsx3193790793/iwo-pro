@@ -65,6 +65,8 @@ const apis = {
   queryForceCustInfo: {url: `${apiPrefix('web')}/cust/queryForceCustInfo`, method: 'post'},
   //获取H码
   getHNumber: {url: `${apiPrefix('web')}/HNumber/get`, method: 'get'},
+  //申告地
+  getHNumberTree: {url: `${apiPrefix('web')}/HNumber/getTree`, method: 'get'},
   // 获取GIS地址列表
   getGisAddressList: {url: `${apiPrefix('web')}/group/getGisAddressList`, method: 'get'},
   // 工单画像

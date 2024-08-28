@@ -179,14 +179,22 @@ const onSubmit = DialogRef => {
       }
   );
 };
+const getAllcomplaintSource=async ()=>{
+ await proxy.$$api.complaintSource
+          .listComplaintSourceTree()
+          .then(({res: response, err}) => {
+            if (err) return;
+            proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree(response?.list || [], 'sourceName', 'sourceCode', 'children')});
+          });
+}
 
 const formConfig = ref({
   formName: '',
   onLoad: async function ({vm}) {
     console.log('formConfig onLoad...', vm.reqQuery, vm.$attrs)
-
     // 获取详情
-    if (props.pkid) proxy.$$api.template.detail({templateId: props.pkid.templateId, versionId: props.pkid.versionId}).then(({res}) => {
+    if (props.pkid){ 
+      proxy.$$api.template.detail({templateId: props.pkid.templateId, versionId: props.pkid.versionId}).then(({res}) => {
       //以下字段新建后不可再编辑
       vm.expandFormConfigItems.forEach(efci => ['smallType', 'sceneLevelCode', 'productCode'].includes(efci.key) && (efci.isDisable = !0));
       if (res) {
@@ -200,6 +208,12 @@ const formConfig = ref({
           bigType: res?.bigType?.toString(),
           smallType: res?.smallType?.toString(),
         }));
+        // 编辑回显时，通过全量的投诉来源 获取数据进行匹配
+        if(res?.smallType&&res?.smallType?.toString()=='TPL0101'){
+          getAllcomplaintSource()
+        }
+
+         
         getSceneForm(vm);
         if (res?.formTemplateConfig?.formContent) {
           //回显设计器
@@ -211,7 +225,9 @@ const formConfig = ref({
           }
         }
       }
-    });
+      });
+    }
+    
   },
   items: [
     {
@@ -292,7 +308,7 @@ async function listComplaintPhenomenonTree() {
 
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
-  if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid')?.length) return;
+  // if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid')?.length) return;
   const {res, err} = await proxy.$$api.complaintSource.getAskSourceSrlByUid({});
   if (err) return;
   proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree(res?.list || [], 'sourceName', 'sourceCode', 'children')});
@@ -310,8 +326,11 @@ async function listProductTree() {
 watch(() => props.pkid, () => FormModelRef.value?.init());
 
 onBeforeMount(() => {
+  // 只有在新建时获取根据角色分配的投诉来源数据项
+  if(!props.pkid){
+    listComplaintSourceTree();
+  }
   listComplaintPhenomenonTree();
-  listComplaintSourceTree();
   listProductTree();
 });
 

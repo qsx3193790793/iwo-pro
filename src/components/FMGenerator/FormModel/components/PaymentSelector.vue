@@ -14,7 +14,7 @@
         <el-table-column prop="acctId" label="帐户编号" width="120"></el-table-column>
         <el-table-column prop="paymentId" label="付款流水号" width="120"></el-table-column>
         <el-table-column prop="paymentChannelName" label="缴费渠道"></el-table-column>
-        <el-table-column prop="paymentMethod" label="付款方式"></el-table-column>
+        <!--        <el-table-column prop="paymentMethod" label="付款方式"></el-table-column>-->
         <el-table-column prop="amount" label="缴费金额"></el-table-column>
         <el-table-column prop="paymentDate" label="缴费时间" width="160">
           <template #default="{row}">
@@ -120,7 +120,7 @@ function init() {
   if (!customPositioning) return;
   const {lanIdInfo, complaintWorksheetId, accType, accNum} = customPositioning;
   PageSearchPanelRef.value.initFormData({
-    accNum, prodClass: accType, lanId: lanIdInfo.lanid, complaintWorksheetId
+    accNum, prodClass: accType, lanId: lanIdInfo.lanid, complaintWorksheetId, billingCycleId: proxy.$$dayjs().format('YYYYMM')
   });
   getList(1);
 }
