@@ -77,8 +77,8 @@
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
             <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:reason:detailList']">查询</el-button>
-            <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:reason:add']">新增</el-button>
-            <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button>
+            <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:reason:add']">新增</el-button>
+            <el-button type="danger" size="mini" :disabled="!isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button>
           </el-form-item>
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
@@ -258,9 +258,9 @@ export default {
       // 非多个禁用
       multiple: true,
       //是否可以新增
-      isAllowAdd: true,
+      isAllowAdd: false,
       //是否可以删除
-      isAllowDelet: true,
+      isAllowDelet: false,
       // 显示搜索条件
       showSearch: true,
       //SELECT选中数据
@@ -334,28 +334,31 @@ export default {
           {
             name: "状态",
             key: "status",
+            width:"80"
           },
           {
             name: "更新人",
             key: "updatedBy",
+            width:"80"
           },
           {
             name: "更新时间",
             key: "updatedTime",
+            width:'160'
           },
         ],
         options: {
           btns: [
-            {
-              label: "新增",
-              key: "add",
-              type: "success",
-              permission:['config:reason:add'],
-              autoHidden: ({row}) => {
-                return row.level === 3 || row.level === 4
-              },
-              event: this.handleAdd,
-            },
+            // {
+            //   label: "新增",
+            //   key: "add",
+            //   type: "success",
+            //   permission:['config:reason:add'],
+            //   autoHidden: ({row}) => {
+            //     return row.level === 3 || row.level === 4
+            //   },
+            //   event: this.handleAdd,
+            // },
             {
               label: "编辑",
               key: "edit",
@@ -364,6 +367,15 @@ export default {
                 return (row.level === 4 || row.level === 5) && row.isProvinceCustom == 1
               },
               event: this.handleUpdate,
+            },
+            {
+                  label: "详情",
+                  key: "detail",
+                  permission:['config:reason:detailList'],
+                  autoHidden: ({row}) => {
+                    return row.level === 4 || row.level === 5
+                  },
+                  event: this.handleDetail,
             },
             {
               label: "更多",
@@ -394,15 +406,6 @@ export default {
                   permission:['config:reason:update'],
                   autoHidden: this.autoEndHidden,
                   event: this.handleEnd,
-                },
-                {
-                  label: "详情",
-                  key: "detail",
-                  permission:['config:reason:detailList'],
-                  autoHidden: ({row}) => {
-                    return row.level === 4 || row.level === 5
-                  },
-                  event: this.handleDetail,
                 },
               ]
             },
@@ -562,11 +565,13 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
+      console.log('selection',selection);
       this.selectRow = selection[0]
       this.multiple = !selection.length
       this.single = selection.length != 1;
-      this.isAllowAdd = !this.single && selection[0]?.level === 2 ? false : true
-      this.isAllowDelet = !this.single && selection[0]?.level === 3 ? false : true
+      this.isAllowAdd = !this.single && (selection[0]?.level === 3 ||selection[0]?.level === 4 )
+      this.isAllowDelet =!this.single && (selection[0]?.level === 4 ||selection[0]?.level === 5 ) && selection[0].isProvinceCustom==1
+      
     },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {

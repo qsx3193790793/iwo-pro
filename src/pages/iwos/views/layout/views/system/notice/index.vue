@@ -438,7 +438,6 @@ export default {
       this.$$api.notice.getNotice({ noticeId: noticeId }).then(({ res: response, err }) => {
         if (err) return
         this.form = response;
-        delete this.form.status
         if (this.form.recipientType == 1) {
           this.form.deptId = response.recipientIds
         } else if (this.form.recipientType == 2) {
