@@ -37,9 +37,9 @@
         <!--        </div>-->
       </el-form-item>
     </el-form>
-    <div class="login_user">
+    <!-- <div class="login_user">
       <img src="../../../../assets/images/login/logo_user_icon.png" alt="" class="img">
-    </div>
+    </div> -->
     <!--  底部  -->
     <!--    <div class="el-login-footer">-->
     <!--      <span>Copyright © xxxxxxxxxx All Rights Reserved.</span>-->
@@ -144,7 +144,7 @@ export default {
 <style lang="scss" scoped>
 .login {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   height: 100vh;
   background-size: cover;
@@ -180,6 +180,7 @@ export default {
 }
 
 .login-form {
+  margin-right: 200px;
   border-radius: 6px;
   // background: #ffffff;
   width: 430px;

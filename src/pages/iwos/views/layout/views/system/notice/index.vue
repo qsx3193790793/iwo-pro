@@ -88,7 +88,9 @@
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status" width="100">
         <template slot-scope="{row}">
-          {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
+          <el-tag :type="row.status == 0?'':row.status == 1?'warning':'danger'">
+            {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="创建者" align="center" prop="createBy" width="100"/>
@@ -103,7 +105,22 @@
           <el-button
               size="small"
               type="primary"
+              @click="handleRelease(scope.row)"
+              v-if="scope.row.status != 0"
+          >发布
+          </el-button>
+          <el-button
+              size="small"
+              type="danger"
+              @click="handleRetract(scope.row)"
+              v-if="scope.row.status == 0"
+          >撤回
+          </el-button>
+          <el-button
+              size="small"
+              type="primary"
               @click="handleUpdate(scope.row)"
+              v-if="scope.row.status != 0"
               v-hasPermission="['system:notice:edit']"
           >修改
           </el-button>
@@ -157,7 +174,7 @@
             <el-form-item label="接收者类型">
               <el-radio-group v-model="form.recipientType"  @change="recipientTypeChange">
                 <!-- <el-radio
-                    v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_status')"
+                    v-for="dict in $store.getters['dictionaries/GET_DICT']('notice_recipient_type')"
                     :key="dict.value"
                     :label="dict.value"
                 >{{ dict.label }}
@@ -204,6 +221,7 @@ export default {
   name: "NoticeIndex",
   dicts: ['sys_notice_status', 'sys_notice_type'],
   components: {Editor, Treeselect},
+  cusDicts: ['notice_recipient_type'],
   data() {
     return {
       // 遮罩层
@@ -370,6 +388,7 @@ export default {
       this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
         if (err) return
         this.form = response;
+        delete this.form.status
         if(this.form.recipientType==1){
           this.form.deptId = response.recipientIds
         }else if(this.form.recipientType==2){
@@ -378,6 +397,28 @@ export default {
         }
         this.open = true;
         this.title = "修改公告";
+      });
+    },
+    /** 发布按钮 */
+    handleRelease(row){
+      this.$$Dialog.confirm('是否确认发布公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
+        return this.$$api.notice.changeNoticeStatus({ data:{ noticeId: row.noticeId, status:0}});
+      }).then(({res: response, err}) => {
+        if (err) return
+        this.getList();
+        this.$$Toast.success("删除成功");
+      }).catch(() => {
+      });
+    },
+    /** 撤回按钮 */
+    handleRetract(row){
+      this.$$Dialog.confirm('是否确认撤回公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
+        return this.$$api.notice.changeNoticeStatus({ data:{ noticeId: row.noticeId, status:2}});
+      }).then(({res: response, err}) => {
+        if (err) return
+        this.getList();
+        this.$$Toast.success("删除成功");
+      }).catch(() => {
       });
     },
     /** 提交按钮 */
