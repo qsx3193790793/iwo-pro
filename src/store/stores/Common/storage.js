@@ -31,8 +31,10 @@ let store = {
       finder ? Object.assign(finder, {isActive: !0}) : state.activeTabs.push(payload);
     },
     REMOVE_TAB(state, payload) {
+      const finder = state.activeTabs.find(at => at.key === payload);//找到坐标
       const finderIndex = state.activeTabs.findIndex(at => at.key === payload);//找到坐标
       const isActive = state.activeTabs[finderIndex]?.isActive || !1;//记录是否是活动标签
+      this.dispatch('keepAlive/REMOVE_ALIVE_PAGE', [finder.routeName]);
       state.activeTabs.splice(finderIndex, 1);//删除
       if (isActive) {//如果是活动标签 则标记他上一个为活动
         const tab = state.activeTabs[finderIndex - 1];

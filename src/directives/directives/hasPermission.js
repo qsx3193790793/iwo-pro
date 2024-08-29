@@ -2,15 +2,18 @@
  * 权限
  * @param binding.value 权限列表
  * @example
- * <button v-has-permission="['xxx']">按钮</button>
+ * <button v-hasPermission="['xxx']">按钮</button>
  */
 import {store} from '@/store/stores/Common/userInfo'
 
 export default {
-  name: 'hasPermission', mounted(el, binding, vnode) {
+  name: 'hasPermission',
+  inserted(el, binding, vnode) {
     if (!el) return;
-    const permissions = store.state.permissions;
     const {value} = binding;
-    (value || []).filter(v => permissions.includes('*:*:*') || permissions.includes(v)).length === 0 && el.remove();
+    if (!value) return;
+    const permissions = store.state.permissions || [];
+    const res = (value || []).filter(v => permissions.includes('*:*:*') || permissions.includes(v));
+    res.length === 0 && el.remove();
   }
 }

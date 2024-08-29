@@ -94,7 +94,7 @@
     }
     // 时间的传值不传这个字段
     delete queryParams.dataRange;
-    let {res} = await proxy.$$api.complaint.abnormalformList({
+    let {res} = await proxy.$$api.complaintAbnormal.abnormalformList({
       params: Object.assign(
           {
             pageNum: pageInfo.value.pageNum,

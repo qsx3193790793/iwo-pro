@@ -90,6 +90,7 @@ let columns = ref({
       {
         label: '发布',
         key: 'release',
+        permission: ['system:template:release'],
         event: row => {
           select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
           isShowAddDialog.value = !0;
@@ -108,7 +109,7 @@ const list = ref([]);
 const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.pageNum = pageNum;
   const formData = PageSearchPanelRef.value.getFormData();
-  const {res, err} = await proxy.$$api.template.list({params: Object.assign(proxy.$$formatELDateTimeRange(formData.timeRange, ['startTime', 'endTime']), pageInfo.value, formData, {statusName: '待发布'})});
+  const {res, err} = await proxy.$$api.template.list({params: Object.assign(proxy.$$formatELDateTimeRange(formData.timeRange, ['startTime', 'endTime']), pageInfo.value, formData, {statusName: '待发布,上架'})});
   if (err) return;
   pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
   list.value = res?.rows || [];

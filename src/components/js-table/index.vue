@@ -22,7 +22,7 @@
                 <el-button v-if="(item.autoHidden?item.autoHidden(scope):true)" v-hasPermission="item.permission" :key="item.key" size="small" :loading="item.loading" :type="item.type||'primary'" @click="item.event?.(scope.row)">{{ item.label }}</el-button>
               </template>
               <!-- 更多下拉按钮-->
-              <el-dropdown v-else-if="item.children.filter(c=>(c.autoHidden ? c.autoHidden(scope) : true)).length" class="public-el-dropdown" trigger="click">
+              <el-dropdown v-else-if="item.children.filter(c=>(c.autoHidden ? c.autoHidden(scope) : true)).length" v-hasPermission="item.permission" class="public-el-dropdown" trigger="click">
                 <el-button type="primary">
                   {{ item.label || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>

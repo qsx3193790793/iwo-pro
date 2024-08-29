@@ -1,15 +1,15 @@
 <template>
   <div class="one-screen">
     <PageSearchPanel
-      ref="PageSearchPanelRef"
-      :formConfigItems="formConfigItems"
+        ref="PageSearchPanelRef"
+        :formConfigItems="formConfigItems"
     ></PageSearchPanel>
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
         <JsTable
-          :dataSource="state.dataSource"
-          :columns="state.columns"
-          @selectionChange="selectionChange"
+            :dataSource="state.dataSource"
+            :columns="state.columns"
+            @selectionChange="selectionChange"
         >
           <template #ordernumber="scope">
             <!-- @click="Todetail(scope.row)" -->
@@ -21,8 +21,8 @@
             <div>
               {{
                 $store.getters["dictionaries/MATCH_LABEL"](
-                  "base_province_code",
-                  row.provinceCode
+                    "base_province_code",
+                    row.provinceCode
                 )
               }}
             </div>
@@ -31,8 +31,8 @@
             <div>
               {{
                 $store.getters["dictionaries/MATCH_LABEL"](
-                  "search_order_type",
-                  scope.row.workorderType
+                    "search_order_type",
+                    scope.row.workorderType
                 )
               }}
             </div>
@@ -41,8 +41,8 @@
             <div>
               {{
                 $store.getters["dictionaries/MATCH_LABEL"](
-                  "jy_complaint_status_cd",
-                  scope.row.statusCd
+                    "jy_complaint_status_cd",
+                    scope.row.statusCd
                 )
               }}
             </div>
@@ -51,14 +51,14 @@
         </JsTable>
         <div class="pagination-area">
           <el-pagination
-            :current-page.sync="pageInfo.pageNum"
-            :page-size.sync="pageInfo.pageSize"
-            :page-sizes="[15, 30, 40, 50]"
-            background
-            layout=" ->,total, sizes, prev, pager, next, jumper"
-            :total="pageInfo.rowCount"
-            @size-change="getList(1)"
-            @current-change="getList"
+              :current-page.sync="pageInfo.pageNum"
+              :page-size.sync="pageInfo.pageSize"
+              :page-sizes="[15, 30, 40, 50]"
+              background
+              layout=" ->,total, sizes, prev, pager, next, jumper"
+              :total="pageInfo.rowCount"
+              @size-change="getList(1)"
+              @current-change="getList"
           />
         </div>
       </div>
@@ -66,25 +66,25 @@
     <el-empty v-else></el-empty>
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog
-      title="归档"
-      :visible.sync="state.open"
-      width="6rem"
-      append-to-body
+        title="归档"
+        :visible.sync="state.open"
+        width="6rem"
+        append-to-body
     >
       <el-form
-        ref="FormRef"
-        :model="state.form"
-        :rules="state.rules"
-        label-width="auto"
+          ref="FormRef"
+          :model="state.form"
+          :rules="state.rules"
+          label-width="auto"
       >
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="归档意见" prop="auditOpinion">
               <el-input
-                type="textarea"
-                v-model="state.form.auditOpinion"
-                placeholder="请输入"
-                :maxlength="80"
+                  type="textarea"
+                  v-model="state.form.auditOpinion"
+                  placeholder="请输入"
+                  :maxlength="80"
               />
             </el-form-item>
           </el-col>
@@ -100,11 +100,12 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { getCurrentInstance, ref, onBeforeMount } from "vue";
+import {getCurrentInstance, ref, onBeforeMount} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
-import { onMounted } from "vue";
-const { proxy } = getCurrentInstance();
+import {onMounted} from "vue";
+
+const {proxy} = getCurrentInstance();
 let selectData = ref([]);
 const selectionChange = (val) => {
   selectData.value = val;
@@ -126,22 +127,20 @@ const submitForm = () => {
         };
         return item;
       });
-      proxy.$$api.complaint
-        .examineOnFile({
-          data: state.value.form,
-        })
-        .then(({ res, err }) => {
-          if (err) return;
-          proxy.$$Toast.success("归档成功");
-          state.value.open = false;
-          getList(1);
-        });
+      proxy.$$api.complaintOnFile
+          .examineOnFile({
+            data: state.value.form,
+          })
+          .then(({res, err}) => {
+            if (err) return;
+            proxy.$$Toast.success("归档成功");
+            state.value.open = false;
+            getList(1);
+          });
     }
   });
 };
-const cancel = () => {
-  console.log("---77");
-};
+
 let state = ref({
   open: false,
   form: {
@@ -149,7 +148,7 @@ let state = ref({
   },
   rules: {
     auditOpinion: [
-      { required: true, message: "归档意见不能为空", trigger: "blur" },
+      {required: true, message: "归档意见不能为空", trigger: "blur"},
     ],
   },
   columns: {
@@ -192,23 +191,23 @@ let state = ref({
       },
     ],
     options: {
-    btns: [
-      {
-        label: '详情',
-        key: 'detail',
-        event: row => {
-          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+      btns: [
+        {
+          label: '详情',
+          key: 'detail',
+          event: row => {
+            proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+          },
         },
-      },
-    ],
-  },
+      ],
+    },
   },
   dataSource: [],
 });
 const PageSearchPanelRef = ref();
-const pageInfo = ref({ pageNum: 1, pageSize: 15, rowCount: 0 });
+const pageInfo = ref({pageNum: 1, pageSize: 15, rowCount: 0});
 
-const list = ref(Array.from({ length: 88 }).map((v, i) => ({ roleName: i })));
+const list = ref(Array.from({length: 88}).map((v, i) => ({roleName: i})));
 
 // 列表请求
 const getList = async (pageNum = pageInfo.value.pageNum) => {
@@ -217,20 +216,20 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   let dataTime = {};
   // 建单时间的取值
   if (
-    queryParams.provinceOrderCreateTime &&
-    queryParams.provinceOrderCreateTime.length > 0
+      queryParams.provinceOrderCreateTime &&
+      queryParams.provinceOrderCreateTime.length > 0
   ) {
     dataTime.beginTime = dayjs(
-      new Date(queryParams.provinceOrderCreateTime[0]).getTime()
+        new Date(queryParams.provinceOrderCreateTime[0]).getTime()
     ).format("YYYY-MM-DD HH:mm:ss");
     dataTime.endTime = dayjs(
-      new Date(queryParams.provinceOrderCreateTime[1]).getTime()
+        new Date(queryParams.provinceOrderCreateTime[1]).getTime()
     ).format("YYYY-MM-DD HH:mm:ss");
   }
   // 投诉来源的取值
   if (queryParams.askSourceSrl && queryParams.askSourceSrl.length > 1) {
     queryParams.askSourceSrl =
-      queryParams.askSourceSrl[queryParams.askSourceSrl.length - 1];
+        queryParams.askSourceSrl[queryParams.askSourceSrl.length - 1];
   } else {
     if (queryParams.askSourceSrl && queryParams.askSourceSrl.length > 0) {
       queryParams.askSourceSrl = queryParams.askSourceSrl[0];
@@ -241,14 +240,14 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
 
   // 时间的传值不传这个字段
   delete queryParams.provinceOrderCreateTime;
-  let { res } = await proxy.$$api.complaint.listOnFile({
+  let {res} = await proxy.$$api.complaintOnFile.listOnFile({
     params: Object.assign(
-      {
-        pageNum: pageInfo.value.pageNum,
-        pageSize: pageInfo.value.pageSize,
-      },
-      dataTime,
-      queryParams
+        {
+          pageNum: pageInfo.value.pageNum,
+          pageSize: pageInfo.value.pageSize,
+        },
+        dataTime,
+        queryParams
     ),
   });
   if (res) {
@@ -314,7 +313,7 @@ const formConfigItems = ref([
     col: 6,
     type: "select",
     options: () =>
-      proxy.$store.getters["dictionaries/GET_DICT"]("search_order_type"),
+        proxy.$store.getters["dictionaries/GET_DICT"]("search_order_type"),
     isDisable: !1,
     isRequire: !1,
   },
@@ -325,7 +324,7 @@ const formConfigItems = ref([
     col: 6,
     type: "cascader",
     options: () => complaint_source_tree.value,
-    attrs: { props: { checkStrictly: !0 } },
+    attrs: {props: {checkStrictly: !0}},
     isDisable: !1,
     isRequire: !1,
   },
@@ -339,7 +338,7 @@ const formConfigItems = ref([
     isDisable: !1,
     isRequire: !1,
   },
-  { col: 6 },
+  {col: 6},
   {
     type: "buttons",
     verticalAlign: "top",
@@ -349,9 +348,9 @@ const formConfigItems = ref([
       {
         btnName: "重置",
         type: "button",
-        attrs: { type: "" },
+        attrs: {type: ""},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           vm.resetFormData();
           getList(1);
         },
@@ -359,9 +358,9 @@ const formConfigItems = ref([
       {
         btnName: "查询",
         type: "button",
-        attrs: { type: "primary" },
+        attrs: {type: "primary"},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           getList(1);
         },
       },
@@ -377,9 +376,10 @@ const formConfigItems = ref([
       {
         btnName: "归档",
         type: "button",
-        attrs: { type: "success" },
+        attrs: {type: "success"},
         col: 1,
-        onClick({ vm }) {
+        permission: ['order:onFile:action'],
+        onClick({vm}) {
           // 通过异步的方式实现生成后的操作
           setTimeout(() => {
             FormRef.value?.resetFields();
@@ -398,22 +398,24 @@ const formConfigItems = ref([
     ],
   },
 ]);
+
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
   proxy.$$api.complaintSource
-    .listComplaintSourceTree({
-      data: { status: 1 },
-    })
-    .then((res, err) => {
-      if (err) return;
-      complaint_source_tree.value = proxy.$$formatCascaderTree(
-        res?.res.list || [],
-        "sourceName",
-        "sourceCode",
-        "children"
-      );
-    });
+      .listComplaintSourceTree({
+        data: {status: 1},
+      })
+      .then((res, err) => {
+        if (err) return;
+        complaint_source_tree.value = proxy.$$formatCascaderTree(
+            res?.res.list || [],
+            "sourceName",
+            "sourceCode",
+            "children"
+        );
+      });
 }
+
 onMounted(() => {
   getList(1);
 });
@@ -425,7 +427,7 @@ onBeforeMount(() => {
 <script>
 export default {
   name: "ComplaintForm",
-  cusDicts: ["search_order_type", "base_province_code",'jy_complaint_status_cd'],
+  cusDicts: ["search_order_type", "base_province_code", 'jy_complaint_status_cd'],
 };
 </script>
 <style lang="scss" scoped></style>

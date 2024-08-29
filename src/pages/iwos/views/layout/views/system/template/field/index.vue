@@ -83,6 +83,7 @@ let columns = ref({
         label: '修改',
         key: 'edit',
         autoHidden: ({row}) => row.isProvinceCustom == '1',
+        permission: ['system:template:fields:edit'],
         event: row => {
           console.log(row);
           // 打开编辑弹窗
@@ -94,6 +95,7 @@ let columns = ref({
         label: '删除',
         key: 'del',
         type: 'danger',
+        permission: ['system:template:fields:delete'],
         autoHidden: ({row}) => row.isProvinceCustom == '1',
         event: handleDel,
       },
@@ -139,7 +141,7 @@ const formConfigItems = ref([
   {name: '字段标题', key: 'title', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '字段名称', key: 'name', value: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {
-    type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, items: [].concat(
+    type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, permission: ['system:template:fields:add'], items: [].concat(
         [
           {
             btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
@@ -162,7 +164,7 @@ const formConfigItems = ref([
             proxy.$emit('onBatchQuote', selectionList.value);
           }
         }] : [{
-          btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
+          btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1, permission: ['system:template:fields:add'],
           onClick({vm}) {
             // 打开弹窗
             select_pkid.value = null;

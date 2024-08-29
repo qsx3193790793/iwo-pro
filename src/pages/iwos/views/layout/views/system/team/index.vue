@@ -57,7 +57,7 @@
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
-            <el-button type="primary" size="mini" @click="handleQuery">搜索</el-button>
+            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['system:team:query']">搜索</el-button>
             <el-button type="success" size="mini" @click="handleAdd" v-hasPermission="['system:team:add']">新增</el-button>
             <el-button type="info" plain size="small" @click="toggleExpandAll">展开/折叠</el-button>
 

@@ -63,7 +63,7 @@
             >
             <el-button
                 type="primary"
-
+                v-hasPermission="['system:role:query']"
                 size="small"
                 @click="handleQuery"
             >搜索
@@ -100,8 +100,8 @@
                 批量操作<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="begin">批量启用</el-dropdown-item>
-                <el-dropdown-item command="end">批量停用</el-dropdown-item>
+                <el-dropdown-item command="begin" v-hasPermission="['system:role:edit']">批量启用</el-dropdown-item>
+                <el-dropdown-item command="end" v-hasPermission="['system:role:edit']">批量停用</el-dropdown-item>
                 <el-dropdown-item command="delete" v-hasPermission="['system:role:remove']">批量删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>

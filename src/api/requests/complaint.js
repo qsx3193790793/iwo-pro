@@ -8,10 +8,9 @@ const apis = {
   temporarySaveComplaintWorkOrder: {url: `${apiPrefix("web")}/complaintWorkOrder/temporarySaveComplaintWorkOrder`},
   // 办结
   temporaryCompletedComplaintWorkOrder: {url: `${apiPrefix("srv")}/completedWorkOrder`},
-  
+
   // 取消
   temporaryCancelComplaintWorkOrder: {url: `${apiPrefix("web")}/createOrder/updStatusCd`, method: "put"},
-
   // 查询流程定义ID
   getProcessDefinitionId: {url: `${apiPrefix("web")}/complaintWorkOrder/getProcessDefinitionId`, method: "get"},
   // 详情
@@ -22,33 +21,10 @@ const apis = {
   listComplaint: {url: `${apiPrefix("web")}/createOrder/list`, method: "get"},
   //我的待办-待提交投诉单
   waitCommitList: {url: `${apiPrefix("web")}/createOrder/waitCommitList`, method: "get"},
-
-  // -------------------------------------------异常单--------------------------
-  abnormalformList: {url: `${apiPrefix("web")}/complaintWorkOrder/queryOrderReceiveFailList`, method: "get"},
-
-  // -------------------------------------------归档--------------------------
-  // 归档列表
-  listOnFile: {url: `${apiPrefix("web")}/workOrder/archiveList`, method: "get"},
-  // 归档审批
-  examineOnFile: {url: `${apiPrefix("web")}/workOrder/groupOrderArchives`, method: "post"},
-
   // 获取集团工单编号
   getComplaintWorksheetId: {url: `${apiPrefix("web")}/workOrder/getComplaintWorksheetId`, method: "get"},
   //一键信息获取
   diagnosisHandleInfo: {url: `${apiPrefix('web')}/diagnosis/handleInfo`, method: 'post'},
-  // -------------------------------------------归档策略--------------------------
-  // 分页查询归档配置
-  listOnFileStrategy: {url: `${apiPrefix("config")}/archiveRule/findArchiveRulePage`, method: "get"},
-  // 新增归档配置
-  addOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/save`, method: 'post'},
-  //根据主键Id查询归档配置
-  detailOnFileStrategy: {url: (args) => `${apiPrefix('config')}/archiveRule/findArchiveRuleById/${args?.archiveRuleId || ''}`, method: 'get'},
-  // 批量删除归档配置
-  delteOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/deleteByIds`, method: 'post'},
-  //修改归档配置根据归档配置主键Id
-  updataOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/update`, method: 'post'},
-  //修改启用、停用状态
-  statusOnFileStrategy: {url: `${apiPrefix('config')}/archiveRule/updateStatus`, method: 'post'},
   //工信部导入
   miitImport: {url: `${apiPrefix('web')}/importWorkOrder/miit`, method: 'post'},
   //省管局导入
@@ -57,6 +33,20 @@ const apis = {
   miitTemplate: {url: `${apiPrefix('web')}/importWorkOrder/miitTemplate`, method: 'post', responseType: 'blob'},
   //省管局模板下载
   provinceAuthorityTemplate: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthorityTemplate`, method: 'post', responseType: 'blob'},
+
+  //投诉现象
+  queryPhenomPullList: {url: `${apiPrefix("web")}/phenom/web/queryPhenomPullList`, method: "get"},
+  //投诉原因
+  queryReasonPullList: {url: `${apiPrefix("web")}/phenom/web/queryReasonPullList`, method: "get"},
+  //产品
+  channelTree: {url: `${apiPrefix("web")}/tChannel/channelTree`, method: "get"},
+
+  // 查询模板现象类表单
+  formPhenomenon: {url: (args) => `${apiPrefix('web')}/template/form/phenomenon/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
+  // 查询模板来源类表单
+  formSource: {url: (args) => `${apiPrefix('web')}/template/form/source/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
+  // 查询模板通用类表单
+  formCommon: {url: (args) => `${apiPrefix('web')}/template/form/common/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
 };
 
 export default apiGenerator(apis);

@@ -11,10 +11,11 @@ export default {
   install(Vue, options) {
     directives.forEach(directive => {
       Vue.directive(directive.name, {
-        beforeMount: directive.beforeMount,
-        mounted: directive.mounted,
-        updated: directive.updated,
-        beforeUnmount: directive.beforeUnmount
+        bind: directive.bind,
+        inserted: directive.inserted,
+        update: directive.update,
+        componentUpdated: directive.componentUpdated,
+        unbind: directive.unbind,
       })
     });
   }

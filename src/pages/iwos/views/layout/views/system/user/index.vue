@@ -91,13 +91,13 @@
             <!-- <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button> -->
             <el-button type="info" plain size="small" @click="handleImport" v-hasPermission="['system:user:import']">导入</el-button>
             <el-button type="warning" plain size="small" @click="handleExport" v-hasPermission="['system:user:export']">导出</el-button>
-            <el-dropdown trigger="click" @command="(command) => handleBatchClick(command)" v-hasPermission="['system:user:edit']" :disabled="multiple">
+            <el-dropdown trigger="click" @command="(command) => handleBatchClick(command)" v-hasPermission="['system:user:edit','system:user:remove']" :disabled="multiple">
               <el-button type="danger" size="small" class="dropdownBtn" :disabled="multiple">
                 批量操作<i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="begin">批量启用</el-dropdown-item>
-                <el-dropdown-item command="end">批量停用</el-dropdown-item>
+                <el-dropdown-item command="begin" v-hasPermission="['system:user:edit']">批量启用</el-dropdown-item>
+                <el-dropdown-item command="end" v-hasPermission="['system:user:edit']">批量停用</el-dropdown-item>
                 <el-dropdown-item command="delete" v-hasPermission="['system:user:remove']">批量删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -136,13 +136,13 @@
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
               <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['system:user:edit']">修改</el-button>
               <el-button size="small" type="danger" @click="handleDelete(scope.row)" v-hasPermission="['system:user:remove']">删除</el-button>
-              <el-dropdown v-hasPermission="['system:user:resetPwd', 'system:user:edit']" class="public-el-dropdown" trigger="click">
+              <el-dropdown v-hasPermission="['system:user:edit']" class="public-el-dropdown" trigger="click">
                 <el-button type="primary">
                   更多<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
                   <div class="inner">
-                    <el-button v-hasPermission="['system:user:resetPwd']" type="primary" size="small" @click="handleResetPwd(scope.row)">重置密码</el-button>
+                    <el-button v-hasPermission="['system:user:edit']" type="primary" size="small" @click="handleResetPwd(scope.row)">重置密码</el-button>
                     <el-button v-hasPermission="['system:user:edit']" type="primary" size="small" @click="handleAuthRole(scope.row)">分配角色</el-button>
                   </div>
                 </el-dropdown-menu>

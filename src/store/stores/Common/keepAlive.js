@@ -13,17 +13,13 @@ let store = {
   },
   actions: {
     ADD_ALIVE_PAGE({state, commit}, route) {
-      console.log('ADD_ALIVE_PAGE', route)
       const hasAlivePage = !!state.alivePage.find(ap => ap.name === route.name);
       if (!hasAlivePage) {
         commit('SET_ALIVE_PAGE', [].concat(state.alivePage, [{name: route.name, pageLevel: route.meta.pageLevel || -1}]));
-        console.log('ADD_ALIVE_PAGE', state.alivePage)
       }
     },
-    REMOVE_ALIVE_PAGE({state, commit}, route) {
-      console.log('REMOVE_ALIVE_PAGE', route)
-      commit('SET_ALIVE_PAGE', state.alivePage.filter(ap => ap.pageLevel < route.meta.pageLevel));
-      console.log('REMOVE_ALIVE_PAGE', state.alivePage)
+    REMOVE_ALIVE_PAGE({state, commit}, names) {
+      commit('SET_ALIVE_PAGE', state.alivePage.filter(ap => !names.includes(ap.name)));
     }
   },
   getters: {

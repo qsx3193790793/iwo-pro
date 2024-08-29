@@ -10,11 +10,11 @@ export const label = '投诉单_投诉来源变化拉取模板';
 export default async ({vm, value = null}) => {
   const askSourceSrlChain = vm.formData.askSourceSrlChain?.[vm.formData.askSourceSrlChain.length - 1];
 
-  //必须要有现象 通过 (工单类型:大类:小类:来源) 进行查询场景模板
+  //必须要有来源 通过 (工单类型:大类:小类:来源) 进行查询场景模板
   if (askSourceSrlChain) {
     const sceneCode = ['BUS0001', 'TPL0001', 'TPL0101', askSourceSrlChain].filter(v => !!v).join(':');
     // const formModel = parseFormModel(testT);
-    const {res, err} = await vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? 'formMock' : 'form']({
+    const {res, err} = await (process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? vm.$$api.template.formMock : vm.$$api.complaint.formSource)({
       loading: false, sceneCode, bigType: 'TPL0001', workorderType: 'BUS0001',
       headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
     });

@@ -331,6 +331,7 @@ const formConfigItems = ref([
         type: "button",
         attrs: {type: "success"},
         col: 1,
+        permission: ['order:complaint:list'],
         onClick({vm}) {
           console.time('open');
           proxy.$router.push({name: 'ComplaintCreate'})
@@ -340,11 +341,13 @@ const formConfigItems = ref([
         btnName: "导入",
         type: "buttonGroup",
         attrs: {type: "warning"},
+        permission: ['order:complaint:import:sgj'],
         items: [
           // {
           //   btnName: "工信部",
           //   type: "button",
           //   attrs: {type: "primary"},
+          // permission: ['order:complaint:import:gxb'],
           //   onClick({vm}) {
           //     importFile('工信部导入')
           //   },
@@ -354,6 +357,7 @@ const formConfigItems = ref([
             type: "button",
             attrs: {type: "primary"},
             col: 1,
+            permission: ['order:complaint:import:sgj'],
             onClick({vm}) {
               importFile('省管局导入')
             },

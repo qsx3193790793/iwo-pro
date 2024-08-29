@@ -75,14 +75,14 @@
       </el-form-item>
       <el-form-item>
         <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery">搜索</el-button>
+        <el-button type="primary"  size="small" @click="handleQuery"  v-hasPermission="['monitor:operlog:query']">搜索</el-button>
         <el-button
             type="danger"
             plain
             size="small"
             :disabled="multiple"
             @click="handleDelete"
-            v-hasPermission="['system:operlog:remove']"
+           v-hasPermission="['monitor:operlog:remove']"
         >删除
         </el-button>
         <el-button
@@ -90,7 +90,7 @@
             plain
             size="small"
             @click="handleClean"
-            v-hasPermission="['system:operlog:remove']"
+            v-hasPermission="['monitor:operlog:query']"
         >清空
         </el-button>
         <el-button
@@ -98,7 +98,6 @@
             plain
             size="small"
             @click="handleExport"
-            v-hasPermission="['system:operlog:export']"
         >导出
         </el-button>
       </el-form-item>
@@ -149,7 +148,7 @@
               size="small"
               type="primary"
               @click="handleView(scope.row,scope.index)"
-              v-hasPermission="['system:operlog:query']"
+              v-hasPermission="['monitor:operlog:query']"
           >详细
           </el-button>
         </template>

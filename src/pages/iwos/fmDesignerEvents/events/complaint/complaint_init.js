@@ -54,7 +54,7 @@ export default async ({vm, item}) => {
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
       // 拉取通用模板
-      vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? 'formMock' : 'form']({
+      (process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? vm.$$api.template.formMock : vm.$$api.complaint.formCommon)({
         loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
@@ -131,7 +131,7 @@ export default async ({vm, item}) => {
       headers: {'complaintWorksheetId': vm.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': vm.$route.query.complaintAssetNum ?? ''}
     }),
     // 拉取通用模板
-    vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? 'formMock' : 'form']({
+    (process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? vm.$$api.template.formMock : vm.$$api.complaint.formCommon)({
       loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
       headers: {'complaintWorksheetId': vm.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': vm.$route.query.complaintAssetNum ?? ''}
     }),

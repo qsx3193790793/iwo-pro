@@ -36,7 +36,7 @@ export default async ({vm, value = null}) => {
   if (complaintPhenomenonLevel) {
     const sceneCode = ['BUS0001', 'TPL0001', 'TPL0100', complaintPhenomenonLevel, productLevel].filter(v => !!v).join(':');
     // const formModel = parseFormModel(testT);
-    const {res, err} = await vm.$$api.template[process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? 'formMock' : 'form']({
+    const {res, err} = await (process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? vm.$$api.template.formMock : vm.$$api.complaint.formPhenomenon)({
       loading: false, sceneCode, bigType: 'TPL0001', workorderType: 'BUS0001',
       headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': vm.formData.complaintAssetNum ?? ''}
     });

@@ -4,20 +4,23 @@
     <template v-if="list.length">
       <div class="table-panel one-screen-fg1">
         <JsTable :dataSource="list" :columns="columns">
-          <!--          <template #unifiedComplaintCode="scope">-->
-          <!--            &lt;!&ndash; @click="Todetail(scope.row)" &ndash;&gt;-->
-          <!--            <div style="color: rgb(50, 151, 255); cursor: pointer">-->
-          <!--              {{ scope.row.unifiedComplaintCode }}-->
-          <!--            </div>-->
-          <!--          </template>-->
-          <template #workorderType="scope">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", scope.row.workorderType) }}
+          <template #workorderType="{row}">
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", row.workorderType) }}
           </template>
-          <template #provinceCode="scope">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}
+          <template #provinceCode="{row}">
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", row.provinceCode) }}
           </template>
-          <template #statusCd="scope">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", scope.row.statusCd) }}
+          <template #statusCd="{row}">
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", row.statusCd) }}
+          </template>
+          <template #complaintPhenomenonLevelChain="{row}">
+            {{ [row.complaintPhenomenonLevel1, row.complaintPhenomenonLevel2, row.complaintPhenomenonLevel3].filter(v => !!v).join(' / ') }}
+          </template>
+          <template #productLevelChain="{row}">
+            {{ [row.productLevel1, row.productLevel2].filter(v => !!v).join(' / ') }}
+          </template>
+          <template #workorderStrictest="{row}">
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("yes_no", row.workorderStrictest) }}
           </template>
         </JsTable>
         <div class="pagination-area">
@@ -44,7 +47,6 @@
 import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
-import apiPrefix from "@/api/apiPrefix.js";
 
 const {proxy} = getCurrentInstance();
 
@@ -59,66 +61,23 @@ const submitForm = () => {
 
 const columns = ref({
   props: [
-    {
-      name: "投诉编号",
-      width: 240,
-      key: "unifiedComplaintCode",
-    },
-    {
-      name: "申诉工单编号",
-      width: 200,
-      key: "appealWorksheetId",
-    },
-    {
-      name: "客户名称",
-      key: "appealUserName",
-    },
-    {
-      name: "来电号码",
-      width: 120,
-      key: "callerNo",
-    },
-    {
-      name: "业务号码",
-      width: 120,
-      key: "complaintAssetNum",
-    },
-    {
-      name: "省",
-      key: "provinceCode",
-    },
-    {
-      name: "投诉来源",
-      key: "askSourceSrlName",
-    },
-    {
-      name: "工单类型",
-      key: "workorderType",
-    },
-    {
-      name: "工单状态",
-      key: "statusCd",
-    },
-    // {
-    //   name: "派单单位",
-    //   key: "orderType",
-    // },
-    {
-      name: "创建人",
-      key: "createdBy",
-    },
-    {
-      name: "创建时间",
-      width: 160,
-      key: "createdTime",
-      el: "format",
-      format: "default",
-    },
-    // {
-    //   name: '状态',
-    //   key: 'state',
-    //   format: 'default',
-    // },
+    {name: "工单类型", width: 80, key: "workorderType",},
+    {name: "业务号码", width: 120, key: "complaintAssetNum",},
+    {name: "号码归属地", width: 120, key: "phoneLocal",},
+    {name: "客户名称", width: 100, key: "appealUserName",},
+    {name: "投诉来源", width: 200, key: "askSourceSrlName",},
+    {name: "投诉现象", width: 300, key: "complaintPhenomenonLevelChain"},
+    {name: "产品", width: 200, key: "productLevelChain"},
+    {name: "省内建单时间", width: 160, key: "provinceOrderCreateTime", el: "format", format: "default",},
+    {name: "受理工号", width: 100, key: "createStaff",},
+    {name: "是否市场最严工单", width: 130, key: "workorderStrictest"},
+    {name: "责任管控渠道", width: 120, key: "controlChannel"},
+    {name: "30天重复投诉次数", width: 180, key: "recmplntTimes30days",},
+    {name: "30天越级投诉次数", width: 180, key: "croscmplntTimes30days",},
+    {name: "客户升级投诉倾向", width: 180, key: "upgradeTrend",},
+    {name: "工单超时状态", width: 120, key: "timeoutFlag",},
+    {name: "工单要求时限", width: 120, key: "demandTimeLimit"},
+    {name: "工单流转状态", width: 120, key: "nodeCode"},
   ],
   options: {
     btns: [
@@ -155,32 +114,22 @@ const list = ref([]);
 const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.pageNum = pageNum;
   let queryParams = PageSearchPanelRef.value.getFormData();
-  let dataTime = {};
-  // 建单时间的取值
-  if (queryParams.provinceOrderCreateTime && queryParams.provinceOrderCreateTime.length > 0) {
-    dataTime.beginTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[0]).format("YYYY-MM-DD HH:mm:ss");
-    dataTime.endTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[1]).format("YYYY-MM-DD HH:mm:ss");
-  }
-  // 投诉来源的取值
-  if (queryParams.askSourceSrl && queryParams.askSourceSrl?.length > 1) {
-    queryParams.askSourceSrl = queryParams.askSourceSrl[1];
-  } else {
-    if (queryParams.askSourceSrl?.length > 0) {
-      queryParams.askSourceSrl = queryParams.askSourceSrl[0];
-    } else {
-      queryParams.askSourceSrl = [];
-    }
-  }
   // 时间的传值不传这个字段
   delete queryParams.provinceOrderCreateTime;
   let {res} = await proxy.$$api.complaint.listComplaint({
     params: Object.assign(
+        queryParams,
+        proxy.$$formatELDateTimeRange(queryParams.provinceOrderCreateTime, ['beginTime', 'endTime']),
         {
           pageNum: pageInfo.value.pageNum,
           pageSize: pageInfo.value.pageSize,
+          askSourceSrl: queryParams.askSourceSrl?.[queryParams.askSourceSrl?.length - 1],
+          complaintPhenomenonLevel1Code: queryParams.complaintPhenomenonLevelChain?.[0] ?? null,
+          complaintPhenomenonLevel2Code: queryParams.complaintPhenomenonLevelChain?.[1] ?? null,
+          complaintPhenomenonLevel3Code: queryParams.complaintPhenomenonLevelChain?.[2] ?? null,
+          productLevel1Code: queryParams.productLevelChain?.[0] ?? null,
+          productLevel2Code: queryParams.productLevelChain?.[1] ?? null,
         },
-        dataTime,
-        queryParams
     ),
   });
   if (res) {
@@ -212,8 +161,8 @@ const formConfigItems = ref([
   {name: "工单流转状态", key: "nodeCode", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
 
   // 展开
-  {name: "投诉现象", key: "complaintPhenomenonLevel", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
-  {name: "产品", key: "productLevel", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_product_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
+  {name: "投诉现象", key: "complaintPhenomenonLevelChain", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
+  {name: "产品", key: "productLevelChain", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_product_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
   {name: "申诉日期", key: "provinceOrderCreateTime", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
   {name: "申诉工单编号", key: "appealWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "号码归属地", key: "phoneLocal", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},

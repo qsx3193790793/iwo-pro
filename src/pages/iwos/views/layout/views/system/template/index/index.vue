@@ -137,6 +137,7 @@ let columns = ref({
           label: '编辑',
           autoHidden: ({row}) => !['待审核', '待发布', '上架'].includes(row.statusName),
           key: 'edit',
+          permission: ['system:template:detail'],
           event: (row) => {
             select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
             isShowAddDialog.value = !0;
@@ -145,6 +146,7 @@ let columns = ref({
           {
             label: '升级',
             autoHidden: ({row}) => row.statusName === '上架',
+            permission: ['system:template:detail'],
             key: 'copy',
             event: (row) => {
               select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
@@ -162,10 +164,12 @@ let columns = ref({
           {
             label: '更多',
             key: 'more',
+            permission: ['system:template:apply', 'system:template:approval', 'system:template:soldOut', 'system:template:release', 'system:template:update', 'system:template:delete'],
             children: [
               {
                 label: '提交审核',
                 key: 'audit', type: 'warning',
+                permission: ['system:template:apply'],
                 autoHidden: ({row}) => row.statusName === '草稿',
                 event: (row) => {
                   proxy.$$Dialog.confirm('确认提交审核吗？', '提示').then(async () => {
@@ -179,6 +183,7 @@ let columns = ref({
               {
                 label: '审核',
                 key: 'audit', type: 'warning',
+                permission: ['system:template:approval'],
                 autoHidden: ({row}) => row.statusName === '待审核',
                 event: (row) => {
                   select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
@@ -188,6 +193,7 @@ let columns = ref({
               {
                 label: '下架',
                 key: 'down', type: 'warning',
+                permission: ['system:template:soldOut'],
                 autoHidden: ({row}) => row.statusName === '上架',
                 event: (row) => {
                   proxy.$$Dialog.confirm('确认下架吗？', '提示').then(async () => {
@@ -201,6 +207,7 @@ let columns = ref({
               {
                 label: '发布',
                 key: 'release', type: 'warning',
+                permission: ['system:template:release'],
                 autoHidden: ({row}) => row.statusName === '待发布',
                 event: (row) => {
                   select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
@@ -211,6 +218,7 @@ let columns = ref({
                 label: '设计',
                 key: 'designer',
                 type: 'success',
+                permission: ['system:template:update'],
                 autoHidden: ({row}) => ['草稿', '驳回', '回退', '下架'].includes(row.statusName),
                 event: row => {
                   console.log(row);
@@ -221,6 +229,7 @@ let columns = ref({
                 label: '删除',
                 key: 'del',
                 type: 'danger',
+                permission: ['system:template:delete'],
                 autoHidden: ({row}) => ['草稿', '驳回', '回退', '下架'].includes(row.statusName),
                 event: handleDel,
               },
@@ -275,7 +284,7 @@ const formConfigItems = ref([
   {name: '省', key: 'provinceCode', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('base_province_code'), isDisable: !1, isRequire: !1},
   {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
   {
-    type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, items: [
+    type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, permission: ['system:template:create'], items: [
       {
         btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
         onClick({vm}) {
@@ -297,6 +306,7 @@ const formConfigItems = ref([
       // },
       {
         btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
+        permission: ['system:template:create'],
         isShow() {
           return !props.isQuote
         },

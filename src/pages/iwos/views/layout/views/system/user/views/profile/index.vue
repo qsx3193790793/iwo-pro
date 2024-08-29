@@ -6,7 +6,8 @@
           <div slot="header" class="main-title noMb">个人信息</div>
           <div>
             <div class="text-center" style="margin-bottom: 0.16rem;">
-              <userAvatar/>
+              <!--              <userAvatar/>-->
+              <span class="avatar" :title="user.userName">{{ user.userName }}</span>
             </div>
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
@@ -55,13 +56,13 @@
 </template>
 
 <script>
-import userAvatar from "./userAvatar";
+// import userAvatar from "./userAvatar";
 import userInfo from "./userInfo";
 import resetPwd from "./resetPwd";
 
 export default {
   name: "UserProfile",
-  components: {userAvatar, userInfo, resetPwd},
+  components: {userInfo, resetPwd},
   data() {
     return {
       user: {},
@@ -89,5 +90,19 @@ export default {
 <style scoped lang="scss">
 .text-center {
   text-align: center
+}
+
+.avatar {
+  display: inline-block;
+  width: 110px;
+  height: 110px;
+  line-height: 110px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: rgba($main-color, 0.75);
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 16px;
 }
 </style>

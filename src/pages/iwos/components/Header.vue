@@ -13,7 +13,7 @@
       <el-popover popper-class="user-panel-popover" placement="bottom" trigger="click">
         <template #reference>
           <div class="avatar">
-            <i class="el-icon-user"></i>
+            <!--            <i class="el-icon-user"></i>-->
             <span>{{ $$store.getters['user/GET_USER_INFO']?.nickName || '用户名' }}</span>
             <i class="el-icon-arrow-down"></i>
           </div>

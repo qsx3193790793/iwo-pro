@@ -15,12 +15,12 @@
       <el-button type="primary" plain @click="DialogRef?.handleClose()">返回</el-button>
       <el-button v-if="type==='编辑'" type="primary" @click="onSubmit(DialogRef)">保存</el-button>
       <template v-if="type==='发布'">
-        <el-button type="success" @click="onRelease(DialogRef)">发布</el-button>
-        <el-button type="danger" @click="onRollback(DialogRef)">回退</el-button>
+        <el-button type="success" v-hasPermission="['system:template:release']" @click="onRelease(DialogRef)">发布</el-button>
+        <el-button type="danger" v-hasPermission="['system:template:rollback']" @click="onRollback(DialogRef)">回退</el-button>
       </template>
       <template v-if="type==='审核'">
-        <el-button type="success" @click="onAuditPass(DialogRef)">通过</el-button>
-        <el-button type="danger" @click="onAuditBack(DialogRef)">驳回</el-button>
+        <el-button type="success" v-hasPermission="['system:template:approval']" @click="onAuditPass(DialogRef)">通过</el-button>
+        <el-button type="danger" v-hasPermission="['system:template:reject']" @click="onAuditBack(DialogRef)">驳回</el-button>
       </template>
     </template>
   </MDialog>
@@ -179,13 +179,13 @@ const onSubmit = DialogRef => {
       }
   );
 };
-const getAllcomplaintSource=async ()=>{
- await proxy.$$api.complaintSource
-          .listComplaintSourceTree()
-          .then(({res: response, err}) => {
-            if (err) return;
-            proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree(response?.list || [], 'sourceName', 'sourceCode', 'children')});
-          });
+const getAllcomplaintSource = async () => {
+  await proxy.$$api.complaintSource
+      .listComplaintSourceTree()
+      .then(({res: response, err}) => {
+        if (err) return;
+        proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree(response?.list || [], 'sourceName', 'sourceCode', 'children')});
+      });
 }
 
 const formConfig = ref({
@@ -193,41 +193,40 @@ const formConfig = ref({
   onLoad: async function ({vm}) {
     console.log('formConfig onLoad...', vm.reqQuery, vm.$attrs)
     // 获取详情
-    if (props.pkid){ 
+    if (props.pkid) {
       proxy.$$api.template.detail({templateId: props.pkid.templateId, versionId: props.pkid.versionId}).then(({res}) => {
-      //以下字段新建后不可再编辑
-      vm.expandFormConfigItems.forEach(efci => ['smallType', 'sceneLevelCode', 'productCode'].includes(efci.key) && (efci.isDisable = !0));
-      if (res) {
-        vm.initFormData(Object.assign(res || {}, {
-          fieldList: res.fieldConfigs || [],
-          formId: res?.formTemplateConfig?.formId,
-          formName: res?.formTemplateConfig?.formName,
-          sceneLevelCode: [res?.sceneLevel1Code, res?.sceneLevel2Code, res?.sceneLevel3Code].filter(r => !!r),//回显级联
-          productCode: [res?.productCode].filter(r => !!r),//回显级联
-          workorderType: res?.workorderType?.toString(),
-          bigType: res?.bigType?.toString(),
-          smallType: res?.smallType?.toString(),
-        }));
-        // 编辑回显时，通过全量的投诉来源 获取数据进行匹配
-        if(res?.smallType&&res?.smallType?.toString()=='TPL0101'){
-          getAllcomplaintSource()
-        }
+        //以下字段新建后不可再编辑
+        vm.expandFormConfigItems.forEach(efci => ['smallType', 'sceneLevelCode', 'productCode'].includes(efci.key) && (efci.isDisable = !0));
+        if (res) {
+          vm.initFormData(Object.assign(res || {}, {
+            fieldList: res.fieldConfigs || [],
+            formId: res?.formTemplateConfig?.formId,
+            formName: res?.formTemplateConfig?.formName,
+            sceneLevelCode: [res?.sceneLevel1Code, res?.sceneLevel2Code, res?.sceneLevel3Code].filter(r => !!r),//回显级联
+            productCode: [res?.productCode].filter(r => !!r),//回显级联
+            workorderType: res?.workorderType?.toString(),
+            bigType: res?.bigType?.toString(),
+            smallType: res?.smallType?.toString(),
+          }));
+          // 编辑回显时，通过全量的投诉来源 获取数据进行匹配
+          if (res?.smallType && res?.smallType?.toString() == 'TPL0101') {
+            getAllcomplaintSource()
+          }
 
-         
-        getSceneForm(vm);
-        if (res?.formTemplateConfig?.formContent) {
-          //回显设计器
-          FMDesignerRef.value && FMDesignerRef.value.loadJson(JSON.parse(res.formTemplateConfig.formContent));
+          getSceneForm(vm);
+          if (res?.formTemplateConfig?.formContent) {
+            //回显设计器
+            FMDesignerRef.value && FMDesignerRef.value.loadJson(JSON.parse(res.formTemplateConfig.formContent));
 
-          //详情查看用
-          if (props.isDetail) {
-            detailFormConfig.value = parseFormModel(JSON.parse(res.formTemplateConfig.formContent));
+            //详情查看用
+            if (props.isDetail) {
+              detailFormConfig.value = parseFormModel(JSON.parse(res.formTemplateConfig.formContent));
+            }
           }
         }
-      }
       });
     }
-    
+
   },
   items: [
     {
@@ -309,7 +308,8 @@ async function listComplaintPhenomenonTree() {
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
   // if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid')?.length) return;
-  const {res, err} = await proxy.$$api.complaintSource.getAskSourceSrlByUid({});
+  // const {res, err} = await proxy.$$api.complaintSource.getAskSourceSrlByUid({});
+  const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
   if (err) return;
   proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree(res?.list || [], 'sourceName', 'sourceCode', 'children')});
 }
@@ -327,7 +327,7 @@ watch(() => props.pkid, () => FormModelRef.value?.init());
 
 onBeforeMount(() => {
   // 只有在新建时获取根据角色分配的投诉来源数据项
-  if(!props.pkid){
+  if (!props.pkid) {
     listComplaintSourceTree();
   }
   listComplaintPhenomenonTree();
