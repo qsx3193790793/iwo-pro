@@ -92,7 +92,7 @@
             <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:phenom:detailList']">查询</el-button>
             <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)"  v-hasPermission="['config:phenom:add']">新增</el-button>
             <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)"  v-hasPermission="['config:phenom:update']">删除</el-button>
-          </el-form-item>system:dept:edit
+          </el-form-item>
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
           <template #isProvinceCustom="{row}">

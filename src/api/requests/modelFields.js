@@ -19,6 +19,8 @@ const apis = {
   lists: {url: `${apiPrefix('config')}/tFieldConfig/lists`, method: 'get'},
   // 字段id反查详细 data: [1,2,3,4]
   getListByIds: {url: `${apiPrefix('config')}/tFieldConfig/getListByIds`},
+   // 获取字段英文
+  trans: {url: `${apiPrefix('config')}//tFieldConfig/trans`, method: 'get'},
 };
 
 export default apiGenerator(apis);

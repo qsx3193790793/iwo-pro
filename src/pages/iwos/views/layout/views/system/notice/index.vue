@@ -1,61 +1,31 @@
 <template>
   <div class="app-container one-screen">
-    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+      label-width="68px">
       <el-form-item label="标题" prop="noticeTitle">
-        <el-input
-            class="queryItem"
-            v-model="queryParams.noticeTitle"
-            placeholder="请输入标题"
-            clearable
-            maxlength="30"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-input class="queryItem" v-model="queryParams.noticeTitle" placeholder="请输入标题" clearable maxlength="30"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="操作人员" prop="createBy">
-        <el-input
-            class="queryItem"
-            v-model="queryParams.createBy"
-            placeholder="请输入操作人员"
-            clearable
-            maxlength="30"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-input class="queryItem" v-model="queryParams.createBy" placeholder="请输入操作人员" clearable maxlength="30"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="类型" prop="noticeType">
         <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable class="queryItem">
-          <el-option
-              v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
+          <el-option v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')" :key="dict.value"
+            :label="dict.label" :value="dict.value" />
         </el-select>
       </el-form-item>
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
         <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
-        <el-button
-            type="success"
-            size="small"
-            @click="handleAdd"
-            v-hasPermission="['system:notice:add']"
-        >新增
+        <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增
         </el-button>
-        <el-button
-            type="success"
-            size="small"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermission="['system:notice:edit']"
-        >修改
+        <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
+          v-hasPermission="['system:notice:edit']">修改
         </el-button>
-        <el-button
-            type="danger"
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermission="['system:notice:remove']"
-        >删除
+        <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete"
+          v-hasPermission="['system:notice:remove']">删除
         </el-button>
       </el-form-item>
     </el-form>
@@ -72,15 +42,11 @@
       </el-col>
     </el-row> -->
 
-    <el-table v-loading="loading" class="one-screen-fg1" height="100%" :data="noticeList" border @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
+    <el-table v-loading="loading" class="one-screen-fg1" height="100%" :data="noticeList" border
+      @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center" />
       <!-- <el-table-column label="序号" align="center" prop="noticeId" width="100"/> -->
-      <el-table-column
-          label="标题"
-          align="center"
-          prop="noticeTitle"
-          :show-overflow-tooltip="true"
-      />
+      <el-table-column label="标题" align="center" prop="noticeTitle" :show-overflow-tooltip="true" />
       <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_type', row.noticeType) }}
@@ -88,13 +54,13 @@
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status == 0?'':row.status == 1?'warning':'danger'">
+          <el-tag :type="row.status == 0 ? '' : row.status == 1 ? 'warning' : 'danger'">
             {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建者" align="center" prop="createBy" width="100"/>
-      <el-table-column label="发布部门" align="center" prop="publishDeptName" width="100"/>
+      <el-table-column label="创建者" align="center" prop="createBy" width="100" />
+      <el-table-column label="发布部门" align="center" prop="publishDeptName" width="100" />
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime, '{y}-{m}-{d}') }}</span>
@@ -102,40 +68,38 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-              size="small"
-              type="primary"
-              @click="handleRelease(scope.row)"
-              v-if="scope.row.status != 0"
-          >发布
+          <el-button size="small" type="primary" @click="handleRelease(scope.row)" v-if="scope.row.status != 0">发布
           </el-button>
-          <el-button
-              size="small"
-              type="danger"
-              @click="handleRetract(scope.row)"
-              v-if="scope.row.status == 0"
-          >撤回
+          <el-button size="small" type="danger" @click="handleRetract(scope.row)" v-if="scope.row.status == 0">撤回
           </el-button>
-          <el-button
-              size="small"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-if="scope.row.status != 0"
-              v-hasPermission="['system:notice:edit']"
-          >修改
+          <el-button size="small" type="success" @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
+            v-hasPermission="['system:notice:edit']">修改
           </el-button>
-          <el-button
-              size="small"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermission="['system:notice:remove']"
-          >删除
-          </el-button>
+          <el-dropdown  style="margin-left: 4px;" trigger="click" placement="bottom">
+            <el-button type="primary">
+              更多<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>
+                <el-button size="small" type="danger" @click="handleDelete(scope.row)"
+                  v-hasPermission="['system:notice:remove']">删除
+                </el-button>
+              </el-dropdown-item>
+              <el-dropdown-item style="margin-top: 4px;">
+                <el-button size="small" type="primary" @click="handleDetail(scope.row)"
+                  v-hasPermission="['system:notice:remove']">详情
+                </el-button>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
 
-    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
+    <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum"
+      :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40, 50]" background
+      layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList"
+      @current-change="getList" />
 
     <!-- 添加或修改公告对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
@@ -143,19 +107,15 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="form.noticeType" placeholder="请选择公告类型" style="width: 100%;">
-                <el-option
-                    v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
-                ></el-option>
+              <el-select v-model="form.noticeType" placeholder="请选择公告类型" style="width: 100%;" :disabled="isDeatil" >
+                <el-option v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')" :key="dict.value"
+                  :label="dict.label" :value="dict.value"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="30"/>
+              <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="30" :disabled="isDeatil" />
             </el-form-item>
           </el-col>
           <!-- <el-col :span="24">
@@ -171,41 +131,40 @@
             </el-form-item>
           </el-col> -->
           <el-col :span="24">
-            <el-form-item label="接收者类型">
-              <el-radio-group v-model="form.recipientType"  @change="recipientTypeChange">
+            <el-form-item label="接收者类型" prop="recipientType">
+              <el-radio-group v-model="form.recipientType" @change="recipientTypeChange" :disabled="isDeatil" >
                 <!-- <el-radio
                     v-for="dict in $store.getters['dictionaries/GET_DICT']('notice_recipient_type')"
                     :key="dict.value"
                     :label="dict.value"
                 >{{ dict.label }}
                 </el-radio> -->
-                <el-radio
-                    v-for="dict in [{value:'1', label:'机构'},{value:'2', label:'班组'}]"
-                    :key="dict.value"
-                    :label="dict.value"
-                >{{ dict.label }}
+                <el-radio v-for="dict in [{ value: '1', label: '机构' }, { value: '2', label: '班组' }]" :key="dict.value"
+                  :label="dict.value">{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="接收机构" prop="deptId">
-              <treeselect v-model="form.deptId" :multiple="form.recipientType==='1'" :options="deptOptions" :show-count="true" placeholder="请选择机构" @select="handelDeptIdChange"/>
+              <treeselect v-model="form.deptId" :multiple="form.recipientType === '1'" :options="deptOptions"
+                :show-count="true" placeholder="请选择机构" @select="handelDeptIdChange" :disabled="isDeatil" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.recipientType!=='1'">
+          <el-col :span="12" v-if="form.recipientType !== '1'">
             <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
-              <treeselect v-model="form.recipientIds" noOptionsText='该机构下无数据' :multiple="true" :normalizer="normalizer" :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`"/>
+              <treeselect v-model="form.recipientIds" noOptionsText='该机构下无数据' :multiple="true" :normalizer="normalizer"
+                :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`" :disabled="isDeatil" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="内容">
-              <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192"/>
+              <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDeatil" />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" v-if="!isDeatil">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -220,7 +179,7 @@ import Treeselect from "@riophae/vue-treeselect";
 export default {
   name: "NoticeIndex",
   dicts: ['sys_notice_status', 'sys_notice_type'],
-  components: {Editor, Treeselect},
+  components: { Editor, Treeselect },
   cusDicts: ['notice_recipient_type'],
   data() {
     return {
@@ -244,6 +203,8 @@ export default {
       open: false,
       deptOptions: [],
       recipientOptions: [],
+      //是否打开详情
+      isDetail:false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -258,16 +219,19 @@ export default {
       // 表单校验
       rules: {
         noticeTitle: [
-          {required: true, message: "标题不能为空", trigger: "blur"}
+          { required: true, message: "标题不能为空", trigger: "blur" }
         ],
         noticeType: [
-          {required: true, message: "公告类型不能为空", trigger: "change"}
+          { required: true, message: "公告类型不能为空", trigger: "change" }
         ],
         deptId: [
-          {required: true, message: "接收机构不能为空", trigger: "change"}
+          { required: true, message: "接收机构不能为空", trigger: "change" }
         ],
         recipientIds: [
-          {required: true, message: `接收班组不能为空`, trigger: "change"}
+          { required: true, message: `接收班组不能为空`, trigger: "change" }
+        ],
+        recipientType: [
+          { required: true, message: `接收者类型不能为空`, trigger: "change" }
         ]
       }
     };
@@ -294,35 +258,35 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      this.$$api.notice.listNotice({params: this.queryParams}).then(({res: response, err}) => {
+      this.$$api.notice.listNotice({ params: this.queryParams }).then(({ res: response, err }) => {
         if (err) return this.loading = false;
         this.noticeList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
     },
-    recipientTypeChange(val){
-      this.form.deptId= undefined
-      if (val=='2'){
-        this.form.recipientIds= []
-        this.recipientOptions=[]
+    recipientTypeChange(val) {
+      this.form.deptId = undefined
+      if (val == '2') {
+        this.form.recipientIds = []
+        this.recipientOptions = []
       }
     },
     //查询机构树
     getDeptTree() {
-      this.$$api.user.deptTreeSelect().then(({res, err}) => {
+      this.$$api.user.deptTreeSelect().then(({ res, err }) => {
         if (err) return;
         this.deptOptions = res?.list || [];
       });
     },
-    handelDeptIdChange({id}) {
+    handelDeptIdChange({ id }) {
       if (this.form.recipientType === '2') {
-        this.$$api.team.getDeptTeamTree({deptId: id}).then(({res, err}) => {
+        this.$$api.team.getDeptTeamTree({ deptId: id }).then(({ res, err }) => {
           if (err) return;
-          this.form.recipientIds= []
+          this.form.recipientIds = []
           this.recipientOptions = res?.rows || [];
         });
-      } 
+      }
       // else if (this.form.recipientType === '3') {
       //   this.$$api.user.deptTreeSelect().then(({res, err}) => {
       //     if (err) return;
@@ -354,8 +318,8 @@ export default {
         noticeType: undefined,
         noticeContent: undefined,
         deptId: undefined,
-        recipientIds:undefined,
-        recipientType: '1'
+        recipientIds: undefined,
+        recipientType: '1',
       };
       this.$refs['form']?.resetFields();
     },
@@ -378,6 +342,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.isDeatil = false
       this.open = true;
       this.title = "添加公告";
     },
@@ -385,25 +350,26 @@ export default {
     handleUpdate(row) {
       this.reset();
       const noticeId = row.noticeId || this.ids
-      this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
+      this.isDeatil = false
+      this.$$api.notice.getNotice({ noticeId: noticeId }).then(({ res: response, err }) => {
         if (err) return
         this.form = response;
         delete this.form.status
-        if(this.form.recipientType==1){
+        if (this.form.recipientType == 1) {
           this.form.deptId = response.recipientIds
-        }else if(this.form.recipientType==2){
+        } else if (this.form.recipientType == 2) {
           this.form.deptId = response.deptArr[0]
-          this.recipientOptions= response.teamList
+          this.recipientOptions = response.teamList
         }
         this.open = true;
         this.title = "修改公告";
       });
     },
     /** 发布按钮 */
-    handleRelease(row){
+    handleRelease(row) {
       this.$$Dialog.confirm('是否确认发布公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
-        return this.$$api.notice.changeNoticeStatus({ data:{ noticeId: row.noticeId, status:0}});
-      }).then(({res: response, err}) => {
+        return this.$$api.notice.changeNoticeStatus({ data: { noticeId: row.noticeId, status: 0 } });
+      }).then(({ res: response, err }) => {
         if (err) return
         this.getList();
         this.$$Toast.success("删除成功");
@@ -411,10 +377,10 @@ export default {
       });
     },
     /** 撤回按钮 */
-    handleRetract(row){
+    handleRetract(row) {
       this.$$Dialog.confirm('是否确认撤回公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
-        return this.$$api.notice.changeNoticeStatus({ data:{ noticeId: row.noticeId, status:2}});
-      }).then(({res: response, err}) => {
+        return this.$$api.notice.changeNoticeStatus({ data: { noticeId: row.noticeId, status: 2 } });
+      }).then(({ res: response, err }) => {
         if (err) return
         this.getList();
         this.$$Toast.success("删除成功");
@@ -429,15 +395,15 @@ export default {
             this.form.recipientIds = this.form.deptId
           }
           if (this.form.noticeId != undefined) {
-           console.log('this.$refs.editorRef.getText()',this.$refs.editorRef.getText());
-            this.$$api.notice.updateNotice({data: { ...this.form,noticeText: this.$refs.editorRef.getText()}}).then(({res: response, err}) => {
+            console.log('this.$refs.editorRef.getText()', this.$refs.editorRef.getText());
+            this.$$api.notice.updateNotice({ data: { ...this.form, noticeText: this.$refs.editorRef.getText() } }).then(({ res: response, err }) => {
               if (err) return
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.$$api.notice.addNotice({data: {...this.form,noticeText: this.$refs.editorRef.getText()}}).then(({res: response, err}) => {
+            this.$$api.notice.addNotice({ data: { ...this.form, noticeText: this.$refs.editorRef.getText() } }).then(({ res: response, err }) => {
               if (err) return
               this.$$Toast.success("新增成功");
               this.open = false;
@@ -451,8 +417,8 @@ export default {
     handleDelete(row) {
       const noticeIds = row.noticeId || this.ids
       this.$$Dialog.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(() => {
-        return this.$$api.notice.delNotice({noticeId: noticeIds});
-      }).then(({res: response, err}) => {
+        return this.$$api.notice.delNotice({ noticeId: noticeIds });
+      }).then(({ res: response, err }) => {
         if (err) return
         this.getList();
         this.$$Toast.success("删除成功");
@@ -463,8 +429,25 @@ export default {
     //    this.noticeText = val.replace(/\n/g, "")
     //    console.log('this.noticeText',this.noticeText)
     // },
-    chooseRecipient() {
-
+    //详情按钮操作
+    handleDetail(row) {
+      this.reset();
+      this.isDeatil = true
+      const noticeId = row.noticeId || this.ids
+      this.form.isDeatil = true
+      this.$$api.notice.getNotice({ noticeId: noticeId }).then(({ res: response, err }) => {
+        if (err) return
+        this.form = response;
+        delete this.form.status
+        if (this.form.recipientType == 1) {
+          this.form.deptId = response.recipientIds
+        } else if (this.form.recipientType == 2) {
+          this.form.deptId = response.deptArr[0]
+          this.recipientOptions = response.teamList
+        }
+        this.open = true;
+        this.title = "公告详情";
+      });
     }
   }
 };

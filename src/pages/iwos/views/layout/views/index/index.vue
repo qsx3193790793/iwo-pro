@@ -4,23 +4,23 @@
       <el-collapse-item name="1">
         <template slot="title">
           <div class="collapse-title">
-            <div class="collapse-title-name">近期关注</div>
+            <div class="collapse-title-name">通知公告</div>
             <div> {{ recentAttention[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
         </template>
         <el-row :gutter="24">
-          <el-col :span="6" v-for="item in new Array(8)" :key="item" style="margin-bottom: 10px;">
+          <el-col :span="6" v-for="item in recentAttentionlist" :key="item.noticeId" style="margin-bottom: 10px;">
             <el-card shadow="never" style="border: 1px solid #dcdfec;">
-              <div class="container-title">标题</div>
+              <div class="container-title">{{ item.noticeTitle }}</div>
               <div style="padding: 10px 0;">
-                心中无敌，方能无敌于天下
+                {{ item.noticeText }}
               </div>
               <div class="card-container">
                 <div style="display: flex; align-items: center">
                   <el-avatar size="small" src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar>
-                  <span style="margin-left: 5px;">元顺</span>
+                  <span style="margin-left: 5px;">{{ item.createBy }}</span>
                 </div>
-                <div> 2024/12/12 10:10:10</div>
+                <div> {{ item.createTime }}</div>
               </div>
             </el-card>
           </el-col>
@@ -36,21 +36,21 @@
             <div> {{ serviceCases[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
         </template>
-        <div v-for="item in new Array(8)" :key="item">
+        <div v-for="item in serviceCasesList" :key="item.noticeId">
           <div style="display: flex;">
             <div style="display: flex;margin-right: 40px;">
               <div>
                 <el-avatar src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar>
               </div>
               <div style="margin-left: 10px;">
-                <div>晁盖</div>
-                <div>2024/12/12 12:12:12</div>
+                <div>{{ item.createBy }}</div>
+                <div>{{ item.createTime }}</div>
               </div>
             </div>
             <div style="width: 85%;">
-              <div class="container-title"> 2023年，你过得怎么样？</div>
+              <div class="container-title"> {{ item.noticeTitle }}</div>
               <div class="serviceCases-ellipsis">
-                与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。与现实生活一致：与现实生活的流程、逻辑保持一致，遵循用户习惯的语言和概念；在界面中一致：所有的元素和结构需保持一致，比如：设计样式、图标和文本、元素的位置等。
+                {{ item.noticeText }}
               </div>
             </div>
           </div>
@@ -65,21 +65,23 @@
 import {getCurrentInstance, ref, onMounted} from "vue";
 
 const {proxy} = getCurrentInstance();
-// class asew {
-//   constructor() {
-//     this.a = 66
-//   }
-
-//   log() {
-//     console.log('aaaaaaaaaa')
-//   }
-// }
-
-// (new asew()).log()
 const recentAttention = ref(['1'])
 const serviceCases = ref('1')
+const recentAttentionlist=ref([])
+const serviceCasesList=ref([])
+async function getStagingList(noticeType){
+  const {res,err} = await proxy.$$api.staging.workbench({params:{pageNum:1,pageSize:8,noticeType}})
+  console.log('res',res);
+    if(err) return 
+    if(noticeType==1){
+      recentAttentionlist.value=res.rows
+    }else{
+      serviceCasesList.value=res.rows
+    }
+ }
 onMounted(() => {
-
+  getStagingList(1)
+  getStagingList(2)
 })
 </script>
 <script>
