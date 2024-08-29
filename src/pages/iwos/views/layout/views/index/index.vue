@@ -5,7 +5,7 @@
         <template slot="title">
           <div class="collapse-title">
             <div class="collapse-title-name" @click.stop="more('1')">
-              通知公告<el-badge class="mark" :value="recentAttentionTotal"  />
+              <el-badge class="mark" :value="recentAttentionTotal" v-if="recentAttentionTotal"/>通知公告<i class="el-icon-arrow-right"></i> 
             </div>
             <div> {{ recentAttention[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
@@ -19,9 +19,9 @@
               </div>
               <div class="card-container">
                 <div style="display: flex; align-items: center">
-                  <el-avatar size="small"
-                    src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar>
-                  <span style="margin-left: 5px;">{{ item.createBy }}</span>
+                  <!-- <el-avatar size="small"
+                    src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar> -->
+                  <span>{{ item.createBy }}</span>
                 </div>
                 <div> {{ item.createTime }}</div>
               </div>
@@ -37,7 +37,7 @@
         <template slot="title">
           <div class="collapse-title">
             <div class="collapse-title-name"  @click.stop="more('2')">
-              服务案例<el-badge class="mark" :value="serviceCasesTotal" />
+              <el-badge class="mark" :value="serviceCasesTotal" v-if="serviceCasesTotal" />服务案例<i class="el-icon-arrow-right"></i> 
               <!-- <el-button type="primary">更多</el-button> -->
             </div>
             <div> {{ serviceCases[0] == 1 ? '折叠' : '展开' }} </div>
@@ -47,9 +47,9 @@
           <div v-for="item in serviceCasesList" :key="item.noticeId">
             <div style="display: flex;">
               <div style="display: flex;margin-right: 40px;">
-                <div>
+                <!-- <div>
                   <el-avatar src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar>
-                </div>
+                </div> -->
                 <div style="margin-left: 10px;">
                   <div>{{ item.createBy }}</div>
                   <div>{{ item.createTime }}</div>
