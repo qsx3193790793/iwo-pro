@@ -1,6 +1,5 @@
 import {getTypePrefix} from "@/pages/iwos/views/layout/views/system/template/config";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config";
-
 export const key = 'complaint_init';
 export const label = '投诉单_初始化';
 
@@ -27,7 +26,17 @@ export default async ({vm, item}) => {
       headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
     });
     if (qpRes?.pendingWorkOrderFlag >= 1) {
-      const c = await vm.$$Dialog.confirm('该设备号存在在途工单，是否继续新建？', '提示').catch(vm.$$emptyFn);
+      const h = vm.$createElement;
+      const c = await vm.$$Dialog.confirm(h('p', null, [
+        h('span', null, '该设备号存 '),
+        h('span', { style: 'color: #409eff;text-decoration-line: underline;cursor: pointer;',on:{
+          click :()=>{
+           vm.$$Dialog.close()
+           vm.$router.push({name:'ComplaintForm',params:{accNum}})
+          }
+        }}, '在途工单'),
+        h('span', null, '，是否继续新建？')
+      ]), '提示').catch(vm.$$emptyFn);
       if (c !== 'confirm') return;
     }
 

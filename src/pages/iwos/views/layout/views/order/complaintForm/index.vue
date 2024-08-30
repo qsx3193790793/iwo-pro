@@ -47,12 +47,12 @@
 </template>
 
 <script setup>
-import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
+import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated, watch} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
 
 const {proxy} = getCurrentInstance();
-
+const accNum = ref() //在途工单传递的号码
 const FormRef = ref();
 const submitForm = () => {
   FormRef.value.validate((valid) => {
@@ -61,7 +61,6 @@ const submitForm = () => {
     }
   });
 };
-
 const columns = ref({
   props: [
     {name: "工单类型", width: 80, key: "workorderType",},
@@ -155,7 +154,7 @@ const formConfigItems = ref([
   {name: "集团工单编号", key: "complaintWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "省内建单时间", key: "provinceOrderCreateTime", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
   {name: "主叫号码", key: "callerNo", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
-  {name: "业务号码", key: "complaintAssetNum", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "业务号码", key: "complaintAssetNum", value: '', col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "联系电话1", key: "contactPhone1", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "联系电话2", key: "contactPhone2", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "投诉来源", key: "askSourceSrl", value: "", col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
@@ -244,6 +243,7 @@ async function listProductTree() {
 }
 
 onMounted(() => {
+  accNum.value= proxy.$route.params.accNum || ''
   listComplaintSourceTree();
   listComplaintPhenomenonTree();
   listProductTree();
