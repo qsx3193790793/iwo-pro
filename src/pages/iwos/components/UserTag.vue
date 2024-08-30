@@ -31,12 +31,12 @@ const props = defineProps({
   },
 });
 const leftHalfCirclePoints = [
-  {right: '3.6rem', bottom: '0.2rem'},
-  {right: '3.2rem', bottom: '0.7rem'},
+  {right: '3.6rem', bottom: '0'},
+  {right: '3.2rem', bottom: '0.5rem'},
   {right: '2.6rem', top: '0rem'},
   {left: '2.6rem', top: '0rem'},
-  {left: '3.2rem', bottom: '0.7rem'},
-  {left: '3.6rem', bottom: '0.2rem'},
+  {left: '3.2rem', bottom: '0.5rem'},
+  {left: '3.6rem', bottom: '0'},
 ];
 const tagList = computed(() => {
   return props.userProfile.tagList.map((v, i) => ({v, style: leftHalfCirclePoints[i]}));
@@ -115,8 +115,8 @@ const tagList = computed(() => {
 
 .tipText {
   position: absolute;
-  right: 0px;
-  top: -10px;
+  right: 0;
+  top: 0;
   background-color: #fbb8ba;
   font-size: 13px;
   padding: 3px 12px;
@@ -143,7 +143,7 @@ const tagList = computed(() => {
   text-align: center;
 
   .userImg {
-    width: 180px !important;
+    width: 120px !important;
   }
 }
 </style>

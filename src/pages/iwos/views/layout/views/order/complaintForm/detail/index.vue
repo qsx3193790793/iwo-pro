@@ -54,6 +54,7 @@ import template from "@/pages/iwos/fmDesignerComps/template/投诉单详情模�
 const {proxy} = getCurrentInstance();
 const FormModelRef = ref();
 const formConfig = ref();
+const detailWorkorderId = ref(null);
 
 const formData = ref({});
 
@@ -151,16 +152,26 @@ const textLineList2 = computed(() => [
   {label: '建单时间：', value: proxy.$$lodash.get(formData.value, 'provinceOrderCreateTime')},
 ]);
 
-watch(() => proxy.$route.params.workorderId, () => FormModelRef.value?.init())
+watch(() => proxy.$route.params.detailWorkorderId, () => {
+  console.log('watch detail', proxy.$route.params.detailWorkorderId, detailWorkorderId.value)
+  if (proxy.$route.params.detailWorkorderId) {
+    if (detailWorkorderId.value === proxy.$route.params.detailWorkorderId) return;
+    detailWorkorderId.value = proxy.$route.params.detailWorkorderId;
+    FormModelRef.value?.init();
+  }
+})
 
 onMounted(() => {
-  formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
+  if (proxy.$route.params.detailWorkorderId) {
+    detailWorkorderId.value = proxy.$route.params.detailWorkorderId;
+    formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
+  }
 });
 </script>
 <script>
 export default {
   name: "ComplaintDetail",
-  cusDicts: [
+  webDicts: [
     "customer_strategy_grouping",
     "cus_city",
   ],

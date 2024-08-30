@@ -244,7 +244,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 
 export default {
-  name: "complaintReason",
+  name: "ComplaintReason",
   cusDicts: ["reason_status_name", "yes_no"],
   components: {Treeselect, PageSearchPanel, JsTable},
   data() {
@@ -334,17 +334,17 @@ export default {
           {
             name: "状态",
             key: "status",
-            width:"80"
+            width: "80"
           },
           {
             name: "更新人",
             key: "updatedBy",
-            width:"80"
+            width: "80"
           },
           {
             name: "更新时间",
             key: "updatedTime",
-            width:'160'
+            width: '160'
           },
         ],
         options: {
@@ -362,20 +362,20 @@ export default {
             {
               label: "编辑",
               key: "edit",
-              permission:['config:reason:update'],
+              permission: ['config:reason:update'],
               autoHidden: ({row}) => {
                 return (row.level === 4 || row.level === 5) && row.isProvinceCustom == 1
               },
               event: this.handleUpdate,
             },
             {
-                  label: "详情",
-                  key: "detail",
-                  permission:['config:reason:detailList'],
-                  autoHidden: ({row}) => {
-                    return row.level === 4 || row.level === 5
-                  },
-                  event: this.handleDetail,
+              label: "详情",
+              key: "detail",
+              permission: ['config:reason:detailList'],
+              autoHidden: ({row}) => {
+                return row.level === 4 || row.level === 5
+              },
+              event: this.handleDetail,
             },
             {
               label: "更多",
@@ -385,7 +385,7 @@ export default {
                   label: "删除",
                   key: "del",
                   type: "danger",
-                  permission:['config:reason:delete'],
+                  permission: ['config:reason:delete'],
                   autoHidden: ({row}) => {
                     return (row.level === 4 || row.level === 5) && row.isProvinceCustom == 1
                   },
@@ -395,7 +395,7 @@ export default {
                   label: "启用",
                   key: "start",
                   type: "primary",
-                  permission:['config:reason:update'],
+                  permission: ['config:reason:update'],
                   autoHidden: this.autoStartHidden,
                   event: this.handleStart,
                 },
@@ -403,7 +403,7 @@ export default {
                   label: "停用",
                   key: "end",
                   type: "danger",
-                  permission:['config:reason:update'],
+                  permission: ['config:reason:update'],
                   autoHidden: this.autoEndHidden,
                   event: this.handleEnd,
                 },
@@ -565,13 +565,13 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      console.log('selection',selection);
+      console.log('selection', selection);
       this.selectRow = selection[0]
       this.multiple = !selection.length
       this.single = selection.length != 1;
-      this.isAllowAdd = !this.single && (selection[0]?.level === 3 ||selection[0]?.level === 4 )
-      this.isAllowDelet =!this.single && (selection[0]?.level === 4 ||selection[0]?.level === 5 ) && selection[0].isProvinceCustom==1
-      
+      this.isAllowAdd = !this.single && (selection[0]?.level === 3 || selection[0]?.level === 4)
+      this.isAllowDelet = !this.single && (selection[0]?.level === 4 || selection[0]?.level === 5) && selection[0].isProvinceCustom == 1
+
     },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {

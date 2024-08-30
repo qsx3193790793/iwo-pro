@@ -4,7 +4,7 @@
       <CustomerProfile @change="change" @diagnosisChange="diagnosisChange" @reset="reset"></CustomerProfile>
     </div>
     <ELScrollbar class="one-screen-fg1 public-background create-order-container">
-      <div class="create-order-header">投诉单</div>
+      <!--      <div class="create-order-header">投诉单</div>-->
       <div class="create-order-form">
         <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig">
           <template #ext="{root}">

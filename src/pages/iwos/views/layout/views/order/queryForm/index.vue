@@ -10,7 +10,7 @@ import {getCurrentInstance, ref} from "vue";
 const {proxy} = getCurrentInstance();
 </script>
 <script>
-export default {name: 'ComplaintForm'}
+export default {name: 'QueryForm'}
 </script>
 <style lang="scss" scoped>
 </style>

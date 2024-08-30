@@ -171,7 +171,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
-  name: "UserIndex",
+  name: "ComplaintSource",
   cusDicts: ["start_stop", "yes_no"],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {
@@ -663,7 +663,7 @@ export default {
               this.form.twoSourceCode = twoSourceCode;
               this.form.twoSourceName = twoSourceName;
             }
-            this.form.sourceId = sourceId;  
+            this.form.sourceId = sourceId;
             this.form.level = level
             this.form.oneSourceCode = oneSourceCode;
             this.form.oneSourceName = oneSourceName;

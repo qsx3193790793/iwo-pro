@@ -93,8 +93,9 @@ export default {
   type: 'layout',
   children: [],
   z_props: [].concat([
+    {sort: 4.2, name: '默认收起', key: 'collapsed', value: false, type: 'radio', options: [{label: '是', value: true}, {label: '否', value: false}], isRequire: !1, col: 24},
     {
-      sort: 4, name: '板块类型', key: 'isBtnBlock', value: '基础', type: 'radio', options: [{label: '基础', value: '基础'}, {label: '按钮组', value: '按钮组'}, {label: '隐藏域', value: '隐藏域'}], isRequire: !1, col: 24,
+      sort: 4.5, name: '板块类型', key: 'isBtnBlock', value: '基础', type: 'radio', options: [{label: '基础', value: '基础'}, {label: '按钮组', value: '按钮组'}, {label: '隐藏域', value: '隐藏域'}], isRequire: !1, col: 24,
       onChange({vm}) {
         if (vm.formData.isBtnBlock === '基础') {
           return vm.formData.name = '板块名称', vm.formData.subName = '板块子名称';

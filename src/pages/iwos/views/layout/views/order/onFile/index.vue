@@ -196,7 +196,7 @@ let state = ref({
           label: '详情',
           key: 'detail',
           event: row => {
-            proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+            proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
           },
         },
       ],
@@ -401,19 +401,15 @@ const formConfigItems = ref([
 
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
-  proxy.$$api.complaintSource
-      .listComplaintSourceTree({
-        data: {status: 1},
-      })
-      .then((res, err) => {
-        if (err) return;
-        complaint_source_tree.value = proxy.$$formatCascaderTree(
-            res?.res.list || [],
-            "sourceName",
-            "sourceCode",
-            "children"
-        );
-      });
+  proxy.$$api.web.findSourceTree({data: {status: 1},}).then((res, err) => {
+    if (err) return;
+    complaint_source_tree.value = proxy.$$formatCascaderTree(
+        res?.res.list || [],
+        "sourceName",
+        "sourceCode",
+        "children"
+    );
+  });
 }
 
 onMounted(() => {
@@ -426,8 +422,8 @@ onBeforeMount(() => {
 
 <script>
 export default {
-  name: "ComplaintForm",
-  cusDicts: ["search_order_type", "base_province_code", 'jy_complaint_status_cd'],
+  name: "OrderOnFile",
+  webDicts: ["search_order_type", "base_province_code", 'jy_complaint_status_cd'],
 };
 </script>
 <style lang="scss" scoped></style>

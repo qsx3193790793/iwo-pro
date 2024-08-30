@@ -1,9 +1,10 @@
 import useEvents from "./events";
+import {$$dayjs} from "@/utils";
 
 //选项字典获取渲染
 function dictReqCompiler(dictType) {
   return async function ({vm}) {
-    await vm.$store.dispatch('dictionaries/GET_DICTIONARIES', {type: 'customDict', dicts: [dictType]})
+    await vm.$store.dispatch('dictionaries/GET_DICTIONARIES', {type: 'web', dicts: [dictType]})
     return vm.$store.getters['dictionaries/GET_DICT'](dictType);
   }
 }
@@ -136,6 +137,10 @@ export const datePickerCompiler = (j, isView) => {
   if (!['FMDatePicker'].includes(j.name)) return {};
   return {
     type: j.z_props.dateType,
+    value: (function () {
+      if (['FMDateRangePicker', 'FMDateTimeRangePicker', 'FMMonthRangePicker', 'FMDatesPicker', 'FMMonthsPicker', 'FMYearsPicker'].includes(j.z_props.dateType)) return [];
+      return null//$$dayjs().format('YYYY-MM-DD HH:mm:ss');
+    })(),
     //值变化时触发
     onChange: baseOnChange(j, isView)
   }

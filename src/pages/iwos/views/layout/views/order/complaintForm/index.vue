@@ -13,6 +13,9 @@
           <template #statusCd="{row}">
             {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", row.statusCd) }}
           </template>
+          <template #timeoutFlag="{row}">
+            {{ $store.getters["dictionaries/MATCH_LABEL"]("timeout_flag", row.timeoutFlag) }}
+          </template>
           <template #complaintPhenomenonLevelChain="{row}">
             {{ [row.complaintPhenomenonLevel1, row.complaintPhenomenonLevel2, row.complaintPhenomenonLevel3].filter(v => !!v).join(' / ') }}
           </template>
@@ -77,7 +80,7 @@ const columns = ref({
     {name: "客户升级投诉倾向", width: 180, key: "upgradeTrend",},
     {name: "工单超时状态", width: 120, key: "timeoutFlag",},
     {name: "工单要求时限", width: 120, key: "demandTimeLimit"},
-    {name: "工单流转状态", width: 120, key: "nodeCode"},
+    {name: "工单流转状态", width: 120, key: "statusCd"},
   ],
   options: {
     btns: [
@@ -93,7 +96,7 @@ const columns = ref({
         label: '详情',
         key: 'detail',
         event: row => {
-          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
+          proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
         },
       },
       // {
@@ -157,8 +160,8 @@ const formConfigItems = ref([
   {name: "联系电话2", key: "contactPhone2", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "投诉来源", key: "askSourceSrl", value: "", col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
   {name: "客户升级投诉倾向", key: "upgradeTrend", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
-  {name: "工单超时状态", key: "timeoutFlag", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
-  {name: "工单流转状态", key: "nodeCode", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "工单超时状态", key: "timeoutFlag", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("timeout_flag"), isDisable: !1, isRequire: !1,},
+  {name: "工单流转状态", key: "statusCd", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("jy_complaint_status_cd"), isDisable: !1, isRequire: !1,},
 
   // 展开
   {name: "投诉现象", key: "complaintPhenomenonLevelChain", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
@@ -202,7 +205,7 @@ const formConfigItems = ref([
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
   if (proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree")?.length) return;
-  const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
+  const {res, err} = await proxy.$$api.web.findSourceTree({loading: !1, data: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
     complaint_source_tree: proxy.$$formatCascaderTree(
@@ -217,7 +220,7 @@ async function listComplaintSourceTree() {
 //现象
 async function listComplaintPhenomenonTree() {
   if (proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree")?.length) return;
-  const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree({params: {status: 1}});
+  const {res, err} = await proxy.$$api.web.queryPhenomPullList({loading: !1, params: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
     complaint_phenomenon_tree: proxy.$$formatCascaderTree(
@@ -230,7 +233,7 @@ async function listComplaintPhenomenonTree() {
 //产品
 async function listProductTree() {
   if (proxy.$store.getters["dictionaries/GET_DICT"]("complaint_product_tree")?.length) return;
-  const {res, err} = await proxy.$$api.productClassification.listProductTree({params: {status: 1}});
+  const {res, err} = await proxy.$$api.web.productTree({loading: !1, params: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
     complaint_product_tree: proxy.$$formatCascaderTree(
@@ -252,12 +255,14 @@ onMounted(() => {
 <script>
 export default {
   name: "ComplaintForm",
-  cusDicts: [
+  webDicts: [
     "yes_no",
     "search_order_type",
     "base_province_code",
     "jy_complaint_status_cd",
     "workorder_strictest_scene",
+    "timeout_flag",
+    "jy_complaint_status_cd",
   ],
 };
 </script>

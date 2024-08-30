@@ -187,7 +187,7 @@
 
 <script>
 export default {
-  name: "Post",
+  name: "PostIndex",
   dicts: ["sys_normal_disable"],
   data() {
     return {

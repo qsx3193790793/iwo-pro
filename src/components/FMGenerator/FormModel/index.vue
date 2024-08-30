@@ -79,7 +79,7 @@
                       <DatePicker v-else-if="['monthRangePicker','FMMonthRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM'" :value-format="v.valueFormat||'yyyy-MM'" type="monthrange" :clearable="v.clearable??true" :editable="!1" unlink-panels @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['yearPicker','FMYearPicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy'" :value-format="v.valueFormat||'yyyy'" type="year" :readonly="v.readonly??false" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['yearsPicker','FMYearsPicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy'" :value-format="v.valueFormat||'yyyy'" type="years" :readonly="v.readonly??false" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
-                      <DatePicker v-else-if="['dateTimePicker','FMDateTimePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd HH:mm:ss'" :value-format="v.valueFormat||'yyyy-MM-dd HH:mm:ss'" type="datetime" :default-time="v.defaultTime ||new Date(1970, 1, 1, 0, 0, 0)" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
+                      <DatePicker v-else-if="['dateTimePicker','FMDateTimePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd HH:mm:ss'" :value-format="v.valueFormat||'yyyy-MM-dd HH:mm:ss'" type="datetime" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <DatePicker v-else-if="['dateTimeRangePicker','FMDateTimeRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'yyyy-MM-dd HH:mm:ss'" :value-format="v.valueFormat||'yyyy-MM-dd HH:mm:ss'" type="datetimerange" :clearable="v.clearable??true" :editable="!1" unlink-panels @change="v.onChange&&v.onChange({vm,item:v})"></DatePicker>
                       <TimePicker v-else-if="['timePicker','FMTimePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'HH:mm:ss'" :value-format="v.valueFormat||'HH:mm:ss'" :clearable="v.clearable??true" :editable="!1" @change="v.onChange&&v.onChange({vm,item:v})"></TimePicker>
                       <TimePicker v-else-if="['timeRangePicker','FMTimeRangePicker'].includes(v.type)" v-loading="v.loading" v-model="formData[v.key]" :placeholder="(v.isDisable||disabled)?'':(v.placeholder||'请选择')" start-placeholder="开始时间" end-placeholder="结束时间" :disabled-date="(d)=>v.disabledDate?.({vm,d})" :required="v.isRequire" :disabled="disabled||v.isDisable" :format="v.format||'HH:mm:ss'" :value-format="v.valueFormat||'HH:mm:ss'" :clearable="v.clearable??true" :editable="!1" is-range unlink-panels @change="v.onChange&&v.onChange({vm,item:v})"></TimePicker>
@@ -103,19 +103,23 @@
                         <div class="form-buttons" :class="v.align||'left'">
                           <template v-for="(bv,bi) in v.items">
                             <!-- 更多下拉按钮-->
-                            <el-dropdown v-if="bv.type==='buttonGroup'&&bv.items.filter(bgb=>((!bgb.isShow)||bgb.isShow({vm}))).length" v-hasPermission="bv.permission" class="public-el-dropdown" trigger="click">
-                              <Button v-bind="bv.attrs">
-                                {{ bv.btnName || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
-                              </Button>
-                              <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
-                                <div class="inner">
-                                  <template v-for="(bgb,bgbi) in bv.items">
-                                    <Button v-if="(!bgb.isShow)||bgb.isShow({vm})" v-hasPermission="bgb.permission" v-bind="bgb.attrs" :loading="bgb.loading" :key="bgbi" :disabled="$$getVariableType(bgb.attrs?.disabled)==='[object Function]'?bgb.attrs.disabled({vm}):bgb.attrs?.disabled" @click="bgb.onClick&&bgb.onClick({vm,item:bgb})">{{ bgb.btnName }}</Button>
-                                  </template>
-                                </div>
-                              </el-dropdown-menu>
-                            </el-dropdown>
-                            <Button v-else-if="bv.type==='button'&&((!bv.isShow)||bv.isShow({vm}))" v-hasPermission="bv.permission" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
+                            <template v-if="bv.type==='buttonGroup'&&isShowDropdown(bv.items)">
+                              <el-dropdown class="public-el-dropdown" trigger="click">
+                                <Button v-bind="bv.attrs">
+                                  {{ bv.btnName || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
+                                </Button>
+                                <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
+                                  <div class="inner">
+                                    <template v-for="(bgb,bgbi) in bv.items">
+                                      <Button v-if="(!bgb.isShow)||bgb.isShow({vm})" v-hasPermission="bgb.permission" v-bind="bgb.attrs" :loading="bgb.loading" :key="bgbi" :disabled="$$getVariableType(bgb.attrs?.disabled)==='[object Function]'?bgb.attrs.disabled({vm}):bgb.attrs?.disabled" @click="bgb.onClick&&bgb.onClick({vm,item:bgb})">{{ bgb.btnName }}</Button>
+                                    </template>
+                                  </div>
+                                </el-dropdown-menu>
+                              </el-dropdown>
+                            </template>
+                            <template v-else-if="bv.type==='button'&&((!bv.isShow)||bv.isShow({vm}))">
+                              <Button v-hasPermission="bv.permission" v-bind="bv.attrs" :loading="v.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
+                            </template>
                           </template>
                         </div>
                       </template>
@@ -140,7 +144,9 @@
     <!--按钮区-->
     <div v-if="formConfig.bottomButtons?.items?.length" class="bottomButtons" :class="[formConfig.bottomButtons?.align]">
       <template v-for="(bv,bi) in formConfig.bottomButtons?.items">
-        <Button v-if="(!bv.isShow)||bv.isShow({vm})" v-hasPermission="bv.permission" v-bind="bv.attrs" :loading="bv.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
+        <template v-if="(!bv.isShow)||bv.isShow({vm})">
+          <Button v-hasPermission="bv.permission" v-bind="bv.attrs" :loading="bv.loading" :key="bi" :disabled="$$getVariableType(bv.attrs?.disabled)==='[object Function]'?bv.attrs.disabled({vm}):bv.attrs?.disabled" @click="bv.onClick&&bv.onClick({vm,item:bv})">{{ bv.btnName }}</Button>
+        </template>
       </template>
     </div>
   </div>
@@ -221,6 +227,10 @@ export default {
     }
   },
   methods: {
+    isShowDropdown(items = []) {
+      const item = items.filter(bgb => ((!bgb.isShow) || bgb.isShow({vm: this})));//出现的按钮
+      return item.filter(it => this.$$hasPermission(it.permission)).length > 0;
+    },
     onFormDataChange: debounce(function () {
       this.$emit('formDataChange', this.getFormData());
     }),
@@ -367,7 +377,8 @@ export default {
       //   (it?.items || []).forEach(iti => iti.key && (iti.key = iti.key.replace(/\./g, '$dot$')));
       // });
       // 模式mode为collapse可伸缩展开，collapsed是否默认展开 ，默认使用name||否则使用index
-      this.collapseActive = this.resultItems.map((fci, i) => fci.mode === 'collapse' ? (fci.collapsed ? (fci.name || `${i}`) : null) : (fci.name || `${i}`)).filter(f => f);
+      // this.collapseActive = this.resultItems.map((fci, i) => fci.mode === 'collapse' ? (fci.collapsed ? (fci.name || `${i}`) : null) : (fci.name || `${i}`)).filter(f => f);
+      this.collapseActive = this.resultItems.map((fci, i) => fci.collapsed === true ? null : (fci.name || `${i}`)).filter(f => f);
       this.loadExpandFormConfigItems();//展开
       // this.formData = this.expandFormConfigItems?.reduce((t, c) => (c.key && (this.$$lodash.set(t, c.key, c.value ?? null)), t), {});//初始化formData把数据key对应
       this.formData = [].concat(this.expandFormConfigItems, this.formConfig.hiddenFields || [])?.reduce((t, c) => (c.key && (t[c.key] = c.value ?? null), t), {});//初始化formData把数据key对应

@@ -26,7 +26,7 @@ let store = {
       return new Promise((rs, rj) => {
         payload.dicts.forEach(dictType => {
           // if (state.dictionaries?.[dictType]?.length) return;//字典已存在 pass
-          Vue.prototype.$$api[payload.type || 'dict'].getDicts({loading: !1, dictType}).then(({res, err}) => {
+          Vue.prototype.$$api[payload.type || 'dict']?.getDicts({loading: !1, dictType}).then(({res, err}) => {
             if (err) return;
             //存档字典
             commit('SET_DICTIONARIES', {

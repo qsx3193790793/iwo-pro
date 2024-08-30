@@ -19,21 +19,27 @@
             <slot v-for="item in columns.options.btns" :name="item.key + '-option'" :row="scope">
               <!-- 普通按钮-->
               <template v-if="!item.children">
-                <el-button v-if="(item.autoHidden?item.autoHidden(scope):true)" v-hasPermission="item.permission" :key="item.key" size="small" :loading="item.loading" :type="item.type||'primary'" @click="item.event?.(scope.row)">{{ item.label }}</el-button>
+                <template v-if="(item.autoHidden?item.autoHidden(scope):true)">
+                  <el-button v-hasPermission="item.permission" :per="item.permission" :key="item.key" size="small" :loading="item.loading" :type="item.type||'primary'" @click="item.event?.(scope.row)">{{ item.label }}</el-button>
+                </template>
               </template>
               <!-- 更多下拉按钮-->
-              <el-dropdown v-else-if="item.children.filter(c=>(c.autoHidden ? c.autoHidden(scope) : true)).length" v-hasPermission="item.permission" class="public-el-dropdown" trigger="click">
-                <el-button type="primary">
-                  {{ item.label || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
-                </el-button>
-                <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
-                  <div class="inner">
-                    <template v-for="(vv,ii) in item.children">
-                      <el-button v-if="vv.autoHidden ? vv.autoHidden(scope) : true" v-hasPermission="vv.permission" :type="vv.type||'primary'" :key="ii" size="small" @click="vv.event?.(scope.row)">{{ vv.label }}</el-button>
-                    </template>
-                  </div>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <template v-else-if="isShowDropdown(item.children,scope)">
+                <el-dropdown class="public-el-dropdown" :per="item.permission" trigger="click">
+                  <el-button type="primary">
+                    {{ item.label || '更多' }}<i class="el-icon-arrow-down el-icon--right"></i>
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
+                    <div class="inner">
+                      <template v-for="(vv,ii) in item.children">
+                        <template v-if="vv.autoHidden ? vv.autoHidden(scope) : true">
+                          <el-button v-hasPermission="vv.permission" :per="vv.permission" :type="vv.type||'primary'" :key="ii" size="small" @click="vv.event?.(scope.row)">{{ vv.label }}</el-button>
+                        </template>
+                      </template>
+                    </div>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </template>
             </slot>
           </template>
         </template>
@@ -95,6 +101,11 @@ const optionsWidth = computed(() => {
   console.log('optionsWidth', width)
   return props.columns.options.width ? props.columns.options.width : width;
 });
+
+function isShowDropdown(items = [], scope) {
+  const item = items.filter(c => (c.autoHidden ? c.autoHidden(scope) : true));//出现的按钮
+  return item.filter(it => proxy.$$hasPermission(it.permission)).length > 0;
+}
 
 const tableView = ref(null);
 let multipleSelection = ref([]); //多选的数据

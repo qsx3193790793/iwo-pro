@@ -38,14 +38,14 @@
                 </div>
               </el-col>
             </el-row>
-            <el-row :gutter="20" class="rowPadding">
-              <el-col :span="6">
+            <el-row :gutter="10" class="rowPadding">
+              <el-col :span="8">
                 <div>
                   号码归属地：
                   <span class="showData">{{ state.userInfo.phoneLocal }}</span>
                 </div>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="4">
                 <div>
                   工单满意：
                   <span class="showData">{{
@@ -53,7 +53,7 @@
                     }}</span>
                 </div>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="4">
                 <div>
                   工单不满意：
                   <span class="showData">{{
@@ -61,9 +61,7 @@
                     }}</span>
                 </div>
               </el-col>
-            </el-row>
-            <el-row :gutter="20" class="rowPadding">
-              <el-col :span="6">
+              <el-col :span="4">
                 <div>
                   重复投诉：
                   <span class="showData">{{
@@ -71,7 +69,7 @@
                     }}</span>
                 </div>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="4">
                 <div>
                   越级投诉：
                   <span class="showData">{{
@@ -322,7 +320,7 @@ onBeforeMount(() => {
 </script>
 <script>
 export default {
-  cusDicts: ['base_province_code', 'cus_city']
+  webDicts: ['base_province_code', 'cus_city']
 }
 </script>
 <style lang="scss" scoped>

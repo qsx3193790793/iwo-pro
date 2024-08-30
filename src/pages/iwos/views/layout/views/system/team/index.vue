@@ -136,7 +136,7 @@
 import Treeselect from "@riophae/vue-treeselect";
 
 export default {
-  name: "Team",
+  name: "TeamManage",
   components: {Treeselect},
   dicts: ['sys_normal_disable'],
   data() {

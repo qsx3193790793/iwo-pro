@@ -294,7 +294,7 @@ import Treeselect from "@riophae/vue-treeselect";
 import iconfontJson from '/public/static/css/iconfont/iconfont.json';
 
 export default {
-  name: "Menu",
+  name: "MenuIndex",
   dicts: ['sys_show_hide', 'sys_normal_disable'],
   components: {Treeselect},
   data() {

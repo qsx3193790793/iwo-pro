@@ -73,7 +73,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
-  name: "Dict",
+  name: "LabelDictionary",
   cusDicts: ["start_stop", "base_province_code"],
   components: {JsTable, PageSearchPanel},
   data() {

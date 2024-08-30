@@ -277,6 +277,7 @@ const $$validator = {
     if ($$getVariableType(value) === '[object Array]') return !!value.length;
     return $$getVariableType(value) === '[object String]' ? !!value.trim() : !$$isEmpty(value)
   },
+  isVariableAndChineseCharacters: value => $$isEmpty(value) || /^[A-Za-z_$\u4E00-\u9FA5][A-Za-z0-9_$\.\u4E00-\u9FA5]*$/.test(value),
   isVariable: value => $$isEmpty(value) || /^[A-Za-z_$][A-Za-z0-9_$\.]*$/.test(value),//变量名
   hasChineseCharacters: value => $$isEmpty(value) || /[\u4E00-\u9FA5]+/g.test(value),
   isNumber: value => $$isEmpty(value) || !!Number(value),
@@ -1083,13 +1084,6 @@ const $$getFullDateStr = (d) => {
   return `${year}${month}${day} ${hour}${min}${sec}`;
 }
 
-//判断是否有权限
-const $$hasPermissions = (per = []) => {
-  const permissions = Vue.prototype.$$store.getters['user/GET_PERMISSIONS'];
-  if (permissions?.[0] === '*:*') return !0;//全权限
-  return (per || []).filter(v => permissions.includes(v)).length > 0;
-}
-
 //复制文字
 const $$toCopy = (event, text) => {
   const clipboard = new Clipboard(event.target, {text: () => `${text}`});
@@ -1182,6 +1176,14 @@ const $$findTreePath = ({tree = [], props = {codeKey: 'code', childrenKey: 'chil
   const flats = $$lodash.flatMapDeep(tree, n => {
     console.log('n', n)
   });
+}
+
+//权限检测
+const $$hasPermission = (pms) => {
+  if (!pms) return !0;
+  const permissions = Vue.prototype.$$store.getters['user/GET_PERMISSIONS'] || [];
+  const res = (pms || []).filter(v => permissions.includes('*:*:*') || permissions.includes(v));
+  return res.length > 0;
 }
 
 export default {
@@ -1419,7 +1421,6 @@ export default {
     Vue.prototype.$$goRouter = $$goRouter;
 
     Vue.prototype.$$triggerLockElement = $$triggerLockElement;
-    Vue.prototype.$$hasPermissions = $$hasPermissions;
     Vue.prototype.$$toCopy = $$toCopy;
     Vue.prototype.$$getSourceUrl = $$getSourceUrl;
     Vue.prototype.$$blob2stream = $$blob2stream;
@@ -1428,6 +1429,7 @@ export default {
     Vue.prototype.$$RouYiHandleTree = $$RouYiHandleTree;
     Vue.prototype.$$tansParams = $$tansParams;
     Vue.prototype.$$formatCascaderTree = $$formatCascaderTree;
+    Vue.prototype.$$hasPermission = $$hasPermission;
 
   }
 };
@@ -1529,7 +1531,6 @@ export {
   $$goRouter,
   $$triggerLockElement,
   $$getFullDateStr,
-  $$hasPermissions,
   $$toCopy,
   $$splitArray,
   $$blob2stream,
@@ -1539,4 +1540,5 @@ export {
   $$fileSaveAs,
   $$formatCascaderTree,
   $$findTreePath,
+  $$hasPermission,
 };

@@ -125,7 +125,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 
 export default {
-  name: "UserIndex",
+  name: "OrderOnFileStrategy",
   cusDicts: [
     "start_stop",
     "search_order_type",

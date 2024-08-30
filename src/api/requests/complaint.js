@@ -33,20 +33,15 @@ const apis = {
   miitTemplate: {url: `${apiPrefix('web')}/importWorkOrder/miitTemplate`, method: 'post', responseType: 'blob'},
   //省管局模板下载
   provinceAuthorityTemplate: {url: `${apiPrefix('web')}/importWorkOrder/provinceAuthorityTemplate`, method: 'post', responseType: 'blob'},
-
-  //投诉现象
-  queryPhenomPullList: {url: `${apiPrefix("web")}/phenom/web/queryPhenomPullList`, method: "get"},
-  //投诉原因
-  queryReasonPullList: {url: `${apiPrefix("web")}/phenom/web/queryReasonPullList`, method: "get"},
-  //产品
-  channelTree: {url: `${apiPrefix("web")}/tChannel/channelTree`, method: "get"},
-
   // 查询模板现象类表单
   formPhenomenon: {url: (args) => `${apiPrefix('web')}/template/form/phenomenon/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
   // 查询模板来源类表单
   formSource: {url: (args) => `${apiPrefix('web')}/template/form/source/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
   // 查询模板通用类表单
   formCommon: {url: (args) => `${apiPrefix('web')}/template/form/common/${args.sceneCode ?? ''}/${args.bigType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
+  // 点击 获取投诉现象的按钮，进行打标
+  saveComplaintPhenomMark: {url: `${apiPrefix('web')}/complaintPhenom/saveComplaintPhenomMark`, method: 'post'},
+
 };
 
 export default apiGenerator(apis);

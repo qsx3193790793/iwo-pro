@@ -90,8 +90,8 @@
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
             <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:phenom:detailList']">查询</el-button>
-            <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)"  v-hasPermission="['config:phenom:add']">新增</el-button>
-            <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)"  v-hasPermission="['config:phenom:update']">删除</el-button>
+            <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:phenom:add']">新增</el-button>
+            <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:phenom:update']">删除</el-button>
           </el-form-item>
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
@@ -228,7 +228,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 
 export default {
-  name: "complaintPhenomenon",
+  name: "ComplaintPhenomenon",
   // dicts: ["sys_normal_disable", "sys_user_sex"],
   cusDicts: ["phenom_status_name", "yes_no"],
   components: {Treeselect, PageSearchPanel, JsTable},
@@ -334,7 +334,7 @@ export default {
               label: "新增",
               key: "add",
               type: "success",
-              permission:['config:phenom:add'],
+              permission: ['config:phenom:add'],
               autoHidden: ({row}) => {
                 return row.level === 2 && row.isProvinceCustom === 1
               },
@@ -343,7 +343,7 @@ export default {
             {
               label: "编辑",
               key: "edit",
-              permission:['config:phenom:update'],
+              permission: ['config:phenom:update'],
               autoHidden: ({row}) => {
                 return row.level === 3 && row.isProvinceCustom === 1
               },
@@ -358,7 +358,7 @@ export default {
                   label: "删除",
                   key: "del",
                   type: "danger",
-                  permission:['config:phenom:update'],
+                  permission: ['config:phenom:update'],
                   autoHidden: ({row}) => {
                     return row.level === 3 && row.isProvinceCustom === 1
                   },
@@ -368,7 +368,7 @@ export default {
                   label: "启用",
                   key: "start",
                   type: "primary",
-                  permission:['config:phenom:update'],
+                  permission: ['config:phenom:update'],
                   autoHidden: this.autoStartHidden,
                   event: this.handleStart,
                 },
@@ -376,14 +376,14 @@ export default {
                   label: "停用",
                   key: "end",
                   type: "danger",
-                  permission:['config:phenom:update'],
+                  permission: ['config:phenom:update'],
                   autoHidden: this.autoEndHidden,
                   event: this.handleEnd,
                 },
                 {
                   label: "详情",
                   key: "detail",
-                  permission:['config:phenom:detailList'],
+                  permission: ['config:phenom:detailList'],
                   event: this.handleDetail,
                   autoHidden: ({row}) => {
                     return row.isProvinceCustom === 1

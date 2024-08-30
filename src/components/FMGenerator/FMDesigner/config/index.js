@@ -71,7 +71,7 @@ export const parseFormModel = (json, isView = false) => {
     ),
     items: [].concat(
       json.stage?.filter(it => !['按钮组', '隐藏域'].includes(it.z_props.isBtnBlock)).map(it => ({
-        name: it.z_props.name, subName: it.z_props.subName,
+        name: it.z_props.name, subName: it.z_props.subName, collapsed: it.z_props.collapsed,
         items: it.children.map(j => {
           return Object.assign(
             j?.z_props || {},

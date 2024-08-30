@@ -157,7 +157,7 @@ const columns = ref({
         label: '详情',
         key: 'detail',
         event: row => {
-          proxy.$router.push({name: 'ComplaintDetail', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
+          proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
         },
       },
       {
@@ -412,7 +412,7 @@ async function listComplaintSourceTree() {
   )
     return;
   const {res, err} =
-      await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
+      await proxy.$$api.web.findSourceTree({data: {status: 1}});
   if (err) return;
   proxy.$store.commit("dictionaries/SET_DICTIONARIES", {
     complaintSourceTree: proxy.$$formatCascaderTree(
@@ -429,12 +429,20 @@ onMounted(() => {
   getList(1);
 });
 
+onActivated(() => {
+  // 提交关闭后返回刷新页面
+  if (sessionStorage.getItem('reload') === 'true') {
+    getList();
+    sessionStorage.removeItem('reload');
+  }
+});
+
 </script>
 
 <script>
 export default {
   name: "NotSubmitComplaintIndex",
-  cusDicts: [
+  webDicts: [
     "yes_no",
     "search_order_type",
     "base_province_code",

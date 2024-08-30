@@ -25,9 +25,6 @@ export default async ({vm, value = null}) => {
     if (workorderStrictestScene) {
       vm.formData.workorderStrictest = '1';//市场最严工单
       vm.formData.workorderStrictestScene = workorderStrictestScene;//市场最严工单场景
-    } else {
-      vm.formData.workorderStrictest = '0';//市场最严工单
-      vm.formData.workorderStrictestScene = null;//市场最严工单场景
     }
     finder_workorderStrictest?.onChange({vm, value: {workorderStrictestScene: vm.formData.workorderStrictestScene}});
   }

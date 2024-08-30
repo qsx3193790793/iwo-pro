@@ -100,7 +100,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
-  name: "Dict",
+  name: "CustomDictionary",
   // dicts: ["sys_normal_disable"],
   cusDicts: ['start_stop'],
   components: {JsTable, PageSearchPanel},

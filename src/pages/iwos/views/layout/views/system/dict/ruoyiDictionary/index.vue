@@ -60,19 +60,19 @@
 
     <!-- <el-row class="one-screen-fg0 mb8" :gutter="10">
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-      
+
       </el-col>
       <el-col :span="1.5">
-      
+
       </el-col>
     </el-row> -->
 
@@ -154,7 +154,7 @@
 <script>
 
 export default {
-  name: "Dict",
+  name: "DictIndex",
   dicts: ['sys_normal_disable'],
   data() {
     return {

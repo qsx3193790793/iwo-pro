@@ -157,7 +157,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
-  name: "UserIndex",
+  name: "ChannelClassification",
   cusDicts: ['start_stop', 'yes_no','base_province_code'],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {

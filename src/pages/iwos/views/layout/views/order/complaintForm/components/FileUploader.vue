@@ -131,10 +131,15 @@ export default {
   text-align: right;
 }
 
-.require:before {
-  content: '*';
-  color: red;
-  padding-right: 4px;
+.require {
+  margin-bottom: 6px;
+
+  &:before {
+    content: '*';
+    color: red;
+    padding-right: 4px;
+  }
 }
+
 
 </style>

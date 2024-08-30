@@ -58,12 +58,22 @@ const formConfig = ref({
       name: '',
       items: [
         {name: '字段类型', key: 'type', value: '', col: 24, type: 'select', options: props.pkid ? optionsAll : options, isDisable: props.pkid ? !0 : !1, isRequire: !0},
-        {name: '字段标题', key: 'title', value: '', type: 'input', col: 24, isDisable: !1, isRequire: !0, 
-         async onChange({vm}){ 
+        {
+          name: '字段标题', key: 'title', value: '', type: 'input', col: 24, isDisable: !1, isRequire: !0,
+          rules: [
+            {
+              validator: (rule, value, cb) => {
+                proxy.$$validator.isVariableAndChineseCharacters(value) ? cb() : cb(new Error('只能是[中文、数字、英文、_、$]，且不能以数字开头'))
+              }, trigger: ['blur', 'change']
+            }
+          ],
+          async onChange({vm}) {
+            if (!proxy.$$validator.isVariableAndChineseCharacters(vm.formData.title)) return vm.formData.name = null;
             const {res, err} = await proxy.$$api.modelFields.trans({params: {param: vm.formData.title}})
-            if(err) return 
+            if (err) return
             vm.formData.name = res.value
-          }},
+          }
+        },
         {
           name: '字段名称', key: 'name', value: '', type: 'input', col: 24, isDisable: !0, isRequire: !0,
           rules: [{validator: (rule, value, cb) => Vue.prototype.$$validator.isVariable(value) ? cb() : cb(new Error('不符合变量规范[A~Z、a~z、0~9、_、$]，不允许数字开头）')), trigger: 'blur'}],

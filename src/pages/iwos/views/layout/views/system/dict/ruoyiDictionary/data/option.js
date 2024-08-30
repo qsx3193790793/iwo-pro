@@ -10,7 +10,7 @@ export default {
     name: '字典数据',
     title: "智慧客服工单系统",
     authentication: true, //该页面是否需要登陆才可进入
-    keepAlive: false,
+    keepAlive: true,
     pageLevel: 1
   },
 };

@@ -5,7 +5,8 @@
         <template slot="title">
           <div class="collapse-title">
             <div class="collapse-title-name" @click.stop="more('1')">
-              <el-badge class="mark" :value="recentAttentionTotal" v-if="recentAttentionTotal"/>通知公告<i class="el-icon-arrow-right"></i> 
+              <el-badge class="mark" :value="recentAttentionTotal" v-if="recentAttentionTotal"/>
+              通知公告<i class="el-icon-arrow-right"></i>
             </div>
             <div> {{ recentAttention[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
@@ -36,8 +37,9 @@
       <el-collapse-item name="1">
         <template slot="title">
           <div class="collapse-title">
-            <div class="collapse-title-name"  @click.stop="more('2')">
-              <el-badge class="mark" :value="serviceCasesTotal" v-if="serviceCasesTotal" />服务案例<i class="el-icon-arrow-right"></i> 
+            <div class="collapse-title-name" @click.stop="more('2')">
+              <el-badge class="mark" :value="serviceCasesTotal" v-if="serviceCasesTotal"/>
+              服务案例<i class="el-icon-arrow-right"></i>
               <!-- <el-button type="primary">更多</el-button> -->
             </div>
             <div> {{ serviceCases[0] == 1 ? '折叠' : '展开' }} </div>
@@ -74,22 +76,24 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, ref, onMounted } from "vue";
+import {getCurrentInstance, ref, onMounted} from "vue";
 import moreNotice from './more/index.vue'
 import detailDialog from './detail/index.vue'
-const { proxy } = getCurrentInstance();
+
+const {proxy} = getCurrentInstance();
 const recentAttention = ref(['1'])
 const serviceCases = ref('1')
 const recentAttentionlist = ref([])
-const recentAttentionTotal = ref (0)
-const serviceCasesTotal = ref (0)
+const recentAttentionTotal = ref(0)
+const serviceCasesTotal = ref(0)
 const serviceCasesList = ref([])
 const isShowAddDialog = ref(false)
 const noticeType = ref(null)
 const showDetailDialog = ref(false)
 const noticeId = ref(null)
+
 async function getStagingList(noticeType) {
-  const { res, err } = await proxy.$$api.staging.workbench({ params: { pageNum: 1, pageSize: 8, noticeType } })
+  const {res, err} = await proxy.$$api.staging.workbench({params: {pageNum: 1, pageSize: 8, noticeType}})
   if (err) return
   if (noticeType == 1) {
     recentAttentionlist.value = res.rows
@@ -99,21 +103,24 @@ async function getStagingList(noticeType) {
     serviceCasesTotal.value = res.total
   }
 }
+
 function more(val) {
   noticeType.value = val
   isShowAddDialog.value = true
 }
+
 function detail(val) {
   noticeId.value = val
   showDetailDialog.value = true
 }
+
 onMounted(() => {
   getStagingList(1)
   getStagingList(2)
 })
 </script>
 <script>
-export default { name: 'Index' }
+export default {name: 'Index'}
 </script>
 <style lang="scss" scoped>
 $collapse_colorrgb: rgb(237, 244, 254);

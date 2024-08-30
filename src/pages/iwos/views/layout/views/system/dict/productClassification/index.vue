@@ -143,7 +143,7 @@ import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
-  name: "UserIndex",
+  name: "ProductClassification",
   cusDicts: ['start_stop', 'yes_no'],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {
@@ -393,7 +393,7 @@ export default {
         productCode: [
           {required: true, message: "产品二级编码不能为空", trigger: "blur"},
         ],
-        
+
       },
     };
   },
@@ -636,7 +636,7 @@ export default {
               this.form.productCode = productCode;
               this.form.oneProductNameEdit = true;
             }
-            
+
           });
     },
     /** 修改按钮操作 */

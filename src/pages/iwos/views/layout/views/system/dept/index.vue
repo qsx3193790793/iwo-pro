@@ -201,7 +201,7 @@
 import Treeselect from "@riophae/vue-treeselect";
 
 export default {
-  name: "Dept",
+  name: "DeptIndex",
   dicts: ['sys_normal_disable'],
   cusDicts: ['base_province_code'],
   components: {Treeselect},

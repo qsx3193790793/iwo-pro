@@ -7,7 +7,7 @@ export const label = '投诉单_初始化';
 export default async ({vm, item}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
 
-  if (!vm.$route.params.workorderId) { // 新建
+  if (!vm.$route.params.workorderId && !vm.$route.params.detailWorkorderId) { // 新建
     const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
 
     // 未定位直接pass
@@ -127,7 +127,7 @@ export default async ({vm, item}) => {
   //以下 详情进入
   const [R1, R2] = await Promise.all([
     vm.$$api.complaint.complaintWorkOrderDetail({
-      loading: !1, workorderId: vm.$route.params.workorderId,
+      loading: !1, workorderId: vm.$route.params.workorderId || vm.$route.params.detailWorkorderId,//详情和新建分开 避免keepalive污染
       headers: {'complaintWorksheetId': vm.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': vm.$route.query.complaintAssetNum ?? ''}
     }),
     // 拉取通用模板
@@ -139,19 +139,19 @@ export default async ({vm, item}) => {
   const {res, err} = R1, {res: pbtRes, err: pbtErr} = R2;
   if (res) {
     //申告地
-    vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: res.lanId}}).then(({res, err}) => {
-      vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
+    const problemLanIdChainFinder = vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain');
+    problemLanIdChainFinder && vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: res.lanId}}).then(({res, err}) => {
+      problemLanIdChainFinder.options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
     });
 
-    //当unifiedComplaintCode为空时 获取统一投诉编码
+    //当unifiedComplaintCode为空时 获取统一投诉编码  为了导入用 导入时没有unifiedComplaintCode所以帮他获取下
     let unifiedComplaintCode = res.unifiedComplaintCode ?? null;
-    if (unifiedComplaintCode) {
-      const {res: ufcRes, err: ufcErr} = await vm.$$api.srv.getUnifyComplaintCode({
-        loading: !1, data: {complaintPhone: res.complaintAssetNum, custName: res.custName, complaintWorksheetId: res.complaintWorksheetId},
-        headers: {'complaintWorksheetId': res.complaintWorksheetId ?? '', 'complaintAssetNum': res.complaintAssetNum ?? ''}
-      });
+    if (!unifiedComplaintCode) vm.$$api.srv.getUnifyComplaintCode({
+      loading: !1, data: {complaintPhone: res.complaintAssetNum, custName: res.custName, complaintWorksheetId: res.complaintWorksheetId},
+      headers: {'complaintWorksheetId': res.complaintWorksheetId ?? '', 'complaintAssetNum': res.complaintAssetNum ?? ''}
+    }).then(({res: ufcRes, err: ufcErr}) => {
       unifiedComplaintCode = ufcRes?.unifiedComplaintCode ?? null;
-    }
+    });
 
     if (pbtRes?.formContent) {
       const provinceCommFormModel = parseFormModel(JSON.parse(pbtRes.formContent));

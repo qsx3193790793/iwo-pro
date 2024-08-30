@@ -30,12 +30,12 @@
       <!-- <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog> -->
     </div>
   </template>
-  
+
   <script setup>
   import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
   import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
   import JsTable from "@/components/js-table/index.vue";
-  
+
   const {proxy} = getCurrentInstance();
   const columns = ref({
     props: [
@@ -49,7 +49,7 @@
         width: 200,
         key: "failCount",
       },
-  
+
       {
         name: "补偿状态",
         key: "receiveStatus",
@@ -72,12 +72,12 @@
       },
     ],
   });
-  
+
   const PageSearchPanelRef = ref();
   const pageInfo = ref({pageNum: 1, pageSize: 15, rowCount: 0});
-  
+
   const list = ref([]);
-  
+
   // 列表请求
   const getList = async (pageNum = pageInfo.value.pageNum) => {
     pageInfo.value.pageNum = pageNum;
@@ -112,14 +112,14 @@
         pageInfo.value.rowCount=0
         list.value = [];
       }
-      
+
     }
-  };  
+  };
   //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
   const formConfigItems = ref([
     {
       name: "集团工单编号",
-      key: "complaintWorksheetId", 
+      key: "complaintWorksheetId",
       value: "",
       col: 6,
       type: "input",
@@ -179,13 +179,13 @@
   onMounted(() => {
     getList(1);
   });
-  
+
   </script>
-  
+
   <script>
   export default {
-    name: "ComplaintForm",
-    cusDicts: [
+    name: "Abnormal_form",
+    webDicts: [
       "abnormal_form_status",
       "search_order_type",
     ],
@@ -196,4 +196,3 @@
     width: 100%;
   }
   </style>
-  
