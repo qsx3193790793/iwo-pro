@@ -314,6 +314,16 @@ export default {
           isRequire: !1,
         },
         {
+          name: "字典键值",
+          key: "dictValue",
+          value: "",
+          type: "input",
+          placeholder: "字典键值",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
           name: "状态",
           key: "status",
           value: "",

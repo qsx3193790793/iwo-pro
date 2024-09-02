@@ -21,9 +21,9 @@
         <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增
         </el-button>
-        <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
+        <!-- <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
                    v-hasPermission="['system:notice:edit']">修改
-        </el-button>
+        </el-button> -->
         <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete"
                    v-hasPermission="['system:notice:remove']">删除
         </el-button>
@@ -59,7 +59,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建者" align="center" prop="createBy" width="100"/>
+      <el-table-column label="创建者" align="center" prop="publisher" width="100"/>
       <el-table-column label="发布部门" align="center" prop="publishDeptName" width="100"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -68,11 +68,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button size="small" type="primary" @click="handleRelease(scope.row)" v-if="scope.row.status != 0">发布
+          <el-button size="small" type="success" @click="handleRelease(scope.row)" v-if="scope.row.status != 0">发布
           </el-button>
           <el-button size="small" type="danger" @click="handleRetract(scope.row)" v-if="scope.row.status == 0">撤回
           </el-button>
-          <el-button size="small" type="success" @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
+          <el-button size="small" type="primary"  @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
                      v-hasPermission="['system:notice:edit']">修改
           </el-button>
           <el-dropdown style="margin-left: 4px;" trigger="click" placement="bottom">
@@ -107,7 +107,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="公告类型" prop="noticeType">
-              <el-select v-model="form.noticeType" placeholder="请选择公告类型" style="width: 100%;" :disabled="isDeatil">
+              <el-select v-model="form.noticeType" placeholder="请选择公告类型" style="width: 100%;" :disabled="isDetail">
                 <el-option v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')" :key="dict.value"
                            :label="dict.label" :value="dict.value"></el-option>
               </el-select>
@@ -115,7 +115,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="30" :disabled="isDeatil"/>
+              <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="30" :disabled="isDetail"/>
             </el-form-item>
           </el-col>
           <!-- <el-col :span="24">
@@ -132,7 +132,7 @@
           </el-col> -->
           <el-col :span="24">
             <el-form-item label="接收者类型" prop="recipientType">
-              <el-radio-group v-model="form.recipientType" @change="recipientTypeChange" :disabled="isDeatil">
+              <el-radio-group v-model="form.recipientType" @change="recipientTypeChange" :disabled="isDetail">
                 <!-- <el-radio
                     v-for="dict in $store.getters['dictionaries/GET_DICT']('notice_recipient_type')"
                     :key="dict.value"
@@ -148,23 +148,23 @@
           <el-col :span="12">
             <el-form-item label="接收机构" prop="deptId">
               <treeselect v-model="form.deptId" :multiple="form.recipientType === '1'" :options="deptOptions"
-                          :show-count="true" placeholder="请选择机构" @select="handelDeptIdChange" :disabled="isDeatil"/>
+                          :show-count="true" placeholder="请选择机构" @select="handelDeptIdChange" :disabled="isDetail"/>
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.recipientType !== '1'">
             <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
               <treeselect v-model="form.recipientIds" noOptionsText='该机构下无数据' :multiple="true" :normalizer="normalizer"
-                          :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`" :disabled="isDeatil"/>
+                          :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`" :disabled="isDetail"/>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="内容">
-              <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDeatil"/>
+              <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDetail"/>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer" v-if="!isDeatil">
+      <div slot="footer" class="dialog-footer" v-if="!isDetail">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -342,7 +342,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      this.isDeatil = false
+      this.isDetail = false
       this.open = true;
       this.title = "添加公告";
     },
@@ -350,7 +350,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const noticeId = row.noticeId || this.ids
-      this.isDeatil = false
+      this.isDetail = false
       this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
         if (err) return
         this.form = response;
@@ -432,9 +432,9 @@ export default {
     //详情按钮操作
     handleDetail(row) {
       this.reset();
-      this.isDeatil = true
+      this.isDetail = true
       const noticeId = row.noticeId || this.ids
-      this.form.isDeatil = true
+      this.form.isDetail = true
       this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
         if (err) return
         this.form = response;

@@ -28,7 +28,7 @@ export default async ({vm, item}) => {
     if (qpRes?.pendingWorkOrderFlag >= 1) {
       const h = vm.$createElement;
       const c = await vm.$$Dialog.confirm(h('p', null, [
-        h('span', null, '该设备号存 '),
+        h('span', null, '该设备号存在'),
         h('span', { style: 'color: #409eff;text-decoration-line: underline;cursor: pointer;',on:{
           click :()=>{
            vm.$$Dialog.close()

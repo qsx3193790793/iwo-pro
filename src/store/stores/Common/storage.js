@@ -44,7 +44,9 @@ let store = {
     },
     CLEAR_TABS(state, payload) {
       state.activeTabs.splice(1, state.activeTabs.length);
-      console.log('CLEAR_TABS', state.activeTabs)
+        const tab = state.activeTabs[0];
+        tab.isActive = !0;
+        Vue.prototype.$$router.replace({name: tab.routeName, query: tab.query, params: tab.params});
     },
     SET_TABS_ACTIVE_STATUS(state, payload = !1) {
       state.activeTabs.forEach(at => at.isActive = payload);

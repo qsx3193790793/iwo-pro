@@ -5,8 +5,7 @@
         <template slot="title">
           <div class="collapse-title">
             <div class="collapse-title-name" @click.stop="more('1')">
-              <el-badge class="mark" :value="recentAttentionTotal" v-if="recentAttentionTotal"/>
-              通知公告<i class="el-icon-arrow-right"></i>
+              通知公告<el-badge class="mark" :value="recentAttentionTotal" v-if="recentAttentionTotal"/><i class="el-icon-arrow-right"></i>
             </div>
             <div> {{ recentAttention[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
@@ -22,7 +21,7 @@
                 <div style="display: flex; align-items: center">
                   <!-- <el-avatar size="small"
                     src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar> -->
-                  <span>{{ item.createBy }}</span>
+                  <span>{{ item.publisher+'-'+ item.publishDeptName }}</span>
                 </div>
                 <div> {{ item.createTime }}</div>
               </div>
@@ -38,9 +37,7 @@
         <template slot="title">
           <div class="collapse-title">
             <div class="collapse-title-name" @click.stop="more('2')">
-              <el-badge class="mark" :value="serviceCasesTotal" v-if="serviceCasesTotal"/>
-              服务案例<i class="el-icon-arrow-right"></i>
-              <!-- <el-button type="primary">更多</el-button> -->
+              服务案例<el-badge class="mark" :value="serviceCasesTotal" v-if="serviceCasesTotal"/><i class="el-icon-arrow-right"></i>
             </div>
             <div> {{ serviceCases[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
@@ -48,17 +45,17 @@
         <template v-if="serviceCasesList?.length > 0">
           <div v-for="item in serviceCasesList" :key="item.noticeId">
             <div style="display: flex;">
-              <div style="display: flex;margin-right: 40px;">
+              <div style="display: flex;margin-right: 40px;flex: 1;">
                 <!-- <div>
                   <el-avatar src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar>
                 </div> -->
-                <div style="margin-left: 10px;">
-                  <div>{{ item.createBy }}</div>
+                <div>
+                  <div style="margin-bottom: 5px;">{{ item.publisher+'-'+ item.publishDeptName }}</div>
                   <div>{{ item.createTime }}</div>
                 </div>
               </div>
               <div style="width: 85%;">
-                <div class="container-title" @click="detail(item.noticeId)"> {{ item.noticeTitle }}</div>
+                <div style="margin-bottom: 5px;" class="container-title" @click="detail(item.noticeId)"> {{ item.noticeTitle }}</div>
                 <div class="serviceCases-ellipsis">
                   {{ item.noticeText }}
                 </div>

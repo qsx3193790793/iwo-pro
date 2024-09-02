@@ -165,7 +165,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="归属班组" prop="teamIds">
-              <treeselect v-model="form.teamIds" :options="teamOptions" :normalizer="normalizer" :multiple="true" :show-count="true" placeholder="请选择归属班组" @select="handelparentIdChange"/>
+              <treeselect v-model="form.teamIds" :options="teamOptions" noOptionsText='该机构下没有班组信息' :normalizer="normalizer" :multiple="true" :show-count="true" placeholder="请选择归属班组" @select="handelparentIdChange"/>
             </el-form-item>
           </el-col>
         </el-row>
