@@ -1189,6 +1189,11 @@ const $$hasPermission = (pms) => {
   return res.length > 0;
 }
 
+//饿了么tree展开或收起
+const $$treeExpandOrCollapse = (treeRef, flag = true) => {
+  Object.values(treeRef?.store?.nodesMap || {}).forEach(nm => nm.expanded = flag);
+}
+
 export default {
   install(Vue, options) {
     //加密串
@@ -1434,6 +1439,7 @@ export default {
     Vue.prototype.$$tansParams = $$tansParams;
     Vue.prototype.$$formatCascaderTree = $$formatCascaderTree;
     Vue.prototype.$$hasPermission = $$hasPermission;
+    Vue.prototype.$$treeExpandOrCollapse = $$treeExpandOrCollapse;
 
   }
 };
@@ -1546,4 +1552,5 @@ export {
   $$findTreePath,
   $$hasPermission,
   $$remBasePx,
+  $$treeExpandOrCollapse,
 };

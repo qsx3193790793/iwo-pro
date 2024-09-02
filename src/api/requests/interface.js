@@ -19,6 +19,8 @@ const apis = {
   update: {url: `${apiPrefix('config')}/tInterfaceInfo/updInterfaceInfo`, method: 'put'},
   // 详情
   detail: {url: (args) => `${apiPrefix('config')}/tInterfaceInfo/getInterfaceInfoById/${args?.interfaceId || ''}`, method: 'get'},
+  // 刷新缓存
+  refreshCache: {url:`${apiPrefix('config')}/tInterfaceInfo/refreshCache`, method: 'get'},
 };
 
 export default apiGenerator(apis);

@@ -285,6 +285,18 @@ const formConfigItems = ref([
           return props.type !== 'FormModel'
         }
       },
+      {
+        btnName: '刷新缓存', type: 'button', attrs: {type: 'warning'}, col: 1,
+        // permission: ['config:interfaceInfo:add'],
+       async onClick({vm}) {
+           const {res, err} =await proxy.$$api.interface.refreshCache()
+           if(err) return 
+           proxy.$$Toast.success("缓存刷新成功");
+        },
+        isShow({vm}) {
+          return props.type !== 'FormModel'
+        }
+      },
     ]
   }
 ]);

@@ -12,7 +12,11 @@
               maxlength="30"
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
-          />
+          >
+          <template slot="append">
+              <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
+            </template>
+          </el-input>
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
@@ -21,7 +25,7 @@
               :expand-on-click-node="false"
               :filter-node-method="filterNode"
               ref="tree"
-              node-key="id"
+              node-key="sourceId"
               default-expand-all
               :highlight-current="true"
               @node-click="handleNodeClick"
@@ -401,6 +405,7 @@ export default {
           },
         ],
       },
+      isExpend: true
     };
   },
   watch: {
@@ -751,6 +756,11 @@ export default {
           })
           .catch(() => {
           });
+    },
+    // 树权限（展开/折叠）
+    handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend;
+      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
     },
   },
 };

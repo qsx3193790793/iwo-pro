@@ -12,10 +12,14 @@
               maxlength="30"
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
-          />
+          >
+          <template slot="append">
+              <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
+            </template>
+          </el-input>
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
-          <el-tree :data="complaintReasonTreeOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" node-key="id" default-expand-all highlight-current @node-click="handleNodeClick"/>
+          <el-tree :data="complaintReasonTreeOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" node-key="reasonId" default-expand-all highlight-current @node-click="handleNodeClick"/>
         </div>
       </div>
       <!--用户数据-->
@@ -430,6 +434,7 @@ export default {
           {required: true, message: "用户状态不能为空", trigger: "change"},
         ],
       },
+      isExpend: true
     };
   },
   watch: {
@@ -467,7 +472,6 @@ export default {
       this.$$Dialog
           .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点不会被启用')
           .then(() => {
-
             let data = {
               reasonId: row.reasonId,
               status: 1
@@ -785,6 +789,11 @@ export default {
           })
           .catch(() => {
           });
+    },
+     // 树权限（展开/折叠）
+     handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend;
+      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
     },
   },
 };
