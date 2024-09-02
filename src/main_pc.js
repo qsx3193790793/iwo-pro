@@ -7,7 +7,7 @@ import "./scss/public.scss";
 import "./scss/element-ui.scss";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Vue from 'vue';
-import utils from './utils';
+import utils, {$$stopScale} from './utils';
 import api from './api';
 import directives from './directives';
 import PublicDictLoader from '@/mixin/PublicDictLoader';//通用字典请求mixin
@@ -43,6 +43,7 @@ export default ({App, router, store, scssVariables = {}, pageConfig = {}}) => {
     router, // 将路由实例注入到Vue根实例中
     mounted() {
       this.$$setHtmlRemSize({psdWidth: 1920});
+      this.$$stopScale();
     },
     render: h => h(App)
   }).$mount('#app');

@@ -2,6 +2,8 @@ export default {
   title: '投诉单模板',
   json: {
     "form": {
+      "labelPosition": "right",
+      "labelWidth": 110,
       "eventsType": "事件",
       "interfaceName": null,
       "interfaceReqParams": null,
@@ -246,7 +248,7 @@ export default {
         "name": "FMBlock",
         "compType": "",
         "z_props": {
-          "collapsed": false,
+          "collapsed": true,
           "isBtnBlock": "基础",
           "name": "基础信息",
           "subName": ""
@@ -257,7 +259,6 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "type": "FMInput",
               "col": 6,
               "key": "callerNo",
               "isRequire": false,
@@ -266,11 +267,12 @@ export default {
               "value": "",
               "name": "主叫号码",
               "placeholder": "",
-              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           },
@@ -279,7 +281,6 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "type": "FMInput",
               "col": 6,
               "key": "complaintWorksheetId",
               "isRequire": true,
@@ -288,11 +289,12 @@ export default {
               "value": "",
               "name": "集团工单编号",
               "placeholder": "",
-              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": null
           },
@@ -301,7 +303,6 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "type": "FMInput",
               "col": 6,
               "key": "unifiedComplaintCode",
               "isRequire": true,
@@ -310,11 +311,12 @@ export default {
               "value": "",
               "name": "统一投诉编码",
               "placeholder": "",
-              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": null
           },
@@ -323,7 +325,6 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "type": "FMInput",
               "col": 6,
               "key": "controlChannel",
               "isRequire": false,
@@ -332,11 +333,12 @@ export default {
               "value": "",
               "name": "责任管控渠道",
               "placeholder": "",
-              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": null
           },
@@ -345,7 +347,6 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "type": "FMInput",
               "col": 6,
               "key": "callId",
               "isRequire": false,
@@ -354,11 +355,12 @@ export default {
               "value": "",
               "name": "呼叫流水号",
               "placeholder": "",
-              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           }
@@ -676,22 +678,22 @@ export default {
             "name": "FMTextarea",
             "compType": "FMTextarea",
             "z_props": {
-              "type": "FMTextarea",
               "col": 20,
               "key": "complaintDescription",
               "isRequire": false,
               "isDisable": false,
               "clearable": true,
-              "rows": 4,
-              "maxlength": 0,
-              "resize": "none",
               "value": "",
               "name": "用户申诉描述",
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMTextarea",
+              "rows": 4,
+              "maxlength": 0,
+              "resize": "none"
             },
             "children": []
           },
@@ -749,14 +751,10 @@ export default {
             "name": "FMCascader",
             "compType": "FMCascader",
             "z_props": {
-              "type": "FMCascader",
               "col": 10,
               "key": "complaintPhenomenonLevel",
               "isRequire": true,
               "isDisable": false,
-              "optionsEvent": "complaint_listComplaintPhenomenonTree",
-              "checkStrictly": true,
-              "valueType": "array",
               "clearable": true,
               "value": "",
               "name": "投诉现象",
@@ -766,7 +764,11 @@ export default {
               "events": [
                 "complaint_phenomenon_and_product_change"
               ],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMCascader",
+              "optionsEvent": "complaint_listComplaintPhenomenonTree",
+              "checkStrictly": true,
+              "valueType": "array"
             },
             "children": []
           },
@@ -775,14 +777,10 @@ export default {
             "name": "FMCascader",
             "compType": "FMCascader",
             "z_props": {
-              "type": "FMCascader",
               "col": 10,
               "key": "productLevel",
               "isRequire": false,
               "isDisable": false,
-              "optionsEvent": "complaint_listProductTree",
-              "checkStrictly": true,
-              "valueType": "array",
               "clearable": true,
               "value": "",
               "name": "产品",
@@ -792,7 +790,11 @@ export default {
               "events": [
                 "complaint_phenomenon_and_product_change"
               ],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMCascader",
+              "optionsEvent": "complaint_listProductTree",
+              "checkStrictly": true,
+              "valueType": "array"
             },
             "children": []
           },
@@ -801,22 +803,22 @@ export default {
             "name": "FMTextarea",
             "compType": "FMTextarea",
             "z_props": {
-              "type": "FMTextarea",
               "col": 20,
               "key": "complaintInfo",
               "isRequire": true,
               "isDisable": false,
               "clearable": true,
-              "rows": 4,
-              "maxlength": 0,
-              "resize": "none",
               "value": "",
               "name": "用户投申诉内容",
               "placeholder": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": []
+              "eventsFields": [],
+              "type": "FMTextarea",
+              "rows": 4,
+              "maxlength": 0,
+              "resize": "none"
             },
             "children": []
           },

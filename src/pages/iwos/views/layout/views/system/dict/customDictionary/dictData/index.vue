@@ -149,7 +149,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 export default {
   name: "Dict",
   // dicts: ["sys_normal_disable"],
-  cusDicts: ['start_stop'],
+  dicts: ['start_stop'],
   components: {JsTable, PageSearchPanel},
   data() {
     return {
@@ -309,6 +309,16 @@ export default {
           value: "",
           type: "input",
           placeholder: "字典标签",
+          col: 6,
+          isDisable: !1,
+          isRequire: !1,
+        },
+        {
+          name: "字典键值",
+          key: "dictValue",
+          value: "",
+          type: "input",
+          placeholder: "字典键值",
           col: 6,
           isDisable: !1,
           isRequire: !1,
@@ -528,6 +538,11 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const dictItemIds = row.dictItemId || this.ids;
+       // 启用状态的不能删除
+       if (row?.status == 1) {
+        this.$$Toast.warning("当前字段状态为启用，不可以删除");
+        return
+      }
       this.$$Dialog
           .confirm('是否确认删除标签编号为"' + dictItemIds + '"的数据项？')
           .then(() => {

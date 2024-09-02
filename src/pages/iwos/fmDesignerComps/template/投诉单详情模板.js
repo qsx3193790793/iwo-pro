@@ -2,6 +2,8 @@ export default {
   title: '投诉单详情模板',
   json: {
     "form": {
+      "labelPosition": "right",
+      "labelWidth": 110,
       "eventsType": "事件",
       "interfaceName": null,
       "interfaceReqParams": null,
@@ -21,46 +23,26 @@ export default {
         "name": "FMBlock",
         "compType": "",
         "z_props": {
+          "collapsed": false,
           "isBtnBlock": "基础",
           "name": "受理信息",
           "subName": ""
         },
         "children": [
           {
-            "cId": "FMCascader_ID_29B98840B4F2C344ADAA0DE95140EE763863",
-            "name": "FMCascader",
-            "compType": "FMCascader",
-            "z_props": {
-              "col": 6,
-              "key": "askSourceSrlChain",
-              "isRequire": false,
-              "isDisable": false,
-              "clearable": true,
-              "value": "",
-              "name": "投诉来源",
-              "placeholder": "",
-              "showCondition": [],
-              "relevance": [],
-              "events": [
-                "complaint_source_change"
-              ],
-              "eventsFields": [],
-              "type": "FMCascader",
-              "optionsEvent": "complaint_listComplaintSourceTree",
-              "checkStrictly": true,
-              "valueType": "array"
-            },
-            "children": []
-          },
-          {
             "cId": "FMRadio_ID_15C275D2E84ABA47E77A5681EC0EB7C8BD79",
             "name": "FMRadio",
             "compType": "FMRadio",
             "z_props": {
-              "col": 6,
+              "type": "FMRadio",
+              "col": 8,
               "key": "workorderStrictest",
               "isRequire": false,
               "isDisable": false,
+              "optionsType": "字典",
+              "optionsStaticValue": [],
+              "optionsDictName": "yes_no",
+              "optionsEvent": "",
               "clearable": true,
               "value": "0",
               "name": "是否市场最严工单",
@@ -68,12 +50,7 @@ export default {
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "optionsType": "字典",
-              "optionsStaticValue": [],
-              "optionsDictName": "yes_no",
-              "optionsEvent": "",
-              "type": "FMRadio"
+              "eventsFields": []
             },
             "children": []
           },
@@ -82,18 +59,11 @@ export default {
             "name": "FMSelect",
             "compType": "FMSelect",
             "z_props": {
-              "col": 6,
+              "type": "FMSelect",
+              "col": 8,
               "key": "workorderStrictestScene",
               "isRequire": false,
               "isDisable": false,
-              "clearable": true,
-              "value": "",
-              "name": "市场最严工单场景",
-              "placeholder": "",
-              "showCondition": [],
-              "relevance": [],
-              "events": [],
-              "eventsFields": [],
               "optionsType": "静态数据",
               "optionsStaticValue": [
                 {
@@ -127,7 +97,14 @@ export default {
               ],
               "optionsDictName": "",
               "optionsEvent": "",
-              "type": "FMSelect"
+              "clearable": true,
+              "value": "",
+              "name": "市场最严工单场景",
+              "placeholder": "",
+              "showCondition": [],
+              "relevance": [],
+              "events": [],
+              "eventsFields": []
             },
             "children": []
           },
@@ -136,7 +113,8 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "col": 6,
+              "type": "FMInput",
+              "col": 8,
               "key": "controlChannel",
               "isRequire": false,
               "isDisable": true,
@@ -144,11 +122,11 @@ export default {
               "value": "",
               "name": "责任管控渠道",
               "placeholder": "",
+              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
+              "eventsFields": []
             },
             "children": null
           },
@@ -157,10 +135,14 @@ export default {
             "name": "FMCascader",
             "compType": "FMCascader",
             "z_props": {
-              "col": 6,
+              "type": "FMCascader",
+              "col": 8,
               "key": "complaintPhenomenonLevel",
               "isRequire": false,
               "isDisable": false,
+              "optionsEvent": "complaint_listComplaintPhenomenonTree",
+              "checkStrictly": true,
+              "valueType": "array",
               "clearable": true,
               "value": "",
               "name": "投诉现象",
@@ -170,11 +152,33 @@ export default {
               "events": [
                 "complaint_phenomenon_and_product_change"
               ],
-              "eventsFields": [],
+              "eventsFields": []
+            },
+            "children": []
+          },
+          {
+            "cId": "FMCascader_ID_29B98840B4F2C344ADAA0DE95140EE763863",
+            "name": "FMCascader",
+            "compType": "FMCascader",
+            "z_props": {
               "type": "FMCascader",
-              "optionsEvent": "complaint_listComplaintPhenomenonTree",
+              "col": 8,
+              "key": "askSourceSrlChain",
+              "isRequire": false,
+              "isDisable": false,
+              "optionsEvent": "complaint_listComplaintSourceTree",
               "checkStrictly": true,
-              "valueType": "array"
+              "valueType": "array",
+              "clearable": true,
+              "value": "",
+              "name": "投诉来源",
+              "placeholder": "",
+              "showCondition": [],
+              "relevance": [],
+              "events": [
+                "complaint_source_change"
+              ],
+              "eventsFields": []
             },
             "children": []
           },
@@ -183,10 +187,14 @@ export default {
             "name": "FMCascader",
             "compType": "FMCascader",
             "z_props": {
-              "col": 6,
+              "type": "FMCascader",
+              "col": 8,
               "key": "productLevel",
               "isRequire": false,
               "isDisable": false,
+              "optionsEvent": "complaint_listProductTree",
+              "checkStrictly": true,
+              "valueType": "array",
               "clearable": true,
               "value": "",
               "name": "产品",
@@ -196,11 +204,7 @@ export default {
               "events": [
                 "complaint_phenomenon_and_product_change"
               ],
-              "eventsFields": [],
-              "type": "FMCascader",
-              "optionsEvent": "complaint_listProductTree",
-              "checkStrictly": true,
-              "valueType": "array"
+              "eventsFields": []
             },
             "children": []
           },
@@ -209,10 +213,14 @@ export default {
             "name": "FMCascader",
             "compType": "FMCascader",
             "z_props": {
-              "col": 6,
+              "type": "FMCascader",
+              "col": 8,
               "key": "developChannelLevel",
               "isRequire": false,
               "isDisable": false,
+              "optionsEvent": "complaint_listChannelTree",
+              "checkStrictly": true,
+              "valueType": "array",
               "clearable": true,
               "value": "",
               "name": "发展渠道",
@@ -220,20 +228,7 @@ export default {
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "type": "FMCascader",
-              "optionsEvent": "complaint_listChannelTree",
-              "checkStrictly": true,
-              "valueType": "array"
-            },
-            "children": []
-          },
-          {
-            "cId": "FMEmpty_ID_C01D326988CDFF4CD6E9E629D6FC83E93C62",
-            "name": "FMEmpty",
-            "compType": "divider-empty",
-            "z_props": {
-              "col": 6
+              "eventsFields": []
             },
             "children": []
           },
@@ -242,7 +237,8 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "col": 6,
+              "type": "FMInput",
+              "col": 8,
               "key": "assistStaffId",
               "isRequire": false,
               "isDisable": false,
@@ -250,11 +246,11 @@ export default {
               "value": "",
               "name": "受理工号",
               "placeholder": "",
+              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
+              "eventsFields": []
             },
             "children": []
           },
@@ -263,7 +259,8 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "col": 6,
+              "type": "FMInput",
+              "col": 8,
               "key": "assistStaffName",
               "isRequire": false,
               "isDisable": false,
@@ -271,11 +268,11 @@ export default {
               "value": "",
               "name": "受理员工姓名",
               "placeholder": "",
+              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
+              "eventsFields": []
             },
             "children": []
           },
@@ -284,7 +281,8 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "col": 6,
+              "type": "FMInput",
+              "col": 8,
               "key": "opGropName",
               "isRequire": false,
               "isDisable": false,
@@ -292,11 +290,11 @@ export default {
               "value": "",
               "name": "受理团队/班组",
               "placeholder": "",
+              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
+              "eventsFields": []
             },
             "children": []
           },
@@ -305,7 +303,8 @@ export default {
             "name": "FMInput",
             "compType": "FMInput",
             "z_props": {
-              "col": 6,
+              "type": "FMInput",
+              "col": 8,
               "key": "urgencyCount",
               "isRequire": false,
               "isDisable": false,
@@ -313,11 +312,11 @@ export default {
               "value": "",
               "name": "催单次数",
               "placeholder": "",
+              "suffix": "",
               "showCondition": [],
               "relevance": [],
               "events": [],
-              "eventsFields": [],
-              "type": "FMInput"
+              "eventsFields": []
             },
             "children": null
           },
@@ -352,6 +351,7 @@ export default {
         "name": "FMBlock",
         "compType": "",
         "z_props": {
+          "collapsed": false,
           "isBtnBlock": "基础",
           "name": "回单信息",
           "subName": ""
@@ -374,7 +374,8 @@ export default {
               "relevance": [],
               "events": [],
               "eventsFields": [],
-              "type": "FMInput"
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           },
@@ -395,7 +396,8 @@ export default {
               "relevance": "",
               "events": [],
               "eventsFields": [],
-              "type": "FMInput"
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           },
@@ -416,7 +418,8 @@ export default {
               "relevance": "",
               "events": [],
               "eventsFields": [],
-              "type": "FMInput"
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           },
@@ -437,7 +440,8 @@ export default {
               "relevance": "",
               "events": [],
               "eventsFields": [],
-              "type": "FMInput"
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           },
@@ -458,7 +462,8 @@ export default {
               "relevance": "",
               "events": [],
               "eventsFields": [],
-              "type": "FMInput"
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           },
@@ -479,7 +484,8 @@ export default {
               "relevance": [],
               "events": [],
               "eventsFields": [],
-              "type": "FMInput"
+              "type": "FMInput",
+              "suffix": ""
             },
             "children": []
           }
@@ -490,6 +496,7 @@ export default {
         "name": "FMBlock",
         "compType": "",
         "z_props": {
+          "collapsed": false,
           "isBtnBlock": "按钮组",
           "name": "",
           "subName": ""
@@ -502,7 +509,8 @@ export default {
             "z_props": {
               "col": 24,
               "align": "center",
-              "verticalAlign": "form"
+              "verticalAlign": "form",
+              "isShowInDetail": false
             },
             "children": [
               {
@@ -513,6 +521,7 @@ export default {
                   "isDisable": false,
                   "showCondition": [],
                   "type": "FMButton",
+                  "isShowInDetail": false,
                   "btnName": "办结",
                   "btnType": "success",
                   "eventsType": "事件",
@@ -528,7 +537,7 @@ export default {
                   "eventsFields": []
                 },
                 "children": []
-              },
+              }
             ]
           }
         ]

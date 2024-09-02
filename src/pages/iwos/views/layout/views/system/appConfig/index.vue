@@ -1,10 +1,7 @@
 <template>
-  <div class="app-container one-screen">
+  <div class="public-background one-screen">
     <!-- noBackground -->
-    <PageSearchPanel
-        ref="PageSearchPanelRef"
-        :formConfigItems="formConfigItems"
-    ></PageSearchPanel>
+    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems" noBackground style="margin-bottom: 0;"></PageSearchPanel>
     <JsTable
         :dataSource="state.dataSource"
         :columns="state.columns"
@@ -20,9 +17,6 @@
         <div v-show="row.status == 2">
           <el-tag type="danger">删除</el-tag>
         </div>
-      </template>
-      <template #provinceCode="{ row }">
-        <div> {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}</div>
       </template>
     </JsTable>
     <el-pagination
@@ -480,7 +474,7 @@ let state = ref({
       },
       {
         name: "省公司名称",
-        key: "provinceCode",
+        key: "provinceName",
       },
       {
         name: "创建人",
@@ -554,7 +548,7 @@ let state = ref({
 <script>
 export default {
   name: "AppConfigManage",
-  cusDicts: [
+  dicts: [
     "start_stop",
     "base_province_code",
   ],

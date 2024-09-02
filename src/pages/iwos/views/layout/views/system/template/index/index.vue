@@ -1,29 +1,26 @@
 <template>
   <div class="one-screen">
     <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <!--        <JsTable :dataSource="list" :columns="columns" @selectionChange="selectionChange">-->
-        <JsTable :dataSource="list" :columns="columns">
-          <template #updatedTime="{row}">
-            {{ $$dateFormatter(row.updatedTime) }}
-          </template>
-          <template #workorderType="{row}">
-            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('template_work_order_type', row.workorderType) }}
-          </template>
-          <template #bigType="{row}">
-            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('template_big_type', row.bigType) }}
-          </template>
-          <template #smallType="{row}">
-            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('template_small_type', row.smallType) }}
-          </template>
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[1,15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
-        </div>
+    <div class="table-panel one-screen-fg1">
+      <!--        <JsTable :dataSource="list" :columns="columns" @selectionChange="selectionChange">-->
+      <JsTable :dataSource="list" :columns="columns">
+        <template #updatedTime="{row}">
+          {{ $$dateFormatter(row.updatedTime) }}
+        </template>
+        <template #workorderType="{row}">
+          {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('template_work_order_type', row.workorderType) }}
+        </template>
+        <template #bigType="{row}">
+          {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('template_big_type', row.bigType) }}
+        </template>
+        <template #smallType="{row}">
+          {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('template_small_type', row.smallType) }}
+        </template>
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[1,15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
       </div>
-    </template>
-    <el-empty v-else></el-empty>
+    </div>
     <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog>
     <FormView v-if="isShowFormViewDialog" v-model="isShowFormViewDialog" :pkid="select_pkid" destroyOnClose></FormView>
     <AddDialog v-if="isShowReleaseDialog" v-model="isShowReleaseDialog" :pkid="select_pkid" destroyOnClose isDetail type="发布" @success="getList(1)"></AddDialog>
@@ -147,6 +144,7 @@ let columns = ref({
             label: '升级',
             autoHidden: ({row}) => row.statusName === '上架',
             permission: ['system:template:detail'],
+            type: 'warning',
             key: 'copy',
             event: (row) => {
               select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
@@ -330,7 +328,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'TemplateIndex',
-  cusDicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type', 'base_province_code']
+  dicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type', 'base_province_code']
 }
 </script>
 <style lang="scss" scoped>

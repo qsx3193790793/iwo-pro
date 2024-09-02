@@ -1,53 +1,48 @@
 <template>
   <div class="one-screen">
     <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems" :mainSize="11"></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <JsTable :dataSource="list" :columns="columns">
-          <template #workorderType="{row}">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", row.workorderType) }}
-          </template>
-          <template #provinceCode="{row}">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", row.provinceCode) }}
-          </template>
-          <template #statusCd="{row}">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", row.statusCd) }}
-          </template>
-          <template #timeoutFlag="{row}">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("timeout_flag", row.timeoutFlag) }}
-          </template>
-          <template #complaintPhenomenonLevelChain="{row}">
-            {{ [row.complaintPhenomenonLevel1, row.complaintPhenomenonLevel2, row.complaintPhenomenonLevel3].filter(v => !!v).join(' / ') }}
-          </template>
-          <template #productLevelChain="{row}">
-            {{ [row.productLevel1, row.productLevel2].filter(v => !!v).join(' / ') }}
-          </template>
-          <template #workorderStrictest="{row}">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("yes_no", row.workorderStrictest) }}
-          </template>
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination
-              :current-page.sync="pageInfo.pageNum"
-              :page-size.sync="pageInfo.pageSize"
-              :page-sizes="[15, 30, 40, 50]"
-              background
-              layout=" ->,total, sizes, prev, pager, next, jumper"
-              :total="pageInfo.rowCount"
-              @size-change="getList(1)"
-              @current-change="getList"
-          />
-        </div>
+    <div class="table-panel one-screen-fg1">
+      <JsTable :dataSource="list" :columns="columns">
+        <template #workorderType="{row}">
+          {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", row.workorderType) }}
+        </template>
+        <template #provinceCode="{row}">
+          {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", row.provinceCode) }}
+        </template>
+        <template #statusCd="{row}">
+          {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", row.statusCd) }}
+        </template>
+        <template #timeoutFlag="{row}">
+          {{ $store.getters["dictionaries/MATCH_LABEL"]("timeout_flag", row.timeoutFlag) }}
+        </template>
+        <template #complaintPhenomenonLevelChain="{row}">
+          {{ [row.complaintPhenomenonLevel1, row.complaintPhenomenonLevel2, row.complaintPhenomenonLevel3].filter(v => !!v).join(' / ') }}
+        </template>
+        <template #productLevelChain="{row}">
+          {{ [row.productLevel1, row.productLevel2].filter(v => !!v).join(' / ') }}
+        </template>
+        <template #workorderStrictest="{row}">
+          {{ $store.getters["dictionaries/MATCH_LABEL"]("yes_no", row.workorderStrictest) }}
+        </template>
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination
+            :current-page.sync="pageInfo.pageNum"
+            :page-size.sync="pageInfo.pageSize"
+            :page-sizes="[15, 30, 40, 50]"
+            background
+            layout=" ->,total, sizes, prev, pager, next, jumper"
+            :total="pageInfo.rowCount"
+            @size-change="getList(1)"
+            @current-change="getList"
+        />
       </div>
-    </template>
-    <el-empty v-else></el-empty>
-    <!-- 添加或修改用户配置对话框 -->
-    <!-- <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog> -->
+    </div>
   </div>
 </template>
 
 <script setup>
-import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated, watch} from "vue";
+import {getCurrentInstance, ref, onMounted, watch} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
 
@@ -116,10 +111,7 @@ const list = ref([]);
 const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.pageNum = pageNum;
   let queryParams = PageSearchPanelRef.value.getFormData();
-  // 时间的传值不传这个字段
-  delete queryParams.provinceOrderCreateTime;
-  let {res} = await proxy.$$api.complaint.listComplaint({
-    params: Object.assign(
+  let paramsData= Object.assign(
         queryParams,
         proxy.$$formatELDateTimeRange(queryParams.provinceOrderCreateTime, ['beginTime', 'endTime']),
         {
@@ -132,8 +124,12 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
           productLevel1Code: queryParams.productLevelChain?.[0] ?? null,
           productLevel2Code: queryParams.productLevelChain?.[1] ?? null,
         },
-    ),
-  });
+    )
+  // 时间的传值不传这个字段
+  delete queryParams.provinceOrderCreateTime;
+  let {res} = await proxy.$$api.complaint.listComplaint({
+    params:paramsData,
+  }); 
   if (res) {
     pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
     list.value = res.rows;
@@ -154,7 +150,7 @@ const formConfigItems = ref([
   {name: "集团工单编号", key: "complaintWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "省内建单时间", key: "provinceOrderCreateTime", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
   {name: "主叫号码", key: "callerNo", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
-  {name: "业务号码", key: "complaintAssetNum", value: '', col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "业务号码", key: "complaintAssetNum", value: proxy.$route.query.accNum || '', col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "联系电话1", key: "contactPhone1", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "联系电话2", key: "contactPhone2", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "投诉来源", key: "askSourceSrl", value: "", col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
@@ -165,7 +161,7 @@ const formConfigItems = ref([
   // 展开
   {name: "投诉现象", key: "complaintPhenomenonLevelChain", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
   {name: "产品", key: "productLevelChain", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_product_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
-  {name: "申诉日期", key: "provinceOrderCreateTime", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
+  {name: "申诉日期", key: "appealDate", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
   {name: "申诉工单编号", key: "appealWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "号码归属地", key: "phoneLocal", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "受理工号", key: "createStaff", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
@@ -242,8 +238,11 @@ async function listProductTree() {
   });
 }
 
+watch(() => proxy.$route.params.accNum, () => {
+
+});
+
 onMounted(() => {
-  accNum.value= proxy.$route.params.accNum || ''
   listComplaintSourceTree();
   listComplaintPhenomenonTree();
   listProductTree();

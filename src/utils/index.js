@@ -107,8 +107,11 @@ const $$fileSaveAs = (data, fileName) => {
   }
 }
 
+// rem基准值
+const $$remBasePx = 100;
+
 // 设置根大小
-const $$setHtmlRemSize = ({psdWidth = 375, jzPx = 100}) => {//设计稿宽度,基准值
+const $$setHtmlRemSize = ({psdWidth = 375, jzPx = $$remBasePx}) => {//设计稿宽度,基准值
   let resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
   let mDocEl = document.documentElement;
 
@@ -1326,6 +1329,7 @@ export default {
 
     //上万数据转换 10000 to 1w  value=数字 dValue=位数 unit=单位 toFixedLength=小数点位数 force=强制转换
     Vue.prototype.$$parseWan = $$parseWan;
+    Vue.prototype.$$remBasePx = $$remBasePx;
 
     //表格数据中空字段默认显示某字符
     Vue.prototype.$$tableDataFormatter = $$tableDataFormatter;
@@ -1541,4 +1545,5 @@ export {
   $$formatCascaderTree,
   $$findTreePath,
   $$hasPermission,
+  $$remBasePx,
 };

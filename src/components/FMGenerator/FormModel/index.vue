@@ -6,7 +6,7 @@
       </template>
     </div>
     <div class="form-model-inner" :style="[formConfig.maxHeight&&{maxHeight:`${formConfig.maxHeight}`,overflow:'auto'}]">
-      <Form :model="formData" ref="Form" :inline="true" :label-position="formConfig.labelPosition||'top'" :label-width="formConfig.labelWidth" hide-required-asterisk scroll-to-error>
+      <Form v-bind="formPositionValue" :model="formData" ref="Form" :inline="true" hide-required-asterisk scroll-to-error>
         <Collapse v-model="collapseActive">
           <template v-for="(item,index) in resultItems">
             <CollapseItem v-if="!item.isShow||item.isShow({vm})" :key="item.name+`${index}`" :class="{'is-disabled':!item.name}" :name="item.name||`${index}`">
@@ -205,12 +205,20 @@ export default {
         this.isSaved = !1;//表单改动 标为未保存
       },
       deep: !0
-    },
+    }
   },
   computed: {
     disabled() {
       //表单禁用
       return this.formStatus === 'view';
+    },
+    formPositionValue() {
+      let width = this.formConfig.labelWidth || 'auto';
+      if (this.$$getVariableType(width) === '[object Number]') width = `${width / this.$$remBasePx}rem`;
+      return {
+        'label-position': this.formConfig.labelPosition || 'top',
+        'label-width': width,
+      }
     },
     resultItems() {
       // console.log('resultItems action');

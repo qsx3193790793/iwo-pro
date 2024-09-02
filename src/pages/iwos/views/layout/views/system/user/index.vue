@@ -85,8 +85,8 @@
             ></el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" @click="resetQuery">重置</el-button>
-            <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
+            <el-button size="small" @click="resetQuery"  v-hasPermission="['system:user:query']">重置</el-button>
+            <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:user:query']">搜索</el-button>
             <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:user:add']">新增</el-button>
             <!-- <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button> -->
             <el-button type="info" plain size="small" @click="handleImport" v-hasPermission="['system:user:import']">导入</el-button>
@@ -114,12 +114,13 @@
           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120"/>
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
-              <el-switch
+              {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', scope.row.status) }}
+              <!-- <el-switch
                   v-model="scope.row.status"
                   active-value="0"
                   inactive-value="1"
                   @change="handleStatusChange(scope.row)"
-              ></el-switch>
+              ></el-switch> -->
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[6].visible" width="160">
@@ -143,7 +144,9 @@
                 <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
                   <div class="inner">
                     <el-button v-hasPermission="['system:user:edit']" type="primary" size="small" @click="handleResetPwd(scope.row)">重置密码</el-button>
-                    <el-button v-hasPermission="['system:user:edit']" type="primary" size="small" @click="handleAuthRole(scope.row)">分配角色</el-button>
+                    <el-button v-hasPermission="['system:user:query']" type="primary" size="small" @click="handleAuthRole(scope.row)">查看角色</el-button>
+                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
+                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='0'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
                   </div>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -160,12 +163,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="归属机构" prop="deptId">
-              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属机构" @select="handelDeptIdChange"/>
+              <treeselect v-model="form.deptId" :options="deptOptions" noOptionsText='暂无数据' :show-count="true" placeholder="请选择归属机构" @select="handelDeptIdChange"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="归属班组" prop="teamIds">
-              <treeselect v-model="form.teamIds" :options="teamOptions" :normalizer="normalizer" :multiple="true" :show-count="true" placeholder="请选择归属班组" @select="handelparentIdChange"/>
+              <treeselect v-model="form.teamIds" :options="teamOptions" noOptionsText='该机构下没有班组信息' :normalizer="normalizer" :multiple="true" :show-count="true" placeholder="请选择归属班组" @select="handelparentIdChange"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -306,13 +309,13 @@
     </el-dialog>
 
     <!-- 分配角色 -->
-    <el-dialog title="分配角色" :visible.sync="authRole.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="已授权角色" :visible.sync="authRole.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
       <div class="one-screen" style="height: 50vh;">
         <h4 class="main-title one-screen-fg0">基本信息</h4>
         <el-form class="one-screen-fg0" ref="form" :model="authRole.form" label-width="80px">
           <el-row>
             <el-col :span="8" :offset="2">
-              <el-form-item label="用户昵称" prop="nickName">
+              <el-form-item label="用户名称" prop="nickName">
                 <el-input v-model="authRole.form.nickName" disabled maxlength="30"/>
               </el-form-item>
             </el-col>
@@ -327,8 +330,13 @@
         <h4 class="main-title one-screen-fg0">角色信息</h4>
         <el-table v-loading="authRole.loading" class="one-screen-fg1" height="100%" :row-key="getRowKey" border @row-click="clickRow" ref="authRoleTable" @selection-change="handleAuthRoleSelectionChange" :data="authRole.roles">
           <el-table-column label="序号" type="index" align="center"></el-table-column>
-          <el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column>
-          <el-table-column label="角色编号" align="center" prop="roleId"/>
+          <!-- <el-table-column type="selection" :reserve-selection="true" width="55"></el-table-column> -->
+          <!-- <el-table-column label="角色编号" align="center" prop="roleId"/> -->
+          <el-table-column label="是否有效" align="center" prop="flag">
+            <template slot-scope="scope">
+              <span>{{ scope.row.flag?'有效':'无效' }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="角色名称" align="center" prop="roleName"/>
           <el-table-column label="权限字符" align="center" prop="roleKey"/>
           <el-table-column label="创建时间" align="center" prop="createTime" width="180">
@@ -636,15 +644,18 @@ export default {
     },
     // 用户状态修改
     handleStatusChange(row) {
-      let text = row.status === "0" ? "启用" : "停用";
+      let text = row.status === "0" ? "停用" : "启用";
+      let changeStatus=row.status === "0" ? "1" : "0";
       this.$$Dialog.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(() => {
-        return this.$$api.user.changeUserStatus({data: {userId: row.userId, status: row.status}});
+        return this.$$api.user.changeUserStatus({data: {userId: row.userId, status:changeStatus}});
       }).then(({res, err}) => {
         if (err) return;
-        this.$$Toast.success(text + "成功");
-      }).catch(function () {
         row.status = row.status === "0" ? "1" : "0";
-      });
+        this.$$Toast.success(text + "成功");
+      })
+      // .catch(function () {
+      //   row.status = row.status === "0" ? "1" : "0";
+      // });
     },
     // 取消按钮
     cancel() {

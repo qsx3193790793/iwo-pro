@@ -15,29 +15,9 @@ export default async ({vm, item}) => {
 
     if (lanIdInfo?.lanid) {
       //申告地
-      vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: lanIdInfo.lanid}}).then(({res, err}) => {
+      vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: vm.$store.getters['user/GET_USER_PROVINCE_CODE']}}).then(({res, err}) => {
         vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
       });
-    }
-
-    //查询是否有在途单
-    const {res: qpRes} = await vm.$$api.complaint.queryPendingWorkOrderByAssetNum({
-      params: {assetNum: accNum},
-      headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
-    });
-    if (qpRes?.pendingWorkOrderFlag >= 1) {
-      const h = vm.$createElement;
-      const c = await vm.$$Dialog.confirm(h('p', null, [
-        h('span', null, '该设备号存 '),
-        h('span', { style: 'color: #409eff;text-decoration-line: underline;cursor: pointer;',on:{
-          click :()=>{
-           vm.$$Dialog.close()
-           vm.$router.push({name:'ComplaintForm',params:{accNum}})
-          }
-        }}, '在途工单'),
-        h('span', null, '，是否继续新建？')
-      ]), '提示').catch(vm.$$emptyFn);
-      if (c !== 'confirm') return;
     }
 
     vm.removeAppendItems(['complaint_scene_form']);//清除模板

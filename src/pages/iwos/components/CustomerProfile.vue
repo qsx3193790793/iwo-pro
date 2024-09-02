@@ -147,6 +147,7 @@ async function getComplaintWorksheetId(cb) {
     complaintWorksheetId.value = res.value;
     return cb && cb();
   }
+  proxy.$$Dialog.confirm('集团工单编号获取失败', '提示', {showCancelButton: false}).catch(proxy.$$emptyFn);
 }
 
 // '0': 'public',    '1': 'scene',    '2': 'ext',    '3': 'comm',
@@ -168,7 +169,34 @@ async function diagnosisHandleInfo() {
   }
 }
 
+const h = proxy.$createElement;
+
+//查询是否有在途单
+async function queryPendingWorkOrderByAssetNum(accNum) {
+  const {res: qpRes} = await proxy.$$api.complaint.queryPendingWorkOrderByAssetNum({
+    params: {assetNum: accNum},
+    headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum ?? ''}
+  });
+  if (qpRes?.pendingWorkOrderFlag >= 1) {
+    const c = await proxy.$$Dialog.confirm(h('p', null, [
+      h('span', null, '该设备号存在 '),
+      h('span', {
+        style: 'color: #409eff;text-decoration-line: underline;cursor: pointer;', on: {
+          click: () => {
+            proxy.$$Dialog.close()
+            proxy.$router.push({name: 'ComplaintForm', query: {accNum}})
+          }
+        }
+      }, '在途工单'),
+      h('span', null, ' ，是否继续新建？')
+    ]), '提示').catch(proxy.$$emptyFn);
+    return c === 'confirm';
+  }
+  return true;
+}
+
 async function getInfo({isForce, from}) {
+
   // 如果在详情内重新查询 那么重新重置表单数据初始化 并保持complaintWorksheetId不变
   if (from === '手动' && proxy.$route.params.workorderId && accNum.value) return proxy.$router.replace({
     name: 'ComplaintCreate', query: {
@@ -178,6 +206,9 @@ async function getInfo({isForce, from}) {
   });
   if (!complaintWorksheetId.value) return;
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
+
+  if (!(await queryPendingWorkOrderByAssetNum(accNum.value))) return;//查询在途单
+
   let res, err;
   if (accType.value === '12') {//移动设备才需要调用H码查询 其他没有
     const R = await proxy.$$api.crm.getHNumber({
@@ -343,7 +374,7 @@ export default {
   .searchParams {
     display: flex;
     align-items: center;
-    padding: 0px 32px;
+    padding: 0 20px;
 
     .searchParams_text {
       color: #000000 !important;
@@ -387,7 +418,7 @@ export default {
 
   .UserContent_Text {
     flex-grow: 1;
-    padding: 20px 32px;
+    padding: 16px 20px;
     border-right: 1px solid #e2e6f1;
 
     .el-row:nth-child(1) {
@@ -407,7 +438,6 @@ export default {
     }
 
     .rowPadding {
-      margin-top: 12px;
       font-size: 16px;
       line-height: 2;
 
@@ -421,7 +451,6 @@ export default {
     width: 480px;
     flex-grow: 0;
     flex-shrink: 0;
-    padding-top: 20px;
   }
 }
 </style>

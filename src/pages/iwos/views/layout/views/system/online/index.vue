@@ -20,13 +20,12 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery" v-hasPermission="['monitor:online:query']">搜索</el-button>
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['monitor:online:query']">搜索</el-button>
       </el-form-item>
 
     </el-form>
     <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="list" border style="width: 100%;">
-      <el-table-column label="序号" type="index" align="center"></el-table-column>
       <el-table-column label="会话编号" align="center" prop="tokenId" :show-overflow-tooltip="true"/>
       <el-table-column label="登录名称" align="center" prop="userName" :show-overflow-tooltip="true"/>
       <el-table-column label="主机" align="center" prop="ipaddr" :show-overflow-tooltip="true"/>

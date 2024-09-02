@@ -76,8 +76,8 @@
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
-            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:reason:detailList']">查询</el-button>
-            <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:reason:add']">新增</el-button>
+            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:reason:list']">查询</el-button>
+            <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd" v-hasPermission="['config:reason:add']">新增</el-button>
             <el-button type="danger" size="mini" :disabled="!isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button>
           </el-form-item>
         </el-form>
@@ -222,7 +222,7 @@
           </el-col>
           <el-col :span="12" v-if="this.form.userId">
             <el-form-item label="用户状态" prop="status">
-              <el-radio-group v-model="form.status" :disabled="detailDisabled">
+              <el-radio-group v-model="form.status" disabled>
                 <el-radio :label="1">启用</el-radio>
                 <el-radio :label="0">停用</el-radio>
               </el-radio-group>
@@ -245,7 +245,7 @@ import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 
 export default {
   name: "ComplaintReason",
-  cusDicts: ["reason_status_name", "yes_no"],
+  dicts: ["reason_status_name", "yes_no"],
   components: {Treeselect, PageSearchPanel, JsTable},
   data() {
     return {
@@ -291,6 +291,7 @@ export default {
       treeReasonName: undefined,
       //是否展示五级原因
       showForthItem: true,
+      cuurrentNodeData:{},
       // 表单参数
       form: {},
       defaultProps: {
@@ -371,6 +372,7 @@ export default {
             {
               label: "详情",
               key: "detail",
+              type: "success",
               permission: ['config:reason:detailList'],
               autoHidden: ({row}) => {
                 return row.level === 4 || row.level === 5
@@ -465,6 +467,7 @@ export default {
       this.$$Dialog
           .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点不会被启用')
           .then(() => {
+
             let data = {
               reasonId: row.reasonId,
               status: 1
@@ -482,13 +485,14 @@ export default {
     //停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点也将被停用')
+          .confirm('是否确认停用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点也将被停用')
           .then(() => {
             let data = {
               reasonId: row.reasonId,
               status: 0
             };
-            return this.$$api.complaintreasonenon.updateComplaintReason({data: data});
+            console.log('adadsa');
+            return this.$$api.complaintReason.updateComplaintReason({data: data});
           })
           .then(({res, err}) => {
             if (err) return;
@@ -532,8 +536,12 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data, node) {
-      if (node.childNodes.length <= 0) return this.dataSource = []
+      this.isAllowAdd =  data.level === 3 || data.level === 4
+      this.cuurrentNodeData= data
+      console.log('cuurrentNodeData',this.cuurrentNodeData);
+      if (node.childNodes?.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.reasonCode
+
       this.handleQuery();
     },
     // 取消按钮
@@ -569,9 +577,7 @@ export default {
       this.selectRow = selection[0]
       this.multiple = !selection.length
       this.single = selection.length != 1;
-      this.isAllowAdd = !this.single && (selection[0]?.level === 3 || selection[0]?.level === 4)
       this.isAllowDelet = !this.single && (selection[0]?.level === 4 || selection[0]?.level === 5) && selection[0].isProvinceCustom == 1
-
     },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {
@@ -604,16 +610,16 @@ export default {
       return [];
     },
     /** 新增按钮操作 */
-    handleAdd(row) {
+    handleAdd() {
       this.reset();
       this.title = "新增投诉原因";
-      this.showForthItem = row.level === 3 ? false : true
-      this.superiorCode = row.reasonCode
+      this.showForthItem = this.cuurrentNodeData.level === 3 ? false : true
+      this.superiorCode = this.cuurrentNodeData.reasonCode
       this.$$api.complaintReason
-          .getComplaintReasonCode({params: {pcode: row.reasonCode}}).then(({res: response, err}) => {
+          .getComplaintReasonCode({params: {pcode: this.cuurrentNodeData.reasonCode}}).then(({res: response, err}) => {
         if (err) return;
-        const treeData = this.findAncestorsInMultipleTrees(this.complaintReasonTreeOptions, row.reasonCode, 'reasonCode', 'reasonName', 'reasonList')
-        if (row.level === 3) {
+        const treeData = this.findAncestorsInMultipleTrees(this.complaintReasonTreeOptions, this.cuurrentNodeData.reasonCode, 'reasonCode', 'reasonName', 'reasonList')
+        if (this.cuurrentNodeData.level === 3) {
           const formData = {
             reasonCode: response.reasonCode,
             isProvinceCustom: '1',
@@ -621,11 +627,11 @@ export default {
             firstReasonName: treeData[1].reasonName,
             secondReasonCode: treeData[0].reasonCode,
             secondReasonName: treeData[0].reasonName,
-            thirdReasonCode: row.reasonCode,
-            thirdReasonName: row.reasonName,
+            thirdReasonCode: this.cuurrentNodeData.reasonCode,
+            thirdReasonName: this.cuurrentNodeData.reasonName,
           }
           this.form = formData
-        } else if (row.level === 4) {
+        } else if (this.cuurrentNodeData.level === 4) {
           const formData = {
             reasonCode: response.reasonCode,
             isProvinceCustom: '1',
@@ -635,8 +641,8 @@ export default {
             secondReasonName: treeData[1].reasonName,
             thirdReasonCode: treeData[0].reasonCode,
             thirdReasonName: treeData[0].reasonName,
-            fourthReasonCode: row.reasonCode,
-            fourthReasonName: row.reasonName,
+            fourthReasonCode: this.cuurrentNodeData.reasonCode,
+            fourthReasonName: this.cuurrentNodeData.reasonName,
           }
           this.form = formData
         }
@@ -654,7 +660,7 @@ export default {
           reasonName: row.reasonName,
           userId: row.reasonId,
           status: row.status,
-          isProvinceCustom: row.isProvinceCustom,
+          isProvinceCustom: `${row.isProvinceCustom}` ,
           firstReasonCode: treeData[2].reasonCode,
           firstReasonName: treeData[2].reasonName,
           secondReasonCode: treeData[1].reasonCode,
@@ -669,7 +675,7 @@ export default {
           reasonName: row.reasonName,
           userId: row.reasonId,
           status: row.status,
-          isProvinceCustom: row.isProvinceCustom,
+          isProvinceCustom:  `${row.isProvinceCustom}` ,
           firstReasonCode: treeData[3].reasonCode,
           firstReasonName: treeData[3].reasonName,
           secondReasonCode: treeData[2].reasonCode,
@@ -694,7 +700,7 @@ export default {
           reasonName: row.reasonName,
           userId: row.reasonId,
           status: row.status,
-          isProvinceCustom: row.isProvinceCustom,
+          isProvinceCustom: `${row.isProvinceCustom}`,
           firstReasonCode: treeData[2].reasonCode,
           firstReasonName: treeData[2].reasonName,
           secondReasonCode: treeData[1].reasonCode,
@@ -709,7 +715,7 @@ export default {
           reasonName: row.reasonName,
           userId: row.reasonId,
           status: row.status,
-          isProvinceCustom: row.isProvinceCustom,
+          isProvinceCustom:  `${row.isProvinceCustom}` ,
           firstReasonCode: treeData[3].reasonCode,
           firstReasonName: treeData[3].reasonName,
           secondReasonCode: treeData[2].reasonCode,
@@ -734,7 +740,6 @@ export default {
                   data: {
                     reasonId: this.form.userId,
                     reasonName: this.form.reasonName,
-                    status: this.form.status
                   }
                 })
                 .then(({res, err}) => {

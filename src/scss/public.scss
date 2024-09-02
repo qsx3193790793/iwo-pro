@@ -693,7 +693,7 @@
   border-radius: 6px;
   background-color: rgb(241, 247, 253);
   filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.1));
-  margin-bottom: 22px;
+  margin-bottom: 12px;
 
   &.noBackground {
     background-color: transparent;
@@ -790,25 +790,6 @@
   clear: both;
   display: block;
 }
-
-.create-order-container {
-  .create-order-header {
-    font-size: 18px;
-    line-height: 3;
-    border-bottom: 1PX solid #eeeeee;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    padding: 0 32px !important;
-    background-color: rgb(241, 247, 253);
-    font-weight: bold;
-  }
-
-  .create-order-form {
-    padding: 0 32px !important;
-  }
-}
-
 
 //若依重写
 .app-container {

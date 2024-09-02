@@ -152,12 +152,13 @@
       <!-- <el-table-column label="显示顺序" prop="roleSort" /> -->
       <el-table-column label="状态" align="center">
         <template slot-scope="scope">
-          <el-switch
+          {{ $store.getters['dictionaries/MATCH_LABEL']('sys_normal_disable', scope.row.status) }}
+          <!-- <el-switch
               v-model="scope.row.status"
               active-value="0"
               inactive-value="1"
               @change="handleStatusChange(scope.row)"
-          ></el-switch>
+          ></el-switch> -->
         </template>
       </el-table-column>
       <el-table-column label="创建人" prop="createBy"/>
@@ -194,13 +195,17 @@
           >删除
           </el-button
           >
+
           <el-dropdown v-hasPermission="['system:role:edit']" class="public-el-dropdown" trigger="click">
             <el-button type="primary">
               更多<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
               <div class="inner">
-                <el-button v-hasPermission="['system:role:edit']" type="primary" size="small" @click="handleAuthUser(scope.row)">分配用户</el-button>
+                   <el-button v-hasPermission="['system:role:edit']" type="primary" size="small" @click="handleAuthUser(scope.row)">已授权用户</el-button>
+                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
+                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='0'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
+
               </div>
             </el-dropdown-menu>
           </el-dropdown>
@@ -409,13 +414,13 @@
     </el-dialog>
 
     <!-- 分配用户 -->
-    <el-dialog title="分配用户" :visible.sync="authUser.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="已授权用户" :visible.sync="authUser.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
       <div class="one-screen" style="height: 50vh;">
         <el-form class="one-screen-fg0" :model="authUser.queryParams" ref="queryAuthUserForm" size="small" :inline="true">
-          <el-form-item label="用户名称" prop="userName">
+          <el-form-item label="用户账号" prop="userName">
             <el-input
                 v-model="authUser.queryParams.userName"
-                placeholder="请输入用户名称"
+                placeholder="请输入用户账号"
                 clearable
                 style="width: 240px"
                 maxlength="30"
@@ -435,15 +440,15 @@
           <el-form-item>
             <el-button size="small" @click="resetAuthUserQuery">重置</el-button>
             <el-button type="primary" size="small" @click="handleAuthUserQuery">搜索</el-button>
-            <el-button type="success" size="small" @click="openSelectUser" v-hasPermission="['system:role:add']">添加用户</el-button>
+            <!-- <el-button type="success" size="small" @click="openSelectUser" v-hasPermission="['system:role:add']">添加用户</el-button> -->
             <el-button type="danger" size="small" :disabled="authUser.multiple" @click="cancelAuthUserAll" v-hasPermission="['system:role:remove']">批量取消授权</el-button>
           </el-form-item>
         </el-form>
 
         <el-table v-loading="authUser.loading" class="one-screen-fg1" height="100%" ref="authUserTable" :data="authUser.userList" border @selection-change="handleAuthUserSelectionChange">
           <el-table-column type="selection" width="55" align="center"/>
-          <el-table-column label="用户名称" prop="userName" :show-overflow-tooltip="true"/>
-          <el-table-column label="用户昵称" prop="nickName" :show-overflow-tooltip="true"/>
+          <el-table-column label="用户账号" prop="userName" :show-overflow-tooltip="true"/>
+          <el-table-column label="用户名称" prop="nickName" :show-overflow-tooltip="true"/>
           <el-table-column label="邮箱" prop="email" :show-overflow-tooltip="true"/>
           <el-table-column label="手机" prop="phonenumber" :show-overflow-tooltip="true"/>
           <el-table-column label="状态" align="center" prop="status">
@@ -471,7 +476,7 @@
       </div>
     </el-dialog>
 
-    <select-user ref="selectUser" :roleId="queryParams.roleId" @ok="handleQuery"/>
+    <select-user ref="selectUser" :roleId="authUser.queryParams.roleId" @ok="handleQuery"/>
 
   </div>
 </template>
@@ -713,19 +718,21 @@ export default {
     },
     // 角色状态修改
     handleStatusChange(row) {
-      let text = row.status === "0" ? "启用" : "停用";
+      let text = row.status === "0" ? "停用" : "启用";
+      let changeStatus=row.status === "0" ? "1" : "0";
       this.$$Dialog
           .confirm('确认要"' + text + '""' + row.roleName + '"角色吗？')
           .then(() => {
-            return this.$$api.role.changeRoleStatus({data: {roleId: row.roleId, status: row.status}});
+            return this.$$api.role.changeRoleStatus({data: {roleId: row.roleId, status: changeStatus}});
           })
           .then(({res, err}) => {
-            if (err) return row.status = row.status === "0" ? "1" : "0";
+            if (err) 
+            row.status = row.status === "0" ? "1" : "0";
             this.$$Toast.success(text + "成功");
           })
-          .catch(function () {
-            row.status = row.status === "0" ? "1" : "0";
-          });
+          // .catch(function () {
+          //   row.status = row.status === "0" ? "1" : "0";
+          // });
     },
     // 取消按钮
     cancel() {

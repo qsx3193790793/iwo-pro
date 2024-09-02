@@ -1,31 +1,28 @@
 <template>
   <div class="one-screen">
     <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <JsTable :dataSource="list" :columns="columns" @selectionChange="handleSelectionChange">
-          <template #interfaceMethod="{row}">
-            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_request_method', row.interfaceMethod) }}
-          </template>
-          <template #interfaceNormType="{row}">
-            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_specification_type', row.interfaceNormType) }}
-          </template>
-          <template #interfaceType="{row}">
-            {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_type', row.interfaceType) }}
-          </template>
-          <template #status="{row}">
-            <el-tag :type="row.status == 0?'danger':''">
-              {{ $store.getters['dictionaries/MATCH_LABEL']('start_stop', row.status) }}
-            </el-tag>
-            <!-- <el-switch v-model="row.status" :inactive-value="0" :active-value="1" @change="handleStatusChange(row)"></el-switch> -->
-          </template>
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[1,15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
-        </div>
+    <div class="table-panel one-screen-fg1">
+      <JsTable :dataSource="list" :columns="columns" @selectionChange="handleSelectionChange">
+        <template #interfaceMethod="{row}">
+          {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_request_method', row.interfaceMethod) }}
+        </template>
+        <template #interfaceNormType="{row}">
+          {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_specification_type', row.interfaceNormType) }}
+        </template>
+        <template #interfaceType="{row}">
+          {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_type', row.interfaceType) }}
+        </template>
+        <template #status="{row}">
+          <el-tag :type="row.status == 0?'danger':''">
+            {{ $store.getters['dictionaries/MATCH_LABEL']('start_stop', row.status) }}
+          </el-tag>
+          <!-- <el-switch v-model="row.status" :inactive-value="0" :active-value="1" @change="handleStatusChange(row)"></el-switch> -->
+        </template>
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[1,15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
       </div>
-    </template>
-    <el-empty v-else></el-empty>
+    </div>
     <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog>
   </div>
 </template>
@@ -110,30 +107,30 @@ let columns = ref({
       }
     }] : [
       {
-      label: '编辑',
-      key: 'edit',
-      permission:['config:interfaceInfo:edit'],
-      event: (row) => {
-        select_pkid.value = {interfaceId: row.interfaceId};
-        isShowAddDialog.value = !0;
+        label: '编辑',
+        key: 'edit',
+        permission: ['config:interfaceInfo:edit'],
+        event: (row) => {
+          select_pkid.value = {interfaceId: row.interfaceId};
+          isShowAddDialog.value = !0;
+        },
       },
-     },
-     {
-       label: "启用",
-       key: "start",
-       type: "primary",
-       permission:['config:interfaceInfo:edit'],
-       autoHidden: autoStartHidden,
-       event: handleStart,
-        },
       {
-       label: "停用",
-       key: "end",
-       type: "danger",
-       permission:['config:interfaceInfo:edit'],
-       autoHidden:autoEndHidden,
-       event: handleEnd,
-        },
+        label: "启用",
+        key: "start",
+        type: "primary",
+        permission: ['config:interfaceInfo:edit'],
+        autoHidden: autoStartHidden,
+        event: handleStart,
+      },
+      {
+        label: "停用",
+        key: "end",
+        type: "danger",
+        permission: ['config:interfaceInfo:edit'],
+        autoHidden: autoEndHidden,
+        event: handleEnd,
+      },
     ],
   },
 })
@@ -152,58 +149,63 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
   list.value = res?.rows || [];
 };
+
 function autoStartHidden(val) {
-      if (val.row) {
-        return val.row.status == "0" ? true : false
-      } else {
-        return false;
-      }
+  if (val.row) {
+    return val.row.status == "0" ? true : false
+  } else {
+    return false;
   }
+}
+
 function autoEndHidden(val) {
-      if (val.row) {
-        return val.row.status == "1" ? true : false
-      } else {
-        return false;
-      }
+  if (val.row) {
+    return val.row.status == "1" ? true : false
+  } else {
+    return false;
   }
+}
+
 //启用
 function handleStart(row) {
   proxy.$$Dialog
-    .confirm('是否确认启用接口名称为"' + row.interfaceName + '"的数据项？')
-    .then(() => {
-      let data = {
-        interfaceId: row.interfaceId,
-        status: 1
-      };
-      return proxy.$$api.interface.changeStatus({data: data});
-    })
-    .then(({res, err}) => {
-      if (err) return;
-      getList(1);
-      proxy.$$Toast.success("启用成功");
-    })
-    .catch(() => {
-    });
+      .confirm('是否确认启用接口名称为"' + row.interfaceName + '"的数据项？')
+      .then(() => {
+        let data = {
+          interfaceId: row.interfaceId,
+          status: 1
+        };
+        return proxy.$$api.interface.changeStatus({data: data});
+      })
+      .then(({res, err}) => {
+        if (err) return;
+        getList(1);
+        proxy.$$Toast.success("启用成功");
+      })
+      .catch(() => {
+      });
 }
+
 //停用
 function handleEnd(row) {
   proxy.$$Dialog
-   .confirm('是否确认停用接口名称为"' + row.interfaceName + '"的数据项？')
-   .then(() => {
-     let data = {
-      status: 0,
-      interfaceId: row.interfaceId
-     };
-     return proxy.$$api.interface.changeStatus({data: data});
-   })
-   .then(({res, err}) => {
-     if (err) return;
-     getList(1);
-     proxy.$$Toast.success("停用成功");
-   })
-   .catch(() => {
-   });
+      .confirm('是否确认停用接口名称为"' + row.interfaceName + '"的数据项？')
+      .then(() => {
+        let data = {
+          status: 0,
+          interfaceId: row.interfaceId
+        };
+        return proxy.$$api.interface.changeStatus({data: data});
+      })
+      .then(({res, err}) => {
+        if (err) return;
+        getList(1);
+        proxy.$$Toast.success("停用成功");
+      })
+      .catch(() => {
+      });
 }
+
 function handleSelectionChange(value) {
   selectionList.value = value
 }
@@ -256,14 +258,14 @@ const formConfigItems = ref([
       },
       {
         btnName: '查询', type: 'button', attrs: {type: 'primary'}, col: 1,
-        permission:['config:interfaceInfo:query'],
+        permission: ['config:interfaceInfo:query'],
         onClick({vm}) {
           getList(1);
         }
       },
       {
         btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
-        permission:['config:interfaceInfo:remove'],
+        permission: ['config:interfaceInfo:remove'],
         onClick({vm}) {
           handleDel();
         },
@@ -273,7 +275,7 @@ const formConfigItems = ref([
       },
       {
         btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
-        permission:['config:interfaceInfo:add'],
+        permission: ['config:interfaceInfo:add'],
         onClick({vm}) {
           // 打开弹窗
           select_pkid.value = null;
@@ -296,7 +298,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'InterfaceIndex',
-  cusDicts: ['interface_request_method', 'interface_specification_type', 'interface_type', 'start_stop']
+  dicts: ['interface_request_method', 'interface_specification_type', 'interface_type', 'start_stop']
 }
 </script>
 <style lang="scss" scoped>

@@ -49,9 +49,21 @@ export const optionsProps = (sort = 1) => [
 ]
 
 export const formConfigProps = () => [
-  {sort: 1, name: '初始化事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
   {
-    sort: 2, name: '绑定接口', key: 'interfaceName', value: '', type: 'component', component: 'ApiSelector', isRequire: !1, col: 24,
+    sort: 1, name: '标签位置', key: 'labelPosition', value: 'right', type: 'radio', options: [{label: '顶部', value: 'top'}, {label: '左侧', value: 'right'}], isRequire: !1, col: 24,
+    onChange({vm}) {
+      vm.formData.labelWidth = vm.formData.labelPosition === 'right' ? 110 : 'auto';
+    }
+  },
+  {
+    sort: 2, name: '标签宽度（px）', key: 'labelWidth', value: 110, type: 'number', isRequire: !1, col: 24,
+    isShow({vm}) {
+      return vm.formData.labelPosition === 'right';
+    }
+  },
+  {sort: 3, name: '初始化事件类型', key: 'eventsType', value: '事件', type: 'radio', options: [{label: '事件', value: '事件'}, {label: '接口', value: '接口'}], isRequire: !1, col: 24},
+  {
+    sort: 4, name: '绑定接口', key: 'interfaceName', value: '', type: 'component', component: 'ApiSelector', isRequire: !1, col: 24,
     emitter({vm, item}) {
       return {
         onConfirm: function (value) {
@@ -68,7 +80,7 @@ export const formConfigProps = () => [
     }
   },
   {
-    sort: 2.1, name: '绑定入参', key: 'interfaceReqParams', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+    sort: 4.1, name: '绑定入参', key: 'interfaceReqParams', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
     attrs: {
       formPlaceholder: '入参字段', toPlaceholder: '绑定表单字段',
       handleValueKeys({vm}) {
@@ -92,7 +104,7 @@ export const formConfigProps = () => [
     }
   },
   {
-    sort: 2.1, name: '绑定出参', key: 'interfaceResParams', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+    sort: 4.1, name: '绑定出参', key: 'interfaceResParams', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
     attrs: {
       formPlaceholder: '表单字段', toPlaceholder: '绑定出参字段',
       handleValueKeys({vm}) {
@@ -119,7 +131,7 @@ export const formConfigProps = () => [
   {isHidden: !0, key: 'interfaceReqParamsArray', value: []},
   {isHidden: !0, key: 'interfaceResParamsArray', value: []},
   {
-    sort: 3, name: '绑定事件', key: 'events', value: [], type: 'multipleSelect', isRequire: !1, col: 24,
+    sort: 5, name: '绑定事件', key: 'events', value: [], type: 'multipleSelect', isRequire: !1, col: 24,
     options({vm}) {
       const events = useEvents();
       return Object.keys(events).map(etk => ({label: events[etk].label, value: etk}))
@@ -129,7 +141,7 @@ export const formConfigProps = () => [
     }
   },
   {
-    sort: 4, name: '绑定事件字段', key: 'eventsFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
+    sort: 6, name: '绑定事件字段', key: 'eventsFields', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
     attrs: {
       formPlaceholder: '表单字段', toPlaceholder: '绑定事件字段',
       handleKeys({vm}) {
@@ -150,7 +162,7 @@ export const formConfigProps = () => [
       return vm.formData.eventsType === '事件'
     }
   },
-  {sort: 4, name: '隐藏字段域', key: 'hiddenFields', attrs: {formPlaceholder: '字段名', toPlaceholder: '默认值',}, value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24},
+  {sort: 7, name: '隐藏字段域', key: 'hiddenFields', attrs: {formPlaceholder: '字段名', toPlaceholder: '默认值',}, value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24},
 ];
 
 // 组件通用配置 右侧配置会根据sort排序显示

@@ -1,7 +1,7 @@
 <template>
   <div class="user">
     <div class="userModel">
-      <div class="tipText" :style="{ visibility: userProfile.birthdayFlag ? 'visible' : 'hidden' }">
+      <div class="tipText" :sty1le="{ visibility: userProfile.birthdayFlag ? 'visible' : 'hidden' }">
         <i class="circle"></i> 今日生日
       </div>
       <img ref="" :src="userProfile.gender=='0'?womanImage:manImage" alt="" class="userImg"/>
@@ -31,12 +31,12 @@ const props = defineProps({
   },
 });
 const leftHalfCirclePoints = [
-  {right: '3.6rem', bottom: '0'},
+  {right: '3.6rem', bottom: '0.1rem'},
   {right: '3.2rem', bottom: '0.5rem'},
-  {right: '2.6rem', top: '0rem'},
-  {left: '2.6rem', top: '0rem'},
+  {right: '2.6rem', bottom: '0.9rem'},
+  {left: '2.6rem', bottom: '0.9rem'},
   {left: '3.2rem', bottom: '0.5rem'},
-  {left: '3.6rem', bottom: '0'},
+  {left: '3.6rem', bottom: '0.1rem'},
 ];
 const tagList = computed(() => {
   return props.userProfile.tagList.map((v, i) => ({v, style: leftHalfCirclePoints[i]}));
@@ -100,8 +100,8 @@ const tagList = computed(() => {
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  justify-content: center;
+  align-items: flex-end;
 }
 
 .imgCss {
@@ -116,7 +116,7 @@ const tagList = computed(() => {
 .tipText {
   position: absolute;
   right: 0;
-  top: 0;
+  top: 10px;
   background-color: #fbb8ba;
   font-size: 13px;
   padding: 3px 12px;
@@ -137,10 +137,12 @@ const tagList = computed(() => {
 
 .userModel {
   width: 100%;
-  padding: 40px;
-  padding-bottom: 10px;
+  height: 100%;
   position: relative;
-  text-align: center;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
 
   .userImg {
     width: 120px !important;

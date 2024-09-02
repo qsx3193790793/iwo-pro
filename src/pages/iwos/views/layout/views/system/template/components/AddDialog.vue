@@ -1,5 +1,5 @@
 <template>
-  <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="90%" top="5vh" height="75vh" :title="`${props.pkid?type:'新增'}模板`">
+  <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="96vw" top="5vh" height="75vh" :title="`${props.pkid?type:'新增'}模板`">
     <el-tabs v-model="tabActive" class="AddDialog" :before-leave="tabBeforeLeave">
       <el-tab-pane label="基本信息" name="基本信息">
         <ELScrollbar style="height: 100%">
@@ -84,7 +84,7 @@ const detailFormConfig = ref(null);//详情json
 function getFieldsArray() {
   return FormModelRef.value?.formData?.fieldList?.map(r => {
     let name = `${getTypePrefix(r.type)}${r.name}`;
-    return {label: `${r.title}(${name})`, value: name}
+    return {label: `${r.title}(${name})`, value: name, originLabel: r.title, type: r.type}
   }) || [];
 }
 
@@ -250,6 +250,7 @@ const formConfig = ref({
             vm.formData.productCode = [];
             vm.formData.sceneLevelCode = [];
             getSceneForm(vm);
+            vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = null
           }
         },
         {
@@ -258,6 +259,8 @@ const formConfig = ref({
           attrs: {props: {checkStrictly: !0}},
           onChange({vm}) {
             getSceneForm(vm);
+            const {path: developChannelLevelPath, pathLabels: developChannelLevelPathLabels} = vm.$refs.sceneLevelCode?.[0]?.getCheckedNodes()?.[0] || {};
+            vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = `${vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'}-${developChannelLevelPathLabels.join('-')}`
           },
           isShow({vm}) {
             return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
@@ -338,7 +341,7 @@ onBeforeMount(() => {
 <script>
 export default {
   name: 'TemplateAddDialog',
-  cusDicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type']
+  dicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type']
 }
 </script>
 <style lang="scss" scoped>

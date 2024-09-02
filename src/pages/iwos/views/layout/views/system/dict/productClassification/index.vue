@@ -144,7 +144,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
   name: "ProductClassification",
-  cusDicts: ['start_stop', 'yes_no'],
+  dicts: ['start_stop', 'yes_no'],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {
     return {
@@ -435,7 +435,7 @@ export default {
     // 启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启用投诉产品编号为"' + row.productId + '"的数据项？')
+          .confirm('是否确认启用投诉产品编号为"' + row.productCode + '"的数据项？')
           .then(() => {
             let data = {
               productId: row.productId,
@@ -454,7 +454,7 @@ export default {
     // 停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用投诉产品编号为"' + row.productId + '"的数据项？')
+          .confirm('是否确认停用投诉产品编号为"' + row.productCode + '"的数据项？')
           .then(() => {
             let data = {
               productId: row.productId,

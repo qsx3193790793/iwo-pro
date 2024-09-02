@@ -12,7 +12,17 @@
               maxlength="30"
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
-          />
+          >
+          <template slot="append">
+            <el-button type="primary"  @click="handleCheckedTreeExpand">{{ isExpend? '展开':'折叠'}}</el-button>
+          </template>
+          </el-input>
+          <!-- <el-checkbox
+              v-model="deptExpand"
+              @change="handleCheckedTreeExpand($event, 'dept')"
+          >展开/折叠
+          </el-checkbox
+          > -->
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
@@ -21,7 +31,7 @@
               :expand-on-click-node="false"
               :filter-node-method="filterNode"
               ref="tree"
-              node-key="id"
+              node-key="phenomId"
               default-expand-all
               :highlight-current="true"
               @node-click="handleNodeClick"
@@ -89,8 +99,8 @@
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
-            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:phenom:detailList']">查询</el-button>
-            <el-button type="success" size="mini" :disabled="isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:phenom:add']">新增</el-button>
+            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:phenom:list']">查询</el-button>
+            <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:phenom:add']">新增</el-button>
             <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:phenom:update']">删除</el-button>
           </el-form-item>
         </el-form>
@@ -219,6 +229,7 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 
@@ -226,11 +237,10 @@
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
-
 export default {
   name: "ComplaintPhenomenon",
   // dicts: ["sys_normal_disable", "sys_user_sex"],
-  cusDicts: ["phenom_status_name", "yes_no"],
+  dicts: ["phenom_status_name", "yes_no"],
   components: {Treeselect, PageSearchPanel, JsTable},
   data() {
     return {
@@ -243,7 +253,7 @@ export default {
       // 非多个禁用
       multiple: true,
       //是否可以新增
-      isAllowAdd: true,
+      isAllowAdd: false,
       //是否可以删除
       isAllowDelet: true,
       // 显示搜索条件
@@ -276,6 +286,10 @@ export default {
       superiorName: undefined,
       //选中行数据
       selectRow: {},
+      //单击节点选中数据
+      currentNodeData:{},
+      //树形组件是否展开
+      isExpend:true,
       // 表单参数
       form: {},
       defaultProps: {
@@ -330,16 +344,16 @@ export default {
         ],
         options: {
           btns: [
-            {
-              label: "新增",
-              key: "add",
-              type: "success",
-              permission: ['config:phenom:add'],
-              autoHidden: ({row}) => {
-                return row.level === 2 && row.isProvinceCustom === 1
-              },
-              event: this.handleAdd,
-            },
+            // {
+            //   label: "新增",
+            //   key: "add",
+            //   type: "success",
+            //   permission: ['config:phenom:add'],
+            //   autoHidden: ({row}) => {
+            //     return row.level === 2 && row.isProvinceCustom === 1
+            //   },
+            //   event: this.handleAdd,
+            // },
             {
               label: "编辑",
               key: "edit",
@@ -349,22 +363,17 @@ export default {
               },
               event: this.handleUpdate,
             },
-
             {
-              label: "更多",
-              key: "more",
-              children: [
-                {
-                  label: "删除",
-                  key: "del",
-                  type: "danger",
-                  permission: ['config:phenom:update'],
+                  label: "详情",
+                  key: "detail",
+                  type: "success",
+                  permission: ['config:phenom:detailList'],
+                  event: this.handleDetail,
                   autoHidden: ({row}) => {
-                    return row.level === 3 && row.isProvinceCustom === 1
+                    return row.isProvinceCustom === 1
                   },
-                  event: this.handleDelete,
-                },
-                {
+            },
+            {
                   label: "启用",
                   key: "start",
                   type: "primary",
@@ -380,14 +389,29 @@ export default {
                   autoHidden: this.autoEndHidden,
                   event: this.handleEnd,
                 },
+            {
+              label: "更多",
+              key: "more",
+              children: [
+                {
+                  label: "删除",
+                  key: "del",
+                  type: "danger",
+                  permission: ['config:phenom:update'],
+                  autoHidden: ({row}) => {
+                    return row.level === 3 && row.isProvinceCustom === 1
+                  },
+                  event: this.handleDelete,
+                },
                 {
                   label: "详情",
                   key: "detail",
+                  type: "success",
                   permission: ['config:phenom:detailList'],
                   event: this.handleDetail,
                   autoHidden: ({row}) => {
                     return row.isProvinceCustom === 1
-                  },
+                },
                 },
               ]
             },
@@ -507,6 +531,21 @@ export default {
       }).catch((error) => {
       });
     },
+     // 树权限（展开/折叠）
+     handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend
+        let treeList = this.complaintPhenomenonTreeOptions[0].phenomList
+        this.expandAndFlod(treeList)
+
+    },
+    expandAndFlod(treeList){
+      treeList.forEach(ele => {
+          this.$refs.tree.store.nodesMap[ele.phenomId].expanded  =  this.isExpend;
+          if(ele.phenomList && ele.phenomList >=0){
+            this.expandAndFlod(ele.phenomList)
+          }
+        });
+    },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {
       // 如果找到了目标节点，则返回祖先列表（逆序）
@@ -544,6 +583,8 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data, node) {
+      this.isAllowAdd = data.level == 2 && data.phenomName == '省自定'
+      this.currentNodeData = data
       if (node.childNodes.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.phenomCode
       this.handleQuery();
@@ -580,23 +621,21 @@ export default {
       this.selectRow = selection[0]
       this.multiple = !selection.length
       this.single = selection.length != 1;
-      this.isAllowAdd = !this.single && (selection[0]?.level === 2 && selection[0]?.isProvinceCustom === 1) ? false : true
       this.isAllowDelet = !this.single && (selection[0]?.level === 3 && selection[0]?.isProvinceCustom === 1) ? false : true
-
     },
     /** 新增按钮操作 */
-    handleAdd(row) {
+    handleAdd() {
       this.reset();
       this.title = "新增";
       this.$$api.complaintPhenomenon
-          .getComplaintPhenomenonCode({params: {pcode: row.phenomCode}}).then(({res: response, err}) => {
+          .getComplaintPhenomenonCode({params: {pcode: this.currentNodeData.phenomCode}}).then(({res: response, err}) => {
         if (err) return;
-        const treeData = this.findAncestorsInMultipleTrees(this.complaintPhenomenonTreeOptions, row.phenomCode, 'phenomCode', 'phenomName', 'phenomList')
+        const treeData = this.findAncestorsInMultipleTrees(this.complaintPhenomenonTreeOptions, this.currentNodeData.phenomCode, 'phenomCode', 'phenomName', 'phenomList')
         const formData = {
           phenomCode: response.phenomCode,
           isProvinceCustom: '1',
-          secondPhenomCode: row.phenomCode,
-          secondPhenomName: row.phenomName,
+          secondPhenomCode: this.currentNodeData.phenomCode,
+          secondPhenomName: this.currentNodeData.phenomName,
           firstPhenomCode: treeData[0].phenomCode,
           firstPhenomName: treeData[0].phenomName
         }
@@ -613,7 +652,7 @@ export default {
         phenomName: row.phenomName,
         userId: row.phenomId,
         status: row.status,
-        isProvinceCustom: '1',
+        isProvinceCustom:`${row.isProvinceCustom}`,
         firstPhenomCode: treeData[1].phenomCode,
         firstPhenomName: treeData[1].phenomName,
         secondPhenomCode: treeData[0].phenomCode,
@@ -633,7 +672,6 @@ export default {
                   data: {
                     phenomId: this.form.userId,
                     phenomName: this.form.phenomName,
-                    status: this.form.status
                   }
                 })
                 .then(({res, err}) => {
@@ -689,7 +727,7 @@ export default {
         phenomName: row.phenomName,
         userId: row.phenomId,
         status: row.status,
-        isProvinceCustom: '1',
+        isProvinceCustom:`${row.isProvinceCustom}`,
         firstPhenomCode: treeData[1].phenomCode,
         firstPhenomName: treeData[1].phenomName,
         secondPhenomCode: treeData[0].phenomCode,

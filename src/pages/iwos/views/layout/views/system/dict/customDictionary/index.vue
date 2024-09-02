@@ -102,7 +102,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 export default {
   name: "CustomDictionary",
   // dicts: ["sys_normal_disable"],
-  cusDicts: ['start_stop'],
+  dicts: ['start_stop'],
   components: {JsTable, PageSearchPanel},
   data() {
     return {

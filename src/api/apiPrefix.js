@@ -16,6 +16,7 @@ const service = {
   web: getProxy('web'),
   srv: getProxy('srv'),
   file: getProxy('file'),
+  proccess: getProxy('proccess'),
   ruoyi: getProxy(),
 };
 

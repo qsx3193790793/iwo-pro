@@ -18,7 +18,7 @@ const detail = ref()
 function getFieldsArray() {
   return detail.value?.fieldConfigs?.map(r => {
     let name = `${getTypePrefix(r.type)}${r.name}`;
-    return {label: `${r.title}(${name})`, value: name}
+    return {label: `${r.title}(${name})`, value: name, originLabel: r.title, type: r.type}
   }) || [];
 }
 

@@ -41,7 +41,7 @@
       </div>
       <div class="fm-designer-stage-panel">
         <div class="fm-designer-stage" @click.stop="handlerLayoutClick({cId:null})">
-          <el-form :inline="true" label-position="top" hide-required-asterisk scroll-to-error>
+          <el-form :inline="true" v-bind="z_formConfigPropsValue" hide-required-asterisk scroll-to-error>
             <Draggable v-model="stage" class="el-row" :class="{empty:!stage.length}" handle=".drag-element-handler" :forceFallback="false" :group="{name:'layout',pull:!1,put:layoutPut}" :sort="true">
               <component v-for="(v,i) in stage" :children.sync="v.children" :stage="stage" :props="v.z_props" :node="v" :key="v.cId" :cId="v.cId" :is="v" @layout-click="handlerLayoutClick" @layout-del="handlerLayoutDel" @layout-copy="handlerLayoutCopy"></component>
             </Draggable>
@@ -59,12 +59,12 @@
         </el-tabs>
       </div>
     </div>
-    <el-dialog v-if="dialogVisible" title="表单预览" :visible.sync="dialogVisible" width="75%" :close-on-click-modal="!1" destroy-on-close append-to-body>
+    <el-dialog v-if="dialogVisible" title="表单预览" :visible.sync="dialogVisible" width="90vw" :close-on-click-modal="!1" destroy-on-close append-to-body>
       <div class="fm-designer-view">
         <FormModel ref="FormConfigViewRef" :formConfig="formConfigView"></FormModel>
       </div>
     </el-dialog>
-    <MDialog v-if="isQuoteTemplateShow&&quoteComponent" v-model="isQuoteTemplateShow" width="90%" height="70vh" title="选择模板" onScreen>
+    <MDialog v-if="isQuoteTemplateShow&&quoteComponent" v-model="isQuoteTemplateShow" width="90vw" height="70vh" title="选择模板" onScreen>
       <component :is="quoteComponent" :is-quote="true" @onQuote="onQuote"></component>
     </MDialog>
   </div>
@@ -74,7 +74,7 @@ import Draggable from 'vuedraggable';
 import {comps} from './config/comps';
 import FormModel from '../FormModel/index.vue';
 import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
-import {parseFormModel, parseJson, parseStage, parseStageFormConfig, stageValidator} from "./config";
+import {getProps, parseFormModel, parseJson, parseStage, parseStageFormConfig, stageValidator} from "./config";
 import {formConfigProps} from "./config/defaultConfigProps";
 import MDialog from '@/components/MDialog';
 
@@ -209,8 +209,15 @@ const compFormConfig = computed(() => {
         items: comp['z_props'].sort((a, b) => (a.sort ?? 9999) - (b.sort ?? 9999)).map(p => {
           // 对字段名进行处理 如果是有列表的使用下拉
           if (p.key === 'key') {
-            const options = proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray;
-            if (options?.length) return Object.assign(p, {type: 'select', options});
+            const options = (proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray);
+            if (options?.length) return Object.assign(p, {
+              type: 'select', options: options.filter(o => o.type != 0),//字段名不允许public字段赋值
+              onChange({vm}) {
+                const finder = options.find(o => o.value === vm.formData.key);
+                if (!finder) return;
+                vm.formData.name = finder?.originLabel ?? '输入标签名称';
+              }
+            });
             return Object.assign(p, {type: 'input', options: []});
           }
           return p;
@@ -222,10 +229,19 @@ const compFormConfig = computed(() => {
 
 const z_formConfigProps = ref(formConfigProps());
 
+const z_formConfigPropsValue = computed(() => {
+  const ps = getProps(z_formConfigProps.value);
+  return {
+    labelPosition: ps?.labelPosition || 'right',
+    labelWidth: ps?.labelPosition !== 'right' ? null : (ps?.labelWidth ? `${(ps.labelWidth / proxy.$$remBasePx)}rem` : 'auto'),
+  }
+});
+
 watch(() => z_formConfigProps.value, () => proxy.$$store.commit('fmDesigner/ADD_FORM_HISTORY', z_formConfigProps.value));
 
 function z_formConfigPropsChange(formData) {
   z_formConfigProps.value.forEach(zp => zp.value = formData[zp.key]);
+  console.log('z_formConfigProps.value', z_formConfigProps.value)
 }
 
 const formConfig = computed(() => {

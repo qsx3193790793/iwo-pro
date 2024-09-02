@@ -35,7 +35,7 @@ axiosInstance.interceptors.request.use(
       config.data = Vue.prototype.$$toFormData(config.data);
     }
     //设置超时
-    config.timeout = 30000;
+    config.timeout = 10 * 60 * 1000;
     //设置请求格式
     config.headers['Content-Type'] = ['application/json;charset=UTF-8', 'application/x-www-form-urlencoded;charset=UTF-8', 'multipart/form-data;charset=UTF-8'][config.contentType];
     config.headers['Authorization'] = `Bearer ${Vue.prototype.$$store.getters['user/GET_TOKEN']}`;

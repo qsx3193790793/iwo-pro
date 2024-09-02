@@ -158,7 +158,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
   name: "ChannelClassification",
-  cusDicts: ['start_stop', 'yes_no','base_province_code'],
+  dicts: ['start_stop', 'yes_no','base_province_code'],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {
     return {

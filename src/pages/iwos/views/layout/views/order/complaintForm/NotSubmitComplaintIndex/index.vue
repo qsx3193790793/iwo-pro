@@ -4,40 +4,37 @@
         ref="PageSearchPanelRef"
         :formConfigItems="formConfigItems"
     ></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <JsTable :dataSource="list" :columns="columns">
-          <!--          <template #unifiedComplaintCode="scope">-->
-          <!--            &lt;!&ndash; @click="Todetail(scope.row)" &ndash;&gt;-->
-          <!--            <div style="color: rgb(50, 151, 255); cursor: pointer">-->
-          <!--              {{ scope.row.unifiedComplaintCode }}-->
-          <!--            </div>-->
-          <!--          </template>-->
-          <template #workorderType="scope">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", scope.row.workorderType) }}
-          </template>
-          <!--          <template #provinceCode="scope">-->
-          <!--            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}-->
-          <!--          </template>-->
-          <template #statusCd="scope">
-            {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", scope.row.statusCd) }}
-          </template>
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination
-              :current-page.sync="pageInfo.pageNum"
-              :page-size.sync="pageInfo.pageSize"
-              :page-sizes="[15, 30, 40, 50]"
-              background
-              layout=" ->,total, sizes, prev, pager, next, jumper"
-              :total="pageInfo.rowCount"
-              @size-change="getList(1)"
-              @current-change="getList"
-          />
-        </div>
+    <div class="table-panel one-screen-fg1">
+      <JsTable :dataSource="list" :columns="columns">
+        <!--          <template #unifiedComplaintCode="scope">-->
+        <!--            &lt;!&ndash; @click="Todetail(scope.row)" &ndash;&gt;-->
+        <!--            <div style="color: rgb(50, 151, 255); cursor: pointer">-->
+        <!--              {{ scope.row.unifiedComplaintCode }}-->
+        <!--            </div>-->
+        <!--          </template>-->
+        <template #workorderType="scope">
+          {{ $store.getters["dictionaries/MATCH_LABEL"]("search_order_type", scope.row.workorderType) }}
+        </template>
+        <!--          <template #provinceCode="scope">-->
+        <!--            {{ $store.getters["dictionaries/MATCH_LABEL"]("base_province_code", scope.row.provinceCode) }}-->
+        <!--          </template>-->
+        <template #statusCd="scope">
+          {{ $store.getters["dictionaries/MATCH_LABEL"]("jy_complaint_status_cd", scope.row.statusCd) }}
+        </template>
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination
+            :current-page.sync="pageInfo.pageNum"
+            :page-size.sync="pageInfo.pageSize"
+            :page-sizes="[15, 30, 40, 50]"
+            background
+            layout=" ->,total, sizes, prev, pager, next, jumper"
+            :total="pageInfo.rowCount"
+            @size-change="getList(1)"
+            @current-change="getList"
+        />
       </div>
-    </template>
-    <el-empty v-else></el-empty>
+    </div>
     <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog" v-bind="uploadConfig" @templateDownload="onTemplateDownload"></importDialog>
   </div>
 </template>

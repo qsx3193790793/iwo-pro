@@ -1,6 +1,6 @@
 <template>
   <div class="one-screen">
-    <div class="Pagehead">
+    <div class="Pagehead public-background">
       <CustomerProfile @change="change" @diagnosisChange="diagnosisChange" @reset="reset"></CustomerProfile>
     </div>
     <ELScrollbar class="one-screen-fg1 public-background create-order-container">
@@ -53,7 +53,28 @@ export default {name: "ComplaintCreate"};
 </script>
 <style lang="scss" scoped>
 .Pagehead {
+  overflow: hidden;
+  flex-shrink: 0;
+  flex-grow: 0;
   // height: 270px;
   margin-bottom: 12px;
+}
+
+.create-order-container {
+  .create-order-header {
+    font-size: 18px;
+    line-height: 3;
+    border-bottom: 1PX solid #eeeeee;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0 20px !important;
+    background-color: rgb(241, 247, 253);
+    font-weight: bold;
+  }
+
+  .create-order-form {
+    padding: 6px 20px !important;
+  }
 }
 </style>

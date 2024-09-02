@@ -72,9 +72,9 @@ watchEffect(() => {
         & > .el-scrollbar__wrap > .el-scrollbar__view {
           height: 100%;
 
-          & > div {
-            padding: 4px
-          }
+          //& > div {
+          //  padding: 4px
+          //}
         }
       }
     }

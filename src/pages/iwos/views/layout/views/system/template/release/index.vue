@@ -1,28 +1,25 @@
 <template>
   <div class="one-screen">
     <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <JsTable :dataSource="list" :columns="columns">
-          <template #updatedTime="{row}">
-            {{ $$dateFormatter(row.updatedTime) }}
-          </template>
-          <template #workorderType="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('template_work_order_type', row.workorderType) }}
-          </template>
-          <template #bigType="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('template_big_type', row.bigType) }}
-          </template>
-          <template #smallType="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('template_small_type', row.smallType) }}
-          </template>
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
-        </div>
+    <div class="table-panel one-screen-fg1">
+      <JsTable :dataSource="list" :columns="columns">
+        <template #updatedTime="{row}">
+          {{ $$dateFormatter(row.updatedTime) }}
+        </template>
+        <template #workorderType="{row}">
+          {{ $store.getters['dictionaries/MATCH_LABEL']('template_work_order_type', row.workorderType) }}
+        </template>
+        <template #bigType="{row}">
+          {{ $store.getters['dictionaries/MATCH_LABEL']('template_big_type', row.bigType) }}
+        </template>
+        <template #smallType="{row}">
+          {{ $store.getters['dictionaries/MATCH_LABEL']('template_small_type', row.smallType) }}
+        </template>
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
       </div>
-    </template>
-    <el-empty v-else></el-empty>
+    </div>
     <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose isDetail type="发布" @success="getList(1)"></AddDialog>
   </div>
 </template>
@@ -171,7 +168,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'ReleaseIndex',
-  cusDicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type', 'base_province_code']
+  dicts: ['template_work_order_type', 'template_status_name', 'template_big_type', 'template_small_type', 'base_province_code']
 }
 </script>
 <style lang="scss" scoped>

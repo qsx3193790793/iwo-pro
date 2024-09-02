@@ -172,7 +172,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
   name: "ComplaintSource",
-  cusDicts: ["start_stop", "yes_no"],
+  dicts: ["start_stop", "yes_no"],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {
     return {

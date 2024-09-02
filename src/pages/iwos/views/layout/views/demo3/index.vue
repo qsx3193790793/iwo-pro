@@ -1,32 +1,28 @@
 <template>
   <div class="one-screen">
     <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <JsTable :dataSource="list" :columns="columns">
-          <template #ordernumber="{row}">
-            <div style="color: rgb(50, 151, 255);cursor: pointer;" @click="Todetail(row)">{{ row.ordernumber }}</div>
-          </template>
-          <!-- <template #state="scope">
-            {{ scope.row.state == 0 ? '激活' : '未激活' }}
-          </template> -->
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination :current-page.sync="pageInfo.pageNo" :page-size.sync="pageInfo.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
-        </div>
+    <div class="table-panel one-screen-fg1">
+      <JsTable :dataSource="list" :columns="columns">
+        <template #ordernumber="{row}">
+          <div style="color: rgb(50, 151, 255);cursor: pointer;" @click="Todetail(row)">{{ row.ordernumber }}</div>
+        </template>
+        <!-- <template #state="scope">
+          {{ scope.row.state == 0 ? '激活' : '未激活' }}
+        </template> -->
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination :current-page.sync="pageInfo.pageNo" :page-size.sync="pageInfo.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
       </div>
-    </template>
-    <el-empty v-else></el-empty>
+    </div>
     <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog>
   </div>
 </template>
 
 <script setup>
-import {getCurrentInstance, ref} from "vue";
+import {getCurrentInstance, ref,onMounted} from "vue";
 import JsTable from '@/components/js-table/index.vue';
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 import AddDialog from './components/AddDialog';
-import {onMounted} from "vue"
 
 const {proxy} = getCurrentInstance();
 const Todetail = (row) => {

@@ -30,7 +30,9 @@
   .el-collapse-item__header {
     border-bottom: none;
     background-color: transparent;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+    height: 36px;
+    line-height: 36px;
   }
 
   .el-collapse-item__wrap {
@@ -39,7 +41,7 @@
   }
 
   .el-collapse-item__content {
-    padding-bottom: 10px;
+    padding-bottom: 0;
   }
 
   .el-collapse-item__arrow.el-icon-arrow-right {
@@ -78,15 +80,19 @@
 }
 
 ::v-deep(.el-col) {
-  height: 90px;
+  height: 76px;
 
   &.textarea, &.FMTextarea, &.buttons, &.FMButtons, &.mine-row-divider-empty, &.component, &.FMComponent, &.monacoEditor, &.FMMonacoEditor {
-    height: auto;
+    height: auto !important;
   }
 }
 
+::v-deep(.el-form--label-right .el-col) {
+  height: 46px;
+}
+
 ::v-deep(.el-form--label-left .el-col) {
-  height: auto;
+  height: 46px;
 }
 
 ::v-deep(.el-form) {
@@ -94,8 +100,16 @@
 }
 
 ::v-deep(.el-form-item__error) {
-  padding: 6px 0 !important;
-  text-align: right;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 32px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: auto !important;
+  font-weight: bold;
+  pointer-events: none;
 }
 
 ::v-deep(.el-form.el-form--inline) {
@@ -110,7 +124,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 16px;
   margin-right: 0;
   flex-grow: 0;
 
@@ -120,23 +134,6 @@
     }
   }
 
-  //width: 15%;
-  //margin-right: 2%;
-  //
-  //&:nth-of-type(6n) {
-  //  margin-right: 0;
-  //}
-
-  //i.openDialog {
-  //  position: absolute;
-  //  top: 50%;
-  //  right: 0px;
-  //  font-size: 12px;
-  //  transform: translateY(-50%);
-  //  cursor: pointer;
-  //  color: #7a7a7a;
-  //  padding: 10px;
-  //}
   i.openDialog {
     //position: absolute;
     //top: 50%;
@@ -151,8 +148,16 @@
   }
 }
 
+//::v-deep(.el-form--label-right .el-form-item) {
+//  align-items: flex-start;
+//}
+
 ::v-deep(.el-form--inline.el-form--label-top .el-form-item) {
   display: block;
+}
+
+::v-deep(.el-form--label-right .el-form-item) {
+  margin-bottom: 16px;
 }
 
 ::v-deep(.el-form-item__label) {
@@ -161,6 +166,10 @@
   flex-grow: 0;
   flex-shrink: 0;
 }
+
+//::v-deep(.el-form--label-right .el-form-item__label) {
+//  margin: 4px 0;
+//}
 
 ::v-deep(.el-form-item__content) {
   flex-grow: 1;
@@ -309,7 +318,7 @@
     justify-content: flex-end;
     align-items: center;
     flex-grow: 1;
-    height: 48px;
+    height: 36px;
     cursor: default;
     padding-right: 12px;
   }

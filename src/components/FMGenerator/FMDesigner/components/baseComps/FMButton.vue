@@ -27,8 +27,7 @@ export default {
   type: 'comp',
   z_props: [].concat(commonProps(['isDisable', 'showCondition']), [
     {sort: -1, name: '组件类型', key: 'type', value: 'FMButton', type: 'input', isDisable: !0, isRequire: !1, col: 24},
-// {sort: 1, name: '栅格（按钮组内不生效）', key: 'col', value: 6, type: 'slider', min: 1, max: 24, isRequire: !0, col: 24},
-    // {sort: 5.1, name: '垂直对齐（按钮组内不生效）', key: 'verticalAlign', value: 'form', type: 'radio', options: [{label: '表单', value: 'form'}, {label: '顶部', value: 'top'}], isRequire: !1, col: 24},
+    {sort: 5.1, name: '是否在详情中展示', key: 'isShowInDetail', value: false, type: 'radio', options: [{label: '是', value: true}, {label: '否', value: false}], isRequire: !1, col: 24},
     {sort: 5.2, name: '按钮名称', key: 'btnName', value: '按钮', type: 'input', isRequire: !1, col: 24},
     {
       sort: 5.3, name: '按钮类型', key: 'btnType', value: 'primary', type: 'select', isRequire: !1, col: 24,

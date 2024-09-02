@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:dept:query']" >搜索</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:dept:query']">搜索</el-button>
         <el-button
             type="success"
             size="small"
@@ -91,8 +91,8 @@
                 <el-button v-hasPermission="['system:dept:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
                 <el-button v-hasPermission="['system:dept:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
                 <el-button v-hasPermission="['system:dept:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
-                <el-button  v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='0'"  type="danger"  size="small" @click="handleEnd(scope.row)">停用</el-button>
-                <el-button  v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='1'" type="primary"  size="small" @click="handleStart(scope.row)">启用</el-button>
+                <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='0'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
+                <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
               </div>
             </el-dropdown-menu>
           </el-dropdown>
@@ -144,7 +144,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="机构名称" prop="deptName">
-              <el-input v-model="form.deptName" :placeholder="handleType=='detail'?'':'请输入机构名称'"  maxlength="30"/>
+              <el-input v-model="form.deptName" :placeholder="handleType=='detail'?'':'请输入机构名称'" maxlength="30"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -202,8 +202,8 @@ import Treeselect from "@riophae/vue-treeselect";
 
 export default {
   name: "DeptIndex",
-  dicts: ['sys_normal_disable'],
-  cusDicts: ['base_province_code'],
+  dicts: ['sys_normal_disable', 'base_province_code'],
+  // cusDicts: ['base_province_code'],
   components: {Treeselect},
   data() {
     return {
@@ -417,18 +417,23 @@ export default {
       });
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+    async handleUpdate(row) {
       this.reset();
-      this.$$api.dept.getDept({deptId: row.deptId}).then(({res: response, err}) => {
+      await this.$$api.dept.getDept({deptId: row.deptId}).then(({res: response, err}) => {
         if (err) return
         this.form = response;
         this.roleOptions = response.roles
         this.open = true;
         this.title = "修改机构";
       });
-      this.$$api.dept.listDeptExcludeChild({deptId: row.deptId}).then(({res: response, err}) => {
+      await this.$$api.dept.listDeptExcludeChild({deptId: row.deptId}).then(({res: response, err}) => {
         if (err) return
-        this.deptOptions = this.$$handleTree(response.list, "deptId");
+        if (response.list && response.list.length > 0) {
+          this.deptOptions = this.$$handleTree(response.list, "deptId");
+        } else {
+          const noResultsOptions = {deptId: this.form.parentId, deptName: this.form.parentName, children: []};
+          this.deptOptions.push(noResultsOptions);
+        }
       });
     },
     /** 提交按钮 */

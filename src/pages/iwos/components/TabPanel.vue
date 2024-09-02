@@ -2,13 +2,15 @@
   <div class="tab-panel">
     <div class="left">
       <i v-if="$store.getters['storage/GET_NAV_SETTING_CAN_COLLAPSE']" class="iconfont" :class="$store.getters['storage/GET_NAV_SETTING_IS_COLLAPSE']?'icon-shouqicaidan':'icon-zhankaicaidan'" @click="handleCollapse"></i>
-      <i class="iconfont icon-shouye"></i>
+      <!-- <i class="iconfont icon-shouye"></i> -->
     </div>
     <el-tabs v-model="active" class="center" type="card" @tab-click="handlerClick" @tab-remove="$store.commit('storage/REMOVE_TAB', $event)">
       <el-tab-pane v-for="v in tabs" :label="v.name" :name="v.key" :key="v.key" :closable="v.closable" :data-c="v.closable"></el-tab-pane>
     </el-tabs>
     <div class="right">
-      <i class="iconfont icon-shuaxin_refresh"></i>
+      <el-tooltip class="item" effect="dark" content="关闭全部标签页" placement="bottom-start">
+        <i class="iconfont el-icon-close" @click="clickTab"></i>
+      </el-tooltip>
     </div>
   </div>
 </template>
@@ -34,6 +36,12 @@ function handleCollapse() {
   proxy.$store.commit('storage/SET_NAV_SETTING', {isCollapse: !proxy.$store.getters['storage/GET_NAV_SETTING_IS_COLLAPSE']})
 }
 
+function clickTab() {
+  proxy.$$Dialog.confirm(`此操作会清除所有已打开菜单并返回首页，是否确认？`, '提示').then(() => {
+    proxy.$store.commit('storage/CLEAR_TABS')
+    proxy.$store.commit('storage/ADD_TAB', {key: '工作台'})
+  })
+}
 </script>
 <style lang="scss" scoped>
 

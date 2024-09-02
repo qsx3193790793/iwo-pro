@@ -1,28 +1,25 @@
 <template>
   <div class="one-screen">
     <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <JsTable :dataSource="list" :columns="columns" @selectionChange="selectionList=$event">
-          <template #updatedTime="{row}">
-            {{ $$dateFormatter(row.updatedTime) }}
-          </template>
-          <template #type="{row}">
-            {{ type2name(row.type) }}
-          </template>
-          <template #isProvinceCustom="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
-          </template>
-          <template #provinceCode="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}
-          </template>
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
-        </div>
+    <div class="table-panel one-screen-fg1">
+      <JsTable :dataSource="list" :columns="columns" @selectionChange="selectionList=$event">
+        <template #updatedTime="{row}">
+          {{ $$dateFormatter(row.updatedTime) }}
+        </template>
+        <template #type="{row}">
+          {{ type2name(row.type) }}
+        </template>
+        <template #isProvinceCustom="{row}">
+          {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
+        </template>
+        <template #provinceCode="{row}">
+          {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}
+        </template>
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
       </div>
-    </template>
-    <el-empty v-else></el-empty>
+    </div>
     <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose @success="getList(1)"></AddDialog>
   </div>
 </template>
@@ -193,7 +190,7 @@ onMounted(() => {
 <script>
 export default {
   name: 'FieldIndex',
-  cusDicts: ['yes_no', 'base_province_code']
+  dicts: ['yes_no', 'base_province_code']
 }
 </script>
 <style lang="scss" scoped>

@@ -110,7 +110,7 @@ function handleDelete(row, $index) {
 </script>
 <script>
 export default {
-  cusDicts: ['template_field_type']
+  dicts: ['template_field_type']
 }
 </script>
 <style lang="scss" scoped>

@@ -24,10 +24,6 @@
           <el-tag type="danger">删除</el-tag>
         </div>
       </template>
-      <template #provinceCode="{ row }">
-        <div> {{ $store.getters['dictionaries/MATCH_LABEL']('base_province_code', row.provinceCode) }}</div>
-      </template>
-
     </JsTable>
     <el-pagination
         class="one-screen-fg0"
@@ -74,7 +70,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
   name: "LabelDictionary",
-  cusDicts: ["start_stop", "base_province_code"],
+  dicts: ["start_stop"],
   components: {JsTable, PageSearchPanel},
   data() {
     return {
@@ -129,7 +125,7 @@ export default {
           },
           {
             name: "省",
-            key: "provinceCode",
+            key: "provinceName",
           },
           {
             name: "更新人",

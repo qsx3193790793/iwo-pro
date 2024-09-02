@@ -2,7 +2,7 @@
 import {compsMap} from "./comps";
 import useEvents from "./events";
 import {buttonCompiler, buttonsCompiler, cascaderCompiler, customizationCompsCompiler, datePickerCompiler, inputCompiler, interfaceCompiler, selectCompiler, showConditionCompiler} from "./compiler";
-import {$$isEmpty, $$getUUID} from "@/utils";
+import {$$isEmpty, $$getUUID, $$remBasePx} from "@/utils";
 
 //配置列表转换值模型
 export const getProps = (props_arr) => {
@@ -43,7 +43,11 @@ export const parseStage = (json, isNewCID = false) => {
 
 //json表单配置 转 表单真实配置 传入json.form
 export const parseStageFormConfig = (formConfig, json) => {
-  return formConfig.map(c => Object.assign(c, {value: json[c.key]}));
+  json.labelPosition = json.labelPosition ?? 'right';
+  json.labelWidth = json.labelPosition !== 'right' ? null : (json.labelWidth ?? 110);
+  return formConfig.map(c => Object.assign(c, {
+    value: json[c.key],
+  }));
 };
 
 //json配置转表单渲染 isView预览？
@@ -52,6 +56,8 @@ export const parseFormModel = (json, isView = false) => {
   return {
     formName: '',
     loading: false,
+    labelPosition: json.form.labelPosition || 'right',
+    labelWidth: json.form.labelWidth || 'auto',
     onLoad: async function ({vm, value}) {
       console.log('parseFormModel onLoad...', vm, value, json)
       if (isView) return;//预览跳过

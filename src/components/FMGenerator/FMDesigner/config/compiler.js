@@ -61,6 +61,7 @@ export const showConditionCompiler = (j) => {
   if (['FMButtons'].includes(j.name) || !j.z_props?.showCondition?.length) return {};
   return {
     isShow({vm}) {
+      if (['FMButton'].includes(j.name) && !j.z_props.isShowInDetail && vm.disabled) return false;//对于按钮 先看是否在详情中展示
       return j.z_props.showCondition.map((sc, idx) => {//先处理数据true|false
         const result = sc.value?.split(',').includes(vm.formData[sc.key]);
         return {
@@ -177,6 +178,7 @@ export const buttonsCompiler = (j, isView) => {
   return {
     items: j.children.map(btn => buttonCompiler(btn, isView)),
     isShow({vm}) {
+      if (!j.z_props.isShowInDetail && vm.disabled) return false;
       return !!this.items.filter(bv => (!bv.isShow) || bv.isShow({vm})).length;
     }
   }

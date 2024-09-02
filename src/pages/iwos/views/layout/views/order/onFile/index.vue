@@ -1,69 +1,63 @@
 <template>
   <div class="one-screen">
-    <PageSearchPanel
-        ref="PageSearchPanelRef"
-        :formConfigItems="formConfigItems"
-    ></PageSearchPanel>
-    <template v-if="list.length">
-      <div class="table-panel one-screen-fg1">
-        <JsTable
-            :dataSource="state.dataSource"
-            :columns="state.columns"
-            @selectionChange="selectionChange"
-        >
-          <template #ordernumber="scope">
-            <!-- @click="Todetail(scope.row)" -->
-            <div style="color: rgb(50, 151, 255); cursor: pointer">
-              {{ scope.row.ordernumber }}
-            </div>
-          </template>
-          <template #provinceCode="{ row }">
-            <div>
-              {{
-                $store.getters["dictionaries/MATCH_LABEL"](
-                    "base_province_code",
-                    row.provinceCode
-                )
-              }}
-            </div>
-          </template>
-          <template #workorderType="scope">
-            <div>
-              {{
-                $store.getters["dictionaries/MATCH_LABEL"](
-                    "search_order_type",
-                    scope.row.workorderType
-                )
-              }}
-            </div>
-          </template>
-          <template #statusCd="scope">
-            <div>
-              {{
-                $store.getters["dictionaries/MATCH_LABEL"](
-                    "jy_complaint_status_cd",
-                    scope.row.statusCd
-                )
-              }}
-            </div>
-          </template>
+    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
+    <div class="table-panel one-screen-fg1">
+      <JsTable
+          :dataSource="state.dataSource"
+          :columns="state.columns"
+          @selectionChange="selectionChange"
+      >
+        <template #ordernumber="scope">
+          <!-- @click="Todetail(scope.row)" -->
+          <div style="color: rgb(50, 151, 255); cursor: pointer">
+            {{ scope.row.ordernumber }}
+          </div>
+        </template>
+        <template #provinceCode="{ row }">
+          <div>
+            {{
+              $store.getters["dictionaries/MATCH_LABEL"](
+                  "base_province_code",
+                  row.provinceCode
+              )
+            }}
+          </div>
+        </template>
+        <template #workorderType="scope">
+          <div>
+            {{
+              $store.getters["dictionaries/MATCH_LABEL"](
+                  "search_order_type",
+                  scope.row.workorderType
+              )
+            }}
+          </div>
+        </template>
+        <template #statusCd="scope">
+          <div>
+            {{
+              $store.getters["dictionaries/MATCH_LABEL"](
+                  "jy_complaint_status_cd",
+                  scope.row.statusCd
+              )
+            }}
+          </div>
+        </template>
 
-        </JsTable>
-        <div class="pagination-area">
-          <el-pagination
-              :current-page.sync="pageInfo.pageNum"
-              :page-size.sync="pageInfo.pageSize"
-              :page-sizes="[15, 30, 40, 50]"
-              background
-              layout=" ->,total, sizes, prev, pager, next, jumper"
-              :total="pageInfo.rowCount"
-              @size-change="getList(1)"
-              @current-change="getList"
-          />
-        </div>
+      </JsTable>
+      <div class="pagination-area">
+        <el-pagination
+            :current-page.sync="pageInfo.pageNum"
+            :page-size.sync="pageInfo.pageSize"
+            :page-sizes="[15, 30, 40, 50]"
+            background
+            layout=" ->,total, sizes, prev, pager, next, jumper"
+            :total="pageInfo.rowCount"
+            @size-change="getList(1)"
+            @current-change="getList"
+        />
       </div>
-    </template>
-    <el-empty v-else></el-empty>
+    </div>
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog
         title="归档"
@@ -110,10 +104,6 @@ let selectData = ref([]);
 const selectionChange = (val) => {
   selectData.value = val;
 };
-// const Todetail = (val) => {
-//   console.log(val);
-//   proxy.$$router.push({ name: "ComplaintDetail", query: { ID: val.id } });
-// };
 const FormRef = ref();
 // 归档归档
 const submitForm = () => {

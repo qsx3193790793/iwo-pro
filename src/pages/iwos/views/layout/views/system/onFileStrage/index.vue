@@ -126,7 +126,7 @@ import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 
 export default {
   name: "OrderOnFileStrategy",
-  cusDicts: [
+  dicts: [
     "start_stop",
     "search_order_type",
     "base_province_code",

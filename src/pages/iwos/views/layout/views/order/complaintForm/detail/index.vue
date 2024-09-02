@@ -7,7 +7,7 @@
       <template v-for="item in tagList1">
         <el-tag v-if="item.value" style="margin:0 0.2rem 0.1rem 0;" :key="item.label" type="warning" size="medium" color="#f49e47" effect="dark"> {{ item.value }}</el-tag>
       </template>
-      <TextLine labelColor="#a7abb4" labelWidth="1.36rem" :list="textLineList1" style="font-size: 14px;margin: 15px 0;"></TextLine>
+      <TextLine labelColor="#a7abb4" labelWidth="1.36rem" :list="textLineList1" style="font-size:0.14rem;margin: 15px 0;"></TextLine>
       <div class="tag-body" :style=" `border: 2px solid ${item.color}`" v-for="item in evaluateTagList" :key="item.label">
         <div class="tag-name" :style="`color:${item.color}`">{{ item.label }}</div>
         <div class="tag-number" :style="`background-color: ${item.color};`">{{ item.value || '0' }}</div>
@@ -15,7 +15,7 @@
       <el-divider></el-divider>
       <!-- <UserTag class="UserTag" :userProfile="userProfile"></UserTag> -->
       <div class="main-title-1">工单基本信息</div>
-      <TextLine labelWidth="1.36rem" :list="textLineList2" style="font-size: 14px;" labelColor="#a7abb4"></TextLine>
+      <TextLine labelWidth="1.36rem" :list="textLineList2" style="font-size:0.14rem;" labelColor="#a7abb4"></TextLine>
       <el-divider></el-divider>
       <div class="main-title-1">服务轨迹</div>
       <div class="service-trajectory">
@@ -210,7 +210,7 @@ export default {
 
   .base-info {
     padding: 16px 0 0 16px;
-    width: 400px;
+    width: 350px;
     flex-shrink: 0;
     flex-grow: 0;
     margin-right: 16px;
@@ -247,7 +247,7 @@ export default {
   width: 100%;
   margin: 15px 0;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
 
   &-icon {
@@ -255,6 +255,26 @@ export default {
     background-color: #e6ebf1;
     padding: 8px 4px;
     margin-bottom: 4px;
+    margin-top: 4px;
+  }
+}
+
+
+.create-order-container {
+  .create-order-header {
+    font-size: 18px;
+    line-height: 3;
+    border-bottom: 1PX solid #eeeeee;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0 20px !important;
+    background-color: rgb(241, 247, 253);
+    font-weight: bold;
+  }
+
+  .create-order-form {
+    padding: 6px 20px !important;
   }
 }
 </style>

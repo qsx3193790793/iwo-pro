@@ -42,27 +42,18 @@ const columns = ref({
         {
             name: '标题',
             key: 'noticeTitle',
-
         },
         {
-            name: '公告类型',
-            key: 'noticeType',
-        },
-        {
-            name: '状态',
-            key: 'status',
-        },
-        {
-            name: '创建者',
-            key: 'createBy',
+            name: '发布人',
+            key: 'publisher',
         },
         {
             name: '发布部门',
             key: 'publishDeptName',
         },
         {
-            name: '创建时间',
-            key: 'createTime',
+            name: '发布时间',
+            key: 'updateTime',
             width: 160
         },
     ],

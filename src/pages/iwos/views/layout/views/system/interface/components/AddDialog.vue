@@ -93,32 +93,34 @@ const formConfig = ref({
       items: [
         // {name: '接口编码', key: 'interfaceCode', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: '接口名称', key: 'interfaceName', value: '', type: 'input', col: 6, isDisable: !1, isRequire: !0},
-        {name: 'appId', key: 'appId', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
-        {name: 'appKey', key: 'appKey', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !0},
+        {name: 'appId', key: 'appId', value: '', placeholder: '', maxlength: 100, col: 6, type: 'input', isDisable: !1, isRequire: !0},
+        {name: 'appKey', key: 'appKey', value: '', placeholder: '', maxlength: 100, col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: !1, isRequire: !0},
         {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 12, type: 'textarea', isDisable: !1, isRequire: !0},
         {name: '接口描述', key: 'interfaceDesc', value: '', col: 12, type: 'textarea', isDisable: !1, isRequire: !0},
         {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !0},
-        {name: '接口地址', key: 'interfaceUrl', value: '', placeholder: '', col: 12, type: 'input', isDisable: !1, isRequire: !0},
+        {name: '接口地址', key: 'interfaceUrl', value: '', placeholder: '', maxlength: 260, col: 12, type: 'input', isDisable: !1, isRequire: !0},
         {name: '请确保下方入参填写无误再发送', key: '', value: '', placeholder: '', col: 6, type: 'component', component: sendRequst, isDisable: !1, isRequire: !0},
         {
           type: 'alert', col: 24, description: 'GET请求请按该格式填写: key=value&key=value&...  将key，value替换为此接口入参值即可', title: '提示',
           isShow({vm}) {
-            return vm.formData.interfaceMethod==='GET';
+            return vm.formData.interfaceMethod === 'GET';
           }
         },
         {
           type: 'alert', col: 24, description: 'POST请求请按该格式填写: { "key"："value"，"key"："value"，...} 将key，value替换为此接口入参值即可', title: '提示',
           isShow({vm}) {
-            return vm.formData.interfaceMethod==='POST';
-          }
-        },
-        {name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'monacoEditor', height: '2rem', isRequire: !0, col: 24,
-         isShow({vm}) {
             return vm.formData.interfaceMethod === 'POST';
           }
         },
-        {name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '',  type: 'textarea', rows: 5, isRequire: !0, col: 24,
+        {
+          name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'monacoEditor', height: '2rem', isRequire: !0, col: 24,
+          isShow({vm}) {
+            return vm.formData.interfaceMethod === 'POST';
+          }
+        },
+        {
+          name: '请在下方区域编辑接口入参', key: 'requestJsonStr', value: '', type: 'textarea', rows: 5, isRequire: !0, col: 24,
           isShow({vm}) {
             return vm.formData.interfaceMethod === 'GET';
           }
@@ -152,7 +154,7 @@ onBeforeMount(() => {
 </script>
 <script>
 export default {
-  cusDicts: ['interface_request_method', 'interface_specification_type', 'interface_type', 'start_stop']
+  dicts: ['interface_request_method', 'interface_specification_type', 'interface_type', 'start_stop']
 }
 </script>
 <style lang="scss" scoped>
