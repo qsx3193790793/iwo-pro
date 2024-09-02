@@ -472,6 +472,7 @@ export default {
       this.$$Dialog
           .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点不会被启用')
           .then(() => {
+         
             let data = {
               reasonId: row.reasonId,
               status: 1
@@ -545,7 +546,11 @@ export default {
       console.log('cuurrentNodeData',this.cuurrentNodeData);
       if (node.childNodes?.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.reasonCode
+<<<<<<< HEAD
 
+=======
+     
+>>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
       this.handleQuery();
     },
     // 取消按钮

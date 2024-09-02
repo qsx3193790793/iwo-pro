@@ -250,7 +250,11 @@ const formConfig = ref({
             vm.formData.productCode = [];
             vm.formData.sceneLevelCode = [];
             getSceneForm(vm);
+<<<<<<< HEAD
             vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = null
+=======
+            vm.formData.templateName= vm.formData.formName= vm.formData.templateDesc=null
+>>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
           }
         },
         {
@@ -260,7 +264,11 @@ const formConfig = ref({
           onChange({vm}) {
             getSceneForm(vm);
             const {path: developChannelLevelPath, pathLabels: developChannelLevelPathLabels} = vm.$refs.sceneLevelCode?.[0]?.getCheckedNodes()?.[0] || {};
+<<<<<<< HEAD
             vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = `${vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'}-${developChannelLevelPathLabels.join('-')}`
+=======
+            vm.formData.templateName= vm.formData.formName= vm.formData.templateDesc=`${vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'}-${developChannelLevelPathLabels.join('-')}`
+>>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
           },
           isShow({vm}) {
             return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);

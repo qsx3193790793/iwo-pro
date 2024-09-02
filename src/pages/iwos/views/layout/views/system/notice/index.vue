@@ -72,7 +72,11 @@
           </el-button>
           <el-button size="small" type="danger" @click="handleRetract(scope.row)" v-if="scope.row.status == 0">撤回
           </el-button>
+<<<<<<< HEAD
           <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
+=======
+          <el-button size="small" type="primary"  @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
+>>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
                      v-hasPermission="['system:notice:edit']">修改
           </el-button>
           <el-dropdown style="margin-left: 4px;" trigger="click" placement="bottom">

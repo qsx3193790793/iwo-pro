@@ -37,10 +37,15 @@ function handleCollapse() {
 }
 
 function clickTab() {
+<<<<<<< HEAD
   proxy.$$Dialog.confirm(`此操作会清除所有已打开菜单并返回首页，是否确认？`, '提示').then(() => {
     proxy.$store.commit('storage/CLEAR_TABS')
     proxy.$store.commit('storage/ADD_TAB', {key: '工作台'})
   })
+=======
+  proxy.$store.commit('storage/CLEAR_TABS')
+  proxy.$store.commit('storage/ADD_TAB',{key:'工作台'})
+>>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
 }
 </script>
 <style lang="scss" scoped>
