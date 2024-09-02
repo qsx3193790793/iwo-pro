@@ -66,6 +66,7 @@
                   v-model="state.form.sourceCode"
                   :options="state.sourceTree"
                   :show-count="true"
+                  noOptionsText="暂无数据"
                   placeholder="请选择投诉来源"
                   :normalizer="normalizer"
               />
@@ -489,7 +490,7 @@ let state = ref({
     options: {
       btns: [
         {
-          label: "编辑",
+          label: "修改",
           key: "edit",
           permission: ['config:appInfo:edit'],
           event: handleUpdate,

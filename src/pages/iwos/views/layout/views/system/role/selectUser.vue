@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">查询</el-button>
       </el-form-item>
     </el-form>
     <el-row>

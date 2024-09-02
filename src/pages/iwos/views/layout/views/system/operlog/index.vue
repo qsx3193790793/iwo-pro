@@ -75,7 +75,7 @@
       </el-form-item>
       <el-form-item>
         <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery"  v-hasPermission="['system:operlog:query']">搜索</el-button>
+        <el-button type="primary"  size="small" @click="handleQuery"  v-hasPermission="['system:operlog:query']">查询</el-button>
         <el-button
             type="danger"
             plain
@@ -106,13 +106,13 @@
 
     <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
     </el-row> -->
 

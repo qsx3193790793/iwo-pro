@@ -1,5 +1,5 @@
 <template>
-  <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="80%" top="5vh" height="75vh" :title="`${props.pkid?'编辑':'新增'}接口`">
+  <MDialog v-bind.sync="$attrs" v-on="$listeners" ref="MDialogRef" width="80%" top="5vh" height="75vh" :title="`${props.pkid?'修改':'新增'}接口`">
     <FormModel ref="FormModelRef" :formConfig="formConfig" :formStatus="props?.isDetail?'view':'create'"></FormModel>
     <template #footer="{DialogRef}">
       <el-button type="primary" plain @click="DialogRef?.handleClose()">返回</el-button>

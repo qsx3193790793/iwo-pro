@@ -13,15 +13,9 @@
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
           >
-<<<<<<< HEAD
             <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
             </template>
-=======
-          <template slot="append">
-            <el-button type="primary"  @click="handleCheckedTreeExpand">{{ isExpend? '展开':'折叠'}}</el-button>
-          </template>
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
           </el-input>
           <!-- <el-checkbox
               v-model="deptExpand"
@@ -38,11 +32,7 @@
               :filter-node-method="filterNode"
               ref="tree"
               node-key="phenomId"
-<<<<<<< HEAD
               :default-expand-all="isExpend"
-=======
-              default-expand-all
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
               :highlight-current="true"
               @node-click="handleNodeClick"
           />
@@ -239,11 +229,7 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
   </div>
 </template>
 
@@ -251,6 +237,7 @@
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
+
 export default {
   name: "ComplaintPhenomenon",
   // dicts: ["sys_normal_disable", "sys_user_sex"],
@@ -301,15 +288,9 @@ export default {
       //选中行数据
       selectRow: {},
       //单击节点选中数据
-<<<<<<< HEAD
       currentNodeData: {},
       //树形组件是否展开
       isExpend: true,
-=======
-      currentNodeData:{},
-      //树形组件是否展开
-      isExpend:true,
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
       // 表单参数
       form: {},
       defaultProps: {
@@ -375,7 +356,7 @@ export default {
             //   event: this.handleAdd,
             // },
             {
-              label: "编辑",
+              label: "修改",
               key: "edit",
               permission: ['config:phenom:update'],
               autoHidden: ({row}) => {
@@ -383,7 +364,6 @@ export default {
               },
               event: this.handleUpdate,
             },
-<<<<<<< HEAD
             {
               label: "详情",
               key: "detail",
@@ -410,36 +390,6 @@ export default {
               autoHidden: this.autoEndHidden,
               event: this.handleEnd,
             },
-=======
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
-            {
-                  label: "详情",
-                  key: "detail",
-                  type: "success",
-                  permission: ['config:phenom:detailList'],
-                  event: this.handleDetail,
-                  autoHidden: ({row}) => {
-                    return row.isProvinceCustom === 1
-                  },
-<<<<<<< HEAD
-=======
-            },
-            {
-                  label: "启用",
-                  key: "start",
-                  type: "primary",
-                  permission: ['config:phenom:update'],
-                  autoHidden: this.autoStartHidden,
-                  event: this.handleStart,
-                },
-                {
-                  label: "停用",
-                  key: "end",
-                  type: "danger",
-                  permission: ['config:phenom:update'],
-                  autoHidden: this.autoEndHidden,
-                  event: this.handleEnd,
-                },
             {
               label: "更多",
               key: "more",
@@ -452,7 +402,6 @@ export default {
                   autoHidden: ({row}) => {
                     return row.level === 3 && row.isProvinceCustom === 1
                   },
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
                   event: this.handleDelete,
                 },
                 {
@@ -463,7 +412,7 @@ export default {
                   event: this.handleDetail,
                   autoHidden: ({row}) => {
                     return row.isProvinceCustom === 1
-                },
+                  },
                 },
               ]
             },
@@ -583,28 +532,11 @@ export default {
       }).catch((error) => {
       });
     },
-<<<<<<< HEAD
     // 树权限（展开/折叠）
     handleCheckedTreeExpand() {
       console.log(this.$refs.tree)
       this.isExpend = !this.isExpend;
       this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
-=======
-     // 树权限（展开/折叠）
-     handleCheckedTreeExpand() {
-      this.isExpend = !this.isExpend
-        let treeList = this.complaintPhenomenonTreeOptions[0].phenomList
-        this.expandAndFlod(treeList)
-       
-    },
-    expandAndFlod(treeList){
-      treeList.forEach(ele => {
-          this.$refs.tree.store.nodesMap[ele.phenomId].expanded  =  this.isExpend;
-          if(ele.phenomList && ele.phenomList >=0){
-            this.expandAndFlod(ele.phenomList)
-          }
-        });
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
     },
     //递归树形数据查询对应的上级元素
     findAncestors(node, targetId, idKey, nameKey, childName, ancestors = []) {
@@ -717,11 +649,7 @@ export default {
         phenomName: row.phenomName,
         userId: row.phenomId,
         status: row.status,
-<<<<<<< HEAD
         isProvinceCustom: `${row.isProvinceCustom}`,
-=======
-        isProvinceCustom:`${row.isProvinceCustom}`,
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
         firstPhenomCode: treeData[1].phenomCode,
         firstPhenomName: treeData[1].phenomName,
         secondPhenomCode: treeData[0].phenomCode,
@@ -796,11 +724,7 @@ export default {
         phenomName: row.phenomName,
         userId: row.phenomId,
         status: row.status,
-<<<<<<< HEAD
         isProvinceCustom: `${row.isProvinceCustom}`,
-=======
-        isProvinceCustom:`${row.isProvinceCustom}`,
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
         firstPhenomCode: treeData[1].phenomCode,
         firstPhenomName: treeData[1].phenomName,
         secondPhenomCode: treeData[0].phenomCode,

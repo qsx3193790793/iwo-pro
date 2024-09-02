@@ -12,7 +12,7 @@
       </el-table-column>
       <el-table-column v-if="!root.vm.disabled" align="center" width="440">
         <template #header="{ row }">
-          <el-select v-model="selectValue" placeholder="输入字段标题进行搜索，选择添加" :remote-method="remoteMethod" :loading="loading" style="width: 260px;" filterable remote @change="handleChange">
+          <el-select v-model="selectValue" placeholder="输入字段标题进行查询，选择添加" :remote-method="remoteMethod" :loading="loading" style="width: 260px;" filterable remote @change="handleChange">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
           </el-select>
           <el-button class="quote-trigger" type="text" icon="el-icon-files" @click="isBatchQuoteTemplateShow=!0" title="批量选择字段">批量</el-button>

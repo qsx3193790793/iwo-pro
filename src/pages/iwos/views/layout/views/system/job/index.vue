@@ -12,7 +12,7 @@
         />
       </el-form-item>
       <el-form-item label="任务组名" prop="jobGroup">
-        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable  class="queryItem">
+        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable class="queryItem">
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_job_group')"
               :key=" dict.value"
@@ -22,7 +22,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="任务状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable  class="queryItem">
+        <el-select v-model="queryParams.status" placeholder="请选择任务状态" clearable class="queryItem">
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_job_status')"
               :key=" dict.value
@@ -33,8 +33,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery" v-hasPermission="['monitor:job:list']">搜索</el-button>
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['monitor:job:list']">查询</el-button>
         <el-button
             type="primary"
             plain
@@ -82,19 +82,19 @@
 
     <!-- <el-row :gutter="10" class="mb8 one-screen-fg0">
       <el-col :span="1.5">
-       
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
       <el-col :span="1.5">
-       
+
       </el-col>
       <el-col :span="1.5">
-        
+
       </el-col>
     </el-row> -->
 
@@ -121,32 +121,16 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-              size="small"
-              type="primary"
-              @click="handleUpdate(scope.row)"
-              v-hasPermission="['monitor:job:edit']"
-          >修改
-          </el-button>
-          <el-button
-              size="small"
-              type="danger"
-              @click="handleDelete(scope.row)"
-              v-hasPermission="['monitor:job:remove']"
-          >删除
-          </el-button>
-          <el-dropdown size="small" @command="(command) => handleCommand(command, scope.row)" v-hasPermission="['monitor:job:changeStatus', 'monitor:job:query']">
-            <el-button size="small" type="text" >更多</el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="handleRun" 
-                                v-hasPermission="['monitor:job:changeStatus']">执行一次
-              </el-dropdown-item>
-              <el-dropdown-item command="handleView" 
-                                v-hasPermission="['monitor:job:query']">任务详细
-              </el-dropdown-item>
-              <el-dropdown-item command="handleJobLog" 
-                                v-hasPermission="['monitor:job:query']">调度日志
-              </el-dropdown-item>
+          <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['monitor:job:edit']">修改</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)" v-hasPermission="['monitor:job:remove']">删除</el-button>
+          <el-dropdown v-hasPermission="['monitor:job:changeStatus', 'monitor:job:query']" size="small">
+            <el-button size="small" type="primary" style="margin-left:5px">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
+            <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
+              <div class="inner">
+                <el-button v-hasPermission="['monitor:job:changeStatus']" type="success" size="small" @click="handleRun(scope.row)">执行一次</el-button>
+                <el-button v-hasPermission="['monitor:job:query']" type="primary" size="small" @click="handleView(scope.row)">任务详细</el-button>
+                <el-button v-hasPermission="['monitor:job:query']" type="primary" size="small" @click="handleJobLog(scope.row)">调度日志</el-button>
+              </div>
             </el-dropdown-menu>
           </el-dropdown>
         </template>

@@ -131,7 +131,7 @@ let columns = ref({
           },
         },]
         : [{
-          label: '编辑',
+          label: '修改',
           autoHidden: ({row}) => !['待审核', '待发布', '上架'].includes(row.statusName),
           key: 'edit',
           permission: ['system:template:detail'],

@@ -16,7 +16,7 @@
           <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
             </template>
-          </el-input>
+        </el-input>
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
@@ -26,7 +26,7 @@
               :filter-node-method="filterNode"
               ref="tree"
               node-key="channelId"
-              default-expand-all
+              :default-expand-all="isExpend"
               :highlight-current='true'
               @node-click="handleNodeClick"
           />
@@ -198,6 +198,8 @@ export default {
       roleOptions: [],
       // 树搜索项
       tree_channelName: "",
+      //树形组件是否展开
+      isExpend: true,
       // 表单参数
       form: {},
       formConfigItems: [
@@ -275,7 +277,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
-              attrs: {type: "success"},
+              attrs: {type: "success", disabled: () => this.currentNode.channelLevel==3},
               permission:['config:channel:add'],
               col: 1,
               onClick: ({vm}) => {
@@ -336,7 +338,7 @@ export default {
         options: {
           btns: [
             {
-              label: "编辑",
+              label: "修改",
               key: "edit",
               event: this.handleUpdate,
               permission:['config:channel:edit'],
@@ -376,7 +378,7 @@ export default {
         channelLevel: 0,
           channelCode: '0',
           channelId: '0',
-          channelName: '发展渠道',
+          channelName: '渠道',
       },
       // 查询参数
       queryParams: {
@@ -406,7 +408,6 @@ export default {
           {required: true, message: "一级渠道名称不能为空", trigger: "blur"},
         ],
       },
-      isExpend: true
     };
   },
   watch: {
@@ -423,6 +424,11 @@ export default {
     this.getChannelTree();
   },
   methods: {
+     // 树权限（展开/折叠）
+    handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend;
+      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+    },
     autoHandleHidden(val) {
       if (val.row) {
         return  val.row.isProvinceCustom  != "0" ? true : false;
@@ -470,7 +476,7 @@ export default {
           channelLevel: 0,
           channelCode: '0',
           channelId: '0',
-          channelName: '发展渠道',
+          channelName: '渠道',
           children: response.list
         }]
         this.deptOptions = data;
@@ -478,7 +484,12 @@ export default {
     },
     // 筛选节点
     filterNode(value, data) {
-      if (!value) return true;
+      if (!value) {
+        this.isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+        return true;
+      }
+      this.isExpend = true;
       return data.channelName.indexOf(value) !== -1;
     },
     // 节点单击事件
@@ -733,7 +744,7 @@ export default {
     handleDelete(row) {
       const channelCodes = row?.channelId || this.ids;
       let showText = ''
-      if (this.ids.length > 0 &&!row.channelId) {
+      if (this.ids.length > 0 &&!row?.channelId) {
         showText = this.channelCodeList.join(',')
       } else {
         showText = row?.channelCode
@@ -755,11 +766,6 @@ export default {
           })
           .catch(() => {
           });
-    },
-    // 树权限（展开/折叠）
-    handleCheckedTreeExpand() {
-      this.isExpend = !this.isExpend;
-      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
     },
   },
 };

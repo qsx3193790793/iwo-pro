@@ -34,6 +34,18 @@ export default {
     isOnErrDialog = !0;
     return false;
   },
+  // 'code_403': (err, errorMessage) => {//无访问权限
+  //   console.log('code_402', err);
+  //   const message = getMessage(err, errorMessage);
+  //   message && !isOnErrDialog && Vue.prototype.$$Dialog({title: '提示', showCancelButton: false, message}).then(() => {
+  //   }).finally(() => {
+  //     Vue.prototype.$$store.commit('storage/REMOVE_TAB', Vue.prototype.$$router.currentRoute.meta.name);
+  //     Vue.prototype.$$router.replace({name: 'Index'});
+  //     isOnErrDialog = !1
+  //   });
+  //   isOnErrDialog = !0;
+  //   return false;
+  // },
   // 'code_1001': (err, errorMessage) => {
   //   console.log('code_1002', err);
   //   const message = getMessage(err, errorMessage);

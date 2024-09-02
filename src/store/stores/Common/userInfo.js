@@ -105,13 +105,14 @@ let store = {
       })
     },
     // 登出
-    DO_LOGOUT({commit, state}) {
+    DO_LOGOUT({commit, dispatch, state}) {
       return new Promise(async (resolve, reject) => {
         const {res, err} = await Vue.prototype.$$api.login.logout();
         if (err) return reject();
         sessionStorage.clear();
         localStorage.clear();
         commit('storage/CLEAR_TABS', null, {root: !0});
+        dispatch('keepAlive/REMOVE_ALL_ALIVE_PAGE', null, {root: !0});
         Vue.prototype.$$router.replace({name: 'Login'});
         return resolve();
       })

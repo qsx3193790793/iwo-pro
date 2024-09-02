@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
         <el-button
             type="success"
             size="small"
@@ -119,6 +119,7 @@
                   v-model="form.parentId"
                   :options="menuOptions"
                   :normalizer="normalizer"
+                  noOptionsText="暂无数据"
                   :show-count="true"
                   placeholder="选择上级菜单"
               />

@@ -139,7 +139,7 @@ export default {
         options: {
           btns: [
             {
-              label: "编辑",
+              label: "修改",
               key: "edit",
               permission:['config:dictTag:edit'],
               event: this.handleUpdate,

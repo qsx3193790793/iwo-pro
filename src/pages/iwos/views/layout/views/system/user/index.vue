@@ -11,7 +11,11 @@
               size="small"
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
-          />
+          >
+          <template slot="append">
+              <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
+          </template>
+        </el-input>
         </div>
         <div class="head-container one-screen-fg1 search_tree" style="overflow: scroll;">
           <el-tree
@@ -21,7 +25,7 @@
               :filter-node-method="filterNode"
               ref="tree"
               node-key="id"
-              default-expand-all
+              :default-expand-all="isExpend"
               :highlight-current='true'
               @node-click="handleNodeClick"
           />
@@ -86,7 +90,7 @@
           </el-form-item>
           <el-form-item>
             <el-button size="small" @click="resetQuery"  v-hasPermission="['system:user:query']">重置</el-button>
-            <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:user:query']">搜索</el-button>
+            <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:user:query']">查询</el-button>
             <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:user:add']">新增</el-button>
             <!-- <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button> -->
             <el-button type="info" plain size="small" @click="handleImport" v-hasPermission="['system:user:import']">导入</el-button>
@@ -163,12 +167,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="归属机构" prop="deptId">
-              <treeselect v-model="form.deptId" :options="deptOptions" noOptionsText='暂无数据' :show-count="true" placeholder="请选择归属机构" @select="handelDeptIdChange"/>
+              <treeselect v-model="form.deptId" :options="deptOptions" noOptionsText="暂无数据" :show-count="true" placeholder="请选择归属机构" @select="handelDeptIdChange"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="归属班组" prop="teamIds">
-              <treeselect v-model="form.teamIds" :options="teamOptions" noOptionsText='该机构下没有班组信息' :normalizer="normalizer" :multiple="true" :show-count="true" placeholder="请选择归属班组" @select="handelparentIdChange"/>
+              <treeselect v-model="form.teamIds" :options="teamOptions" noOptionsText="该机构下没有班组信息" :normalizer="normalizer" :multiple="true" :show-count="true" placeholder="请选择归属班组" @select="handelparentIdChange"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -407,6 +411,8 @@ export default {
       roleOptions: [],
       // 表单参数
       form: {},
+      //树形组件是否展开
+      isExpend: true,
       defaultProps: {
         children: "children",
         label: "label"
@@ -516,6 +522,11 @@ export default {
     // });
   },
   methods: {
+    // 树权限（展开/折叠）
+    handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend;
+      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+    },
     handleBatchClick(type) {
       if (type == 'end') {
         this.$$Dialog.confirm(`确认要"停用""${this.nickNameList.join(',')}"用户吗？`, '提示', {
@@ -634,7 +645,12 @@ export default {
     },
     // 筛选节点
     filterNode(value, data) {
-      if (!value) return true;
+      if (!value) {
+        this.isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+        return true;
+      }
+      this.isExpend = true;
       return data.label.indexOf(value) !== -1;
     },
     // 节点单击事件

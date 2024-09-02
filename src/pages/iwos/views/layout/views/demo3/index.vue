@@ -79,7 +79,7 @@ let columns = ref({
   options: {
     btns: [
       {
-        label: '编辑',
+        label: '修改',
         key: 'edit',
         event: null,
       },

@@ -15,8 +15,8 @@
           >
           <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
-            </template>
-          </el-input>
+          </template>
+        </el-input>
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
@@ -27,7 +27,7 @@
               ref="tree"
               node-key="productId"
               default-expand-all
-               :highlight-current='true'
+              :highlight-current='true'
               @node-click="handleNodeClick"
           />
         </div>
@@ -106,7 +106,7 @@
           <el-col :span="12">
             <el-form-item label="产品二级" prop="productName">
               <el-input
-                 :disabled="form.productNameEdit"
+                  :disabled="form.productNameEdit"
                   v-model="form.productName"
                   placeholder="请输入"
                   maxlength="30"
@@ -114,7 +114,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="产品二级编码"  prop="productCode">
+            <el-form-item label="产品二级编码" prop="productCode">
               <el-input
                   v-model="form.productCode"
                   disabled
@@ -186,6 +186,8 @@ export default {
       tree_productName: "",
       // 是否允许新增
       addFlag: false,
+      //树形组件是否展开
+      isExpend: true,
       // 表单参数
       form: {},
       formConfigItems: [
@@ -231,9 +233,9 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
+        {col: 6, type: "divider-empty"},
+        {col: 6, type: "divider-empty"},
+        {col: 6, type: "divider-empty"},
         {
           type: "buttons",
           align: "right",
@@ -253,7 +255,7 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              permission:['config:product:query'],
+              permission: ['config:product:query'],
               attrs: {type: "primary"},
               col: 1,
               onClick: ({vm}) => {
@@ -263,7 +265,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
-              permission:['config:product:add'],
+              permission: ['config:product:add'],
               attrs: {
                 type: "success", disabled: () => {
                   return this.currentNode.productLevel !== 1;
@@ -276,7 +278,7 @@ export default {
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length || this.currentNode.productLevel !== 1}, col: 1,
-              permission:['config:product:remove'],
+              permission: ['config:product:remove'],
               onClick: ({vm}) => {
                 this.handleDelete();
               }
@@ -329,18 +331,18 @@ export default {
           // width: 160,
           btns: [
             {
-              label: "编辑",
+              label: "修改",
               key: "edit",
               event: this.handleUpdate,
               autoHidden: this.autoHandleHidden,
-              permission:['config:product:edit'],
+              permission: ['config:product:edit'],
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
               autoHidden: this.autoHandleHidden,
-              permission:['config:product:remove'],
+              permission: ['config:product:remove'],
               event: (val) => {
                 this.handleDelete(val)
               }
@@ -350,7 +352,7 @@ export default {
               key: "start",
               type: "primary",
               autoHidden: this.autoStartHidden,
-              permission:['config:product:edit'],
+              permission: ['config:product:edit'],
               event: this.handleStart,
             },
             {
@@ -358,7 +360,7 @@ export default {
               key: "end",
               type: "danger",
               autoHidden: this.autoEndHidden,
-              permission:['config:product:edit'],
+              permission: ['config:product:edit'],
               event: this.handleEnd,
             },
           ],
@@ -366,7 +368,7 @@ export default {
       },
       dataSource: [],
       currentNode: {
-        level:0
+        level: 0
       },
       // 查询参数
       queryParams: {
@@ -399,7 +401,6 @@ export default {
         ],
 
       },
-      isExpend: true
     };
   },
   watch: {
@@ -416,23 +417,28 @@ export default {
     this.getProductTree();
   },
   methods: {
+    // 树权限（展开/折叠）
+    handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend;
+      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+    },
     autoHandleHidden(val) {
       if (val.row) {
-        return  val.row.isProvinceCustom  != "0" ? true : false;
+        return val.row.isProvinceCustom != "0" ? true : false;
       } else {
         return false;
       }
     },
     autoStartHidden(val) {
       if (val.row) {
-        return (val.row.status == "0" && val.row.isProvinceCustom  != "0")? true : false;
+        return (val.row.status == "0" && val.row.isProvinceCustom != "0") ? true : false;
       } else {
         return false;
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return (val.row.status == "1"&& val.row.isProvinceCustom  != "0") ? true : false;
+        return (val.row.status == "1" && val.row.isProvinceCustom != "0") ? true : false;
       } else {
         return false;
       }
@@ -518,7 +524,12 @@ export default {
     },
     // 筛选节点
     filterNode(value, data) {
-      if (!value) return true;
+      if (!value) {
+        this.isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+        return true;
+      }
+      this.isExpend = true;
       return data.productName.indexOf(value) !== -1;
     },
     // 节点单击事件
@@ -623,15 +634,15 @@ export default {
             this.form.oneProductCode = oneProductCode;
             this.form.oneProductName = oneProductName;
             this.form.productId = productId;
-            this.currentNode.level=productLevel;
-            if(this.form.handleType == "edit"){
-              this.form.customProvince = isProvinceCustom?true:false
+            this.currentNode.level = productLevel;
+            if (this.form.handleType == "edit") {
+              this.form.customProvince = isProvinceCustom ? true : false
             }
             if (productLevel == 1) {
               this.form.oneProductCode = productCode;
               this.form.oneProductName = productName;
               this.form.productNameEdit = true;
-              if(this.form.handleType=='add'){
+              if (this.form.handleType == 'add') {
                 this.form.oneProductNameEdit = true;
                 this.form.productNameEdit = false;
               }
@@ -690,7 +701,7 @@ export default {
     handleDelete(row) {
       const productIds = row?.productId || this.ids;
       let showText = ''
-      if (this.ids.length > 0 && !row.productId) {
+      if (this.ids.length > 0 && !row?.productId) {
         showText = this.productCodeList.join(',')
       } else {
         showText = row?.productCode
@@ -714,11 +725,7 @@ export default {
           .catch(() => {
           });
     },
-    // 树权限（展开/折叠）
-    handleCheckedTreeExpand() {
-      this.isExpend = !this.isExpend;
-      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
-    },
+
   },
 };
 </script>

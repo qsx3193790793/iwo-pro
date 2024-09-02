@@ -11,7 +11,11 @@
               size="small"
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
-          />
+          >
+            <template slot="append">
+              <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
+            </template>
+          </el-input>
         </div>
         <div class="head-container one-screen-fg1 search_tree" style="overflow: scroll;">
           <el-tree
@@ -21,7 +25,7 @@
               :filter-node-method="filterNode"
               ref="tree"
               node-key="id"
-              default-expand-all
+              :default-expand-all="isExpend"
               :highlight-current='true'
               @node-click="handleNodeClick"
           />
@@ -40,7 +44,7 @@
             />
           </el-form-item>
           <!-- <el-form-item label="机构" prop="deptId">
-            <treeselect v-model="queryParams.deptId" :options="deptOptions" :show-count="true" placeholder="请选择机构"  class="queryItem"/>
+            <treeselect v-model="queryParams.deptId" noOptionsText="暂无数据" :options="deptOptions" :show-count="true" placeholder="请选择机构"  class="queryItem"/>
           </el-form-item> -->
           <el-form-item label="状态" prop="status">
             <el-select
@@ -57,7 +61,7 @@
           </el-form-item>
           <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
-            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['system:team:query']">搜索</el-button>
+            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['system:team:query']">查询</el-button>
             <el-button type="success" size="mini" @click="handleAdd" v-hasPermission="['system:team:add']">新增</el-button>
             <el-button type="info" plain size="small" @click="toggleExpandAll">展开/折叠</el-button>
 
@@ -101,10 +105,10 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body @close="handleType=''">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" :disabled="handleType=='detail'">
         <el-form-item label="机构" prop="deptId">
-          <treeselect v-model="form.deptId" :disabled="handleType=='detail'" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属机构'" @select="handelDeptIdChange"/>
+          <treeselect v-model="form.deptId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属机构'" @select="handelDeptIdChange"/>
         </el-form-item>
         <el-form-item label="上级班组">
-          <treeselect v-model="form.parentId" :disabled="handleType=='detail'" :options="teamOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级班组'" @select="handelparentIdChange"/>
+          <treeselect v-model="form.parentId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="teamOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级班组'" @select="handelparentIdChange"/>
         </el-form-item>
         <el-form-item label="班组名称" prop="teamName">
           <el-input v-model="form.teamName" :placeholder="handleType=='detail'?'':'请输入班组名称'" maxlength="30"/>
@@ -178,6 +182,8 @@ export default {
       handleType: '',
       // 是否显示弹出层
       open: false,
+      //树形组件是否展开
+      isExpend: true,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -213,6 +219,11 @@ export default {
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
   methods: {
+    // 树权限（展开/折叠）
+    handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend;
+      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+    },
     // 启用
     handleStart(row) {
       this.$$Dialog
@@ -274,7 +285,12 @@ export default {
     },
     // 筛选节点
     filterNode(value, data) {
-      if (!value) return true;
+      if (!value) {
+        this.isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+        return true;
+      }
+      this.isExpend = true;
       return data.label.indexOf(value) !== -1;
     },
     // 节点单击事件

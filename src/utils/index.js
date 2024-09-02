@@ -1189,9 +1189,9 @@ const $$hasPermission = (pms) => {
   return res.length > 0;
 }
 
-//饿了么tree展开或收起
-const $$treeExpandOrCollapse = (treeRef, flag = true) => {
-  Object.values(treeRef?.store?.nodesMap || {}).forEach(nm => nm.expanded = flag);
+//饿了么tree展开或收起 level某层级生效
+const $$treeExpandOrCollapse = (treeRef, flag = true, level = [2]) => {
+  Object.values(treeRef?.store?.nodesMap || {}).forEach(nm => level.includes(nm.level) && (nm.expanded = flag));
 }
 
 export default {

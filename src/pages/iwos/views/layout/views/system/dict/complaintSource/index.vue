@@ -16,7 +16,8 @@
           <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
             </template>
-          </el-input>
+        </el-input>
+
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
@@ -26,7 +27,7 @@
               :filter-node-method="filterNode"
               ref="tree"
               node-key="sourceId"
-              default-expand-all
+              :default-expand-all="isExpend"
               :highlight-current="true"
               @node-click="handleNodeClick"
           />
@@ -212,6 +213,8 @@ export default {
       roleOptions: [],
       // 树筛选项
       tree_sourceName: "",
+      //树形组件是否展开
+      isExpend: true,
       // 表单参数
       form: {},
       formConfigItems: [
@@ -349,7 +352,7 @@ export default {
         options: {
           btns: [
             {
-              label: "编辑",
+              label: "修改",
               key: "edit",
               event: this.handleUpdate,
               permission:['config:source:edit'],
@@ -405,7 +408,6 @@ export default {
           },
         ],
       },
-      isExpend: true
     };
   },
   watch: {
@@ -422,6 +424,11 @@ export default {
     this.getTree();
   },
   methods: {
+    // 树权限（展开/折叠）
+    handleCheckedTreeExpand() {
+      this.isExpend = !this.isExpend;
+      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+    },
     autoHandleHidden(val) {
       if (val.row) {
         return  val.row.isProvinceCustom  != "0" ? true : false;
@@ -518,7 +525,12 @@ export default {
     },
     // 筛选节点
     filterNode(value, data) {
-      if (!value) return true;
+      if (!value) {
+        this.isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+        return true;
+      }
+      this.isExpend = true;
       return data.sourceName.indexOf(value) !== -1;
     },
     // 节点单击事件
@@ -731,7 +743,7 @@ export default {
     handleDelete(row) {
       const sourceId = row?.sourceId || this.ids;
       let showText = ''
-      if (this.ids.length > 0 &&!row.sourceId) {
+      if (this.ids.length > 0 && !row?.sourceId) {
         showText = this.sourceCodeList.join(',')
       } else {
         showText = row?.sourceCode
@@ -756,11 +768,6 @@ export default {
           })
           .catch(() => {
           });
-    },
-    // 树权限（展开/折叠）
-    handleCheckedTreeExpand() {
-      this.isExpend = !this.isExpend;
-      this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
     },
   },
 };

@@ -21,7 +21,7 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['monitor:online:query']">搜索</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['monitor:online:query']">查询</el-button>
       </el-form-item>
 
     </el-form>

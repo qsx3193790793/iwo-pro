@@ -20,6 +20,10 @@ let store = {
     },
     REMOVE_ALIVE_PAGE({state, commit}, names) {
       commit('SET_ALIVE_PAGE', state.alivePage.filter(ap => !names.includes(ap.name)));
+    },
+    REMOVE_ALL_ALIVE_PAGE({state, commit}) {
+      console.log('REMOVE_ALL_ALIVE_PAGE');
+      commit('SET_ALIVE_PAGE', []);
     }
   },
   getters: {

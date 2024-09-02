@@ -271,8 +271,6 @@ export default {
       selectRow: "",
       // 总条数
       total: 0,
-      // 用户表格数据
-      dataSource: null,
       // 弹出层标题
       title: "",
       //投诉原因树形列表
@@ -365,7 +363,7 @@ export default {
             //   event: this.handleAdd,
             // },
             {
-              label: "编辑",
+              label: "修改",
               key: "edit",
               permission: ['config:reason:update'],
               autoHidden: ({row}) => {
@@ -472,7 +470,7 @@ export default {
       this.$$Dialog
           .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点不会被启用')
           .then(() => {
-         
+
             let data = {
               reasonId: row.reasonId,
               status: 1
@@ -536,7 +534,12 @@ export default {
     },
     // 筛选节点
     filterNode(value, data) {
-      if (!value) return true;
+      if (!value) {
+        this.isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
+        return true;
+      }
+      this.isExpend = true;
       return data.reasonName.indexOf(value) !== -1;
     },
     // 节点单击事件
@@ -546,11 +549,7 @@ export default {
       console.log('cuurrentNodeData',this.cuurrentNodeData);
       if (node.childNodes?.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.reasonCode
-<<<<<<< HEAD
 
-=======
-     
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
       this.handleQuery();
     },
     // 取消按钮

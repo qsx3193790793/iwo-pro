@@ -143,7 +143,7 @@ const columns = ref({
   options: {
     btns: [
       {
-        label: '编辑',
+        label: '修改',
         key: 'edit',
         autoHidden: ({row}) => row.statusCd === 'C100001',
         event: row => {

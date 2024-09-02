@@ -18,9 +18,8 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery">搜索</el-button>
-        <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增
-        </el-button>
+        <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
+        <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增</el-button>
         <!-- <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
                    v-hasPermission="['system:notice:edit']">修改
         </el-button> -->
@@ -72,11 +71,7 @@
           </el-button>
           <el-button size="small" type="danger" @click="handleRetract(scope.row)" v-if="scope.row.status == 0">撤回
           </el-button>
-<<<<<<< HEAD
           <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
-=======
-          <el-button size="small" type="primary"  @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
                      v-hasPermission="['system:notice:edit']">修改
           </el-button>
           <el-dropdown style="margin-left: 4px;" trigger="click" placement="bottom">
@@ -152,12 +147,12 @@
           <el-col :span="12">
             <el-form-item label="接收机构" prop="deptId">
               <treeselect v-model="form.deptId" :multiple="form.recipientType === '1'" :options="deptOptions"
-                          :show-count="true" placeholder="请选择机构" @select="handelDeptIdChange" :disabled="isDetail"/>
+                          :show-count="true" placeholder="请选择机构" noOptionsText="暂无数据" @select="handelDeptIdChange" :disabled="isDetail"/>
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.recipientType !== '1'">
             <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
-              <treeselect v-model="form.recipientIds" noOptionsText='该机构下无数据' :multiple="true" :normalizer="normalizer"
+              <treeselect v-model="form.recipientIds" noOptionsText="该机构下无数据"  :multiple="true" :normalizer="normalizer"
                           :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`" :disabled="isDetail"/>
             </el-form-item>
           </el-col>

@@ -66,7 +66,7 @@
                 v-hasPermission="['system:role:query']"
                 size="small"
                 @click="handleQuery"
-            >搜索
+            >查询
             </el-button
             >
             <el-button
@@ -439,7 +439,7 @@
           </el-form-item>
           <el-form-item>
             <el-button size="small" @click="resetAuthUserQuery">重置</el-button>
-            <el-button type="primary" size="small" @click="handleAuthUserQuery">搜索</el-button>
+            <el-button type="primary" size="small" @click="handleAuthUserQuery">查询</el-button>
             <!-- <el-button type="success" size="small" @click="openSelectUser" v-hasPermission="['system:role:add']">添加用户</el-button> -->
             <el-button type="danger" size="small" :disabled="authUser.multiple" @click="cancelAuthUserAll" v-hasPermission="['system:role:remove']">批量取消授权</el-button>
           </el-form-item>
@@ -726,7 +726,7 @@ export default {
             return this.$$api.role.changeRoleStatus({data: {roleId: row.roleId, status: changeStatus}});
           })
           .then(({res, err}) => {
-            if (err) 
+            if (err)
             row.status = row.status === "0" ? "1" : "0";
             this.$$Toast.success(text + "成功");
           })

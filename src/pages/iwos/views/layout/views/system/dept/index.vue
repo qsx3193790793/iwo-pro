@@ -22,7 +22,7 @@
       </el-form-item>
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:dept:query']">搜索</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:dept:query']">查询</el-button>
         <el-button
             type="success"
             size="small"
@@ -123,7 +123,7 @@
         <el-row>
           <el-col :span="24" v-if="form.parentId != 0">
             <el-form-item label="上级机构" prop="parentId">
-              <treeselect v-model="form.parentId" :disabled="handleType=='detail'" :options="deptOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级机构'" @select="handelDeptIdChange"/>
+              <treeselect v-model="form.parentId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="deptOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级机构'" @select="handelDeptIdChange"/>
             </el-form-item>
           </el-col>
         </el-row>

@@ -107,7 +107,7 @@ let columns = ref({
       }
     }] : [
       {
-        label: '编辑',
+        label: '修改',
         key: 'edit',
         permission: ['config:interfaceInfo:edit'],
         event: (row) => {
@@ -290,7 +290,7 @@ const formConfigItems = ref([
         // permission: ['config:interfaceInfo:add'],
        async onClick({vm}) {
            const {res, err} =await proxy.$$api.interface.refreshCache()
-           if(err) return 
+           if(err) return
            proxy.$$Toast.success("缓存刷新成功");
         },
         isShow({vm}) {

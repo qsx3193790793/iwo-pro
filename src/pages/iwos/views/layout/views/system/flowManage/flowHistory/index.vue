@@ -189,7 +189,7 @@ export default {
         options: {
           btns: [
             {
-              label: "编辑",
+              label: "修改",
               key: "detail",
               // permission: ['config:fileStrage:edit'],
               event: (val) => {

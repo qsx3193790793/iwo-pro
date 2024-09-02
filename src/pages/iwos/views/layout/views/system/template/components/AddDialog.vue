@@ -13,7 +13,7 @@
     </el-tabs>
     <template #footer="{DialogRef}">
       <el-button type="primary" plain @click="DialogRef?.handleClose()">返回</el-button>
-      <el-button v-if="type==='编辑'" type="primary" @click="onSubmit(DialogRef)">保存</el-button>
+      <el-button v-if="type==='修改'" type="primary" @click="onSubmit(DialogRef)">保存</el-button>
       <template v-if="type==='发布'">
         <el-button type="success" v-hasPermission="['system:template:release']" @click="onRelease(DialogRef)">发布</el-button>
         <el-button type="danger" v-hasPermission="['system:template:rollback']" @click="onRollback(DialogRef)">回退</el-button>
@@ -41,7 +41,7 @@ const {proxy} = getCurrentInstance();
 const props = defineProps({
   pkid: {type: Object, default: null},//详情id
   isDetail: {type: Boolean, default: !1},//是否只查看
-  type: {type: String, default: '编辑'},//类型 编辑 发布 审核
+  type: {type: String, default: '修改'},//类型 修改 发布 审核
 });
 const emitter = defineEmits(['success']);
 
@@ -250,11 +250,7 @@ const formConfig = ref({
             vm.formData.productCode = [];
             vm.formData.sceneLevelCode = [];
             getSceneForm(vm);
-<<<<<<< HEAD
             vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = null
-=======
-            vm.formData.templateName= vm.formData.formName= vm.formData.templateDesc=null
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
           }
         },
         {
@@ -264,11 +260,7 @@ const formConfig = ref({
           onChange({vm}) {
             getSceneForm(vm);
             const {path: developChannelLevelPath, pathLabels: developChannelLevelPathLabels} = vm.$refs.sceneLevelCode?.[0]?.getCheckedNodes()?.[0] || {};
-<<<<<<< HEAD
             vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = `${vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'}-${developChannelLevelPathLabels.join('-')}`
-=======
-            vm.formData.templateName= vm.formData.formName= vm.formData.templateDesc=`${vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'}-${developChannelLevelPathLabels.join('-')}`
->>>>>>> 5aef07a11f2fe92cc9167e505448720a6787b937
           },
           isShow({vm}) {
             return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
