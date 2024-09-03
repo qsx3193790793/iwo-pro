@@ -210,7 +210,7 @@
           <!--          </el-col>-->
           <el-col :span="12" v-if="form.menuType != 'M'">
             <el-form-item prop="perms">
-              <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
+              <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100"/>
               <span slot="label">
                 <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermission('system:user:list')`)" placement="top">
                 <i class="el-icon-question"></i>
@@ -400,7 +400,7 @@ export default {
         isFrame: "1",
         isCache: "0",
         visible: "0",
-        status: "0"
+        status: "1"
       };
       this.$$resetForm("form", this.$refs);
     },

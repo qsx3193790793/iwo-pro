@@ -6,7 +6,7 @@
             v-model="queryParams.jobName"
             placeholder="请输入任务名称"
             clearable
-            style="width: 240px"
+            style="width: 200px"
             maxlength="30"
             @keyup.enter.native="handleQuery"
         />
@@ -16,7 +16,7 @@
             v-model="queryParams.jobGroup"
             placeholder="请选择任务组名"
             clearable
-            style="width: 240px"
+            style="width: 200px"
         >
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_job_group')"
@@ -53,57 +53,14 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">查询</el-button>
         <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">查询</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['monitor:job:remove']">删除</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="small" @click="handleClean" v-hasPermission="['monitor:job:remove']">清空</el-button>
+        <el-button type="warning" plain icon="el-icon-download" size="small" @click="handleExport" v-hasPermission="['monitor:job:export']">导出</el-button>
+
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermission="['monitor:job:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="small"
-            @click="handleClean"
-            v-hasPermission="['monitor:job:remove']"
-        >清空
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="small"
-            @click="handleExport"
-            v-hasPermission="['monitor:job:export']"
-        >导出
-        </el-button>
-      </el-col>
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--            type="warning"-->
-      <!--            plain-->
-      <!--            icon="el-icon-close"-->
-      <!--            size="small"-->
-      <!--            @click="handleClose"-->
-      <!--        >关闭-->
-      <!--        </el-button>-->
-      <!--      </el-col>-->
-    </el-row>
 
     <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="jobLogList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
@@ -128,14 +85,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-              size="small"
-              type="text"
-              icon="el-icon-view"
-              @click="handleView(scope.row)"
-              v-hasPermission="['monitor:job:query']"
-          >详细
-          </el-button>
+          <el-button size="small" type="primary" @click="handleView(scope.row)" v-hasPermission="['monitor:job:query']">详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -143,7 +93,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 调度日志详细 -->
-    <el-dialog title="调度日志详细" :visible.sync="open" width="700px" append-to-body>
+    <el-dialog title="调度日志详情" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" label-position="left" label-width="100px" size="small">
         <el-row>
           <el-col :span="12">

@@ -91,8 +91,8 @@
                 <el-button v-hasPermission="['system:dept:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
                 <el-button v-hasPermission="['system:dept:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
                 <el-button v-hasPermission="['system:dept:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
-                <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='0'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
-                <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
+                <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
+                <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
               </div>
             </el-dropdown-menu>
           </el-dropdown>
@@ -281,7 +281,7 @@ export default {
           .then(() => {
             let data = {
               deptId: row.deptId,
-              status: 0,
+              status: 1,
             }
             return this.$$api.dept.updStatus({data: data});
           })
@@ -300,7 +300,7 @@ export default {
           .then(() => {
             let data = {
               deptId: row.deptId,
-              status: 1,
+              status: 0,
             }
             return this.$$api.dept.updStatus({data: data});
           })
@@ -378,7 +378,7 @@ export default {
         phone: undefined,
         deptDescribe: undefined,
         email: undefined,
-        status: "0",
+        status: "1",
         roleIds: []
       };
       this.$$resetForm("form", this.$refs);
@@ -442,7 +442,7 @@ export default {
       that.$refs["form"].validate(valid => {
         if (valid) {
           if (that.form.deptId != undefined) {
-            if (that.form.status == '1') {
+            if (that.form.status == '0') {
               that.$$Dialog.confirm('确定停用所选机构吗?停用后机构下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
                 confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
               }).then(() => {

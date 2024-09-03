@@ -111,25 +111,25 @@ const list = ref([]);
 const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.pageNum = pageNum;
   let queryParams = PageSearchPanelRef.value.getFormData();
-  let paramsData= Object.assign(
-        queryParams,
-        proxy.$$formatELDateTimeRange(queryParams.provinceOrderCreateTime, ['beginTime', 'endTime']),
-        {
-          pageNum: pageInfo.value.pageNum,
-          pageSize: pageInfo.value.pageSize,
-          askSourceSrl: queryParams.askSourceSrl?.[queryParams.askSourceSrl?.length - 1],
-          complaintPhenomenonLevel1Code: queryParams.complaintPhenomenonLevelChain?.[0] ?? null,
-          complaintPhenomenonLevel2Code: queryParams.complaintPhenomenonLevelChain?.[1] ?? null,
-          complaintPhenomenonLevel3Code: queryParams.complaintPhenomenonLevelChain?.[2] ?? null,
-          productLevel1Code: queryParams.productLevelChain?.[0] ?? null,
-          productLevel2Code: queryParams.productLevelChain?.[1] ?? null,
-        },
-    )
+  let paramsData = Object.assign(
+      queryParams,
+      proxy.$$formatELDateTimeRange(queryParams.provinceOrderCreateTime, ['beginTime', 'endTime']),
+      {
+        pageNum: pageInfo.value.pageNum,
+        pageSize: pageInfo.value.pageSize,
+        askSourceSrl: queryParams.askSourceSrl?.[queryParams.askSourceSrl?.length - 1],
+        complaintPhenomenonLevel1Code: queryParams.complaintPhenomenonLevelChain?.[0] ?? null,
+        complaintPhenomenonLevel2Code: queryParams.complaintPhenomenonLevelChain?.[1] ?? null,
+        complaintPhenomenonLevel3Code: queryParams.complaintPhenomenonLevelChain?.[2] ?? null,
+        productLevel1Code: queryParams.productLevelChain?.[0] ?? null,
+        productLevel2Code: queryParams.productLevelChain?.[1] ?? null,
+      },
+  )
   // 时间的传值不传这个字段
   delete queryParams.provinceOrderCreateTime;
   let {res} = await proxy.$$api.complaint.listComplaint({
-    params:paramsData,
-  }); 
+    params: paramsData,
+  });
   if (res) {
     pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
     list.value = res.rows;
@@ -156,7 +156,7 @@ const formConfigItems = ref([
   {name: "投诉来源", key: "askSourceSrl", value: "", col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_source_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},
   {name: "客户升级投诉倾向", key: "upgradeTrend", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "工单超时状态", key: "timeoutFlag", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("timeout_flag"), isDisable: !1, isRequire: !1,},
-  {name: "工单流转状态", key: "statusCd", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("jy_complaint_status_cd"), isDisable: !1, isRequire: !1,},
+  {name: "工单流转状态", key: "statusCd", value: proxy.$route.query.status || '', col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("jy_complaint_status_cd"), isDisable: !1, isRequire: !1,},
 
   // 展开
   {name: "投诉现象", key: "complaintPhenomenonLevelChain", value: [], col: 6, type: "cascader", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("complaint_phenomenon_tree"), attrs: {props: {checkStrictly: !0}}, isDisable: !1, isRequire: !1,},

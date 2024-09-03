@@ -203,8 +203,8 @@
             <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
               <div class="inner">
                    <el-button v-hasPermission="['system:role:edit']" type="primary" size="small" @click="handleAuthUser(scope.row)">已授权用户</el-button>
-                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
-                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='0'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
+                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
+                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='1'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
 
               </div>
             </el-dropdown-menu>
@@ -614,14 +614,14 @@ export default {
         this.$$Dialog.confirm(`确认要"停用""${this.roleNameList.join(',')}"角色吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
         }).then(() => {
-          this.handleStatus('1')
+          this.handleStatus('0')
         })
       }
       if (type == 'begin') {
         this.$$Dialog.confirm(`确认要"启用""${this.roleNameList.join(',')}"角色吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
         }).then(() => {
-          this.handleStatus('0')
+          this.handleStatus('1')
         })
       }
       if (type == 'delete') {
@@ -630,7 +630,7 @@ export default {
 
     },
     handleStatus(type) {
-      let showText = type == '0' ? '启用成功' : '停用成功'
+      let showText = type == '1' ? '启用成功' : '停用成功'
       let data = {
         "ids": this.ids,
         status: type
@@ -718,7 +718,7 @@ export default {
     },
     // 角色状态修改
     handleStatusChange(row) {
-      let text = row.status === "0" ? "停用" : "启用";
+      let text = row.status === "1" ? "停用" : "启用";
       let changeStatus=row.status === "0" ? "1" : "0";
       this.$$Dialog
           .confirm('确认要"' + text + '""' + row.roleName + '"角色吗？')

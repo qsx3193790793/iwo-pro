@@ -184,7 +184,7 @@ async function queryPendingWorkOrderByAssetNum(accNum) {
         style: 'color: #409eff;text-decoration-line: underline;cursor: pointer;', on: {
           click: () => {
             proxy.$$Dialog.close()
-            proxy.$router.push({name: 'ComplaintForm', query: {accNum}})
+            proxy.$router.push({name: 'ComplaintForm', query: {accNum, status: 'C200001'}})
           }
         }
       }, '在途工单'),
@@ -205,14 +205,15 @@ async function getInfo({isForce, from}) {
     }
   });
 
-  if (!complaintWorksheetId.value) return;
+  if (!complaintWorksheetId.value) return;//1.必须先获取集团工单编号
 
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
 
-  if (!(await queryPendingWorkOrderByAssetNum(accNum.value))) return;//查询在途单
+  if (!(await queryPendingWorkOrderByAssetNum(accNum.value))) return;//2.查询在途单
 
-  let res, err;
-  if (accType.value === '12') {//移动设备才需要调用H码查询 其他没有
+  //3.H码查询 移动设备才需要调用H码查询，其他没有
+  let res = null, err = null;
+  if (accType.value === '12') {
     const R = await proxy.$$api.crm.getHNumber({
       params: {segment: accNum.value},
       headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
@@ -220,11 +221,11 @@ async function getInfo({isForce, from}) {
     res = R?.res;
     err = R?.err;
   }
-  if (err) return;
-  if (!res) res = {//如果没查到 默认赋值工号对应省
+  if (!res) res = {//如果H码查询失败 或者没有结果 那么把坐席归属省填入
     lanid: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'],
     provinceCode: proxy.$store.getters['user/GET_USER_PROVINCE_CODE']
   };
+
   if (res) {
     const [R1, R2, R3] = await Promise.all([
       proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({

@@ -82,8 +82,13 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--line, 1);
+  word-break: break-all;
   text-overflow: ellipsis;
   overflow: hidden;
+
+  &.line2 {
+    -webkit-line-clamp: 2;
+  }
 }
 
 

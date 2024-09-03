@@ -75,7 +75,7 @@ const formConfig = ref({
           }
         },
         {
-          name: '字段名称', key: 'name', value: '', type: 'input', col: 24, maxlength: 100, isDisable: !1, isRequire: !0,
+          name: '字段名称', key: 'name', value: '', type: 'input', col: 24, maxlength: 30, isDisable: !1, isRequire: !0,
           rules: [{validator: (rule, value, cb) => Vue.prototype.$$validator.isVariable(value) ? cb() : cb(new Error('不符合变量规范[A~Z、a~z、0~9、_、$]，不允许数字开头）')), trigger: 'blur'}],
         },
         {name: '是否省自定义', key: 'isProvinceCustom', value: '1', col: 24, options: () => proxy.$store.getters['dictionaries/GET_DICT']('yes_no'), type: 'select', isDisable: !0, isRequire: !1},

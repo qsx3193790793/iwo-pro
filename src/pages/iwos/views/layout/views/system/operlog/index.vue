@@ -36,7 +36,7 @@
             v-model="queryParams.businessType"
             placeholder="操作类型"
             clearable
-             class="queryItem"
+            class="queryItem"
         >
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_oper_type')"
@@ -51,7 +51,7 @@
             v-model="queryParams.status"
             placeholder="操作状态"
             clearable
-             class="queryItem"
+            class="queryItem"
         >
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_common_status')"
@@ -64,7 +64,7 @@
       <el-form-item label="操作时间">
         <el-date-picker
             v-model="dateRange"
-             class="queryItem"
+            class="queryItem"
             value-format="yyyy-MM-dd HH:mm:ss"
             type="daterange"
             range-separator="-"
@@ -74,15 +74,15 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery"  v-hasPermission="['system:operlog:query']">查询</el-button>
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:operlog:query']">查询</el-button>
         <el-button
             type="danger"
             plain
             size="small"
             :disabled="multiple"
             @click="handleDelete"
-           v-hasPermission="['system:operlog:remove']"
+            v-hasPermission="['system:operlog:remove']"
         >删除
         </el-button>
         <!-- <el-button
@@ -145,13 +145,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-              size="small"
-              type="primary"
-              @click="handleView(scope.row,scope.index)"
-              v-hasPermission="['system:operlog:query']"
-          >详细
-          </el-button>
+          <el-button size="small" type="primary" @click="handleView(scope.row,scope.index)" v-hasPermission="['system:operlog:query']">详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -159,7 +153,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 操作日志详细 -->
-    <el-dialog title="操作日志详细" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog title="操作日志详情" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" label-position="left" label-width="100px" size="small">
         <el-row>
           <el-col :span="12">
@@ -184,8 +178,8 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="操作状态：">
-              <div v-if="form.status === 0">正常</div>
-              <div v-else-if="form.status === 1">失败</div>
+              <div v-if="form.status === 1">正常</div>
+              <div v-else-if="form.status === 0">失败</div>
             </el-form-item>
           </el-col>
           <el-col :span="8">

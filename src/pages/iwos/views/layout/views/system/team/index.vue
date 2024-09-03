@@ -88,8 +88,8 @@
                     <el-button v-hasPermission="['system:team:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
                     <el-button v-hasPermission="['system:team:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
                     <el-button v-hasPermission="['system:team:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
-                    <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='0'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
-                    <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
+                    <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
+                    <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
                   </div>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -231,7 +231,7 @@ export default {
           .then(() => {
             let data = {
               teamId: row.teamId,
-              status: 0,
+              status: 1,
             }
             return this.$$api.team.updStatus({data: data});
           })
@@ -250,7 +250,7 @@ export default {
           .then(() => {
             let data = {
               teamId: row.teamId,
-              status: 1,
+              status: 0,
             }
             return this.$$api.team.updStatus({data: data});
           })

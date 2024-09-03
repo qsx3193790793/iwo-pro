@@ -47,7 +47,7 @@
             end-placeholder="结束日期"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item style="width: 100%;text-align: right;">
+      <el-form-item style="text-align: right;">
         <el-button size="small" @click="resetQuery">重置</el-button>
         <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['general:dict:list']">查询</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:dict:add']">新增</el-button>
@@ -58,31 +58,13 @@
       </el-form-item>
     </el-form>
 
-    <!-- <el-row class="one-screen-fg0 mb8" :gutter="10">
-      <el-col :span="1.5">
-
-      </el-col>
-      <el-col :span="1.5">
-
-      </el-col>
-      <el-col :span="1.5">
-
-      </el-col>
-      <el-col :span="1.5">
-
-      </el-col>
-      <el-col :span="1.5">
-
-      </el-col>
-    </el-row> -->
-
     <el-table class="one-screen-fg1" v-loading="loading" ref="table" :data="typeList" border height="100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="字典编号" align="center" prop="dictId"/>
       <el-table-column label="字典名称" align="center" prop="dictName" :show-overflow-tooltip="true"/>
       <el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <div class="link-type" style="color: #0000EE;cursor: pointer;" @click="$router.push({name: 'DictData', params: {dictId: scope.row.dictId}})">
+          <div class="link-type" style="color: rgba(50, 151, 255, 1);cursor: pointer;" @click="$router.push({name: 'DictData', params: {dictId: scope.row.dictId}})">
             <span>{{ scope.row.dictType }}</span>
           </div>
         </template>
@@ -102,7 +84,7 @@
         <template slot-scope="scope">
           <el-button
               size="small"
-              type="success"
+              type="primary"
               @click="handleUpdate(scope.row)"
               v-hasPermission="['system:dict:edit']"
           >修改
@@ -227,7 +209,7 @@ export default {
         dictId: undefined,
         dictName: undefined,
         dictType: undefined,
-        status: "0",
+        status: "1",
         remark: undefined
       };
       this.$refs['form']?.resetFields();

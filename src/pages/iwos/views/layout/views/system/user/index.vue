@@ -149,8 +149,8 @@
                   <div class="inner">
                     <el-button v-hasPermission="['system:user:edit']" type="primary" size="small" @click="handleResetPwd(scope.row)">重置密码</el-button>
                     <el-button v-hasPermission="['system:user:query']" type="primary" size="small" @click="handleAuthRole(scope.row)">查看角色</el-button>
-                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='1'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
-                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='0'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
+                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
+                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='1'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
                   </div>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -532,14 +532,14 @@ export default {
         this.$$Dialog.confirm(`确认要"停用""${this.nickNameList.join(',')}"用户吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
         }).then(() => {
-          this.handleStatus('1')
+          this.handleStatus('0')
         })
       }
       if (type == 'begin') {
         this.$$Dialog.confirm(`确认要"启用""${this.nickNameList.join(',')}"用户吗？`, '提示', {
           confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
         }).then(() => {
-          this.handleStatus('0')
+          this.handleStatus('1')
         })
       }
       if (type == 'delete') {
@@ -548,7 +548,7 @@ export default {
 
     },
     handleStatus(type) {
-      let showText = type == '0' ? '启用成功' : '停用成功'
+      let showText = type == '1' ? '启用成功' : '停用成功'
       let data = {
         "ids": this.ids,
         status: type
@@ -660,7 +660,7 @@ export default {
     },
     // 用户状态修改
     handleStatusChange(row) {
-      let text = row.status === "0" ? "停用" : "启用";
+      let text = row.status === "1" ? "停用" : "启用";
       let changeStatus=row.status === "0" ? "1" : "0";
       this.$$Dialog.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(() => {
         return this.$$api.user.changeUserStatus({data: {userId: row.userId, status:changeStatus}});
@@ -690,7 +690,7 @@ export default {
         email: undefined,
         sex: undefined,
         confirmPassword: undefined,
-        status: "0",
+        status: "1",
         remark: undefined,
         // postIds: [],
         roleIds: [],

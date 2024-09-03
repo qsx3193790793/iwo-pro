@@ -43,15 +43,15 @@
             v-hasPermission="['monitor:job:add']"
         >新增
         </el-button>
-        <el-button
-            type="success"
-            plain
-            size="small"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermission="['monitor:job:edit']"
-        >修改
-        </el-button>
+<!--        <el-button-->
+        <!--            type="success"-->
+        <!--            plain-->
+        <!--            size="small"-->
+        <!--            :disabled="single"-->
+        <!--            @click="handleUpdate"-->
+        <!--            v-hasPermission="['monitor:job:edit']"-->
+        <!--        >修改-->
+        <!--        </el-button>-->
         <el-button
             type="danger"
             plain
@@ -128,7 +128,7 @@
             <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
               <div class="inner">
                 <el-button v-hasPermission="['monitor:job:changeStatus']" type="success" size="small" @click="handleRun(scope.row)">执行一次</el-button>
-                <el-button v-hasPermission="['monitor:job:query']" type="primary" size="small" @click="handleView(scope.row)">任务详细</el-button>
+                <el-button v-hasPermission="['monitor:job:query']" type="primary" size="small" @click="handleView(scope.row)">任务详情</el-button>
                 <el-button v-hasPermission="['monitor:job:query']" type="primary" size="small" @click="handleJobLog(scope.row)">调度日志</el-button>
               </div>
             </el-dropdown-menu>
@@ -230,7 +230,7 @@
     </el-dialog>
 
     <!-- 任务日志详细 -->
-    <el-dialog title="任务详细" :visible.sync="openView" width="700px" append-to-body>
+    <el-dialog title="任务详情" :visible.sync="openView" width="700px" append-to-body>
       <el-form ref="form" :model="form" label-position="left" label-width="120px" size="small">
         <el-row>
           <el-col :span="12">

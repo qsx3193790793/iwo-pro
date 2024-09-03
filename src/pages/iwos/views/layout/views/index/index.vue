@@ -5,8 +5,10 @@
         <template slot="title">
           <div class="collapse-title">
             <div class="collapse-title-name" @click.stop="more('1')">
-              通知公告<el-badge class="mark" :value="recentAttentionTotal" v-if="recentAttentionTotal" /><i
-                class="el-icon-arrow-right"></i>
+              通知公告
+              <el-badge class="mark" :value="recentAttentionTotal" v-if="recentAttentionTotal"/>
+              <i
+                  class="el-icon-arrow-right"></i>
             </div>
             <div> {{ recentAttention[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
@@ -23,7 +25,7 @@
                   <!-- <el-avatar size="small"
                     src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"></el-avatar> -->
                   <el-tooltip class="item" effect="dark" :content="`${item.publisher}-${item.publishDeptName}`"
-                    placement="top-start">
+                              placement="top-start">
                     <div class="text-ellipsis">{{ item.publisher + '-' + item.publishDeptName }}</div>
                   </el-tooltip>
                 </div>
@@ -41,8 +43,10 @@
         <template slot="title">
           <div class="collapse-title">
             <div class="collapse-title-name" @click.stop="more('2')">
-              服务案例<el-badge class="mark" :value="serviceCasesTotal" v-if="serviceCasesTotal" /><i
-                class="el-icon-arrow-right"></i>
+              服务案例
+              <el-badge class="mark" :value="serviceCasesTotal" v-if="serviceCasesTotal"/>
+              <i
+                  class="el-icon-arrow-right"></i>
             </div>
             <div> {{ serviceCases[0] == 1 ? '折叠' : '展开' }} </div>
           </div>
@@ -61,7 +65,8 @@
               </div>
               <div style="width: 85%;">
                 <div style="margin-bottom: 5px;" class="container-title" @click="detail(item.noticeId)"> {{
-                  item.noticeTitle }}</div>
+                    item.noticeTitle
+                  }}</div>
                 <div class="serviceCases-ellipsis">
                   {{ item.noticeText }}
                 </div>
@@ -79,11 +84,11 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, ref, onMounted } from "vue";
+import {getCurrentInstance, ref, onMounted} from "vue";
 import moreNotice from './more/index.vue'
 import detailDialog from './detail/index.vue'
 
-const { proxy } = getCurrentInstance();
+const {proxy} = getCurrentInstance();
 const recentAttention = ref(['1'])
 const serviceCases = ref('1')
 const recentAttentionlist = ref([])
@@ -96,7 +101,7 @@ const showDetailDialog = ref(false)
 const noticeId = ref(null)
 
 async function getStagingList(noticeType) {
-  const { res, err } = await proxy.$$api.staging.workbench({ params: { pageNum: 1, pageSize: 8, noticeType } })
+  const {res, err} = await proxy.$$api.staging.workbench({params: {pageNum: 1, pageSize: 8, noticeType}})
   if (err) return
   if (noticeType == 1) {
     recentAttentionlist.value = res.rows
@@ -123,7 +128,7 @@ onMounted(() => {
 })
 </script>
 <script>
-export default { name: 'Index' }
+export default {name: 'Index'}
 </script>
 <style lang="scss" scoped>
 $collapse_colorrgb: rgb(237, 244, 254);
@@ -154,8 +159,8 @@ $collapse_colorrgb: rgb(237, 244, 254);
 .container-text {
   margin: 15px 0;
   width: 80%;
-  line-height: 24px;
-  height: 48px;
+  line-height: 21px;
+  height: 42px;
   // overflow: hidden;
   // text-overflow: ellipsis;
   // white-space: nowrap;
@@ -164,20 +169,8 @@ $collapse_colorrgb: rgb(237, 244, 254);
 .card-container {
   display: flex;
   justify-content: space-between;
-  align-items: center
-}
-
-.text-ellipsis {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: var(--line, 1);
-  text-overflow: ellipsis;
-  overflow: hidden;
-
-  &.line2 {
-    word-break: break-all;
-    -webkit-line-clamp: 2;
-  }
+  align-items: center;
+  opacity: 0.75;
 }
 
 .collapse-title {

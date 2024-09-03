@@ -13,7 +13,7 @@
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
           >
-          <template slot="append">
+            <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
             </template>
           </el-input>
@@ -31,7 +31,7 @@
                 placeholder="请输入投诉原因编码"
                 maxlength="30"
                 clearable
-                style="width: 240px"
+                style="width: 200px"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -41,7 +41,7 @@
                 placeholder="请输入投诉原因名称"
                 clearable
                 maxlength="30"
-                style="width: 240px"
+                style="width: 200px"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -50,7 +50,7 @@
                 v-model="queryParams.isProvinceCustom"
                 placeholder="请选择是否省自定义"
                 clearable
-                style="width: 240px"
+                style="width: 200px"
             >
               <el-option
                   v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
@@ -64,7 +64,7 @@
                 v-model="queryParams.status"
                 placeholder="请选择状态"
                 clearable
-                style="width: 240px"
+                style="width: 130px"
             >
               <el-option
                   v-for="dict in $store.getters['dictionaries/GET_DICT']('reason_status_name')"
@@ -293,7 +293,7 @@ export default {
       treeReasonName: undefined,
       //是否展示五级原因
       showForthItem: true,
-      cuurrentNodeData:{},
+      cuurrentNodeData: {},
       // 表单参数
       form: {},
       defaultProps: {
@@ -544,9 +544,9 @@ export default {
     },
     // 节点单击事件
     handleNodeClick(data, node) {
-      this.isAllowAdd =  data.level === 3 || data.level === 4
-      this.cuurrentNodeData= data
-      console.log('cuurrentNodeData',this.cuurrentNodeData);
+      this.isAllowAdd = data.level === 3 || data.level === 4
+      this.cuurrentNodeData = data
+      console.log('cuurrentNodeData', this.cuurrentNodeData);
       if (node.childNodes?.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.reasonCode
 
@@ -668,7 +668,7 @@ export default {
           reasonName: row.reasonName,
           userId: row.reasonId,
           status: row.status,
-          isProvinceCustom: `${row.isProvinceCustom}` ,
+          isProvinceCustom: `${row.isProvinceCustom}`,
           firstReasonCode: treeData[2].reasonCode,
           firstReasonName: treeData[2].reasonName,
           secondReasonCode: treeData[1].reasonCode,
@@ -683,7 +683,7 @@ export default {
           reasonName: row.reasonName,
           userId: row.reasonId,
           status: row.status,
-          isProvinceCustom:  `${row.isProvinceCustom}` ,
+          isProvinceCustom: `${row.isProvinceCustom}`,
           firstReasonCode: treeData[3].reasonCode,
           firstReasonName: treeData[3].reasonName,
           secondReasonCode: treeData[2].reasonCode,
@@ -723,7 +723,7 @@ export default {
           reasonName: row.reasonName,
           userId: row.reasonId,
           status: row.status,
-          isProvinceCustom:  `${row.isProvinceCustom}` ,
+          isProvinceCustom: `${row.isProvinceCustom}`,
           firstReasonCode: treeData[3].reasonCode,
           firstReasonName: treeData[3].reasonName,
           secondReasonCode: treeData[2].reasonCode,
@@ -794,8 +794,8 @@ export default {
           .catch(() => {
           });
     },
-     // 树权限（展开/折叠）
-     handleCheckedTreeExpand() {
+    // 树权限（展开/折叠）
+    handleCheckedTreeExpand() {
       this.isExpend = !this.isExpend;
       this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
     },
