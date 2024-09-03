@@ -80,7 +80,7 @@ const pageInfo = ref({
     rowCount: 1
 })
 function getList() {
-    proxy.$$api.notice.listNotice({
+    proxy.$$api.staging.workbench({
         params: {
             ...pageInfo.value,
             noticeType: props.noticeType

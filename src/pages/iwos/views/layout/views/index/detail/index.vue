@@ -2,9 +2,9 @@
     <div>
         <el-dialog  :visible.sync="dialogVisible" width="35%" top="20vh"  :close-on-click-modal="!1" destroy-on-close append-to-body :show-close="false">
             <span slot="title" class="notice-title" >
-                <div style="font-weight: bold;margin-bottom: 8px;color: #333f5b;font-size: 16px;">{{ detailData.noticeTitle }} </div>
+                <div style="font-weight: bold;margin-bottom: 8px;color: #333f5b;font-size: 16px;">{{ detailData?.noticeTitle }} </div>
                 <div style="font-size: 12px;color: #a7afbe;font-weight: bold;">
-                    <span style="margin-right:10px;">发布人: <span style="font-weight: bold;color: #333f5b;">{{ detailData.publisher }}</span> </span>
+                    <span style="margin-right:10px;">发布人: <span style="font-weight: bold;color: #333f5b;">{{ detailData.publisher + '-' + detailData.publishDeptName }}</span> </span>
                     <span>发布日期: <span style="font-weight: bold;color: #333f5b;"> {{ detailData.updateTime }}</span></span>
                 </div>
                 <el-divider></el-divider>
@@ -30,7 +30,13 @@ const dialogVisible = computed({
     proxy.$emit('input', v)
   }
 });
-const detailData=ref()
+const detailData=ref({
+    noticeTitle:'',
+    publisher:'',
+    publishDeptName:'',
+    updateTime:'',
+    noticeContent:''
+})
 const { proxy } = getCurrentInstance()
 function handleDetail() {
     proxy.$$api.notice.getNotice({ noticeId: props.noticeId }).then(({ res: response, err }) => {
