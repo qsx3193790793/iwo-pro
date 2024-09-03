@@ -279,10 +279,15 @@ const formConfigItems = ref([
   {name: '模板大类', key: 'bigType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !1},
   {name: '模板小类', key: 'smallType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !1},
   {name: '状态', key: 'statusName', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_status_name'), isDisable: !1, isRequire: !1},
-  {name: '省', key: 'provinceCode', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('base_province_code'), isDisable: !1, isRequire: !1},
+  {
+    name: '省', key: 'provinceCode', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('base_province_code'), isDisable: !1, isRequire: !1,
+    isShow() {
+      return proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000';//集团账号
+    }
+  },
   {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
   {
-    type: 'buttons', align: 'right', verticalAlign: 'top', col: 6, permission: ['system:template:create'], items: [
+    type: 'buttons', align: 'right', verticalAlign: 'top', col: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000' ? 6 : 12, permission: ['system:template:create'], items: [
       {
         btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
         onClick({vm}) {

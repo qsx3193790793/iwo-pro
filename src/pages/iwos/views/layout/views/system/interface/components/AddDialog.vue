@@ -125,7 +125,10 @@ const formConfig = ref({
             return vm.formData.interfaceMethod === 'GET';
           }
         },
-        {name: '出参json', key: 'responseJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !0, isRequire: !0, col: 24},
+        {name: '出参json', key: 'responseJsonStr', value: '', type: 'monacoEditor', height: '2rem', isDisable: !0, isRequire: !0, col: 24,
+        isShow({vm}) {
+            return vm.formData.interfaceMethod;
+          }},
         {
           name: '入参出参确认无误后可将其解析至下方表格并填写描述', key: '', value: '', placeholder: '', col: 20, type: 'component', component: analysisParams, isDisable: !1, isRequire: !0,
           emitter({vm}) {

@@ -204,7 +204,9 @@ async function getInfo({isForce, from}) {
       complaintWorksheetId: complaintWorksheetId.value,
     }
   });
+
   if (!complaintWorksheetId.value) return;
+
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
 
   if (!(await queryPendingWorkOrderByAssetNum(accNum.value))) return;//查询在途单

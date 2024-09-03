@@ -1,7 +1,7 @@
 <template>
   <div class="user">
     <div class="userModel">
-      <div class="tipText" :sty1le="{ visibility: userProfile.birthdayFlag ? 'visible' : 'hidden' }">
+      <div class="tipText" :style="{ visibility: userProfile.birthdayFlag ? 'visible' : 'hidden' }">
         <i class="circle"></i> 今日生日
       </div>
       <img ref="" :src="userProfile.gender=='0'?womanImage:manImage" alt="" class="userImg"/>

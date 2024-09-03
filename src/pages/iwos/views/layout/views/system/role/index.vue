@@ -265,7 +265,7 @@
               :min="0"
           />
         </el-form-item>
-        <el-form-item label="状态">
+        <!-- <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio
                 v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
@@ -274,7 +274,7 @@
             >{{ dict.label }}
             </el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="菜单权限">
           <el-checkbox
               v-model="menuExpand"
@@ -726,8 +726,9 @@ export default {
             return this.$$api.role.changeRoleStatus({data: {roleId: row.roleId, status: changeStatus}});
           })
           .then(({res, err}) => {
-            if (err)
-            row.status = row.status === "0" ? "1" : "0";
+            if (err) return
+            // row.status = row.status === "0" ? "1" : "0";
+            this.getList();
             this.$$Toast.success(text + "成功");
           })
           // .catch(function () {

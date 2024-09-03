@@ -82,7 +82,7 @@
             <el-button size="mini" @click="resetQuery">重置</el-button>
             <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:reason:list']">查询</el-button>
             <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd" v-hasPermission="['config:reason:add']">新增</el-button>
-            <el-button type="danger" size="mini" :disabled="!isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button>
+            <!-- <el-button type="danger" size="mini" :disabled="!isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button> -->
           </el-form-item>
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
@@ -312,12 +312,8 @@ export default {
         pcode: undefined
       },
       columns: {
-        selection: true,
+        // selection: true,
         props: [
-          {
-            name: "节点层级链",
-            key: "reasonChain",
-          },
           {
             name: "投诉原因编码",
             key: "reasonCode",
@@ -349,6 +345,10 @@ export default {
             key: "updatedTime",
             width: '160'
           },
+          {
+            name: "节点层级链",
+            key: "reasonChain",
+          }
         ],
         options: {
           btns: [
@@ -363,7 +363,7 @@ export default {
             //   event: this.handleAdd,
             // },
             {
-              label: "修改",
+              label: "编辑",
               key: "edit",
               permission: ['config:reason:update'],
               autoHidden: ({row}) => {
