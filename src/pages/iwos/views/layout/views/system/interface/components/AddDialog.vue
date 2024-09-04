@@ -95,7 +95,7 @@ const formConfig = ref({
         {name: '接口名称', key: 'interfaceName', value: '', type: 'input', col: 6, isDisable: !1, isRequire: !0},
         {name: 'appId', key: 'appId', value: '', placeholder: '', maxlength: 100, col: 6, type: 'input', isDisable: !1, isRequire: !0},
         {name: 'appKey', key: 'appKey', value: '', placeholder: '', maxlength: 100, col: 6, type: 'input', isDisable: !1, isRequire: !0},
-        {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: !1, isRequire: !0},
+        {name: '接口规范类型', key: 'interfaceNormType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_specification_type'), isDisable: props.pkid, isRequire: !0},
         {name: '接口联系信息', key: 'interfaceInfo', value: '', col: 12, type: 'textarea', isDisable: !1, isRequire: !0},
         {name: '接口描述', key: 'interfaceDesc', value: '', col: 12, type: 'textarea', isDisable: !1, isRequire: !0},
         {name: '请求方式', key: 'interfaceMethod', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('interface_request_method'), isDisable: !1, isRequire: !0},

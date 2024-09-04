@@ -53,9 +53,7 @@
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status == 0 ? '' : row.status == 1 ? 'warning' : 'danger'">
             {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
-          </el-tag>
         </template>
       </el-table-column>
       <el-table-column label="创建者" align="center" prop="publisher" width="100"/>
@@ -67,11 +65,11 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button size="small" type="success" @click="handleRelease(scope.row)" v-if="scope.row.status != 0">发布
+          <el-button size="small" type="success" @click="handleRelease(scope.row)" v-if="scope.row.status != 1">发布
           </el-button>
-          <el-button size="small" type="danger" @click="handleRetract(scope.row)" v-if="scope.row.status == 0">撤回
+          <el-button size="small" type="danger" @click="handleRetract(scope.row)" v-if="scope.row.status == 1">撤回
           </el-button>
-          <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-if="scope.row.status != 0"
+          <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-if="scope.row.status != 1"
                      v-hasPermission="['system:notice:edit']">修改
           </el-button>
           <el-dropdown style="margin-left: 4px;" trigger="click" placement="bottom">
@@ -132,13 +130,7 @@
           <el-col :span="24">
             <el-form-item label="接收者类型" prop="recipientType">
               <el-radio-group v-model="form.recipientType" @change="recipientTypeChange" :disabled="isDetail">
-                <!-- <el-radio
-                    v-for="dict in $store.getters['dictionaries/GET_DICT']('notice_recipient_type')"
-                    :key="dict.value"
-                    :label="dict.value"
-                >{{ dict.label }}
-                </el-radio> -->
-                <el-radio v-for="dict in [{ value: '1', label: '机构' }, { value: '2', label: '班组' }]" :key="dict.value"
+                <el-radio v-for="dict in $store.getters['dictionaries/GET_DICT']('notice_recipient_type')" :key="dict.value"
                           :label="dict.value">{{ dict.label }}
                 </el-radio>
               </el-radio-group>
@@ -146,18 +138,18 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="接收机构" prop="deptId">
-              <treeselect v-model="form.deptId" :multiple="form.recipientType === '1'" :options="deptOptions"
+              <treeselect v-model="form.deptId" :multiple="form.recipientType == '1'" :options="deptOptions"
                           :show-count="true" placeholder="请选择机构" noOptionsText="暂无数据" @select="handelDeptIdChange" :disabled="isDetail"/>
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-if="form.recipientType !== '1'">
+          <el-col :span="12" v-if="form.recipientType != '1'">
             <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
               <treeselect v-model="form.recipientIds" noOptionsText="该机构下无数据"  :multiple="true" :normalizer="normalizer"
                           :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`" :disabled="isDetail"/>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="内容">
+            <el-form-item label="内容" prop="noticeContent">
               <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDetail"/>
             </el-form-item>
           </el-col>
@@ -231,7 +223,10 @@ export default {
         ],
         recipientType: [
           {required: true, message: `接收者类型不能为空`, trigger: "change"}
-        ]
+        ],
+        noticeContent: [
+          {required: true, message: `接收者类型不能为空`, trigger: "change"}
+        ],
       }
     };
   },
@@ -279,7 +274,7 @@ export default {
       });
     },
     handelDeptIdChange({id}) {
-      if (this.form.recipientType === '2') {
+      if (this.form.recipientType == '2') {
         this.$$api.team.getDeptTeamTree({deptId: id}).then(({res, err}) => {
           if (err) return;
           this.form.recipientIds = []
@@ -415,7 +410,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const noticeIds = row.noticeId || this.ids
-      this.$$Dialog.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(() => {
+      this.$$Dialog.confirm('是否确认删除公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
         return this.$$api.notice.delNotice({noticeId: noticeIds});
       }).then(({res: response, err}) => {
         if (err) return

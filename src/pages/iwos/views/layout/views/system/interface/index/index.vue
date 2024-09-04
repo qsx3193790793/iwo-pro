@@ -110,6 +110,9 @@ let columns = ref({
         label: '修改',
         key: 'edit',
         permission: ['config:interfaceInfo:edit'],
+        autoHidden: (val)=>{
+          return val.row.isProvinceCustom == 1
+        },
         event: (row) => {
           select_pkid.value = {interfaceId: row.interfaceId};
           isShowAddDialog.value = !0;
