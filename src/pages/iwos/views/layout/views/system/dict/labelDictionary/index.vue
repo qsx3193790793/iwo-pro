@@ -14,15 +14,7 @@
         @selectionChange="handleSelectionChange"
     >
       <template #status="{ row }">
-        <div v-show="row.status == 0">
-          <el-tag type="danger">停用</el-tag>
-        </div>
-        <div v-show="row.status == 1">
-          <el-tag>启用</el-tag>
-        </div>
-        <div v-show="row.status == 2">
-          <el-tag type="danger">删除</el-tag>
-        </div>
+        {{ ({0: '停用', 1: '启用', 2: '删除'})[row.status] ?? '-' }}
       </template>
     </JsTable>
     <el-pagination
@@ -38,7 +30,7 @@
     />
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -133,6 +125,7 @@ export default {
           },
           {
             name: "更新时间",
+            width: 160,
             key: "updatedTime",
           },
         ],
@@ -141,14 +134,14 @@ export default {
             {
               label: "修改",
               key: "edit",
-              permission:['config:dictTag:edit'],
+              permission: ['config:dictTag:edit'],
               event: this.handleUpdate,
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
-              permission:['config:dictTag:remove'],
+              permission: ['config:dictTag:remove'],
               event: (val) => {
                 this.handleDelete(val)
               },
@@ -157,7 +150,7 @@ export default {
               label: "启用",
               key: "start",
               type: "primary",
-              permission:['config:dictTag:edit'],
+              permission: ['config:dictTag:edit'],
               autoHidden: this.autoStartHidden,
               event: this.handleStart,
             },
@@ -165,7 +158,7 @@ export default {
               label: "停用",
               key: "end",
               type: "danger",
-              permission:['config:dictTag:edit'],
+              permission: ['config:dictTag:edit'],
               autoHidden: this.autoEndHidden,
               event: this.handleEnd,
             },
@@ -207,7 +200,7 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
-        { col: 6, type: "divider-empty" },
+        {col: 6, type: "divider-empty"},
         {
           type: "buttons",
           align: "right",
@@ -227,7 +220,7 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              permission:['config:dictTag:list'],
+              permission: ['config:dictTag:list'],
               attrs: {type: "primary"},
               col: 1,
               onClick: ({vm}) => {
@@ -237,7 +230,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
-              permission:['config:dictTag:add'],
+              permission: ['config:dictTag:add'],
               attrs: {type: "success"},
               col: 1,
               onClick: ({vm}) => {
@@ -246,7 +239,7 @@ export default {
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
-              permission:['config:dictTag:remove'],
+              permission: ['config:dictTag:remove'],
               onClick: ({vm}) => {
                 this.handleDelete();
               }

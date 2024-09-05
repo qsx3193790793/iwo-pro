@@ -5,6 +5,14 @@ import apiPrefix from '../apiPrefix';
 const apis = {
   // 列表
   list: {url: `${apiPrefix('config')}/template/list`, method: 'get'},
+  // 待审核列表
+  pendingApprovalList: {url: `${apiPrefix('config')}/template/pendingApprovalList`, method: 'get'},
+  // 待发布列表
+  pendingReleaseList: {url: `${apiPrefix('config')}/template/pendingReleaseList`, method: 'get'},
+  // 已发布列表
+  releaseList: {url: `${apiPrefix('config')}/template/releaseList`, method: 'get'},
+  // 模板版本历史列表
+  historyList: {url: (args) => `${apiPrefix('config')}/template/historyList/${args.sceneCode}`, method: 'get'},
   // 详细
   detail: {url: (args) => `${apiPrefix('config')}/template/detail/${args.templateId ?? ''}/${args.versionId ?? ''}`, method: 'get'},
   // 查询模板表单
@@ -35,6 +43,8 @@ const apis = {
   rollback: {url: `${apiPrefix('config')}/template/rollback`},
   // 根据投诉现象或投诉来源查询模板表单信息
   getSceneForm: {url: (args) => `${apiPrefix('config')}/template/sceneForm/${args?.sceneCode ?? ''}/${args?.smallType ?? ''}/${args?.workorderType ?? ''}`, method: 'get'},
+  // 初始化
+  initTemplate: {url: (args) => `${apiPrefix('config')}/template/initTemplate`},
 };
 
 export default apiGenerator(apis);

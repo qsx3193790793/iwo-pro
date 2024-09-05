@@ -241,7 +241,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="false">
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" maxlength="30"/>
@@ -356,7 +356,7 @@
         :visible.sync="openDataScope"
         width="500px"
         append-to-body
-        :close-on-click-modal="false"
+        :close-on-click-modal="!1"
     >
       <el-form :model="form" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
@@ -414,7 +414,7 @@
     </el-dialog>
 
     <!-- 分配用户 -->
-    <el-dialog title="已授权用户" :visible.sync="authUser.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="已授权用户" :visible.sync="authUser.open" width="75vw" append-to-body :close-on-click-modal="!1" destroy-on-close>
       <div class="one-screen" style="height: 50vh;">
         <el-form class="one-screen-fg0" :model="authUser.queryParams" ref="queryAuthUserForm" size="small" :inline="true">
           <el-form-item label="用户账号" prop="userName">

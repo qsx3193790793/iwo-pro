@@ -14,15 +14,7 @@
         @selectionChange="handleSelectionChange"
     >
       <template #status="{ row }">
-        <div v-show="row.status == 0">
-          <el-tag type="danger">停用</el-tag>
-        </div>
-        <div v-show="row.status == 1">
-          <el-tag>启用</el-tag>
-        </div>
-        <div v-show="row.status == 2">
-          <el-tag type="danger">删除</el-tag>
-        </div>
+        {{ ({0: '停用', 1: '启用', 2: '删除'})[row.status] ?? '-' }}
       </template>
       <template #dictType="{ row }">
         <div class="keyValue" @click="ToDictData(row)">{{ row.dictType }}</div>
@@ -41,7 +33,7 @@
     />
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -174,13 +166,13 @@ export default {
               label: "修改",
               key: "edit",
               event: this.handleUpdate,
-              permission:['config:dictionary:update'],
+              permission: ['config:dictionary:update'],
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
-              permission:['config:dictionary:remove'],
+              permission: ['config:dictionary:remove'],
               event: this.handleDelete,
             },
           ],
@@ -203,7 +195,7 @@ export default {
           value: "",
           type: "input",
           placeholder: "字典名称",
-          col: 6,
+          col: 4,
           isDisable: !1,
           isRequire: !1,
         },
@@ -213,7 +205,7 @@ export default {
           value: "",
           type: "input",
           placeholder: "字典类型",
-          col: 6,
+          col: 4,
           isDisable: !1,
           isRequire: !1,
         },
@@ -221,7 +213,7 @@ export default {
           name: "状态",
           key: "status",
           value: "",
-          col: 6,
+          col: 4,
           type: "select",
           options: () =>
               this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
@@ -229,9 +221,6 @@ export default {
           isRequire: !1,
         },
         {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",
@@ -253,14 +242,14 @@ export default {
               type: "button",
               attrs: {type: "primary"},
               col: 1,
-              permission:['config:dictionary:pageList'],
+              permission: ['config:dictionary:pageList'],
               onClick: ({vm}) => {
                 this.getList();
               },
             },
             {
               btnName: '刷新缓存', type: 'button', attrs: {type: 'danger'}, col: 1,
-              permission:['config:dictionary:refreshCache'],
+              permission: ['config:dictionary:refreshCache'],
               onClick: ({vm}) => {
                 this.handleCache();
               }
@@ -268,7 +257,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
-              permission:['config:dictionary:add'],
+              permission: ['config:dictionary:add'],
               attrs: {type: "success"},
               col: 1,
               onClick: ({vm}) => {
@@ -325,14 +314,11 @@ export default {
         ...this.queryParams
       }
       if (data.timeRange && data.timeRange.length > 0) {
-        data.beginTime = dayjs(new Date(data.timeRange[0]).getTime()).format('YYYY-MM-DD HH:mm:ss')
-        if (new Date(data.timeRange[0]).getTime() == new Date(data.timeRange[1]).getTime()) {
-          data.endTime = dayjs(new Date(data.timeRange[1]).getTime() + 24 * 60 * 60 * 1000 - 1).format('YYYY-MM-DD HH:mm:ss')
-        } else {
-          data.endTime = dayjs(new Date(data.timeRange[1]).getTime()).format('YYYY-MM-DD HH:mm:ss')
-        }
-        delete data.timeRange
+        let {beginTime,endTime}={...this.$$formatELDateTimeRange(data.timeRange, ['beginTime', 'endTime'])}
+        data.beginTime=beginTime
+        data.endTime=endTime
       }
+      delete data.timeRange
       this.$$api.customDict
           .listDictionary({params: data})
           .then(({res: response, err, total}) => {

@@ -3,9 +3,11 @@
 </template>
 
 <script setup>
-import * as monaco from "monaco-editor";
+import * as monaco from "./esm/vs/editor/editor.api.js";
 import {getCurrentInstance, ref, nextTick, watch} from "vue";
 import fj from "formatter-json";
+
+console.log(monaco)
 
 const {proxy} = getCurrentInstance();
 

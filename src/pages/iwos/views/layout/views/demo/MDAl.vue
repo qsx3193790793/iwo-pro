@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-bind="$attrs" v-on="$listeners" :visible.sync="visibleModel" destroy-on-close close-on-click-modal>
+  <el-dialog v-bind="$attrs" v-on="$listeners" :visible.sync="visibleModel" destroy-on-close :close-on-click-modal="!1">
     <div class="clear-last">
       <slot></slot>
     </div>

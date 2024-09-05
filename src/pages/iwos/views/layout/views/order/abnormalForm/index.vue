@@ -77,12 +77,9 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   let dataTime = {};
   // 建单时间的取值
   if (queryParams.dataRange && queryParams.dataRange.length > 0) {
-    dataTime.beginTime = proxy.$$dayjs(queryParams.dataRange[0]).format("YYYY-MM-DD HH:mm:ss");
-    if (new Date(queryParams.dataRange[0]).getTime() == new Date(queryParams.dataRange[1]).getTime()) {
-      dataTime.endTime = proxy.$$dayjs(new Date(queryParams.dataRange[1]).getTime() + 24 * 60 * 60 * 1000 - 1).format('YYYY-MM-DD HH:mm:ss')
-    } else {
-      dataTime.endTime = proxy.$$dayjs(queryParams.dataRange[1]).format("YYYY-MM-DD HH:mm:ss");
-    }
+    let {beginTime,endTime}={...proxy.$$formatELDateTimeRange(queryParams.dataRange, ['beginTime', 'endTime'])}
+    dataTime.beginTime=beginTime
+    dataTime.endTime=endTime
   }
   // 时间的传值不传这个字段
   delete queryParams.dataRange;

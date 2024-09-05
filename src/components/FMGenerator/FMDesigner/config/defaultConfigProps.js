@@ -19,7 +19,20 @@ export const keysFinder = (arr, filter = []) => {
 
 //选项配置
 export const optionsProps = (sort = 1) => [
-  {sort: sort + 0.1, name: '选项源', key: 'optionsType', value: '静态数据', type: 'radio', options: [{label: '静态数据', value: '静态数据'}, {label: '字典', value: '字典'}, {label: '事件', value: '事件'}], isRequire: !1, col: 24},
+  {
+    sort: sort + 0.1, name: '选项源', key: 'optionsType', value: '静态数据', type: 'radio', options: [{label: '静态数据', value: '静态数据'}, {label: '系统字典', value: '字典'}, {label: '自定义字典', value: '自定义字典'}, {label: '事件', value: '事件'}], isRequire: !1, col: 24,
+    onChange({vm}) {
+      const dictApiMap = {'字典': vm.$$api.dict.optionselect, '自定义字典': vm.$$api.customDict.DictionaryTypeOptions};
+      const finder = vm.expandFormConfigItems.find(efci => efci.key === 'optionsDictName');
+      if (finder) {
+        vm.formData.optionsDictName = '';
+        finder.options = ['字典', '自定义字典'].includes(vm.formData.optionsType) ? async function ({vm}) {
+          const {res, err} = await dictApiMap[vm.formData.optionsType]();
+          return (res?.rows || res?.dataList || []).map(r => ({label: r.dictName, value: r.dictType}))
+        } : [];
+      }
+    }
+  },
   {
     sort: sort + 0.2, name: '选项列表', key: 'optionsStaticValue', value: [{label: '预览1', value: '预览1'}, {label: '预览2', value: '预览2'}], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
     isShow({vm}) {
@@ -29,11 +42,12 @@ export const optionsProps = (sort = 1) => [
   {
     sort: sort + 0.2, name: '数据字典', key: 'optionsDictName', value: '', type: 'select', isRequire: !1, col: 24,
     async options({vm}) {
-      const {res, err} = await vm.$$api.customDict.listDictionary({params: {status: 1, pageNum: 1, pageSize: 1000}});
-      return (res?.rows || []).map(r => ({label: r.dictName, value: r.dictType}))
+      const dictApiMap = {'字典': vm.$$api.dict.optionselect, '自定义字典': vm.$$api.customDict.DictionaryTypeOptions};
+      const {res, err} = await dictApiMap[vm.formData.optionsType]();
+      return (res?.list || res?.dataList || []).map(r => ({label: r.dictName, value: r.dictType}))
     },
     isShow({vm}) {
-      return vm.formData.optionsType === '字典'
+      return ['字典', '自定义字典'].includes(vm.formData.optionsType)
     }
   },
   {

@@ -23,9 +23,7 @@
         <!-- <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
                    v-hasPermission="['system:notice:edit']">修改
         </el-button> -->
-        <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete"
-                   v-hasPermission="['system:notice:remove']">删除
-        </el-button>
+        <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:notice:remove']">删除</el-button>
       </el-form-item>
     </el-form>
 
@@ -53,7 +51,7 @@
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status" width="100">
         <template slot-scope="{row}">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
+          {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
         </template>
       </el-table-column>
       <el-table-column label="创建者" align="center" prop="publisher" width="100"/>
@@ -99,7 +97,7 @@
                    @current-change="getList"/>
 
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
         <el-row>
           <el-col :span="24">

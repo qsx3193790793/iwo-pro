@@ -64,6 +64,7 @@
         :visible.sync="state.open"
         width="6rem"
         append-to-body
+        :close-on-click-modal="!1"
     >
       <el-form
           ref="FormRef"
@@ -108,9 +109,10 @@ const FormRef = ref();
 // 归档归档
 const submitForm = () => {
   state.value.form.taskList = [];
+  let chanceData= selectData.value.length>0? selectData.value:currentRowData.value
   FormRef.value.validate((valid) => {
     if (valid) {
-      state.value.form.taskList = selectData.value.map((ele) => {
+      state.value.form.taskList = chanceData.map((ele) => {
         let item = {
           taskId: ele.taskId,
           complaintWorksheetId: ele.complaintWorksheetId,
@@ -130,7 +132,7 @@ const submitForm = () => {
     }
   });
 };
-
+let currentRowData=ref([])
 let state = ref({
   open: false,
   form: {
@@ -189,6 +191,16 @@ let state = ref({
             proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
           },
         },
+        {
+          label: '归档',
+          key: 'onfile',
+          type:'success',
+          event: row => {
+            selectData.value=[]
+            currentRowData.value=[row]
+            handleOnFile()
+          },
+        },
       ],
     },
   },
@@ -196,8 +208,6 @@ let state = ref({
 });
 const PageSearchPanelRef = ref();
 const pageInfo = ref({pageNum: 1, pageSize: 15, rowCount: 0});
-
-const list = ref(Array.from({length: 88}).map((v, i) => ({roleName: i})));
 
 // 列表请求
 const getList = async (pageNum = pageInfo.value.pageNum) => {
@@ -246,12 +256,6 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   }
 };
 
-//列表选择
-const selectionList = ref([]);
-
-//弹窗
-const isShowAddDialog = ref(!1);
-const select_pkid = ref(null);
 let complaint_source_tree = ref([]);
 
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
@@ -354,41 +358,26 @@ const formConfigItems = ref([
           getList(1);
         },
       },
-      // {
-      //   btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
-      //   onClick({vm}) {
-      //     // 打开弹窗
-      //     select_pkid.value = null;
-      //     isShowAddDialog.value = !0
-
-      //   }
-      // },
       {
         btnName: "归档",
         type: "button",
-        attrs: {type: "success"},
+        attrs: {type: "success",disabled:()=>selectData.value.length==0 },
         col: 1,
         permission: ['order:onFile:action'],
         onClick({vm}) {
-          // 通过异步的方式实现生成后的操作
-          setTimeout(() => {
-            FormRef.value?.resetFields();
-          }, 0);
-          if (selectData.value.length === 0) {
-            proxy.$$Toast.warning("请先选择投诉编号");
-          } else {
-            state.value.open = true;
-          }
-
-          // 打开弹窗
-          // select_pkid.value = null;
-          // isShowAddDialog.value = !0;
+          handleOnFile()
         },
       },
     ],
   },
 ]);
-
+const handleOnFile=()=>{
+   // 通过异步的方式实现生成后的操作
+   setTimeout(() => {
+      FormRef.value?.resetFields();
+   }, 0);
+   state.value.open = true;
+}
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
   proxy.$$api.web.findSourceTree({data: {status: 1},}).then((res, err) => {

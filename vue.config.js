@@ -6,7 +6,7 @@ const path = require("path");
 const os = require('os');
 // const {VantResolver} = require('unplugin-vue-components/resolvers');
 // const ComponentsPlugin = require('unplugin-vue-components/webpack');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
+const MonacoWebpackPlugin = require('./src/components/MonacoEditor/monaco-editor-webpack-plugin/out')
 
 function resolve(dir) {
   return path.resolve(__dirname, dir)
@@ -98,12 +98,13 @@ module.exports = {
       chunkFilename: `static/css/[name].css?[contenthash]`
     }]);
     //对node_modules部分转义
-    config.module.rule('compile').test(/\.js$/).include
+    config.module.rule('compile').test(/(\.js|\.ts)$/).include
       .add(resolve('node_modules/element-ui'))
       .add(resolve('node_modules/debug'))
       .add(resolve('node_modules/sockjs-client'))
+      .add(resolve('node_modules/monaco-editor'))
       .end().use('babel').loader('babel-loader').options({
-      presets: [['@babel/preset-env', {modules: !1}]],
+      presets: [['@babel/preset-env', {modules: false}]],
       plugins: [
         "@babel/plugin-transform-runtime",
         "@babel/plugin-proposal-optional-chaining",

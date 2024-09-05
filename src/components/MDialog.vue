@@ -2,11 +2,11 @@
   <el-dialog v-bind.sync="$attrs" v-on="$listeners" ref="DialogRef" :top="top" :visible.sync="dialogVisibleModel" :close-on-click-modal="!1" destroy-on-close append-to-body>
     <template v-if="onScreen">
       <div class="inner" :style="{height:height,padding:`0 0.2rem`}">
-        <slot></slot>
+        <slot :DialogRef="DialogRef"></slot>
       </div>
     </template>
     <ELScrollbar v-else class="inner" :style="{height:height}">
-      <slot></slot>
+      <slot :DialogRef="DialogRef"></slot>
     </ELScrollbar>
     <template #footer>
       <slot name="footer" :DialogRef="DialogRef"></slot>

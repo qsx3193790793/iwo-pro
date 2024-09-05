@@ -23,15 +23,7 @@
           }}
         </template>
         <template #status="{ row }">
-          <div v-show="row.status == 0">
-            <el-tag type="danger">停用</el-tag>
-          </div>
-          <div v-show="row.status == 1">
-            <el-tag>启用</el-tag>
-          </div>
-          <div v-show="row.status == 2">
-            <el-tag type="danger">删除</el-tag>
-          </div>
+          {{ ({0: '停用', 1: '启用', 2: '删除'})[row.status] ?? '-' }}
         </template>
       </JsTable>
       <el-pagination
@@ -47,7 +39,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="24">

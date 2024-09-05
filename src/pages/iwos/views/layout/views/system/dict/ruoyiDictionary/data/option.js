@@ -5,7 +5,7 @@ export default {
   name: "DictData",
   component: () => import("./index.vue"),
   meta: {
-    belong: 'Config',//属于哪个一级菜单 填写路由name
+    belong: 'System',//属于哪个一级菜单 填写路由name
     parentName: 'DictIndex',//父级路由名称 用来定位导航
     name: '字典数据',
     title: "智慧客服工单系统",

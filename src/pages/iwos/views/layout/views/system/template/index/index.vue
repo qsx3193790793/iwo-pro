@@ -129,20 +129,21 @@ let columns = ref({
             select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
             isShowFormViewDialog.value = !0;
           },
-        },]
-        : [{
-          label: '修改',
-          autoHidden: ({row}) => !['待审核', '待发布', '上架'].includes(row.statusName),
-          key: 'edit',
-          permission: ['system:template:detail'],
-          event: (row) => {
-            select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
-            isShowAddDialog.value = !0;
+        }]
+        : [
+          {
+            label: '修改',
+            autoHidden: ({row}) => !['待审核', '待发布', '上架', '下架'].includes(row.statusName),
+            key: 'edit',
+            permission: ['system:template:detail'],
+            event: (row) => {
+              select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
+              isShowAddDialog.value = !0;
+            },
           },
-        },
           {
             label: '升级',
-            autoHidden: ({row}) => row.statusName === '上架',
+            autoHidden: ({row}) => ['上架', '下架'].includes(row.statusName),
             permission: ['system:template:detail'],
             type: 'warning',
             key: 'copy',
@@ -188,20 +189,20 @@ let columns = ref({
                   isShowAuditDialog.value = !0;
                 },
               },
-              {
-                label: '下架',
-                key: 'down', type: 'warning',
-                permission: ['system:template:soldOut'],
-                autoHidden: ({row}) => row.statusName === '上架',
-                event: (row) => {
-                  proxy.$$Dialog.confirm('确认下架吗？', '提示').then(async () => {
-                    const {res, err} = await proxy.$$api.template.soldOut({data: {versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.bigType, workorderType: row.workorderType, unsanctionedDesc: ''}});
-                    if (err) return;
-                    getList(1);
-                    proxy.$$Toast({message: `操作成功`, type: 'success'});
-                  }).catch(proxy.$$emptyFn);
-                },
-              },
+              // {
+              //   label: '下架',
+              //   key: 'down', type: 'warning',
+              //   permission: ['system:template:soldOut'],
+              //   autoHidden: ({row}) => row.statusName === '上架',
+              //   event: (row) => {
+              //     proxy.$$Dialog.confirm('确认下架吗？', '提示').then(async () => {
+              //       const {res, err} = await proxy.$$api.template.soldOut({data: {versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.bigType, workorderType: row.workorderType, unsanctionedDesc: ''}});
+              //       if (err) return;
+              //       getList(1);
+              //       proxy.$$Toast({message: `操作成功`, type: 'success'});
+              //     }).catch(proxy.$$emptyFn);
+              //   },
+              // },
               {
                 label: '发布',
                 key: 'release', type: 'warning',
@@ -217,7 +218,7 @@ let columns = ref({
                 key: 'designer',
                 type: 'success',
                 permission: ['system:template:update'],
-                autoHidden: ({row}) => ['草稿', '驳回', '回退', '下架'].includes(row.statusName),
+                autoHidden: ({row}) => ['草稿', '驳回', '回退'].includes(row.statusName),
                 event: row => {
                   console.log(row);
                   proxy.$router.push({name: 'TemplateDesigner', params: {templateId: row.templateId, versionId: row.versionId}})
@@ -228,7 +229,7 @@ let columns = ref({
                 key: 'del',
                 type: 'danger',
                 permission: ['system:template:delete'],
-                autoHidden: ({row}) => ['草稿', '驳回', '回退', '下架'].includes(row.statusName),
+                autoHidden: ({row}) => ['草稿', '驳回', '回退'].includes(row.statusName),
                 event: handleDel,
               },
             ]
@@ -301,12 +302,6 @@ const formConfigItems = ref([
           getList(1);
         }
       },
-      // {
-      //   btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !selectionList.value.length}, col: 1,
-      //   onClick({vm}) {
-      //     handleDel();
-      //   }
-      // },
       {
         btnName: '新增', type: 'button', attrs: {type: 'success'}, col: 1,
         permission: ['system:template:create'],
@@ -317,6 +312,19 @@ const formConfigItems = ref([
           // 打开弹窗
           select_pkid.value = null;
           isShowAddDialog.value = !0;
+        }
+      },
+      {
+        btnName: '初始化', type: 'button', attrs: {type: 'danger'}, col: 1,
+        isShow({vm}) {
+          return proxy.$store.getters['user/IS_ADMIN'];
+        },
+        onClick({vm}) {
+          proxy.$$Dialog.confirm('确认初始化吗？', '提示').then(async () => {
+            const {res, err} = await proxy.$$api.template.initTemplate({});
+            if (res) return proxy.$$Toast({message: `操作成功`, type: 'success'});
+            proxy.$$Toast({message: `操作失败`, type: 'error'});
+          }).catch(proxy.$$emptyFn);
         }
       },
     ]

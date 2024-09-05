@@ -12,7 +12,8 @@ export default {
   beforeMount() {
     if (this.$options?.dicts?.length) this._publicDictLoader(this.$options.dicts, 'dict');
     if (this.$options?.cusDicts?.length) this._publicDictLoader(this.$options.cusDicts, 'customDict');
-    if (this.$options?.webDicts?.length) this._publicDictLoader(this.$options.webDicts, 'web');//走web服务的字典 非系统配置页面调用
+    if (this.$options?.webCusDicts?.length) this._publicDictLoader(this.$options.webCusDicts, 'customWeb');//走web服务的字典 自定义字典
+    if (this.$options?.webDicts?.length) this._publicDictLoader(this.$options.webDicts, 'web');//走web服务的字典  系统字典
   },
   mounted() {
   },

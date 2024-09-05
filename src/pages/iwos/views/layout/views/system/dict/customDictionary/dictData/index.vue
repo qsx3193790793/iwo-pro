@@ -13,15 +13,7 @@
         @selectionChange="handleSelectionChange"
     >
       <template #status="{ row }">
-        <div v-show="row.status == 0">
-          <el-tag type="danger">停用</el-tag>
-        </div>
-        <div v-show="row.status == 1">
-          <el-tag>启用</el-tag>
-        </div>
-        <div v-show="row.status == 2">
-          <el-tag type="danger">删除</el-tag>
-        </div>
+        {{ ({0: '停用', 1: '启用', 2: '删除'})[row.status] ?? '-' }}
       </template>
     </JsTable>
     <el-pagination
@@ -37,7 +29,7 @@
     />
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="24">
@@ -74,17 +66,17 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="样式属性">
-              <el-input
-                  v-model="form.listClass"
-                  placeholder="请输入"
-                  maxlength="30"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <!--        <el-row :gutter="20">-->
+        <!--          <el-col :span="24">-->
+        <!--            <el-form-item label="样式属性">-->
+        <!--              <el-input-->
+        <!--                  v-model="form.listClass"-->
+        <!--                  placeholder="请输入"-->
+        <!--                  maxlength="30"-->
+        <!--              />-->
+        <!--            </el-form-item>-->
+        <!--          </el-col>-->
+        <!--        </el-row>-->
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="显示排序">
@@ -95,25 +87,25 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="回显样式">
-              <el-select
-                  v-model="form.cssClass"
-                  placeholder="状态"
-                  clearable
-                  style="width: 100%"
-              >
-                <el-option
-                    v-for="dict in styleArrtList"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <!--        <el-row :gutter="20">-->
+        <!--          <el-col :span="24">-->
+        <!--            <el-form-item label="回显样式">-->
+        <!--              <el-select-->
+        <!--                  v-model="form.cssClass"-->
+        <!--                  placeholder="状态"-->
+        <!--                  clearable-->
+        <!--                  style="width: 100%"-->
+        <!--              >-->
+        <!--                <el-option-->
+        <!--                    v-for="dict in styleArrtList"-->
+        <!--                    :key="dict.value"-->
+        <!--                    :label="dict.label"-->
+        <!--                    :value="dict.value"-->
+        <!--                />-->
+        <!--              </el-select>-->
+        <!--            </el-form-item>-->
+        <!--          </el-col>-->
+        <!--        </el-row>-->
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="状态">
@@ -182,32 +174,32 @@ export default {
           value: 0,
         },
       ],
-      styleArrtList: [
-        {
-          label: "默认(default)",
-          value: "default",
-        },
-        {
-          label: "主要(primary)",
-          value: "primary",
-        },
-        {
-          label: "成功(success)",
-          value: "success",
-        },
-        {
-          label: "信息(info)",
-          value: "info",
-        },
-        {
-          label: "警告(warning)",
-          value: "warning",
-        },
-        {
-          label: "危险(danger)",
-          value: "danger",
-        },
-      ],
+      // styleArrtList: [
+      //   {
+      //     label: "默认(default)",
+      //     value: "default",
+      //   },
+      //   {
+      //     label: "主要(primary)",
+      //     value: "primary",
+      //   },
+      //   {
+      //     label: "成功(success)",
+      //     value: "success",
+      //   },
+      //   {
+      //     label: "信息(info)",
+      //     value: "info",
+      //   },
+      //   {
+      //     label: "警告(warning)",
+      //     value: "warning",
+      //   },
+      //   {
+      //     label: "危险(danger)",
+      //     value: "danger",
+      //   },
+      // ],
       columns: {
         selection: true,
         props: [
@@ -266,14 +258,14 @@ export default {
             {
               label: "修改",
               key: "edit",
-              permission:['config:dictionaryItem:edit'],
+              permission: ['config:dictionaryItem:edit'],
               event: this.handleUpdate,
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
-              permission:['config:dictionaryItem:remove'],
+              permission: ['config:dictionaryItem:remove'],
               event: this.handleDelete,
             },
           ],
@@ -299,7 +291,7 @@ export default {
           options: async () => {
             return this.getTypeLsit()
           },
-          col: 6,
+          col: 5,
           isDisable: !1,
           isRequire: !1,
         },
@@ -309,7 +301,7 @@ export default {
           value: "",
           type: "input",
           placeholder: "字典标签",
-          col: 6,
+          col: 4,
           isDisable: !1,
           isRequire: !1,
         },
@@ -319,7 +311,7 @@ export default {
           value: "",
           type: "input",
           placeholder: "字典键值",
-          col: 6,
+          col: 4,
           isDisable: !1,
           isRequire: !1,
         },
@@ -327,7 +319,7 @@ export default {
           name: "状态",
           key: "status",
           value: "",
-          col: 6,
+          col: 4,
           type: "select",
           options: () =>
               this.$store.getters["dictionaries/GET_DICT"]("start_stop"),
@@ -338,7 +330,7 @@ export default {
           type: "buttons",
           align: "right",
           verticalAlign: "top",
-          col: 6,
+          col: 7,
           items: [
             {
               btnName: "重置",
@@ -358,7 +350,7 @@ export default {
               type: "button",
               attrs: {type: "primary"},
               col: 1,
-              permission:['config:dictionaryItem:pageList'],
+              permission: ['config:dictionaryItem:pageList'],
               onClick: ({vm}) => {
                 this.getList();
               },
@@ -368,7 +360,7 @@ export default {
               type: "button",
               attrs: {type: "success"},
               col: 1,
-              permission:['config:dictionaryItem:add'],
+              permission: ['config:dictionaryItem:add'],
               onClick: ({vm}) => {
                 this.handleAdd()
               },
@@ -447,9 +439,9 @@ export default {
         dictLabel: undefined,
         dictType: undefined,
         dictValue: undefined,
-        listClass: undefined,
-        dictSort: 0,
         cssClass: undefined,
+        dictSort: 0,
+        listClass: 'default',
         status: "1",
         remark: undefined,
       };
@@ -538,8 +530,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const dictItemIds = row.dictItemId || this.ids;
-       // 启用状态的不能删除
-       if (row?.status == 1) {
+      // 启用状态的不能删除
+      if (row?.status == 1) {
         this.$$Toast.warning("当前字段状态为启用，不可以删除");
         return
       }

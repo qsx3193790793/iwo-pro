@@ -13,10 +13,10 @@
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
           >
-          <template slot="append">
+            <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
             </template>
-        </el-input>
+          </el-input>
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
@@ -45,15 +45,7 @@
             <div>{{ row.isProvinceCustom ? '是' : '否' }}</div>
           </template>
           <template #status="{ row }">
-            <div v-show="row.status == 0">
-              <el-tag type="danger">停用</el-tag>
-            </div>
-            <div v-show="row.status == 1">
-              <el-tag>启用</el-tag>
-            </div>
-            <div v-show="row.status == 2">
-              <el-tag type="danger">删除</el-tag>
-            </div>
+            {{ ({0: '停用', 1: '启用', 2: '删除'})[row.status] ?? '-' }}
           </template>
         </JsTable>
         <el-pagination
@@ -71,7 +63,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -162,7 +154,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
   name: "ChannelClassification",
-  dicts: ['start_stop', 'yes_no','base_province_code'],
+  dicts: ['start_stop', 'yes_no', 'base_province_code'],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {
     return {
@@ -245,9 +237,9 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
+        {col: 6, type: "divider-empty"},
+        {col: 6, type: "divider-empty"},
+        {col: 6, type: "divider-empty"},
         {
           type: "buttons",
           align: "right",
@@ -268,7 +260,7 @@ export default {
               btnName: "查询",
               type: "button",
               attrs: {type: "primary"},
-              permission:['config:channel:query'],
+              permission: ['config:channel:query'],
               col: 1,
               onClick: ({vm}) => {
                 this.getList();
@@ -277,8 +269,8 @@ export default {
             {
               btnName: "新增",
               type: "button",
-              attrs: {type: "success", disabled: () => this.currentNode.channelLevel==3},
-              permission:['config:channel:add'],
+              attrs: {type: "success", disabled: () => this.currentNode.channelLevel == 3},
+              permission: ['config:channel:add'],
               col: 1,
               onClick: ({vm}) => {
                 this.handleAdd()
@@ -286,7 +278,7 @@ export default {
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
-              permission:['config:channel:remove'],
+              permission: ['config:channel:remove'],
               onClick: ({vm}) => {
                 this.handleDelete();
               }
@@ -331,7 +323,7 @@ export default {
           },
           {
             name: "更新时间",
-            // width: 130,
+            width: 160,
             key: "updatedTime",
           },
         ],
@@ -341,14 +333,14 @@ export default {
               label: "修改",
               key: "edit",
               event: this.handleUpdate,
-              permission:['config:channel:edit'],
+              permission: ['config:channel:edit'],
               autoHidden: this.autoHandleHidden,
             },
             {
               label: "删除",
               key: "del",
               type: "danger",
-              permission:['config:channel:remove'],
+              permission: ['config:channel:remove'],
               autoHidden: this.autoHandleHidden,
               event: (val) => {
                 this.handleDelete(val)
@@ -358,7 +350,7 @@ export default {
               label: "启用",
               key: "start",
               type: "primary",
-              permission:['config:channel:edit'],
+              permission: ['config:channel:edit'],
               autoHidden: this.autoStartHidden,
               event: this.handleStart,
             },
@@ -366,7 +358,7 @@ export default {
               label: "停用",
               key: "end",
               type: "danger",
-              permission:['config:channel:edit'],
+              permission: ['config:channel:edit'],
               autoHidden: this.autoEndHidden,
               event: this.handleEnd,
             },
@@ -376,9 +368,9 @@ export default {
       dataSource: [],
       currentNode: {
         channelLevel: 0,
-          channelCode: '0',
-          channelId: '0',
-          channelName: '渠道',
+        channelCode: '0',
+        channelId: '0',
+        channelName: '渠道',
       },
       // 查询参数
       queryParams: {
@@ -424,28 +416,28 @@ export default {
     this.getChannelTree();
   },
   methods: {
-     // 树权限（展开/折叠）
+    // 树权限（展开/折叠）
     handleCheckedTreeExpand() {
       this.isExpend = !this.isExpend;
       this.$$treeExpandOrCollapse(this.$refs.tree, this.isExpend);
     },
     autoHandleHidden(val) {
       if (val.row) {
-        return  val.row.isProvinceCustom  != "0" ? true : false;
+        return val.row.isProvinceCustom != "0" ? true : false;
       } else {
         return false;
       }
     },
     autoStartHidden(val) {
       if (val.row) {
-        return (val.row.status == '0'&& val.row.isProvinceCustom  != "0") ? true : false
+        return (val.row.status == '0' && val.row.isProvinceCustom != "0") ? true : false
       } else {
         return false
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return (val.row.status == '1'&& val.row.isProvinceCustom  != "0") ? true : false
+        return (val.row.status == '1' && val.row.isProvinceCustom != "0") ? true : false
       } else {
         return false
       }
@@ -598,16 +590,16 @@ export default {
     getCurrentTreeNodeInfo(ID) {
       this.$$api.channelClassification.getChannelDetail({channelId: ID}).then(({res: response, err}) => {
         if (err) return
-        let {oneChannelCode, oneChannelName, channelName, twoChannelName, channelId, twoChannelCode, channelCode, channelLevel,isProvinceCustom} = {...response}
+        let {oneChannelCode, oneChannelName, channelName, twoChannelName, channelId, twoChannelCode, channelCode, channelLevel, isProvinceCustom} = {...response}
         this.form.oneChannelCode = oneChannelCode
         this.form.oneChannelName = oneChannelName
         this.form.channelId = channelId
-        if(this.form.handleType == "edit"){
-              this.form.customProvince = isProvinceCustom?true:false
+        if (this.form.handleType == "edit") {
+          this.form.customProvince = isProvinceCustom ? true : false
         }
         // 用于编辑时，效果等同于点击树节点（新增、编辑的逻辑就按照同一套逻辑处理）
-        if(this.form.handleType=='edit'){
-          this.currentNode.channelLevel=channelLevel -1
+        if (this.form.handleType == 'edit') {
+          this.currentNode.channelLevel = channelLevel - 1
         }
         if (channelLevel == 1) {
           this.form.oneChannelCode = channelCode
@@ -744,7 +736,7 @@ export default {
     handleDelete(row) {
       const channelCodes = row?.channelId || this.ids;
       let showText = ''
-      if (this.ids.length > 0 &&!row?.channelId) {
+      if (this.ids.length > 0 && !row?.channelId) {
         showText = this.channelCodeList.join(',')
       } else {
         showText = row?.channelCode

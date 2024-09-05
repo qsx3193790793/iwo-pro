@@ -126,6 +126,7 @@ let store = {
     GET_USER_PROVINCE_CODE: state => state.userInfo?.userProvince,
     GET_BIZ_DATA: state => state.bizData || null,
     GET_PERMISSIONS: state => state.permissions || [],
+    IS_ADMIN: state => (state.roles || []).includes('admin'),
   }
 };
 

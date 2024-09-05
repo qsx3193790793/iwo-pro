@@ -118,7 +118,7 @@
     </el-table>
 
     <!-- 添加或修改机构对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body @close="handleType='';deptParentId=null">
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body @close="handleType='';deptParentId=null" :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="left" :disabled="handleType=='detail'">
         <el-row>
           <el-col :span="24" v-if="form.parentId != 0">

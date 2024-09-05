@@ -297,11 +297,13 @@ async function getInfo({isForce, from}) {
 }
 
 async function getDetail() {
-  // if (proxy.$route.query.complaintAssetNum) {
-  //   accNum.value = proxy.$route.query.complaintAssetNum;
-  //   complaintWorksheetId.value = proxy.$route.query.complaintWorksheetId;
-  //   return getInfo({from: '详情'});
-  // }
+  //如果设备号 工单id都带过来了 那就不调详情了
+  if (proxy.$route.query.complaintAssetNum && proxy.$route.query.complaintWorksheetId) {
+    accNum.value = proxy.$route.query.complaintAssetNum;
+    complaintWorksheetId.value = proxy.$route.query.complaintWorksheetId;
+    return getInfo({from: '详情'});
+  }
+  //查询详情
   const {res, err} = await proxy.$$api.complaint.complaintWorkOrderDetail({
     workorderId: proxy.$route.params.workorderId,
     headers: {'complaintWorksheetId': proxy.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': proxy.$route.query.complaintAssetNum ?? ''}

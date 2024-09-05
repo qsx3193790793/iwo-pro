@@ -112,9 +112,7 @@
             {{ row.level }}
           </template>
           <template #status="{ row }">
-            <el-tag :type="row.status == 0?'danger':''">
-              {{ $store.getters['dictionaries/MATCH_LABEL']('phenom_status_name', row.status) }}
-            </el-tag>
+            {{ $store.getters['dictionaries/MATCH_LABEL']('phenom_status_name', row.status) }}
           </template>
 
         </JsTable>
@@ -134,7 +132,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" label-position='left'>
         <el-row :gutter="20">
           <el-col :span="12">

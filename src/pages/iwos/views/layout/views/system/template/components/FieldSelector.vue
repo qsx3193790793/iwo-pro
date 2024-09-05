@@ -75,11 +75,24 @@ function onBatchQuote(data) {
   isBatchQuoteTemplateShow.value = !1;
 }
 
+// function handleInsert2(row) {
+//   const textarea = props.root?.vm?.$refs?.verbalTrickContent2?.[0]?.$el;
+//   if (!textarea) return;
+//   console.log('handleInsert2', textarea, textarea.innerHTML)
+//   const arr = textarea.innerHTML.split('');
+//   const {startOffset, endOffset} = proxy.$$getContentEditableAnchor(textarea);
+//   console.log('handleInsert2-2', startOffset, endOffset);
+//   // console.log(textarea.selectionStart, textarea.selectionEnd)
+//   arr.splice(startOffset, endOffset, `{{${getTypePrefix(row.type)}${row.name}}}`);
+//   props.root.vm.formData.verbalTrickContent2 = arr.join('');
+// }
+
 function handleInsert(row) {
+  // handleInsert2(row);
   const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[0]?.$refs?.textarea;
   if (!textarea) return;
   const arr = textarea.value.split('');
-  arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, `{{${getTypePrefix(row.type)}${row.name}}}`);
+  arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, `{{${row.resValue}}}`);
   props.root.vm.formData.verbalTrickContent = arr.join('');
 }
 
@@ -99,7 +112,7 @@ function handleChange(r) {
   const finder = options.value.find(o => o.fieldId === r);
   if (finder) {
     selectValue.value = '';
-    list.value.push(finder);
+    list.value.push(Object.assign({}, finder, {resValue: `${getTypePrefix(finder.type)}${finder.name}`}));
   }
 }
 

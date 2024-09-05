@@ -1194,6 +1194,24 @@ const $$treeExpandOrCollapse = (treeRef, flag = true, level = [2]) => {
   Object.values(treeRef?.store?.nodesMap || {}).forEach(nm => level.includes(nm.level) && (nm.expanded = flag));
 }
 
+// 获取可编辑元素光标位置
+const $$getContentEditableAnchor = (el) => {
+  let selection = window.getSelection();
+  let anchorNode = selection.anchorNode;
+  // 确保选区的开始节点是contentEditable元素内的节点
+  if (anchorNode && el.contains(anchorNode)) {
+    let range = selection.getRangeAt(0);
+    console.log('$$getContentEditableAnchor', range);
+    return {startOffset: range.startOffset, endOffset: range.endOffset};
+    // let preCaretRange = range.cloneRange();
+    // console.log(range, preCaretRange)
+    // preCaretRange.selectNodeContents(el);
+    // preCaretRange.setEnd(range.endContainer, range.endOffset);
+    // return preCaretRange.toString().length; // 光标位置是前缀范围的长度
+  }
+  return {startOffset: 0, endOffset: 0};
+}
+
 export default {
   install(Vue, options) {
     //加密串
@@ -1440,6 +1458,7 @@ export default {
     Vue.prototype.$$formatCascaderTree = $$formatCascaderTree;
     Vue.prototype.$$hasPermission = $$hasPermission;
     Vue.prototype.$$treeExpandOrCollapse = $$treeExpandOrCollapse;
+    Vue.prototype.$$getContentEditableAnchor = $$getContentEditableAnchor;
 
   }
 };
@@ -1553,4 +1572,5 @@ export {
   $$hasPermission,
   $$remBasePx,
   $$treeExpandOrCollapse,
+  $$getContentEditableAnchor,
 };

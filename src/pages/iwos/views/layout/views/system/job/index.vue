@@ -140,7 +140,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改定时任务对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="12">
@@ -225,12 +225,12 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar">
+    <el-dialog title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar" :close-on-click-modal="!1">
       <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
     </el-dialog>
 
     <!-- 任务日志详细 -->
-    <el-dialog title="任务详情" :visible.sync="openView" width="700px" append-to-body>
+    <el-dialog title="任务详情" :visible.sync="openView" width="700px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" label-position="left" label-width="120px" size="small">
         <el-row>
           <el-col :span="12">

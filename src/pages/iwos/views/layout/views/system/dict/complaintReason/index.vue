@@ -90,9 +90,7 @@
             {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
           </template>
           <template #status="{row}">
-            <el-tag :type="row.status == 0?'danger':''">
               {{ $store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status) }}
-            </el-tag>
           </template>
         </JsTable>
         <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40, 50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
@@ -100,7 +98,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" label-position='left'>
         <el-row :gutter="20">
           <el-col :span="12">

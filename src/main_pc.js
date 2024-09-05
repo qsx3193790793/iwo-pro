@@ -7,11 +7,12 @@ import "./scss/public.scss";
 import "./scss/element-ui.scss";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Vue from 'vue';
-import utils, {$$stopScale} from './utils';
+import utils from './utils';
 import api from './api';
 import directives from './directives';
 import PublicDictLoader from '@/mixin/PublicDictLoader';//通用字典请求mixin
 import Element from 'element-ui';
+
 // 分页组件
 export default ({App, router, store, scssVariables = {}, pageConfig = {}}) => {
 

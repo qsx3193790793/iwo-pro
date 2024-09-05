@@ -13,9 +13,7 @@
           {{ proxy.$store.getters['dictionaries/MATCH_LABEL']('interface_type', row.interfaceType) }}
         </template>
         <template #status="{row}">
-          <el-tag :type="row.status == 0?'danger':''">
-            {{ $store.getters['dictionaries/MATCH_LABEL']('start_stop', row.status) }}
-          </el-tag>
+          {{ $store.getters['dictionaries/MATCH_LABEL']('start_stop', row.status) }}
           <!-- <el-switch v-model="row.status" :inactive-value="0" :active-value="1" @change="handleStatusChange(row)"></el-switch> -->
         </template>
       </JsTable>

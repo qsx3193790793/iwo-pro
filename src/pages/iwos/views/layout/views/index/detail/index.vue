@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog  :visible.sync="dialogVisible" width="35%" top="20vh"  :close-on-click-modal="!1" destroy-on-close append-to-body :show-close="false">
+        <el-dialog  :visible.sync="dialogVisible" width="35%" top="20vh" :close-on-click-modal="!1" destroy-on-close append-to-body :show-close="false">
             <span slot="title" class="notice-title" >
                 <div style="font-weight: bold;margin-bottom: 8px;color: #333f5b;font-size: 16px;">{{ detailData?.noticeTitle }} </div>
                 <div style="font-size: 12px;color: #a7afbe;font-weight: bold;">

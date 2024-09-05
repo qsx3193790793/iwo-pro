@@ -162,7 +162,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body :close-on-click-modal="false">
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="90px">
         <el-row>
           <el-col :span="12">
@@ -282,7 +282,7 @@
     </el-dialog>
 
     <!-- 用户导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body :close-on-click-modal="false">
+    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body :close-on-click-modal="!1">
       <el-upload
           ref="upload"
           :limit="1"
@@ -313,7 +313,7 @@
     </el-dialog>
 
     <!-- 分配角色 -->
-    <el-dialog title="已授权角色" :visible.sync="authRole.open" width="75vw" append-to-body :close-on-click-modal="false" destroy-on-close>
+    <el-dialog title="已授权角色" :visible.sync="authRole.open" width="75vw" append-to-body :close-on-click-modal="!1" destroy-on-close>
       <div class="one-screen" style="height: 50vh;">
         <h4 class="main-title one-screen-fg0">基本信息</h4>
         <el-form class="one-screen-fg0" ref="form" :model="authRole.form" label-width="80px">
@@ -400,7 +400,7 @@ export default {
       // 机构名称
       deptName: undefined,
       // 默认密码
-      initPassword: 'Iwos@2024',
+      initPassword: '',
       // 日期范围
       dateRange: [],
       // 岗位选项
@@ -754,7 +754,11 @@ export default {
         if (err) return;
         this.form = response;
         this.roleOptions = response.roles;
-        this.teamOptions = this.$$handleTree(response.teams, "teamId");
+        if(response.teams){
+          this.teamOptions = this.$$handleTree(response.teams, "teamId");
+        }else{
+          this.teamOptions = [];
+        }
         this.$set(this.form, "roleIds", response.roleIds);
         this.open = true;
         this.title = "修改用户";

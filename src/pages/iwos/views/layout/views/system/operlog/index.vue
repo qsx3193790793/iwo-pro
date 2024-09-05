@@ -153,7 +153,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 操作日志详细 -->
-    <el-dialog title="操作日志详情" :visible.sync="open" width="800px" append-to-body>
+    <el-dialog title="操作日志详情" :visible.sync="open" width="800px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" label-position="left" label-width="100px" size="small">
         <el-row>
           <el-col :span="12">

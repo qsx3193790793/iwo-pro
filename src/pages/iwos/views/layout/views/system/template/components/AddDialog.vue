@@ -30,6 +30,7 @@
 import {getCurrentInstance, onBeforeMount, ref, watch} from "vue";
 import MDialog from '@/components/MDialog';
 import FieldSelector from './FieldSelector';
+import TemplateContent from './TemplateContent';
 import FormModel from '@/components/FMGenerator/FormModel';
 import FMDesigner from "@/components/FMGenerator/FMDesigner";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config";
@@ -293,6 +294,9 @@ const formConfig = ref({
             return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
           }
         },
+        // {
+        //   name: '模板内容', key: 'verbalTrickContent2', value: '', type: 'component', component: TemplateContent, attrs: {rows: 5}, col: 24, isDisable: !1, isRequire: !0,
+        // },
       ]
     }
   ],

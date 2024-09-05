@@ -2,9 +2,9 @@ import useEvents from "./events";
 import {$$dayjs} from "@/utils";
 
 //选项字典获取渲染
-function dictReqCompiler(dictType) {
+function dictReqCompiler(type, dictType) {
   return async function ({vm}) {
-    await vm.$store.dispatch('dictionaries/GET_DICTIONARIES', {type: 'web', dicts: [dictType]})
+    await vm.$store.dispatch('dictionaries/GET_DICTIONARIES', {type, dicts: [dictType]})
     return vm.$store.getters['dictionaries/GET_DICT'](dictType);
   }
 }
@@ -12,7 +12,8 @@ function dictReqCompiler(dictType) {
 function createOptions(j) {
   const events = useEvents();
   if (j.z_props.optionsType === '静态数据') return j.z_props.optionsStaticValue || [];
-  if (j.z_props.optionsType === '字典' && j.z_props.optionsDictName) return dictReqCompiler(j.z_props.optionsDictName);
+  if (j.z_props.optionsType === '字典' && j.z_props.optionsDictName) return dictReqCompiler('web', j.z_props.optionsDictName);
+  if (j.z_props.optionsType === '自定义字典' && j.z_props.optionsDictName) return dictReqCompiler('customWeb', j.z_props.optionsDictName);
   if (j.z_props.optionsType === '事件') return events[j.z_props['optionsEvent']]?.fn;
   return [];
 }
@@ -136,8 +137,14 @@ export const inputCompiler = (j, isView) => {
 //日期类型编译
 export const datePickerCompiler = (j, isView) => {
   if (!['FMDatePicker'].includes(j.name)) return {};
+  const todayStart = $$dayjs($$dayjs().format('YYYY-MM-DD 00:00:00'));
+  const todayEnd = $$dayjs($$dayjs().format('YYYY-MM-DD 23:59:59'));
   return {
     type: j.z_props.dateType,
+    disabledDate: ['之前', '之后'].includes(j.z_props.limit) ? function ({vm, d}) {
+      if (j.z_props.limit === '之前') return todayEnd.isBefore(d);//选择之前
+      if (j.z_props.limit === '之后') return todayStart.isAfter(d);//选择之后
+    } : null,
     value: (function () {
       if (['FMDateRangePicker', 'FMDateTimeRangePicker', 'FMMonthRangePicker', 'FMDatesPicker', 'FMMonthsPicker', 'FMYearsPicker'].includes(j.z_props.dateType)) return [];
       return null//$$dayjs().format('YYYY-MM-DD HH:mm:ss');

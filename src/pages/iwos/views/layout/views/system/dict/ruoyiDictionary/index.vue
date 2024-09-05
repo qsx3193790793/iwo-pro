@@ -49,7 +49,7 @@
       </el-form-item>
       <el-form-item style="text-align: right;">
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['general:dict:list']">查询</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:dict:list']">查询</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:dict:add']">新增</el-button>
         <!-- <el-button type="success"  size="small"  :disabled="single"  @click="handleUpdate"  v-hasPermission="['system:dict:edit']">修改</el-button> -->
         <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:dict:remove']">删除</el-button>
@@ -103,7 +103,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="80px">
         <el-form-item label="字典名称" prop="dictName">
           <el-input v-model="form.dictName" placeholder="请输入字典名称" maxlength="30"/>

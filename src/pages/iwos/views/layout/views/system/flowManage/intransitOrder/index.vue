@@ -20,32 +20,32 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="10rem" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="10rem" append-to-body :close-on-click-modal="!1">
       <div class="detail_info">
-        <div class="Image_area">
-          <el-image
+        <!-- <div class="Image_area"> -->
+          <!-- <el-image
             :src="currentIMageUrl"
             :preview-src-list="currentIMageUrlList"
-          ></el-image>
+          ></el-image> -->
           <!-- <span >点击图片实现大图预览</span> -->
-        </div>
-        <div>
-          <JsTable :dataSource="dataSource" :columns="columns"> </JsTable>
+        <!-- </div> -->
+        <div  class="detailListArea">
+          <JsTable :dataSource="detail_dataSource"  :columns="detail_columns"> </JsTable>
           <el-pagination
-            :current-page.sync="queryParams.pageNum"
-            :page-size.sync="queryParams.pageSize"
+            :current-page.sync="detailParams.pageNum"
+            :page-size.sync="detailParams.pageSize"
             :page-sizes="[5]"
             background
             layout=" ->,total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="getList"
-            @current-change="getList"
+            :total="detail_total"
+            @size-change="getDetail()"
+            @current-change="getDetail()"
           />
         </div>
       </div>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
+        <!-- <el-button @click="cancel">取 消</el-button> -->
       </div>
     </el-dialog>
   </div>
@@ -184,15 +184,50 @@ export default {
               key: "detail",
               // permission: ['config:fileStrage:edit'],
               event: (val) => {
-                // this.getDetail(val.id);
-                //   this.handleUpdate(val);
-                //   this.getSourceTree();
+                this.currentRowBusinessKey=val.businessKey
+                this.getDetail();
               },
             },
           ],
         },
       },
       dataSource: [],
+      currentRowBusinessKey:null,//当前行的数据
+      detail_dataSource: [],
+      detail_total: 0,
+      detailParams:{
+        pageNum: 1,
+        pageSize: 5,
+      },
+      detail_columns: {
+        selection: true,
+        props: [
+          {
+            name: "流程类型",
+            key: "procdefName",
+          },
+          {
+            name: "工单编号",
+            key: "businessKey",
+          },
+          {
+            name: "当前状态",
+            key: "name",
+          },
+          {
+            name: "耗时",
+            key: "duration",
+          },
+          {
+            name: "创单时间",
+            key: "startTime",
+          },
+          {
+            name: "结束时间",
+            key: "endTime",
+          },
+        ],
+      },
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -209,6 +244,10 @@ export default {
     this.getList();
   },
   methods: {
+    // 详情页列表的分页
+    detailListChange(currentPage){
+      this.detail_currentPage = currentPage; //每次点击分页按钮，当前页发生变化
+    },
     /** 查询用户列表 */
     getList() {
       this.loading = true;
@@ -258,30 +297,21 @@ export default {
       this.handleQuery();
     },
     // 获取详情数据
-    getDetail(archiveRuleId) {
+    getDetail() {
       this.loading = true;
       this.open = true;
-      // this.$$api.complaintOnFileStrategy
-      //     .detailOnFileStrategy({
-      //       archiveRuleId,
-      //     })
-      //     .then(({res: response, err}) => {
-      //       if (err) return;
-      //       let {
-      //         archiveRuleId,
-      //         archiveTime,
-      //         complaintSource,
-      //         orderType,
-      //         satisfied,
-      //       } = {...response};
-      //       this.form = {
-      //         archiveRuleId,
-      //         archiveTime: Number(archiveTime),
-      //         complaintSource,
-      //         orderType,
-      //         satisfied,
-      //       };
-      //     });
+      this.$$api.flowManage
+          .flowOrderDetail({
+            params:{
+              id: this.currentRowBusinessKey,
+              ...this.detailParams
+            }
+          })
+          .then(({res: response, err}) => {
+            if (err) return;
+            this.detail_total=response.total
+            this.detail_dataSource=response.rows
+          });
     },
   },
 };
@@ -300,5 +330,8 @@ export default {
 }
 ::v-deep .el-image {
   height: 100%;
+}
+.detailListArea{
+  height: 285px;
 }
 </style>

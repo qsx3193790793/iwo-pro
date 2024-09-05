@@ -1,6 +1,7 @@
 //字典集合 store
 
 import Vue from "vue";
+import api from "@/api";
 
 let store = {
   namespaced: true,
@@ -23,16 +24,20 @@ let store = {
   },
   actions: {
     GET_DICTIONARIES({dispatch, commit, state}, payload) {
+      const apiMap = {
+        dict: Vue.prototype.$$api.dict.getDicts,//config服务 通用字典
+        customDict: Vue.prototype.$$api.customDict.getDicts,//config服务 自定义字典
+        customWeb: Vue.prototype.$$api.web.getCusDicts,//web服务 自定义字典
+        web: Vue.prototype.$$api.web.getDicts,//web服务 通用字典
+      };
       return new Promise((rs, rj) => {
         payload.dicts.forEach(dictType => {
           // if (state.dictionaries?.[dictType]?.length) return;//字典已存在 pass
-          Vue.prototype.$$api[payload.type || 'dict']?.getDicts({loading: !1, dictType}).then(({res, err}) => {
+          (apiMap[payload.type])({loading: !1, dictType}).then(({res, err}) => {
             if (err) return;
             //存档字典
             commit('SET_DICTIONARIES', {
-              [dictType]: payload.type === 'dict'
-                ? (res?.list || []).map(r => ({label: r.dictLabel, value: r.dictValue, key: r.dictValue}))
-                : (res?.dataList || []).sort((a, b) => a.dictSort - b.dictSort).map(r => ({label: r.dictLabel, value: r.dictValue, key: r.dictValue}))
+              [dictType]: (res?.dataList || []).sort((a, b) => a.dictSort - b.dictSort).map(r => ({label: r.dictLabel, value: r.dictValue, key: r.dictValue}))
             });
             rs(res);
           }).catch(() => rj(dictType))

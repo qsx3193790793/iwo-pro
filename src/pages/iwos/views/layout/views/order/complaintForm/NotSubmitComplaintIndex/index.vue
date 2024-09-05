@@ -186,12 +186,9 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   let dataTime = {};
   // 建单时间的取值
   if (queryParams.provinceOrderCreateTime && queryParams.provinceOrderCreateTime.length > 0) {
-    dataTime.beginTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[0]).format("YYYY-MM-DD HH:mm:ss");
-    if (new Date(queryParams.provinceOrderCreateTime[0]).getTime() == new Date(queryParams.provinceOrderCreateTime[1]).getTime()) {
-      dataTime.endTime = proxy.$$dayjs(new Date(queryParams.provinceOrderCreateTime[1]).getTime() + 24 * 60 * 60 * 1000 - 1).format('YYYY-MM-DD HH:mm:ss')
-    } else {
-      dataTime.endTime = proxy.$$dayjs(queryParams.provinceOrderCreateTime[1]).format("YYYY-MM-DD HH:mm:ss");
-    }
+    let {beginTime,endTime}={...proxy.$$formatELDateTimeRange(queryParams.provinceOrderCreateTime, ['beginTime', 'endTime'])}
+    dataTime.beginTime=beginTime
+    dataTime.endTime=endTime
   }
   // 投诉来源的取值
   if (queryParams.askSourceSrl && queryParams.askSourceSrl?.length > 1) {

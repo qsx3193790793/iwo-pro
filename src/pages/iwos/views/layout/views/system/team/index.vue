@@ -102,7 +102,7 @@
     </div>
 
     <!-- 添加或修改班组对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body @close="handleType=''">
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body @close="handleType=''" :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" :disabled="handleType=='detail'">
         <el-form-item label="机构" prop="deptId">
           <treeselect v-model="form.deptId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属机构'" @select="handelDeptIdChange"/>

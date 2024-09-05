@@ -15,7 +15,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
       <div>
         <el-image class="Image" :src="currentIMageUrl" :preview-src-list="currentIMageUrlList"></el-image>
       </div>
@@ -96,7 +96,9 @@ export default {
       this.loading = true;
       this.$$api.flowManage
         .flowTypeList({
-          params: {},
+          params: {
+            ...this.queryParams,
+          },
         })
         .then(({ res: response, err }) => {
           if (err) return;

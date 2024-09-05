@@ -2,97 +2,27 @@
   <div class="app-container one-screen">
     <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="岗位编码" prop="postCode">
-        <el-input
-            v-model="queryParams.postCode"
-            placeholder="请输入岗位编码"
-            clearable
-             maxlength="30"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.postCode" placeholder="请输入岗位编码" clearable maxlength="30" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="岗位名称" prop="postName">
-        <el-input
-            v-model="queryParams.postName"
-            placeholder="请输入岗位名称"
-            clearable
-             maxlength="30"
-            @keyup.enter.native="handleQuery"
-        />
+        <el-input v-model="queryParams.postName" placeholder="请输入岗位名称" clearable maxlength="30" @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <el-form-item label="状态" prop="status">
         <el-select v-model="queryParams.status" placeholder="岗位状态" clearable>
-          <el-option
-              v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
+          <el-option v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_normal_disable')" :key="dict.value" :label="dict.label" :value="dict.value"/>
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">查询</el-button>
-        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
+        <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:post:add']">新增</el-button>
+        <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:post:remove']">删除</el-button>
+        <el-button type="warning" size="small" @click="handleExport" v-hasPermission="['system:post:export']">导出</el-button>
+
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8 one-screen-fg0">
-      <el-col :span="1.5">
-        <el-button
-            type="primary"
-            plain
-            icon="el-icon-plus"
-            size="small"
-            @click="handleAdd"
-            v-hasPermission="['system:post:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="el-icon-edit"
-            size="small"
-            :disabled="single"
-            @click="handleUpdate"
-            v-hasPermission="['system:post:edit']"
-        >修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="el-icon-delete"
-            size="small"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermission="['system:post:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="el-icon-download"
-            size="small"
-            @click="handleExport"
-            v-hasPermission="['system:post:export']"
-        >导出
-        </el-button>
-      </el-col>
-    </el-row>
-
-    <el-table
-        v-loading="loading"
-        class="one-screen-fg1"
-        height="100%"
-        ref="table"
-        :data="postList"
-        border
-        @selection-change="handleSelectionChange"
-    >
+    <el-table v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="postList" border @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="岗位编号" align="center" prop="postId"/>
       <el-table-column label="岗位编码" align="center" prop="postCode"/>
@@ -119,24 +49,8 @@
           class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
-          <el-button
-              size="small"
-              type="text"
-              icon="el-icon-edit"
-              @click="handleUpdate(scope.row)"
-              v-hasPermission="['system:post:edit']"
-          >修改
-          </el-button
-          >
-          <el-button
-              size="small"
-              type="text"
-              icon="el-icon-delete"
-              @click="handleDelete(scope.row)"
-              v-hasPermission="['system:post:remove']"
-          >删除
-          </el-button
-          >
+          <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['system:post:edit']">修改</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)" v-hasPermission="['system:post:remove']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -144,7 +58,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改岗位对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="岗位名称" prop="postName">
           <el-input v-model="form.postName" placeholder="请输入岗位名称" maxlength="30"/>

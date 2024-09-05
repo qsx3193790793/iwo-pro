@@ -25,9 +25,17 @@ export default {
   type: 'comp',
   z_props: [].concat(commonProps(), [
     {sort: -1, name: '组件类型', key: 'type', value: 'FMDatePicker', type: 'input', isDisable: !0, isRequire: !1, col: 24},
-    {sort: 5.1, name: '格式化', key: 'format', value: 'yyyy-MM-dd', type: 'input', isRequire: !1, col: 24},
     {
-      sort: 5.2, name: '选择类型', key: 'dateType', value: 'FMDatePicker', type: 'select', isRequire: !1, col: 24, clearable: !1,
+      sort: 5.1, name: '选择限制', key: 'limit', value: '无限制', type: 'select', clearable: !1, isRequire: !1, col: 24,
+      options: [
+        {label: '无限制', value: '无限制'},
+        {label: '只能选当前日期之前', value: '之前'},
+        {label: '只能选当前日期之后', value: '之后'},
+      ],
+    },
+    {sort: 5.2, name: '格式化', key: 'format', value: 'yyyy-MM-dd', type: 'input', isRequire: !1, col: 24},
+    {
+      sort: 5.3, name: '选择类型', key: 'dateType', value: 'FMDatePicker', type: 'select', isRequire: !1, col: 24, clearable: !1,
       options: [
         {label: '年月日', value: 'FMDatePicker', format: 'yyyy-MM-dd'},
         {label: '年月日范围', value: 'FMDateRangePicker', format: 'yyyy-MM-dd'},
@@ -40,8 +48,8 @@ export default {
         {label: '多个月份', value: 'FMMonthsPicker', format: 'yyyy-MM'},
         {label: '多个年份', value: 'FMYearsPicker', format: 'yyyy'},
       ],
-      onChange({vm, options}) {
-        vm.formData.format = options.find(o => o.value === vm.formData.dateType)?.format ?? '';
+      onChange({vm, item}) {
+        vm.formData.format = item?.options?.find(o => o.value === vm.formData.dateType)?.format ?? '';
       }
     },
   ])

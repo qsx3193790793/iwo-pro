@@ -110,7 +110,7 @@
     </el-table>
 
     <!-- 添加或修改菜单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="680px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="680px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left">
         <el-row>
           <el-col :span="24">

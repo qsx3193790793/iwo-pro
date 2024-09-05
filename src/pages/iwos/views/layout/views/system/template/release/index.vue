@@ -85,20 +85,20 @@ let columns = ref({
   ],
   options: {
     btns: [
-      {
-        label: '下架',
-        key: 'down', type: 'danger',
-        permission: ['system:template:soldOut'],
-        autoHidden: ({row}) => row.statusName === '上架',
-        event: (row) => {
-          proxy.$$Dialog.confirm('确认下架吗？', '提示').then(async () => {
-            const {res, err} = await proxy.$$api.template.soldOut({data: {versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.bigType, workorderType: row.workorderType, unsanctionedDesc: ''}});
-            if (err) return;
-            getList(1);
-            proxy.$$Toast({message: `操作成功`, type: 'success'});
-          }).catch(proxy.$$emptyFn);
-        },
-      },
+      // {
+      //   label: '下架',
+      //   key: 'down', type: 'danger',
+      //   permission: ['system:template:soldOut'],
+      //   autoHidden: ({row}) => row.statusName === '上架',
+      //   event: (row) => {
+      //     proxy.$$Dialog.confirm('确认下架吗？', '提示').then(async () => {
+      //       const {res, err} = await proxy.$$api.template.soldOut({data: {versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.bigType, workorderType: row.workorderType, unsanctionedDesc: ''}});
+      //       if (err) return;
+      //       getList(1);
+      //       proxy.$$Toast({message: `操作成功`, type: 'success'});
+      //     }).catch(proxy.$$emptyFn);
+      //   },
+      // },
       {
         label: '发布',
         key: 'release', type: 'warning',
@@ -122,7 +122,7 @@ const list = ref([]);
 const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.pageNum = pageNum;
   const formData = PageSearchPanelRef.value.getFormData();
-  const {res, err} = await proxy.$$api.template.list({params: Object.assign(proxy.$$formatELDateTimeRange(formData.timeRange, ['startTime', 'endTime']), pageInfo.value, formData, {statusName: '待发布,上架'})});
+  const {res, err} = await proxy.$$api.template.pendingReleaseList({params: Object.assign(proxy.$$formatELDateTimeRange(formData.timeRange, ['startTime', 'endTime']), pageInfo.value, formData)});
   if (err) return;
   pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
   list.value = res?.rows || [];
@@ -138,10 +138,15 @@ const formConfigItems = ref([
   {name: '模板名称', key: 'templateName', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '模板大类', key: 'bigType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !1},
   {name: '模板小类', key: 'smallType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !1},
-  {name: '省', key: 'provinceCode', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('base_province_code'), isDisable: !1, isRequire: !1},
+  {
+    name: '省', key: 'provinceCode', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('base_province_code'), isDisable: !1, isRequire: !1,
+    isShow() {
+      return proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000';//集团账号
+    }
+  },
   {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
   {
-    type: 'buttons', align: 'right', verticalAlign: 'top', col: 12, items: [
+    type: 'buttons', align: 'right', verticalAlign: 'top', col: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000' ? 12 : 18, items: [
       {
         btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
         onClick({vm}) {
