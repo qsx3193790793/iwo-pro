@@ -2,12 +2,19 @@
   <div class="ComplaintDetail">
     <ELScrollbar class="base-info public-background">
       <div class="main-title-1">用户信息</div>
-      <div class="cusName">{{ userInfo.custName || '客户姓名' }}</div>
-      <el-rate v-model="userInfo.custLevel" class="rate" disabled-void-color="#C6D1DE" :max="7" score-template="{value}星用户" show-score disabled></el-rate>
+      <!-- <div class="cusName">{{ userInfo.custName }}</div> -->
+      <div class="user-msg">
+        <span class="avatar" :title="userInfo.custName">{{ userInfo.custName || '客户姓名' }}</span>
+        <span style="font-size: 12px;">
+          <div>投诉号码：{{ userInfo.complaintAssetNum }}</div>
+          <el-rate v-model="userInfo.custLevel" class="rate" disabled-void-color="#C6D1DE" :max="7" score-template="{value}星用户" show-score disabled></el-rate>
+          <div>号码归属地： {{ userInfo.phoneLocal }}</div>
+        </span>
+      </div>
       <template v-for="item in tagList1">
         <el-tag v-if="item.value" style="margin:0 0.2rem 0.1rem 0;" :key="item.label" type="warning" size="medium" color="#f49e47" effect="dark"> {{ item.value }}</el-tag>
       </template>
-      <TextLine labelColor="#a7abb4" labelWidth="1.36rem" :list="textLineList1" style="font-size:0.14rem;margin: 15px 0;"></TextLine>
+      <!-- <TextLine labelColor="#a7abb4" labelWidth="1.36rem" :list="textLineList1" style="font-size:0.14rem;margin: 15px 0;"></TextLine> -->
       <div class="tag-body" :style=" `border: 2px solid ${item.color}`" v-for="item in evaluateTagList" :key="item.label">
         <div class="tag-name" :style="`color:${item.color}`">{{ item.label }}</div>
         <div class="tag-number" :style="`background-color: ${item.color};`">{{ item.value || '0' }}</div>
@@ -57,11 +64,9 @@ const formConfig = ref();
 const detailWorkorderId = ref(null);
 
 const formData = ref({});
-
 const userInfo = ref({
-  custName: '客户姓名', custLevel: 0
+  custName: '客户姓名', custLevel: 0,
 });
-
 async function onFormLoaded(v) {
   formData.value = v;
   if (!proxy.$$lodash.get(formData.value, 'complaintAssetNum')) return;
@@ -77,9 +82,12 @@ async function onFormLoaded(v) {
     custName: proxy.$$lodash.get(formData.value, 'custName'),
     custLevel: proxy.$$lodash.get(formData.value, 'userStarLevel') ?? 0,
     gender: res?.gender,
-    birthdayFlag: res?.birth ? proxy.$$dayjs(proxy.$$dateFormatterYMD(proxy.$$dayjs())).isSame(res.birth) : false
+    birthdayFlag: res?.birth ? proxy.$$dayjs(proxy.$$dateFormatterYMD(proxy.$$dayjs())).isSame(res.birth) : false,
+    complaintAssetNum: proxy.$$lodash.get(formData.value, 'complaintAssetNum'),
+    phoneLocal: proxy.$$lodash.get(formData.value, 'phoneLocal')
   }
 }
+
 
 // const userProfile = computed(() => {
 //   const importantCustomer = proxy.$$lodash.get(formData.value, 'complaint.importantCustomer');
@@ -108,10 +116,10 @@ const tagList1 = computed(() => {
   const custAge = proxy.$$lodash.get(formData.value, 'custAge');
   const cityFlag = proxy.$$lodash.get(formData.value, 'cityFlag');
   const governmentEnterprisekeyPerson = proxy.$$lodash.get(formData.value, 'governmentEnterprisekeyPerson');
-  const phoneLocal = proxy.$$lodash.get(formData.value, 'phoneLocal');
+  // const phoneLocal = proxy.$$lodash.get(formData.value, 'phoneLocal');
 
   return [
-    {label: '归属地：', value: phoneLocal ? `归属地：${phoneLocal}` : null},
+    // {label: '归属地：', value: phoneLocal ? `归属地：${phoneLocal}` : null},
     {label: '网龄', value: !proxy.$$isEmpty(netAge) ? `网龄${netAge}年` : null},
     {label: '城市', value: cityFlag ? proxy.$store.getters["dictionaries/MATCH_LABEL"]("cus_city", cityFlag) : null},
     {label: '重要客户', value: importantCustomer == '1' ? '重要客户' : null},
@@ -126,30 +134,38 @@ const evaluateTagList = computed(() => [
   {label: '重复', value: proxy.$$lodash.get(formData.value, 'recmplntTimes30days'), color: '#6e84fe'},
   {label: '退费', value: proxy.$$lodash.get(formData.value, 'refundRecords90days'), color: '#fcc600'},
 ])
-const textLineList1 = computed(() => [
-  // {label: '号码归属地：', value: proxy.$$lodash.get(formData.value, 'complaint.phoneLocal')},
-  // {label: '工单满意：', value: proxy.$$lodash.get(formData.value, 'complaint.satisfactionEstima30days')},
-  // {label: '工单不满意：', value: proxy.$$lodash.get(formData.value, 'complaint.dissatisfactionEstima30days')},
-  // {label: '重复投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.recmplntTimes30days')},
-  // {label: '越级投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.croscmplntTimes30days')},
-  // {label: '退费记录：', value: proxy.$$lodash.get(formData.value, 'complaint.refundRecords90days')},
-  {label: '业务号码：', value: proxy.$$lodash.get(formData.value, 'complaintAssetNum')},
-  {label: '主叫号码：', value: proxy.$$lodash.get(formData.value, 'callerNo')},
-  {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'contactPhone1')},
-  {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'contactPhone2')},
-]);
+// const textLineList1 = computed(() => [
+//   // {label: '号码归属地：', value: proxy.$$lodash.get(formData.value, 'complaint.phoneLocal')},
+//   // {label: '工单满意：', value: proxy.$$lodash.get(formData.value, 'complaint.satisfactionEstima30days')},
+//   // {label: '工单不满意：', value: proxy.$$lodash.get(formData.value, 'complaint.dissatisfactionEstima30days')},
+//   // {label: '重复投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.recmplntTimes30days')},
+//   // {label: '越级投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.croscmplntTimes30days')},
+//   // {label: '退费记录：', value: proxy.$$lodash.get(formData.value, 'complaint.refundRecords90days')},
+//   {label: '业务号码：', value: proxy.$$lodash.get(formData.value, 'complaintAssetNum')},
+//   {label: '主叫号码：', value: proxy.$$lodash.get(formData.value, 'callerNo')},
+//   {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'contactPhone1')},
+//   {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'contactPhone2')},
+// ]);
 
 const textLineList2 = computed(() => [
   {label: '工单类型：', value: '投诉单'},
-  {label: '统一投诉编码：', value: proxy.$$lodash.get(formData.value, 'unifiedComplaintCode')},
-  {label: '申诉工单编号：', value: proxy.$$lodash.get(formData.value, 'appealWorksheetId')},
   {label: '集团工单编号：', value: proxy.$$lodash.get(formData.value, 'complaintWorksheetId')},
-  {label: '省内工单编号：', value: proxy.$$lodash.get(formData.value, 'worksheetId')},
+  {label: '统一投诉编码：', value: proxy.$$lodash.get(formData.value, 'unifiedComplaintCode')},
   {label: '呼叫流水号：', value: proxy.$$lodash.get(formData.value, 'callId')},
-  {label: '录音流水号：', value: proxy.$$lodash.get(formData.value, 'recordingId')},
-  {label: '申诉日期：', value: proxy.$$lodash.get(formData.value, 'appealDate')},
-  {label: '申诉用户姓名：', value: proxy.$$lodash.get(formData.value, 'appealUserName')},
-  {label: '建单时间：', value: proxy.$$lodash.get(formData.value, 'provinceOrderCreateTime')},
+  {label: '主叫号码：', value: proxy.$$lodash.get(formData.value, 'callerNo')},
+  {label: '受理工号：', value: proxy.$$lodash.get(formData.value, 'createStaff')},
+  {label: '受理员工姓名：', value: proxy.$$lodash.get(formData.value, 'opStaffName')},
+  {label: '受理部门：', value: proxy.$$lodash.get(formData.value, 'opOrgName')},
+  {label: '创建时间：', value: proxy.$$lodash.get(formData.value, 'createTime')},
+  {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'contactPhone1')},
+  {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'contactPhone2')},
+ 
+  // {label: '申诉工单编号：', value: proxy.$$lodash.get(formData.value, 'appealWorksheetId')}, 
+  // {label: '省内工单编号：', value: proxy.$$lodash.get(formData.value, 'worksheetId')},
+  // {label: '录音流水号：', value: proxy.$$lodash.get(formData.value, 'recordingId')},
+  // {label: '申诉日期：', value: proxy.$$lodash.get(formData.value, 'appealDate')},
+  // {label: '申诉用户姓名：', value: proxy.$$lodash.get(formData.value, 'appealUserName')},
+  // {label: '建单时间：', value: proxy.$$lodash.get(formData.value, 'provinceOrderCreateTime')},
 ]);
 
 watch(() => proxy.$route.params.detailWorkorderId, () => {
@@ -197,10 +213,14 @@ export default {
     font-weight: 600;
     margin-bottom: 4px;
   }
-
+  
+  .user-msg{
+       display: flex;
+       margin-bottom: 8px;
+  }
 
   .rate {
-    margin-bottom: 12px;
+    margin: 4px 0;
   }
 
   & > div {
@@ -276,5 +296,20 @@ export default {
   .create-order-form {
     padding: 6px 20px !important;
   }
+}
+
+.avatar {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  line-height: 70px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: rgba($main-color, 0.75);
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  font-size: 16px;
+  margin-right: 5px;
 }
 </style>

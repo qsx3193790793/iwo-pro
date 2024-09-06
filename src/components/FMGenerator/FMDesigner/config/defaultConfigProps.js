@@ -28,7 +28,7 @@ export const optionsProps = (sort = 1) => [
         vm.formData.optionsDictName = '';
         finder.options = ['字典', '自定义字典'].includes(vm.formData.optionsType) ? async function ({vm}) {
           const {res, err} = await dictApiMap[vm.formData.optionsType]();
-          return (res?.rows || res?.dataList || []).map(r => ({label: r.dictName, value: r.dictType}))
+          return (res?.rows || res?.dataList || res?.list || []).map(r => ({label: r.dictName, value: r.dictType}))
         } : [];
       }
     }
@@ -44,7 +44,7 @@ export const optionsProps = (sort = 1) => [
     async options({vm}) {
       const dictApiMap = {'字典': vm.$$api.dict.optionselect, '自定义字典': vm.$$api.customDict.DictionaryTypeOptions};
       const {res, err} = await dictApiMap[vm.formData.optionsType]();
-      return (res?.list || res?.dataList || []).map(r => ({label: r.dictName, value: r.dictType}))
+      return (res?.rows || res?.dataList || res?.list || []).map(r => ({label: r.dictName, value: r.dictType}))
     },
     isShow({vm}) {
       return ['字典', '自定义字典'].includes(vm.formData.optionsType)
