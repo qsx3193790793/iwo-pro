@@ -1200,14 +1200,13 @@ const $$getContentEditableAnchor = (el) => {
   let anchorNode = selection.anchorNode;
   // 确保选区的开始节点是contentEditable元素内的节点
   if (anchorNode && el.contains(anchorNode)) {
+
     let range = selection.getRangeAt(0);
-    console.log('$$getContentEditableAnchor', range);
+    let preCaretRange = range.cloneRange();
+    preCaretRange.selectNodeContents(el);
+    preCaretRange.setEnd(range.endContainer, range.endOffset);
+    console.log('$$getContentEditableAnchor', selection, range, preCaretRange, preCaretRange.toString().length);
     return {startOffset: range.startOffset, endOffset: range.endOffset};
-    // let preCaretRange = range.cloneRange();
-    // console.log(range, preCaretRange)
-    // preCaretRange.selectNodeContents(el);
-    // preCaretRange.setEnd(range.endContainer, range.endOffset);
-    // return preCaretRange.toString().length; // 光标位置是前缀范围的长度
   }
   return {startOffset: 0, endOffset: 0};
 }

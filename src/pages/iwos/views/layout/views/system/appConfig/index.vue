@@ -421,6 +421,13 @@ const handleDelete = (row) => {
       .catch(() => {
       });
 };
+const autoHandleHidden=(val) => {
+      if (val.row) {
+        return val.row.isProvinceCustom != "0" ? true : false;
+      } else {
+        return false;
+      }
+    }
 let state = ref({
   // 遮罩层
   loading: true,
@@ -487,6 +494,7 @@ let state = ref({
           key: "edit",
           permission: ['config:appInfo:edit'],
           event: handleUpdate,
+          autoHidden: autoHandleHidden,
         },
         {
           label: "删除",
@@ -494,14 +502,16 @@ let state = ref({
           type: "danger",
           permission: ['config:appInfo:remove'],
           event: handleDelete,
+          autoHidden: autoHandleHidden,
         },
         {
-          label: "启用",
+          label: "启用",  
           key: "start",
           type: "primary",
           permission: ['config:appInfo:edit'],
           autoHidden: autoStartHidden,
           event: handleStart,
+          autoHidden: autoHandleHidden,
         },
         {
           label: "停用",
@@ -510,6 +520,7 @@ let state = ref({
           permission: ['config:appInfo:edit'],
           autoHidden: autoEndHidden,
           event: handleEnd,
+          autoHidden: autoHandleHidden,
         },
       ],
     },

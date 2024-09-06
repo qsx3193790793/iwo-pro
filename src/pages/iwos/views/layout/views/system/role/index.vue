@@ -665,9 +665,9 @@ export default {
       });
     },
     /** 查询投诉来源下拉树结构 */
-    getcomplaintSourceTree() {
-      this.$$api.complaintSource
-          .getAskSourceSrlByUid()
+   async getcomplaintSourceTree() {
+      await this.$$api.complaintSource
+          .listComplaintSourceTree({data: {status: 1}})
           .then(({res: response, err}) => {
             if (err) return;
             this.complaintSourceOptions = response?.list || [];
@@ -850,13 +850,12 @@ export default {
       this.title = "添加角色";
     },
     /** 修改按钮操作 */
-    handleUpdate(row) {
+   async handleUpdate(row) {
       this.reset();
-      this.getcomplaintSourceTree()
+     await this.getcomplaintSourceTree()
       const roleId = row.roleId || this.ids;
       const roleMenu = this.getRoleMenuTreeselect(roleId);
       const srlRoleList = this.getsrlRoleListTree(roleId);
-
       this.$$api.role.getRole({roleId}).then(({res: response, err}) => {
         if (err) return;
         this.form = response;
@@ -870,9 +869,9 @@ export default {
                 this.$refs.menu.setChecked(v, true, false);
               });
             });
-          });
+          }); 
           srlRoleList.then((res) => {
-            let checkedKeys = res;
+            let checkedKeys = res
             checkedKeys.forEach((v) => {
               this.$nextTick(() => {
                 this.$refs.complaintSource.setChecked(v, true, false);

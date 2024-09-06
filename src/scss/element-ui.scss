@@ -413,5 +413,10 @@ $main-color-5: rgba($main-color, 0.5);
   opacity: 0;
 }
 
+.ql-editor.ql-blank::before {
+  font-style: normal !important;
+  opacity: 0.5;
+}
+
 
 

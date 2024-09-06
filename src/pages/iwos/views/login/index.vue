@@ -92,7 +92,7 @@ export default {
   },
   methods: {
     getCode() {
-      this.$$api.login.getCodeImg().then(({res, err}) => {
+      this.$$api.login.getCodeImg({params: {_t: +new Date()}}).then(({res, err}) => {
         console.log("res:", res)
         if (err) return;
         this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;

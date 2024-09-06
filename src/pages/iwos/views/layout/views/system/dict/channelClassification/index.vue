@@ -154,7 +154,7 @@ import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
   name: "ChannelClassification",
-  dicts: ['start_stop', 'yes_no', 'base_province_code'],
+  dicts: ['start_stop', 'yes_no'],
   components: {Treeselect, JsTable, PageSearchPanel},
   data() {
     return {
@@ -543,8 +543,6 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.$refs["queryForm"]?.resetFields();
-      this.queryParams.channelCode = undefined;
-      this.queryParams.isProvinceCustom = undefined;
       this.$refs.tree.setCurrentKey(null);
       this.handleQuery();
     },

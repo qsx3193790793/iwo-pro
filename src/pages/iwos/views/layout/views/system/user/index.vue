@@ -248,7 +248,7 @@
                     :key="item.postId"
                     :label="item.postName"
                     :value="item.postId"
-                    :disabled="item.status == 1"
+                    :disabled="item.status == 0"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -261,7 +261,7 @@
                     :key="item.roleId"
                     :label="item.roleName"
                     :value="item.roleId"
-                    :disabled="item.status == 1"
+                    :disabled="item.status == 0"
                 ></el-option>
               </el-select>
             </el-form-item>

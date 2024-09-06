@@ -11,6 +11,7 @@ module.exports = {
     "@babel/plugin-proposal-object-rest-spread",
     "@babel/plugin-transform-async-to-generator",
     "@babel/plugin-transform-classes",
+    "@babel/plugin-proposal-class-properties",
     // [
     //   "component",
     //   {

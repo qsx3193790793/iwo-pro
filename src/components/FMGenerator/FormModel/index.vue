@@ -174,6 +174,7 @@ import OrderSalesSelector from "./components/OrderSalesSelector";
 import PointCosHisSelector from "./components/PointCosHisSelector";
 import DisputeChannelSelector from "./components/DisputeChannelSelector";
 import ApiSelector from "./components/ApiSelector";
+import {$$scrollParentToChild} from "@/utils";
 
 export default {
   name: "FormModel",
@@ -339,7 +340,16 @@ export default {
     },
     validator(cb, err) {
       console.log('validator', this.formData, this.getFormData());
-      this.$refs['Form']?.validate(valid => valid ? cb?.(this.getFormData(), this) : (err ? err(valid) : this.$$Toast({message: `表单验证不通过，请检查`, type: 'error'})));
+      this.$refs['Form']?.validate((valid, object) => {
+        if (valid) return cb?.(this.getFormData(), this);
+        err?.(valid, object);
+        this.$$Toast({message: `表单验证不通过，请检查`, type: 'error'});
+        //定位到第一个错误点
+        this.collapseActive = this.resultItems.map((fci, i) => fci.name || `${i}`);//全部展开 避免收起的板块无法定位
+        this.$nextTick(() => {
+          document.getElementsByClassName('is-error')?.[0]?.scrollIntoView({behavior: "smooth", block: "center"});
+        });
+      });
     },
     resetFormData(filterKeys = []) {
       this.$$resetFormFields({fields: this.formData, filterKeys});

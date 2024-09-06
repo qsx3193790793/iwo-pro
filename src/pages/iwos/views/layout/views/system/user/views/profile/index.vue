@@ -24,11 +24,27 @@
               </li>
               <li class="list-group-item">
                 所属机构
-                <div class="pull-right" v-if="user.dept">{{ user.dept.deptName || '-' }} / {{ postGroup || '-' }}</div>
+                <!-- / {{ postGroup || '-' }} -->
+                <div class="pull-right" v-if="user.dept">{{ user.dept.deptName || '-' }} </div>
               </li>
-              <li class="list-group-item">
-                所属角色
-                <div class="pull-right">{{ roleGroup || '-' }}</div>
+              <li class="list-group-item rowShowData">
+                <div>
+                  部门班组
+                </div>
+                <div v-if="teamGroup.length>0">
+                  <div v-for="item in teamGroup" :key="item"  class="rowElement">{{item}}</div>
+                </div>
+                <div v-else>-</div>
+              </li>
+              <li class="list-group-item rowShowData">
+                <div>
+                  所属角色
+                </div>
+                <div v-if="roleGroup.length>0">
+                  <div v-for="item in roleGroup" :key="item"  class="rowElement">{{item}}</div>
+                </div>
+                <div v-else>-</div>
+                <!-- <div class="pull-right">{{ roleGroup || '-' }}</div> -->
               </li>
               <li class="list-group-item">
                 创建日期
@@ -67,6 +83,7 @@ export default {
     return {
       user: {},
       roleGroup: null,
+      teamGroup: null,
       postGroup: {},
       activeTab: "userinfo"
     };
@@ -80,6 +97,7 @@ export default {
         if (err) return;
         this.user = response;
         this.roleGroup = response.reqOuterData.roleGroup;
+        this.teamGroup = response.reqOuterData.teamGroup;
         this.postGroup = response.reqOuterData.postGroup;
       });
     }
@@ -104,5 +122,13 @@ export default {
   font-weight: bold;
   white-space: nowrap;
   font-size: 16px;
+}
+.rowShowData{
+  display: flex;
+  justify-content: space-between;
+  .rowElement{
+    text-align: right;
+    padding-bottom: 7px;
+  }
 }
 </style>

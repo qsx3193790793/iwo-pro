@@ -113,6 +113,7 @@ module.exports = {
         "@babel/plugin-proposal-object-rest-spread",
         "@babel/plugin-transform-async-to-generator",
         "@babel/plugin-transform-classes",
+        "@babel/plugin-proposal-class-properties",
       ]
     });
     config.module.rule("images").test(/\.(png|jpe?g|gif|svg)(\?.*)?$/).use("url-loader").loader("url-loader")

@@ -885,3 +885,27 @@
     color: #ffffff !important;
   }
 }
+
+
+.tpc-tag {
+  display: inline-block;
+  background-color: #ecf5ff;
+  border-color: #d9ecff;
+  padding: 0 10px;
+  line-height: 24px;
+  font-size: 12px;
+  color: #409EFF;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  user-select: none;
+  margin: 0 4px;
+  resize: none;
+  zoom: 1;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+}

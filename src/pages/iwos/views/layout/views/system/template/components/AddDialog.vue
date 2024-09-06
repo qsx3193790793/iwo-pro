@@ -200,7 +200,7 @@ const formConfig = ref({
         vm.expandFormConfigItems.forEach(efci => ['smallType', 'sceneLevelCode', 'productCode'].includes(efci.key) && (efci.isDisable = !0));
         if (res) {
           vm.initFormData(Object.assign(res || {}, {
-            fieldList: res.fieldConfigs || [],
+            fieldList: (res.fieldConfigs || []).map(op => Object.assign({}, op, {resValue: `${getTypePrefix(op.type)}${op.name}`})),
             formId: res?.formTemplateConfig?.formId,
             formName: res?.formTemplateConfig?.formName,
             sceneLevelCode: [res?.sceneLevel1Code, res?.sceneLevel2Code, res?.sceneLevel3Code].filter(r => !!r),//回显级联
@@ -208,6 +208,7 @@ const formConfig = ref({
             workorderType: res?.workorderType?.toString(),
             bigType: res?.bigType?.toString(),
             smallType: res?.smallType?.toString(),
+            // verbalTrickContent2: res?.verbalTrickContent,
           }));
           // 编辑回显时，通过全量的投诉来源 获取数据进行匹配
           if (res?.smallType && res?.smallType?.toString() == 'TPL0101') {
@@ -294,9 +295,9 @@ const formConfig = ref({
             return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
           }
         },
-        // {
-        //   name: '模板内容', key: 'verbalTrickContent2', value: '', type: 'component', component: TemplateContent, attrs: {rows: 5}, col: 24, isDisable: !1, isRequire: !0,
-        // },
+        {
+          name: '模板内容（体验版）', key: 'verbalTrickContent', value: '', type: 'component', component: TemplateContent, attrs: {rows: 5}, col: 24, isDisable: !1, isRequire: !0,
+        },
       ]
     }
   ],

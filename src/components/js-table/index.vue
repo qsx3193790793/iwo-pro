@@ -20,7 +20,7 @@
               <!-- 普通按钮-->
               <template v-if="!item.children">
                 <template v-if="(item.autoHidden?item.autoHidden(scope):true)">
-                  <el-button v-hasPermission="item.permission" :per="item.permission" :key="item.key" size="small" :loading="item.loading" :type="item.type||'primary'" @click="item.event?.(scope.row)">{{ item.label }}</el-button>
+                  <el-button v-if="$$hasPermission(item.permission)" :per="item.permission" :key="item.key" size="small" :loading="item.loading" :type="item.type||'primary'" @click="item.event?.(scope.row)">{{ item.label }}</el-button>
                 </template>
               </template>
               <!-- 更多下拉按钮-->
@@ -33,7 +33,7 @@
                     <div class="inner">
                       <template v-for="(vv,ii) in item.children">
                         <template v-if="vv.autoHidden ? vv.autoHidden(scope) : true">
-                          <el-button v-hasPermission="vv.permission" :per="vv.permission" :type="vv.type||'primary'" :key="ii" size="small" @click="vv.event?.(scope.row)">{{ vv.label }}</el-button>
+                          <el-button v-if="$$hasPermission(vv.permission)" :per="vv.permission" :type="vv.type||'primary'" :key="ii" size="small" @click="vv.event?.(scope.row)">{{ vv.label }}</el-button>
                         </template>
                       </template>
                     </div>

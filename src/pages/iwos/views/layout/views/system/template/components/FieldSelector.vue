@@ -54,11 +54,9 @@ const loading = ref(false);
 
 const list = computed({
   get: () => {
-    console.log(props.value);
-    return props.value
+    return props.value;
   },
   set: v => {
-    console.log(v);
     proxy.$emit('input', v)
   }
 });
@@ -75,20 +73,14 @@ function onBatchQuote(data) {
   isBatchQuoteTemplateShow.value = !1;
 }
 
-// function handleInsert2(row) {
-//   const textarea = props.root?.vm?.$refs?.verbalTrickContent2?.[0]?.$el;
-//   if (!textarea) return;
-//   console.log('handleInsert2', textarea, textarea.innerHTML)
-//   const arr = textarea.innerHTML.split('');
-//   const {startOffset, endOffset} = proxy.$$getContentEditableAnchor(textarea);
-//   console.log('handleInsert2-2', startOffset, endOffset);
-//   // console.log(textarea.selectionStart, textarea.selectionEnd)
-//   arr.splice(startOffset, endOffset, `{{${getTypePrefix(row.type)}${row.name}}}`);
-//   props.root.vm.formData.verbalTrickContent2 = arr.join('');
-// }
+function handleInsert2(row) {
+  const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[1];
+  console.log('handleInsert2', props.root?.vm?.$refs);
+  textarea.insert({value: row.resValue, title: row.title});
+}
 
 function handleInsert(row) {
-  // handleInsert2(row);
+  handleInsert2(row);
   const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[0]?.$refs?.textarea;
   if (!textarea) return;
   const arr = textarea.value.split('');
