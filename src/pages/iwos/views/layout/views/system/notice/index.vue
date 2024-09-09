@@ -97,7 +97,7 @@
                    @current-change="getList"/>
 
     <!-- 添加或修改公告对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body :close-on-click-modal="!1">
+    <el-dialog  v-if="open" :title="title" :visible.sync="open" width="780px" append-to-body :close-on-click-modal="!1">
       <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
         <el-row>
           <el-col :span="24">
