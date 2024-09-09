@@ -987,7 +987,7 @@ export default {
     /** 导出按钮操作 */
     async handleExport() {
       const {res, err} = await this.$$api.role.export({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `role_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `角色管理_${new Date().getTime()}.xlsx`);
       // this.download(
       //   "system/role/export",
       //   {

@@ -1,11 +1,11 @@
 <template>
   <div class="app-container one-screen">
     <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="登录地址" prop="ipaddr">
+      <el-form-item label="地址" prop="ipaddr">
         <el-input
             v-model="queryParams.ipaddr"
             maxlength="30"
-            placeholder="请输入登录地址"
+            placeholder="请输入地址"
             clearable
              class="queryItem"
             @keyup.enter.native="handleQuery"
@@ -21,7 +21,7 @@
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item label="登录状态" prop="status">
         <el-select
             v-model="queryParams.status"
             placeholder="登录状态"
@@ -36,7 +36,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="登录时间">
+      <el-form-item label="访问时间">
         <el-date-picker
             v-model="dateRange"
             class="queryItem"
@@ -105,16 +105,16 @@
 
     <el-table ref="table" v-loading="loading" class="one-screen-fg1" height="100%" :data="list" border @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="访问编号" align="center" prop="infoId"/>
+      <!-- <el-table-column label="访问编号" align="center" prop="infoId"/> -->
       <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']"/>
-      <el-table-column label="地址" align="center" prop="ipaddr" width="130" :show-overflow-tooltip="true"/>
-      <el-table-column label="登录状态" align="center" prop="status">
+      <el-table-column label="地址" align="center" prop="ipaddr"  :show-overflow-tooltip="true"/>
+      <el-table-column label="登录状态" align="center" prop="status" >
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_common_status', row.status) }}
         </template>
       </el-table-column>
       <el-table-column label="描述" align="center" prop="msg" :show-overflow-tooltip="true"/>
-      <el-table-column label="访问时间" align="center" prop="accessTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
+      <el-table-column label="访问时间" align="center" prop="accessTime" sortable="custom" :sort-orders="['descending', 'ascending']" >
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.accessTime) }}</span>
         </template>
@@ -239,7 +239,7 @@ export default {
     },
     /** 导出按钮操作 */ async handleExport() {
       const {res, err} = await this.$$api.logininfor.export({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `logininfor_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `登录日志_${new Date().getTime()}.xlsx`);
       // this.download('system/logininfor/export', {
       //   ...this.queryParams
       // }, `logininfor_${new Date().getTime()}.xlsx`)

@@ -849,7 +849,7 @@ export default {
     /** 导出按钮操作 */
     async handleExport() {
       const {res, err} = await this.$$api.user.export({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `user_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `用户管理_${new Date().getTime()}.xlsx`);
       // this.download('system/user/export', {
       //   ...this.queryParams
       // }, `user_${new Date().getTime()}.xlsx`)

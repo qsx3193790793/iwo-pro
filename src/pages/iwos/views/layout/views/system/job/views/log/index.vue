@@ -239,7 +239,7 @@ export default {
     },
     /** 导出按钮操作 */ async handleExport() {
       const {res, err} = await this.$$api.job.exportLog({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `job_log_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `定时任务_${new Date().getTime()}.xlsx`);
       // this.download('schedule/job/log/export', {
       //   ...this.queryParams
       // }, `log_${new Date().getTime()}.xlsx`)

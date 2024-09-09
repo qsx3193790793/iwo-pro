@@ -323,7 +323,7 @@ export default {
     },
     /** 导出按钮操作 */ async handleExport() {
       const {res, err} = await this.$$api.dict.exportData({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `dict_data_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `字典数据_${new Date().getTime()}.xlsx`);
       // this.download('system/dict/data/export', {
       //   ...this.queryParams
       // }, `data_${new Date().getTime()}.xlsx`)

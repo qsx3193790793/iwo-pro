@@ -249,7 +249,7 @@ export default {
     },
     /** 导出按钮操作 */ async handleExport() {
       const {res, err} = await this.$$api.post.export({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `post_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `岗位管理_${new Date().getTime()}.xlsx`);
       // this.download(
       //     "system/post/export",
       //     {

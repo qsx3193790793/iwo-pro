@@ -118,7 +118,7 @@
 
     <el-table ref="tables" v-loading="loading" class="one-screen-fg1" height="100%" :data="list" border @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
       <el-table-column type="selection" width="50" align="center"/>
-      <el-table-column label="日志编号" align="center" prop="operId"/>
+      <!-- <el-table-column label="日志编号" align="center" prop="operId"/> -->
       <el-table-column label="系统模块" align="center" prop="title" :show-overflow-tooltip="true"/>
       <el-table-column label="操作类型" align="center" prop="businessType">
         <template slot-scope="{row}">
@@ -305,7 +305,7 @@ export default {
     },
     /** 导出按钮操作 */ async handleExport() {
       const {res, err} = await this.$$api.operlog.export({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `operlog_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `操作日志_${new Date().getTime()}.xlsx`);
       // this.download('system/operlog/export', {
       //   ...this.queryParams
       // }, `operlog_${new Date().getTime()}.xlsx`)

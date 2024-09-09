@@ -284,7 +284,7 @@ export default {
     },
     /** 导出按钮操作 */ async handleExport() {
       const {res, err} = await this.$$api.dict.export({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `dict_type_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `通用字典_${new Date().getTime()}.xlsx`);
       // this.download('system/dict/type/export', {
       //   ...this.queryParams
       // }, `type_${new Date().getTime()}.xlsx`)
