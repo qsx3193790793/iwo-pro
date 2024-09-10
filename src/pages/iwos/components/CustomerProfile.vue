@@ -40,42 +40,19 @@
             </el-row>
             <el-row :gutter="10" class="rowPadding">
               <el-col :span="8">
-                <div>
-                  号码归属地：
-                  <span class="showData">{{ state.userInfo.phoneLocal }}</span>
-                </div>
+                <div>号码归属地：<span class="showData">{{ state.userInfo.phoneLocal }}</span></div>
               </el-col>
               <el-col :span="4">
-                <div>
-                  工单满意：
-                  <span class="showData">{{
-                      state.userInfo.thirtyDaysOrderSatisfied
-                    }}</span>
-                </div>
+                <div>30天满意评价：<span class="showData">{{ state.userInfo.thirtyDaysOrderSatisfied }}</span></div>
               </el-col>
               <el-col :span="4">
-                <div>
-                  工单不满意：
-                  <span class="showData">{{
-                      state.userInfo.thirtyDaysOrderDissatisfied
-                    }}</span>
-                </div>
+                <div>30天不满意评价：<span class="showData">{{ state.userInfo.thirtyDaysOrderDissatisfied }}</span></div>
               </el-col>
               <el-col :span="4">
-                <div>
-                  重复投诉：
-                  <span class="showData">{{
-                      state.userInfo.repeatedComplaintsThirtyDays
-                    }}</span>
-                </div>
+                <div>30天重复投诉：<span class="showData">{{ state.userInfo.repeatedComplaintsThirtyDays }}</span></div>
               </el-col>
               <el-col :span="4">
-                <div>
-                  越级投诉：
-                  <span class="showData">{{
-                      state.userInfo.complaintsExceedingLevelThirtyDays
-                    }}</span>
-                </div>
+                <div>30天越级投诉：<span class="showData">{{ state.userInfo.complaintsExceedingLevelThirtyDays }}</span></div>
               </el-col>
               <!--              <el-col :span="6">-->
               <!--                <div>-->
@@ -173,6 +150,7 @@ const h = proxy.$createElement;
 
 //查询是否有在途单
 async function queryPendingWorkOrderByAssetNum(accNum) {
+  if (proxy.$route.params.workorderId) return true;
   const {res: qpRes} = await proxy.$$api.complaint.queryPendingWorkOrderByAssetNum({
     params: {assetNum: accNum},
     headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum ?? ''}
@@ -327,6 +305,16 @@ watch(() => proxy.$route.params.workorderId, () => {
   }
 });
 
+//重置
+const resetId = ref('');
+watch(() => proxy.$route.query.reset, () => {
+  if (resetId.value === proxy.$route.query.reset) return;
+  state.value = reset();
+  accNum.value = null;
+  proxy.$emit('reset');
+  getComplaintWorksheetId();
+});
+
 onBeforeMount(() => {
   proxy.$store.commit('storage/REMOVE_STORAGE', ['customPositioning']);
 
@@ -448,6 +436,7 @@ export default {
 
       .showData {
         padding-left: 5px;
+        font-weight: bold;
       }
     }
   }

@@ -85,9 +85,9 @@
                 <el-button size="small" type="primary" style="margin-left:5px">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
                 <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
                   <div class="inner">
-                    <el-button v-hasPermission="['system:team:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
+                    <!-- <el-button v-hasPermission="['system:team:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button> -->
                     <el-button v-hasPermission="['system:team:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
-                    <el-button v-hasPermission="['system:team:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
+                    <!-- <el-button v-hasPermission="['system:team:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button> -->
                     <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
                     <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
                   </div>
@@ -246,7 +246,7 @@ export default {
     // 停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用班组名称为"' + row.teamName + '"的数据项？')
+          .confirm('确认是否停用机构名称为 ' + row?.dept.deptName + ' 的数据项?停用后下属机构及班组将一并被停用!')
           .then(() => {
             let data = {
               teamId: row.teamId,
@@ -452,25 +452,12 @@ export default {
       that.$refs["form"].validate(valid => {
         if (valid) {
           if (that.form.teamId != null) {
-            if (that.form.status == '1') {
-              that.$$Dialog.confirm('确定停用所选机构吗?停用后机构下的事项目录，事项子目录和目录下的事项一同被停用!', '提示', {
-                confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
-              }).then(() => {
-                that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
-                  if (err) return
-                  that.$$Toast.success("修改成功");
-                  that.open = false;
-                  that.getList();
-                });
-              })
-            } else {
               that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
                 if (err) return
                 that.$$Toast.success("修改成功");
                 that.open = false;
                 that.getList();
               });
-            }
           } else {
             that.$$api.team.addTeam({data: that.form}).then(({res: response, err}) => {
               if (err) return

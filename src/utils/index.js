@@ -1174,11 +1174,62 @@ const $$formatCascaderTree = (data = [], labelName = 'label', valueName = 'value
   return t;
 }, []);
 
-//寻找树路径
-const $$findTreePath = ({tree = [], props = {codeKey: 'code', childrenKey: 'children'}}) => {
-  const flats = $$lodash.flatMapDeep(tree, n => {
-    console.log('n', n)
-  });
+//寻找树路径 给定一个value 返回树链[l1,l2,value] 无匹配否则返回[]
+const $$findTreePath = ({tree = [], value, props = {codeKey: 'value', childrenKey: 'children'}}) => {
+  if (!value) return [];
+  for (let i = 0; i < tree.length; i++) {
+    const v = tree[i][props.codeKey], child = tree[i][props.childrenKey];
+    if (v == value) return [v];
+    if (child?.length) {
+      const finder = $$findTreePath({tree: child, value, props});
+      if (finder?.length) return [v, ...finder];
+    }
+  }
+  return [];
+}
+
+// 查找目标在不在嵌套对象数组中
+// 给定一个code值，在嵌套对象数组中进行匹配，匹配到返回true,匹配不到返回false matchValue 为匹配值、matchField 为匹配字段
+const $$findNodeInTree = (arr, matchValue, matchField) => {
+  // 定义一个递归函数来检查单个对象
+  function checkObject(obj) {
+    // 检查对象是否包含指定的字段，并且该字段的值与匹配值相等
+    if (obj.hasOwnProperty(matchField) && obj[matchField] === matchValue) {
+      return true;
+    }
+    // 递归检查对象的所有值（如果它们是对象或数组）
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+        if (typeof value === 'object' && value !== null) {
+          if (Array.isArray(value)) {
+            // 如果是数组，递归检查每个元素
+            for (let j = 0; j < value.length; j++) {
+              if (checkObject(value[j])) {
+                return true;
+              }
+            }
+          } else {
+            // 如果是对象，递归检查
+            if (checkObject(value)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    // 如果没有找到匹配的字段和值，则返回false
+    return false;
+  }
+
+  // 遍历数组中的每个元素，并调用checkObject函数
+  for (let i = 0; i < arr.length; i++) {
+    if (checkObject(arr[i])) {
+      return true;
+    }
+  }
+  // 如果没有在数组中找到匹配的元素，则返回false
+  return false;
 }
 
 //权限检测
@@ -1228,6 +1279,7 @@ export default {
     Vue.prototype.$$dateFormatterYMD = $$dateFormatterYMD;
 
     Vue.prototype.$$findTreePath = $$findTreePath;
+    Vue.prototype.$$findNodeInTree = $$findNodeInTree;
 
     Vue.prototype.$$lodash = $$lodash;
     Vue.prototype.$$getFullDateStr = $$getFullDateStr;
@@ -1568,6 +1620,7 @@ export {
   $$fileSaveAs,
   $$formatCascaderTree,
   $$findTreePath,
+  $$findNodeInTree,
   $$hasPermission,
   $$remBasePx,
   $$treeExpandOrCollapse,

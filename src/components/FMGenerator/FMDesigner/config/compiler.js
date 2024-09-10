@@ -21,7 +21,7 @@ function createOptions(j) {
 function baseOnChange(j, isView) {
   const events = useEvents();
   return function ({vm, item, value}) {
-    //处理关联字段
+    //处理关联字段 （不完善，暂时没有需求，不完整）
     if (j.z_props.relevance?.length) {
       // 如果清空了 则清空他关联字段
       if (!vm.formData[j.z_props.key]) return vm.resetFormData(j.z_props.relevance || []);
@@ -100,7 +100,7 @@ export const selectCompiler = (j, isView) => {
     options: createOptions(j),
     //resetNextValue 是否重置关联表单
     onChange: function ({vm, item, value, resetNextValue = true}) {
-      //处理关联字段
+      //处理关联字段 （不完善，暂时没有需求，不完整）
       if (j.z_props.relevance?.length) {
         j.z_props.relevance?.forEach(k => {
           //重置关联字段
@@ -206,7 +206,7 @@ export const customizationCompsCompiler = (j, isView) => {
       return {
         //确认触发
         onConfirm: function (value) {
-          //处理关联字段
+          //处理关联字段 （不完善，暂时没有需求，不完整）
           if (j.z_props.relevance?.length) {
             // 如果清空了 则清空他关联字段
             if (!vm.formData[j.z_props.key]) return vm.resetFormData(j.z_props.relevance || []);

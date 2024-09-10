@@ -8,5 +8,6 @@ export default ({vm, item}) => new Promise(async (rs, rj) => {
   item.loading = !1;
   if (err) return rj([]);
   vm.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: vm.$$formatCascaderTree(res?.list || [], 'sourceName', 'sourceCode', 'children')});
-  rs(vm.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'));//?.[0]?.children || []
+  const tree = vm.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid');//?.[0]?.children || []
+  rs(tree);
 })

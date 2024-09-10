@@ -78,7 +78,8 @@ export default ({vm, item}) => {
         if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});
         vm.$$Toast({message: `操作成功`, type: 'success'});
         sessionStorage.setItem('reload', 'true');
-        return vm.$store.commit('storage/REMOVE_TAB', vm.$route.meta.name);
+        // 提交成功 重置表单
+        return vm.$router.replace({name: 'ComplaintCreate', query: {reset: +new Date()}});
       }).catch(vm.$$emptyFn);
     }
   );

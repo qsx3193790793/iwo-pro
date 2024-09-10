@@ -145,7 +145,7 @@ export default {
           {
             name: "状态",
             key: "status",
-            width: 80,
+            // width: 80,
           },
           {
             name: "备注",

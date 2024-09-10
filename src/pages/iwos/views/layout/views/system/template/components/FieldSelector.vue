@@ -63,29 +63,29 @@ const list = computed({
 
 function onQuote(data) {
   props.root.vm.formData.verbalTrickContent = data.verbalTrickContent || '';
-  list.value = data?.fieldConfigs || [];
+  list.value = (data?.fieldConfigs || []).map(fc => Object.assign({}, fc, {resValue: `${getTypePrefix(fc.type)}${fc.name}`}));
   isQuoteTemplateShow.value = !1;
 }
 
 function onBatchQuote(data) {
   const exists = list.value.map(o => o.fieldId);
-  list.value = [].concat(list.value, (data || []).filter(d => !exists.includes(d.fieldId)));
+  list.value = [].concat(list.value, (data || []).filter(d => !exists.includes(d.fieldId))).map(fc => Object.assign({}, fc, {resValue: `${getTypePrefix(fc.type)}${fc.name}`}));
   isBatchQuoteTemplateShow.value = !1;
 }
 
 function handleInsert2(row) {
   const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[1];
   console.log('handleInsert2', props.root?.vm?.$refs);
-  textarea.insert({value: row.resValue, title: row.title});
+  textarea.insert({value: row.resValue, title: `{{${row.title}}}`});
 }
 
 function handleInsert(row) {
   handleInsert2(row);
-  const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[0]?.$refs?.textarea;
-  if (!textarea) return;
-  const arr = textarea.value.split('');
-  arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, `{{${row.resValue}}}`);
-  props.root.vm.formData.verbalTrickContent = arr.join('');
+  // const textarea = props.root?.vm?.$refs?.verbalTrickContent?.[0]?.$refs?.textarea;
+  // if (!textarea) return;
+  // const arr = textarea.value.split('');
+  // arr.splice(textarea.selectionStart, textarea.selectionEnd - textarea.selectionStart, `{{${row.resValue}}}`);
+  // props.root.vm.formData.verbalTrickContent = arr.join('');
 }
 
 const options = ref([]);

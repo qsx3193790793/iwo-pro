@@ -29,8 +29,10 @@ export default {
     console.log('code_402', err);
     const message = getMessage(err, errorMessage);
     message && !isOnErrDialog && Vue.prototype.$$Dialog({title: '提示', showCancelButton: false, message}).then(() => {
+    }).finally(() => {
+      isOnErrDialog = !1;
       Vue.prototype.$$router.replace({name: 'Login'});
-    }).finally(() => isOnErrDialog = !1);
+    });
     isOnErrDialog = !0;
     return false;
   },

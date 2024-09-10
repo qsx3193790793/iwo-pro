@@ -212,7 +212,7 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="是否省自定义">
+            <el-form-item label="省自定义">
               <el-select v-model="form.isProvinceCustom" placeholder="请选择是否省自定义" clearable disabled>
                 <el-option
                     v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
@@ -466,7 +466,7 @@ export default {
     //启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点不会被启用')
+          .confirm('是否确认启用投诉原因编码为"' + row.reasonCode + '"的数据项？如果存在下级节点，下级节点不会被启用')
           .then(() => {
 
             let data = {
@@ -486,7 +486,7 @@ export default {
     //停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用投诉原因名称为"' + row.reasonName + '"的数据项？如果存在下级节点，下级节点也将被停用')
+          .confirm('是否确认停用投诉原因编码为"' + row.reasonCode + '"的数据项？如果存在下级节点，下级节点也将被停用')
           .then(() => {
             let data = {
               reasonId: row.reasonId,

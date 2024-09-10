@@ -88,9 +88,9 @@
             <el-button size="small" type="primary" style="margin-left:5px">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
             <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
               <div class="inner">
-                <el-button v-hasPermission="['system:dept:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button>
+                <!-- <el-button v-hasPermission="['system:dept:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button> -->
                 <el-button v-hasPermission="['system:dept:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
-                <el-button v-hasPermission="['system:dept:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button>
+                <!-- <el-button v-hasPermission="['system:dept:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button> -->
                 <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
                 <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
               </div>
@@ -145,6 +145,20 @@
           <el-col :span="24">
             <el-form-item label="机构名称" prop="deptName">
               <el-input v-model="form.deptName" :placeholder="handleType=='detail'?'':'请输入机构名称'" maxlength="30"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="机构简称" prop="deptAbbreviate">
+              <el-input v-model="form.deptAbbreviate" :placeholder="handleType=='detail'?'':'请输入机构简称'" maxlength="30"/>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="机构编码" prop="deptCode">
+              <el-input v-model="form.deptCode" :placeholder="handleType=='detail'?'':'请输入机构编码'" maxlength="30"/>
             </el-form-item>
           </el-col>
         </el-row>

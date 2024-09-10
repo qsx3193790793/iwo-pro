@@ -118,8 +118,8 @@ export default {
       immediate: true,
     },
   },
-  mounted() {
-    this.init();
+  beforeMount() {
+    this.$nextTick(() => this.init());
     // if (this.Quill) {
     //   this.$emit('getNoticeText', this.Quill.getText())
     // }
@@ -131,6 +131,10 @@ export default {
     init() {
       const editor = this.$refs.editor;
       this.Quill = new Quill(editor, this.options);
+      if (!this.options.readOnly) {
+        this.Quill.enable(false);//解决富文本自动聚焦
+        setTimeout(() => this.Quill.enable(true), 200);
+      }
       // 如果设置了上传地址则自定义图片上传事件
       if (this.type == 'url') {
         let toolbar = this.Quill.getModule("toolbar");

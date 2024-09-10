@@ -97,7 +97,7 @@
                    @current-change="getList"/>
 
     <!-- 添加或修改公告对话框 -->
-    <el-dialog  v-if="open" :title="title" :visible.sync="open" width="780px" append-to-body :close-on-click-modal="!1">
+    <el-dialog v-if="open" :title="title" :visible.sync="open" width="780px" append-to-body :close-on-click-modal="!1" destroy-on-close>
       <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
         <el-row>
           <el-col :span="24">
@@ -142,7 +142,7 @@
           </el-col>
           <el-col :span="12" v-if="form.recipientType != '1'">
             <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
-              <treeselect v-model="form.recipientIds" noOptionsText="该机构下无数据"  :multiple="true" :normalizer="normalizer"
+              <treeselect v-model="form.recipientIds" noOptionsText="该机构下无数据" :multiple="true" :normalizer="normalizer"
                           :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`" :disabled="isDetail"/>
             </el-form-item>
           </el-col>

@@ -20,12 +20,14 @@
     <template #footer="{DialogRef}">
       <el-button type="primary" plain @click="DialogRef?.handleClose()">返回</el-button>
     </template>
+    <FormView v-if="isShowFormViewDialog" v-model="isShowFormViewDialog" :pkid="select_pkid" destroyOnClose></FormView>
   </MDialog>
 </template>
 
 <script setup>
-import Vue, {getCurrentInstance, onBeforeMount, ref, watch} from "vue";
+import {getCurrentInstance, onBeforeMount, ref, watch} from "vue";
 import MDialog from '@/components/MDialog';
+import FormView from '../../components/FormView';
 import JsTable from '@/components/js-table/index.vue';
 
 const {proxy} = getCurrentInstance();
@@ -85,17 +87,27 @@ const columns = ref({
         key: 'down', type: 'danger',
         event: row => {
           proxy.$$Dialog.confirm('确认回退到此版本吗？', '提示').then(async () => {
-            const {res, err} = await proxy.$$api.template.release({data: {templateId: row.templateId, versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.templateType, workorderType: row.workorderType}});
+            const {res, err} = await proxy.$$api.template.release({data: {templateId: row.templateId, versionId: row.versionId, sceneCode: row.sceneCode, templateType: row.bigType, workorderType: row.workorderType}});
             if (err) return;
             getList(1);
             emitter('success');
             proxy.$$Toast({message: `操作成功`, type: 'success'});
           }).catch(proxy.$$emptyFn)
         }
-      },
+      }, {
+        label: '预览',
+        key: 'view',
+        event: row => {
+          select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
+          isShowFormViewDialog.value = !0;
+        },
+      }
     ],
   },
-})
+});
+
+const select_pkid = ref();
+const isShowFormViewDialog = ref(false);
 
 const list = ref([]);
 const pageInfo = ref({pageNum: 1, pageSize: 15, rowCount: 0});

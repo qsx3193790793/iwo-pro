@@ -310,14 +310,17 @@ export default {
           {
             name: "投诉现象编码",
             key: "phenomCode",
+            width: '100'
           },
           {
             name: "投诉现象名称",
             key: "phenomName",
+            width: '100'
           },
           {
             name: "是否省自定义",
             key: "isProvinceCustom",
+            width: '100'
           },
           {
             name: "省份",
@@ -339,6 +342,7 @@ export default {
           {
             name: "节点层级链",
             key: "phenomChain",
+             width: '180'
           }
         ],
         options: {
@@ -361,17 +365,7 @@ export default {
                 return row.level === 3 && row.isProvinceCustom === 1
               },
               event: this.handleUpdate,
-            },
-            {
-              label: "详情",
-              key: "detail",
-              type: "success",
-              permission: ['config:phenom:detailList'],
-              event: this.handleDetail,
-              autoHidden: ({row}) => {
-                return row.isProvinceCustom === 1
-              },
-            },
+            },  
             {
               label: "启用",
               key: "start",
@@ -468,7 +462,7 @@ export default {
     //启用
     handleStart(row) {
       this.$$Dialog
-          .confirm('是否确认启用投诉现象名称为"' + row.phenomName + '"的数据项？')
+          .confirm('是否确认启用投诉现象编码为"' + row.phenomCode + '"的数据项？')
           .then(() => {
             let data = {
               phenomId: row.phenomId,
@@ -487,7 +481,7 @@ export default {
     //停用
     handleEnd(row) {
       this.$$Dialog
-          .confirm('是否确认停用投诉现象名称为"' + row.phenomName + '"的数据项？')
+          .confirm('是否确认停用投诉现象编码为"' + row.phenomCode + '"的数据项？')
           .then(() => {
             let data = {
               phenomId: row.phenomId,

@@ -290,13 +290,16 @@ const formConfig = ref({
           }
         },
         {
-          name: '模板内容', key: 'verbalTrickContent', value: '', type: 'textarea', rows: 5, col: 24, isDisable: !1, isRequire: !0,
+          name: '模板内容（预览）', key: 'verbalTrickContent', value: '', type: 'textarea', rows: 5, col: 24, isDisable: !0, isRequire: !0,
           isShow({vm}) {
             return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
           }
         },
         {
           name: '模板内容（体验版）', key: 'verbalTrickContent', value: '', type: 'component', component: TemplateContent, attrs: {rows: 5}, col: 24, isDisable: !1, isRequire: !0,
+          isShow({vm}) {
+            return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);
+          }
         },
       ]
     }

@@ -1,9 +1,6 @@
 <template>
   <div class="one-screen">
-    <PageSearchPanel
-        ref="PageSearchPanelRef"
-        :formConfigItems="formConfigItems"
-    ></PageSearchPanel>
+    <PageSearchPanel ref="PageSearchPanelRef" :formConfigItems="formConfigItems"></PageSearchPanel>
     <div class="table-panel one-screen-fg1">
       <JsTable :dataSource="list" :columns="columns">
         <!--          <template #unifiedComplaintCode="scope">-->
@@ -35,13 +32,13 @@
         />
       </div>
     </div>
-    <importDialog v-if="isShowImportDialog" v-model="isShowImportDialog" v-bind="uploadConfig" @templateDownload="onTemplateDownload"></importDialog>
+    <ImportDialog v-if="isShowImportDialog" v-model="isShowImportDialog" v-bind="uploadConfig" @templateDownload="onTemplateDownload"></ImportDialog>
   </div>
 </template>
 
 <script setup>
-import importDialog from '../import/index.vue'
-import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
+import ImportDialog from '../import/index.vue'
+import {getCurrentInstance, ref, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
 
@@ -79,7 +76,7 @@ const cancelOrder = (row) => {
 const columns = ref({
   props: [
     {
-      name: "投诉编号",
+      name: "统一投诉编码",
       width: 240,
       key: "unifiedComplaintCode",
     },
@@ -186,9 +183,9 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
   let dataTime = {};
   // 建单时间的取值
   if (queryParams.provinceOrderCreateTime && queryParams.provinceOrderCreateTime.length > 0) {
-    let {beginTime,endTime}={...proxy.$$formatELDateTimeRange(queryParams.provinceOrderCreateTime, ['beginTime', 'endTime'])}
-    dataTime.beginTime=beginTime
-    dataTime.endTime=endTime
+    let {beginTime, endTime} = {...proxy.$$formatELDateTimeRange(queryParams.provinceOrderCreateTime, ['beginTime', 'endTime'])}
+    dataTime.beginTime = beginTime
+    dataTime.endTime = endTime
   }
   // 投诉来源的取值
   if (queryParams.askSourceSrl && queryParams.askSourceSrl?.length > 1) {
@@ -228,7 +225,7 @@ const select_pkid = ref(null);
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
   {
-    name: "投诉编号",
+    name: "统一投诉编码",
     key: "unifiedComplaintCode",
     value: "",
     col: 6,

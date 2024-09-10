@@ -135,7 +135,7 @@
 
         <el-row>
           <el-col :span="12">
-            <el-checkbox v-model="form.customProvince" disabled>是否省自定义</el-checkbox>
+            <el-checkbox v-model="form.customProvince" disabled>省自定义</el-checkbox>
           </el-col>
         </el-row>
       </el-form>

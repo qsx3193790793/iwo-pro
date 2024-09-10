@@ -59,6 +59,7 @@ const submitForm = () => {
 const columns = ref({
   props: [
     {name: "工单类型", width: 80, key: "workorderType",},
+    {name: "统一投诉编码", width: 140, key: "unifiedComplaintCode"},
     {name: "业务号码", width: 120, key: "complaintAssetNum",},
     {name: "号码归属地", width: 120, key: "phoneLocal",},
     {name: "客户名称", width: 100, key: "appealUserName",},
@@ -146,7 +147,7 @@ const select_pkid = ref(null);
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
   // 首屏
-  {name: "投诉编号", key: "unifiedComplaintCode", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "统一投诉编码", key: "unifiedComplaintCode", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "集团工单编号", key: "complaintWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "省内建单时间", key: "provinceOrderCreateTime", value: [], col: 6, type: "dateRangePicker", isDisable: !1, isRequire: !1,},
   {name: "主叫号码", key: "callerNo", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
@@ -165,7 +166,7 @@ const formConfigItems = ref([
   {name: "申诉工单编号", key: "appealWorksheetId", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "号码归属地", key: "phoneLocal", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
   {name: "受理工号", key: "createStaff", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
-  {name: "30天重复投诉次数", key: "recmplntTimes30days", value: "", col: 6, type: "input", isDisable: !1, isRequire: !1,},
+  {name: "30天重复投诉", key: "recmplntTimes30days", value: undefined, min: 0, col: 6, type: "number", isDisable: !1, isRequire: !1,},
   {name: "是否市场最严工单", key: "workorderStrictest", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("yes_no"), isDisable: !1, isRequire: !1,},
   {name: "市场最严工单场景", key: "workorderStrictestScene", value: "", col: 6, type: "select", options: () => proxy.$store.getters["dictionaries/GET_DICT"]("workorder_strictest_scene"), isDisable: !1, isRequire: !1,},
 

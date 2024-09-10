@@ -4,16 +4,19 @@
       <div class="main-title-1">用户信息</div>
       <!-- <div class="cusName">{{ userInfo.custName }}</div> -->
       <div class="user-msg">
-        <span class="avatar" :title="userInfo.custName">{{ userInfo.custName || '客户姓名' }}</span>
-        <span style="font-size: 12px;">
-          <div>投诉号码：{{ userInfo.complaintAssetNum }}</div>
+        <div class="avatar" :title="userInfo.custName">
+          <div>{{ userInfo.custName || '客户姓名' }}</div>
+        </div>
+        <div style="font-size: 0.15rem;">
+          <div><b>投诉号码：</b>{{ userInfo.complaintAssetNum }}</div>
           <el-rate v-model="userInfo.custLevel" class="rate" disabled-void-color="#C6D1DE" :max="7" score-template="{value}星用户" show-score disabled></el-rate>
-          <div>号码归属地： {{ userInfo.phoneLocal }}</div>
-        </span>
+          <div><b>号码归属地：</b>{{ userInfo.phoneLocal }}</div>
+        </div>
       </div>
       <template v-for="item in tagList1">
         <el-tag v-if="item.value" style="margin:0 0.2rem 0.1rem 0;" :key="item.label" type="warning" size="medium" color="#f49e47" effect="dark"> {{ item.value }}</el-tag>
       </template>
+      <br/>
       <!-- <TextLine labelColor="#a7abb4" labelWidth="1.36rem" :list="textLineList1" style="font-size:0.14rem;margin: 15px 0;"></TextLine> -->
       <div class="tag-body" :style=" `border: 2px solid ${item.color}`" v-for="item in evaluateTagList" :key="item.label">
         <div class="tag-name" :style="`color:${item.color}`">{{ item.label }}</div>
@@ -37,7 +40,7 @@
       </div>
     </ELScrollbar>
     <ELScrollbar class="create-order-container public-background">
-      <!--      <div class="create-order-header">投诉单</div>-->
+      <!--      <div   class="create-order-header">投诉单</div>-->
       <div class="create-order-form">
         <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" formStatus="view" @onFormLoaded="onFormLoaded">
           <template #ext="{root}">
@@ -67,6 +70,7 @@ const formData = ref({});
 const userInfo = ref({
   custName: '客户姓名', custLevel: 0,
 });
+
 async function onFormLoaded(v) {
   formData.value = v;
   if (!proxy.$$lodash.get(formData.value, 'complaintAssetNum')) return;
@@ -87,7 +91,6 @@ async function onFormLoaded(v) {
     phoneLocal: proxy.$$lodash.get(formData.value, 'phoneLocal')
   }
 }
-
 
 // const userProfile = computed(() => {
 //   const importantCustomer = proxy.$$lodash.get(formData.value, 'complaint.importantCustomer');
@@ -128,11 +131,10 @@ const tagList1 = computed(() => {
   ]
 })
 const evaluateTagList = computed(() => [
-  {label: '满意', value: proxy.$$lodash.get(formData.value, 'satisfactionEstima30days'), color: '#68b14e'},
-  {label: '越级', value: proxy.$$lodash.get(formData.value, 'croscmplntTimes30days'), color: '#956ec8'},
-  {label: '不满意', value: proxy.$$lodash.get(formData.value, 'dissatisfactionEstima30days'), color: '#d86ca0'},
-  {label: '重复', value: proxy.$$lodash.get(formData.value, 'recmplntTimes30days'), color: '#6e84fe'},
-  {label: '退费', value: proxy.$$lodash.get(formData.value, 'refundRecords90days'), color: '#fcc600'},
+  {label: '30天满意评价', value: proxy.$$lodash.get(formData.value, 'satisfactionEstima30days'), color: '#68b14e'},
+  {label: '30天不满意评价', value: proxy.$$lodash.get(formData.value, 'dissatisfactionEstima30days'), color: '#d86ca0'},
+  {label: '30天重复投诉', value: proxy.$$lodash.get(formData.value, 'recmplntTimes30days'), color: '#6e84fe'},
+  {label: '30天越级投诉', value: proxy.$$lodash.get(formData.value, 'croscmplntTimes30days'), color: '#956ec8'},
 ])
 // const textLineList1 = computed(() => [
 //   // {label: '号码归属地：', value: proxy.$$lodash.get(formData.value, 'complaint.phoneLocal')},
@@ -149,6 +151,7 @@ const evaluateTagList = computed(() => [
 
 const textLineList2 = computed(() => [
   {label: '工单类型：', value: '投诉单'},
+  {label: '工单受理渠道：', value: '集约工单门户'},
   {label: '集团工单编号：', value: proxy.$$lodash.get(formData.value, 'complaintWorksheetId')},
   {label: '统一投诉编码：', value: proxy.$$lodash.get(formData.value, 'unifiedComplaintCode')},
   {label: '呼叫流水号：', value: proxy.$$lodash.get(formData.value, 'callId')},
@@ -159,8 +162,8 @@ const textLineList2 = computed(() => [
   {label: '创建时间：', value: proxy.$$lodash.get(formData.value, 'createTime')},
   {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'contactPhone1')},
   {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'contactPhone2')},
- 
-  // {label: '申诉工单编号：', value: proxy.$$lodash.get(formData.value, 'appealWorksheetId')}, 
+
+  // {label: '申诉工单编号：', value: proxy.$$lodash.get(formData.value, 'appealWorksheetId')},
   // {label: '省内工单编号：', value: proxy.$$lodash.get(formData.value, 'worksheetId')},
   // {label: '录音流水号：', value: proxy.$$lodash.get(formData.value, 'recordingId')},
   // {label: '申诉日期：', value: proxy.$$lodash.get(formData.value, 'appealDate')},
@@ -213,14 +216,28 @@ export default {
     font-weight: 600;
     margin-bottom: 4px;
   }
-  
-  .user-msg{
-       display: flex;
-       margin-bottom: 8px;
+
+  .user-msg {
+    display: flex;
+    margin-bottom: 24px;
+
+    & > div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    ::v-deep(.el-rate__icon) {
+      margin-right: 0;
+    }
+
+    ::v-deep(.el-rate__text) {
+      margin-left: 8px;
+    }
   }
 
   .rate {
-    margin: 4px 0;
+    margin: 8px 0;
   }
 
   & > div {
@@ -285,9 +302,9 @@ export default {
     font-size: 18px;
     line-height: 3;
     border-bottom: 1PX solid #eeeeee;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    //position: sticky;
+    //top: 0;
+    //z-index: 1;
     padding: 0 20px !important;
     background-color: rgb(241, 247, 253);
     font-weight: bold;
@@ -300,8 +317,8 @@ export default {
 
 .avatar {
   display: inline-block;
-  width: 70px;
-  height: 70px;
+  width: 90px;
+  height: 90px;
   line-height: 70px;
   text-align: center;
   border-radius: 50%;
@@ -309,7 +326,14 @@ export default {
   color: #fff;
   font-weight: bold;
   white-space: nowrap;
-  font-size: 16px;
+  font-size: 14px;
   margin-right: 5px;
+  padding: 10px;
+  overflow: hidden;
+
+  & > div {
+    width: 100%;
+    overflow: hidden;
+  }
 }
 </style>

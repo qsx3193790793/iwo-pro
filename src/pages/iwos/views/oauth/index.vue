@@ -12,8 +12,8 @@ const text = ref('认证中...');
 const loading = ref(true);
 
 async function getBizData(p) {
-  const {res, err} = await proxy.$$api.login.getBizData({params: {p}});
-  proxy.$router.push({name: 'ComplaintCreate', query: {p: res ? JSON.stringify(res) : null}});
+  const {res, err} = await proxy.$$api.login.getBizData({isErrDialog: !1, params: {p}});
+  proxy.$router.push({name: 'Window', query: {pageCode: 'ComplaintCreate', p: res ? JSON.stringify(res) : null}});
 }
 
 async function ssoAuth() {

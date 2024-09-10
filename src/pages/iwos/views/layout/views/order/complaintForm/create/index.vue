@@ -1,12 +1,12 @@
 <template>
   <div class="one-screen">
     <div class="Pagehead public-background">
-      <CustomerProfile @change="change" @diagnosisChange="diagnosisChange" @reset="reset"></CustomerProfile>
+      <CustomerProfile ref="CustomerProfileRef" @change="change" @diagnosisChange="diagnosisChange" @reset="reset"></CustomerProfile>
     </div>
     <ELScrollbar class="one-screen-fg1 public-background create-order-container">
       <!--      <div class="create-order-header">投诉单</div>-->
       <div class="create-order-form">
-        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig">
+        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" @reset="onFormModelReset">
           <template #ext="{root}">
             <FileUploader ref="FileUploaderRef" :root="root"></FileUploader>
           </template>
@@ -25,6 +25,7 @@ import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config/index";
 import template from "@/pages/iwos/fmDesignerComps/template/投诉单模板.js";
 
 const {proxy} = getCurrentInstance();
+const CustomerProfileRef = ref();
 const FormModelRef = ref();
 const FileUploaderRef = ref();
 const formConfig = ref();
@@ -38,6 +39,11 @@ function reset() {
   FormModelRef.value?.removeAllAppendItems();
   FormModelRef.value?.resetFormData();
   FileUploaderRef.value?.reset();
+}
+
+function onFormModelReset() {
+  reset();
+  CustomerProfileRef.value.reset();
 }
 
 function diagnosisChange(v) {

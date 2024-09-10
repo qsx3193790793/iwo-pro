@@ -64,6 +64,7 @@
                   :normalizer="normalizer"
               />
             </el-form-item>
+            
           </el-col>
         </el-row>
         <el-row :gutter="20">
@@ -266,9 +267,9 @@ const handleEnd = (row) => {
       .catch(() => {
       });
 };
-/** 查询机构下拉树结构 */
-const getSourceTree = () => {
-  proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}}).then(({res, err}) => {
+/** 查询投诉来源下拉树结构 */
+const getSourceTree =async () => {
+  await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}}).then(({res, err}) => {
     if (err) return;
     state.value.sourceTree = res?.list || [];
   });
@@ -360,18 +361,27 @@ const handleAdd = () => {
 // 多选框选中数据
 const handleSelectionChange = (selection) => {
   state.value.ids = selection.map((item) => item.appId);
+  state.value.clientIds = selection.map((item) => item.clientId);
   state.value.single = selection.length != 1;
   state.value.multiple = !selection.length;
 };
 /** 修改按钮操作 */
-const handleUpdate = (row) => {
+const handleUpdate = async(row) => {
   reset();
-  getSourceTree();
+ await getSourceTree();
   proxy.$$api.appconfigmanage
       .appConfigDetail({appId: row.appId})
       .then(({res: response, err}) => {
         if (err) return;
-        state.value.form = response;
+        let copyresponseData=JSON.parse(JSON.stringify(response))
+        if(copyresponseData.sourceCode){
+          let hasCodefalg=proxy.$$findNodeInTree(state.value.sourceTree,copyresponseData.sourceCode,'sourceCode')
+          if(!hasCodefalg){
+            // proxy.$$Toast.warning("原投诉来源编码为 "+response.sourceCode+' 的数据项已失效，请重新选择');
+            copyresponseData.sourceCode=null
+          }
+        }
+        state.value.form = copyresponseData;
         state.value.open = true;
         state.value.title = "修改应用系统";
       });
@@ -405,8 +415,14 @@ const submitForm = () => {
 /** 删除按钮操作 */
 const handleDelete = (row) => {
   const appIds = row?.appId || state.value.ids;
-  proxy.$$Dialog
-      .confirm('是否确认删除应用系统编码为"' + appIds + '"的数据项？')
+  let showText = ''
+  if (state.value.ids.length > 0 && !row?.appId) {
+    showText = state.value.clientIds.join(',')
+  } else {
+    showText = row?.clientId
+  }
+  proxy.$$Dialog  
+      .confirm('是否确认删除应用系统编码为"' + showText + '"的数据项？')
       .then(() => {
         let data = {
           appIds: Array.isArray(appIds) ? appIds.join(",") : appIds,
@@ -438,6 +454,8 @@ let state = ref({
   sourceTree: [],
   // 选中数组
   ids: [],
+  // 选中数组的编号合集
+  clientIds:[],
   // 非单个禁用
   single: true,
   // 非多个禁用

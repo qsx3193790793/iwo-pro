@@ -1,5 +1,6 @@
 import {getTypePrefix} from "@/pages/iwos/views/layout/views/system/template/config";
 import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config";
+
 export const key = 'complaint_init';
 export const label = '投诉单_初始化';
 
@@ -16,7 +17,9 @@ export default async ({vm, item}) => {
     if (lanIdInfo?.lanid) {
       //申告地
       vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: vm.$store.getters['user/GET_USER_PROVINCE_CODE']}}).then(({res, err}) => {
-        vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
+        const tree = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
+        vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = tree;
+        vm.formData.problemLanIdChain = vm.$$findTreePath({tree, value: lanIdInfo.lanid});
       });
     }
 
@@ -26,33 +29,34 @@ export default async ({vm, item}) => {
     // 模板大类：建单模板：TPL0001，结案模板：TPL0002
     // 模板小类：投诉现象：TPL0100，投诉来源：TPL0101，通用模板：TPL0102
 
-    const [R1, R2, R3, R4] = await Promise.all([
+    const [R1, R2, R3, R4] = await Promise.allSettled([
       // 工单画像
       vm.$$api.crm.sourceCountUserPicuture({
-        loading: !1,
+        isErrDialog: !1, loading: !1,
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
       // 省内接口_设备产品信息查询
       vm.$$api.crm.devCustInfo({
-        loading: !1, data: {accNum, lanId: lanIdInfo.lanid},
+        isErrDialog: !1, loading: !1, data: {accNum, lanId: lanIdInfo.lanid},
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
       //获取统一投诉编码
       vm.$$api.srv.getUnifyComplaintCode({
-        loading: !1, data: {complaintPhone: accNum, custName: custom.custName, complaintWorksheetId},
+        isErrDialog: !1, loading: !1, data: {complaintPhone: accNum, custName: custom.custName, complaintWorksheetId},
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
       // 拉取通用模板
       (process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? vm.$$api.template.formMock : vm.$$api.complaint.formCommon)({
-        loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
+        isErrDialog: !1, loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
         headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
       }),
     ]);
 
     // 工单画像 // 省内接口_设备产品信息查询
-    const {res, err} = R1, {res: dciRes, err: dciErr} = R2, {res: idRes, err: idErr} = R3, {res: pbtRes, err: pbtErr} = R4;
+    console.log(R1, R2, R3, R4);
+    const {res, err} = R1, {res: dciRes, err: dciErr} = R2.value, {res: idRes, err: idErr} = R3.value, {res: pbtRes, err: pbtErr} = R4.value;
 
-    if (err || dciErr || idErr) return;
+    if (idErr) return vm.$$Dialog.confirm('统一投诉编码获取失败', '提示', {showCancelButton: false}).catch(vm.$$emptyFn);
 
     //通用模板 sort在第一板块之后 0.1 .... 不到1
     if (pbtRes?.formContent) {
@@ -65,6 +69,9 @@ export default async ({vm, item}) => {
       'unifiedComplaintCode': idRes.unifiedComplaintCode,
       // 集团工单编号
       'complaintWorksheetId': complaintWorksheetId,
+
+      //来源默认省内投诉-10000号语音
+      'askSourceSrlChain': vm.$$findTreePath({tree: vm.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'), value: 'C10001'}),
 
       // 设备产品信息查询  发展渠道
       'developChannel': dciRes?.channelName ?? null,
@@ -125,7 +132,9 @@ export default async ({vm, item}) => {
       headers: {'complaintWorksheetId': vm.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': vm.$route.query.complaintAssetNum ?? ''}
     }),
   ]);
+
   const {res, err} = R1, {res: pbtRes, err: pbtErr} = R2;
+
   if (res) {
     //申告地
     const problemLanIdChainFinder = vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain');

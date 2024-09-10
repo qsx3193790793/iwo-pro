@@ -11,7 +11,7 @@ export default (apis) => Object.keys(apis).reduce((t, key) => ((t[key] = (args =
     responseType: apis[key].responseType,
     loading: args.loading,
     data: args.data || {},
-    params: args.params || {},
+    params: Object.assign({}, args.params || {}, {_t: +new Date()}),
     cache: apis[key].cache || null,
     isErrDialog: args.isErrDialog,
     errorMessage: args.errorMessage,

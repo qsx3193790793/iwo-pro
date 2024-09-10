@@ -112,7 +112,15 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
-
+        {
+          name: "创单时间",
+          key: "createTime",
+          value: '',
+          col: 6,
+          type: "dateRangePicker",
+          isDisable: !1,
+          isRequire: !1,
+        },
         // {
         //   name: "投诉来源",
         //   key: "complaintSource",
@@ -124,7 +132,7 @@ export default {
         //   isDisable: !1,
         //   isRequire: !1,
         // },
-        { col: 6, type: "divider-empty" },
+        // { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",
@@ -253,14 +261,28 @@ export default {
       this.loading = true;
       const formData = this.$refs.PageSearchPanelRef.getFormData();
       let copyData = JSON.parse(JSON.stringify(formData));
+      let dataTime = {};
+      // 建单时间的取值
+      if (formData.createTime && formData.createTime.length > 0) {
+        let {stateDate,endDate}={...this.$$formatELDateTimeRange(copyData.createTime, ['stateDate', 'endDate'])}
+        dataTime.stateDate=stateDate
+        dataTime.endDate=endDate
+        delete  copyData.createTime
+      }
       if (copyData?.complaintSource && copyData?.complaintSource.length > 0) {
         copyData.complaintSource =
           copyData.complaintSource[copyData.complaintSource.length - 1];
+
       }
       this.$$api.flowManage
         .intransitOrderList({
+          params:{
+            pageNum:this.queryParams.pageNum,
+            pageSize:this.queryParams.pageSize,
+          },
           data: {
             ...copyData,
+            ...dataTime,
             ...this.queryParams,
           },
         })

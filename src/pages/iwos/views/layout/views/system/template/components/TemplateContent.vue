@@ -1,5 +1,5 @@
 <template>
-  <div ref="quillRef" class="TemplateContent" :style="{height:`${(0.13*1.5*rows)+0.1}rem`}">
+  <div ref="quillRef" class="TemplateContent" :style="{height:`${(0.13*1.5*rows)+0.1}rem`}" @click="onFocus">
   </div>
 </template>
 
@@ -8,28 +8,25 @@ import Quill from "quill";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 import "quill/dist/quill.bubble.css";
-import {computed, getCurrentInstance, onBeforeUnmount, onMounted, ref, watch} from "vue";
-import {getTypePrefix} from "../config";
+import {getCurrentInstance, onBeforeUnmount, onMounted, ref, watch, nextTick} from "vue";
 
 const BlockEmbed = Quill.import('blots/embed');
+const Delta = Quill.import('delta');
 
 class TPCTag extends BlockEmbed {
   static create(v) {
     const node = super.create(v);
     const {value, title} = v;
-    console.log('compiler2Html-BlockEmbed', node, v)
     if (v === true) return node;
     node.innerHTML = title;
-    node.setAttribute('data-value', value);
     node.setAttribute('contenteditable', false);
-    node.setAttribute('resize', 'none');
+    node.setAttribute('value', value);
     return node;
   }
 
   static value(node) {
-    console.log('compiler2Html-BlockEmbed-value', node)
     return {
-      value: node.getAttribute('data-value'), title: node.innerHTML
+      value: node.getAttribute('value'), title: node.innerText
     };
   }
 }
@@ -51,56 +48,77 @@ const props = defineProps({
 
 const emitter = defineEmits([]);
 
-const options = ref({
-  theme: "snow",
-  bounds: document.body,
-  debug: "warn",
-  modules: {toolbar: null},
-  placeholder: "请输入",
-  readOnly: props.disabled,
-})
-
 const QuillInst = ref();
 const quillRef = ref();
 
 const currentContent = ref();
+const editorCache = ref();
+const range = ref();
 
 function compiler2Html() {
   if (!props.value) return '';
-  const fieldListMap = (props.root.vm.formData.fieldList || []).reduce((t, c) => ((t[c.resValue] = c.title), t), {});
-  console.log('compiler2Html-1', fieldListMap);
+  const fieldListMap = (props.root.vm.formData.fieldList || []).reduce((t, c) => ((t[c.resValue] = `{{${c.title}}}`), t), {});
   let content = props.value;
   content.match(/\{\{.*?\}\}/g)?.forEach(key => {
     const rk = key.replace(/[\{\}]/g, '');
     const reg = new RegExp(`\\{\\{${rk.replace(/\$/g,'\\$')}\\}\\}`, 'g');
-    console.log('compiler2Html-2', fieldListMap, rk);
-    content = content.replace(reg, fieldListMap[rk] ? `<tpc-tag class="tpc-tag" data-value="${rk}" contenteditable="false" resize="none">${fieldListMap[rk] || ''}</tpc-tag>` : '');
+    content = content.replace(reg, fieldListMap[rk] ? `<tpc-tag class="tpc-tag" contenteditable="false" value="${rk}">${fieldListMap[rk] || ''}</tpc-tag>` : '');
   });
   content = content.split('\n').map(t => t ? `<p>${t}</p>` : `<p><br></p>`).join('');
-  console.log('compiler2Html-3', fieldListMap, content);
   return content;
 }
 
 watch(() => props.value, () => {
   const content = compiler2Html();
-  if (content !== currentContent.value) QuillInst.value?.pasteHTML(currentContent.value = content);
+  if (content !== currentContent.value) {
+    QuillInst.value?.pasteHTML(currentContent.value = content);
+  }
 });
 
-function init() {
-  QuillInst.value = new Quill(quillRef.value, options.value);
-  QuillInst.value.pasteHTML(currentContent.value = compiler2Html());
-  QuillInst.value.on("text-change", (delta, oldDelta, source) => {
-    let html = QuillInst.value.root.innerHTML;
-    html.match(/<tpc-tag class="tpc-tag" data-value=".*?" contenteditable="false" resize="none">.*?<\/tpc-tag>/g)?.forEach(t => {
-      console.log('compiler2Html-cp', t, /data-value="(.*?)"/g.exec(t))
-      html = html.replace(t, `{{${/data-value="(.*?)"/g.exec(t)?.[1]}}}`);
-    });
-    html = html.match(/<p>.*?<\/p>/g)?.map(t => {
-      return t.replace(/<p>|<\/p>/g, '');
-    }).join('\n').replace(/<br>/g, '\n');
-    console.log('compiler2Html-emit', html);
-    proxy.$emit("input", html);
+function onFocus() {
+  QuillInst.value.focus();
+  range.value = QuillInst.value.getSelection(true);
+}
+
+function blur() {
+  let html = QuillInst.value.root.innerHTML;
+  if (editorCache.value === html) return;
+  editorCache.value = html;
+  html.match(/<tpc-tag class="tpc-tag" contenteditable="false" value=".*?">.*?<\/tpc-tag>/g)?.forEach(t => {
+    html = html.replace(t, `{{${/value="(.*?)"/g.exec(t)?.[1]}}}`);
   });
+  html = html.match(/<p>.*?<\/p>/g)?.map(t => {
+    return t.replace(/<p>|<\/p>/g, '');
+  }).join('\n').replace(/<br>/g, '\n');
+  proxy.$emit("input", html);
+}
+
+function init() {
+  QuillInst.value = new Quill(quillRef.value, {
+    theme: "snow",
+    bounds: document.body,
+    debug: "warn",
+    modules: {toolbar: null},
+    placeholder: "请输入",
+    readOnly: props.disabled,
+  });
+  QuillInst.value.enable(false);//解决富文本自动聚焦
+  setTimeout(() => QuillInst.value.enable(true), 200);
+  QuillInst.value.pasteHTML(currentContent.value = compiler2Html());
+  QuillInst.value.root.addEventListener('blur', blur);
+  QuillInst.value.root.addEventListener('paste', (e) => {
+    e.preventDefault();
+    let text = (e.clipboardData || window.clipboardData).getData('text');
+    text.match(/\{\{.*?\}\}/g)?.forEach(key => {
+      const rk = key.replace(/[\{\}]/g, '');
+      const finder = (props.root.vm.formData.fieldList || []).find(fl => fl.title === rk);
+      if (finder) text = text.replace(key, `{{${finder.resValue}}}`);
+    });
+    const range = QuillInst.value.getSelection(true); // 获取光标位置
+    const d = new Delta().retain(range?.index).delete(range?.length).insert(text);
+    QuillInst.value.updateContents(d);
+    QuillInst.value.setSelection(range.index, 0);
+  }, true);
 }
 
 onMounted(() => init());
@@ -108,9 +126,16 @@ onMounted(() => init());
 onBeforeUnmount(() => QuillInst.value = null);
 
 defineExpose({
+  enable(flag = true) {
+    QuillInst.value.enable(flag);
+  },
   insert(v) {
-    const cursorPosition = QuillInst.value.getSelection(); // 获取光标位置
-    QuillInst.value.insertEmbed(cursorPosition?.index || 0, 'TPCTag', v); // 在光标位置插入文本
+    QuillInst.value.focus();
+    console.log('insert', range.value)
+    const d = new Delta().retain(range.value?.index || 0).delete(range.value?.length || 0).insert({TPCTag: v});
+    QuillInst.value.updateContents(d);
+    QuillInst.value.setSelection(range.value?.index || 0, 0);
+    if (range.value) range.value.length = 0;
   }
 });
 

@@ -112,26 +112,26 @@ export default {
           isRequire: !1,
         },
         {
-          name: "创单开始时间",
-          key: "stateDate",
+          name: "创单时间",
+          key: "createTime",
           value: '',
           col: 6,
-          type: "datePicker",
+          type: "dateRangePicker",
           isDisable: !1,
           isRequire: !1,
         },
-        {
-          name: "创单结束时间",
-          key: "endDate",
-          value: '',
-          col: 6,
-          type: "datePicker",
-          isDisable: !1,
-          isRequire: !1,
-        },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
+        // {
+        //   name: "创单结束时间",
+        //   key: "endDate",
+        //   value: '',
+        //   col: 6,
+        //   type: "datePicker",
+        //   isDisable: !1,
+        //   isRequire: !1,
+        // },
+        // { col: 6, type: "divider-empty" },
+        // { col: 6, type: "divider-empty" },
+        // { col: 6, type: "divider-empty" },
         {
           type: "buttons",
           align: "right",
@@ -191,7 +191,7 @@ export default {
         options: {
           btns: [
             {
-              label: "修改",
+              label: "详情",
               key: "detail",
               // permission: ['config:fileStrage:edit'],
               event: (val) => {
@@ -260,14 +260,27 @@ export default {
       this.loading = true;
       const formData = this.$refs.PageSearchPanelRef.getFormData();
       let copyData = JSON.parse(JSON.stringify(formData));
+      let dataTime = {};
+      // 建单时间的取值
+      if (formData.createTime && formData.createTime.length > 0) {
+        let {stateDate,endDate}={...this.$$formatELDateTimeRange(copyData.createTime, ['stateDate', 'endDate'])}
+        dataTime.stateDate=stateDate
+        dataTime.endDate=endDate
+        delete  copyData.createTime
+      }
       if (copyData?.complaintSource && copyData?.complaintSource.length > 0) {
         copyData.complaintSource =
           copyData.complaintSource[copyData.complaintSource.length - 1];
       }
       this.$$api.flowManage
         .historyOrderList({
+          params:{
+            pageNum:this.queryParams.pageNum,
+            pageSize:this.queryParams.pageSize,
+          },
           data: {
             ...copyData,
+            ...dataTime,
             ...this.queryParams,
           },
         })

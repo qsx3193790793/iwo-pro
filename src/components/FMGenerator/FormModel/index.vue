@@ -174,7 +174,6 @@ import OrderSalesSelector from "./components/OrderSalesSelector";
 import PointCosHisSelector from "./components/PointCosHisSelector";
 import DisputeChannelSelector from "./components/DisputeChannelSelector";
 import ApiSelector from "./components/ApiSelector";
-import {$$scrollParentToChild} from "@/utils";
 
 export default {
   name: "FormModel",
@@ -405,7 +404,7 @@ export default {
       this.collapseActive = this.resultItems.map((fci, i) => fci.collapsed === true ? null : (fci.name || `${i}`)).filter(f => f);
       this.loadExpandFormConfigItems();//展开
       // this.formData = this.expandFormConfigItems?.reduce((t, c) => (c.key && (this.$$lodash.set(t, c.key, c.value ?? null)), t), {});//初始化formData把数据key对应
-      this.formData = [].concat(this.expandFormConfigItems, this.formConfig.hiddenFields || [])?.reduce((t, c) => (c.key && (t[c.key] = c.value ?? null), t), {});//初始化formData把数据key对应
+      this.formData = [].concat(this.expandFormConfigItems, this.formConfig.hiddenFields || [])?.reduce((t, c) => (c.key && (t[c.key] = c.value ?? undefined), t), {});//初始化formData把数据key对应
 
       this.formConfig.onLoad && this.formConfig.onLoad({$store: this.$store, vm: this, value});
       console.log('formModel init', this.formConfig, this.resultItems, this.expandFormConfigItems, this.formData);

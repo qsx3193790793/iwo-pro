@@ -17,6 +17,7 @@
     <!-- 添加或修改用户配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
       <div>
+        <span>目前没有真实数据，展示的为测试数据</span>
         <el-image class="Image" :src="currentIMageUrl" :preview-src-list="currentIMageUrlList"></el-image>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -59,12 +60,16 @@ export default {
             key: "name",
           },
           {
-            name: "流程ID",
-            key: "procId",
+            name: "创建日期",
+            key: "deployTime ",
           },
           {
-            name: "创建日期",
-            key: "stateDate",
+            name: "版本号",
+            key: "procdefVersion",
+          },
+          {
+            name: "流程关键字",
+            key: "procdefKey",
           },
         ],
         options: {
@@ -74,7 +79,7 @@ export default {
               key: "detail",
               // permission: ['config:fileStrage:edit'],
               event: (val) => {
-                // this.getDetail(val);
+                this.getDetail(val);
                 //   this.getSourceTree();
               },
             },

@@ -12,10 +12,10 @@
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
           >
-          <template slot="append">
+            <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
-          </template>
-        </el-input>
+            </template>
+          </el-input>
         </div>
         <div class="head-container one-screen-fg1 search_tree" style="overflow: scroll;">
           <el-tree
@@ -89,7 +89,7 @@
             ></el-date-picker>
           </el-form-item>
           <el-form-item>
-            <el-button size="small" @click="resetQuery"  v-hasPermission="['system:user:query']">重置</el-button>
+            <el-button size="small" @click="resetQuery" v-hasPermission="['system:user:query']">重置</el-button>
             <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:user:query']">查询</el-button>
             <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:user:add']">新增</el-button>
             <!-- <el-button type="danger" plain size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:user:remove']">删除</el-button> -->
@@ -150,7 +150,7 @@
                     <el-button v-hasPermission="['system:user:edit']" type="primary" size="small" @click="handleResetPwd(scope.row)">重置密码</el-button>
                     <el-button v-hasPermission="['system:user:query']" type="primary" size="small" @click="handleAuthRole(scope.row)">查看角色</el-button>
                     <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
-                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='1'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
+                    <el-button v-hasPermission="['system:user:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
                   </div>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -338,7 +338,7 @@
           <!-- <el-table-column label="角色编号" align="center" prop="roleId"/> -->
           <el-table-column label="是否有效" align="center" prop="flag">
             <template slot-scope="scope">
-              <span>{{ scope.row.flag?'有效':'无效' }}</span>
+              <span>{{ scope.row.flag ? '有效' : '无效' }}</span>
             </template>
           </el-table-column>
           <el-table-column label="角色名称" align="center" prop="roleName"/>
@@ -661,9 +661,9 @@ export default {
     // 用户状态修改
     handleStatusChange(row) {
       let text = row.status === "1" ? "停用" : "启用";
-      let changeStatus=row.status === "0" ? "1" : "0";
+      let changeStatus = row.status === "0" ? "1" : "0";
       this.$$Dialog.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(() => {
-        return this.$$api.user.changeUserStatus({data: {userId: row.userId, status:changeStatus}});
+        return this.$$api.user.changeUserStatus({data: {userId: row.userId, status: changeStatus}});
       }).then(({res, err}) => {
         if (err) return;
         row.status = row.status === "0" ? "1" : "0";
@@ -754,9 +754,9 @@ export default {
         if (err) return;
         this.form = response;
         this.roleOptions = response.roles;
-        if(response.teams){
+        if (response.teams) {
           this.teamOptions = this.$$handleTree(response.teams, "teamId");
-        }else{
+        } else {
           this.teamOptions = [];
         }
         this.$set(this.form, "roleIds", response.roleIds);
@@ -862,7 +862,7 @@ export default {
     /** 下载模板操作 */ async importTemplate() {
       // this.download('system/user/importTemplate', {}, `user_template_${new Date().getTime()}.xlsx`)
       const {res, err} = await this.$$api.user.importTemplate({data: this.queryParams});
-      if (res.blob) this.$$fileSaveAs(res.blob, `user_template_${new Date().getTime()}.xlsx`);
+      if (res.blob) this.$$fileSaveAs(res.blob, `用户导入模板_${new Date().getTime()}.xlsx`);
     },
     // 文件上传中处理
     handleFileUploadProgress(event, file, fileList) {

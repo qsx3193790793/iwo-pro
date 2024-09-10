@@ -6,23 +6,25 @@
       <div class="right">
         <TabPanel class="tab-panel"></TabPanel>
         <div class="layout">
-          <ELScrollbar>
-            <keep-alive :include="alivePage">
-              <router-view :key="$route.name"></router-view>
-            </keep-alive>
-            <!--            <router-view v-slot="{ Component }">-->
-            <!--              <keep-alive :include="alivePage">-->
-            <!--                <component :is="Component" :key="$route.name"/>-->
-            <!--              </keep-alive>-->
-            <!--            </router-view>-->
-          </ELScrollbar>
+          <!--          <ELScrollbar>-->
+          <keep-alive :include="alivePage">
+            <router-view :key="$route.name"></router-view>
+          </keep-alive>
+          <!--            <router-view v-slot="{ Component }">-->
+          <!--              <keep-alive :include="alivePage">-->
+          <!--                <component :is="Component" :key="$route.name"/>-->
+          <!--              </keep-alive>-->
+          <!--            </router-view>-->
+          <!--          </ELScrollbar>-->
         </div>
       </div>
     </div>
+    <WaterMark></WaterMark>
   </div>
 </template>
 
 <script setup>
+import WaterMark from '@/components/WaterMark';
 import Header from '../../components/Header';
 import Navigation from '../../components/Navigation';
 import TabPanel from '../../components/TabPanel';
@@ -59,6 +61,8 @@ watchEffect(() => {
     }
 
     & > .layout {
+      padding: 12px;
+      border-radius: 6px;
       flex-grow: 1;
       background: linear-gradient(135deg, #c7dbfc 0%, #e2eefe 100%);
       overflow: hidden;

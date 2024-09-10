@@ -7,8 +7,8 @@ const apis = {
   // 暂存
   temporarySaveComplaintWorkOrder: {url: `${apiPrefix("web")}/complaintWorkOrder/temporarySaveComplaintWorkOrder`},
   // 办结
-  temporaryCompletedComplaintWorkOrder: {url: `${apiPrefix("srv")}/completedWorkOrder`},
-
+  temporaryCompletedComplaintWorkOrder: {url: `${apiPrefix("srv")}/unifiedEntry/SVC00002`},
+ 
   // 取消
   temporaryCancelComplaintWorkOrder: {url: `${apiPrefix("web")}/createOrder/updStatusCd`, method: "put"},
   // 查询流程定义ID
