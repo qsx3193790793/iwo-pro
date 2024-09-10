@@ -175,7 +175,7 @@
       <el-table-column
           label="操作"
           align="center"
-          width="220"
+          width="260"
           class-name="small-padding fixed-width"
       >
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
@@ -202,9 +202,9 @@
             </el-button>
             <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
               <div class="inner">
-                   <el-button v-hasPermission="['system:role:edit']" type="primary" size="small" @click="handleAuthUser(scope.row)">已授权用户</el-button>
-                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
-                   <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='1'"  type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
+                <el-button v-hasPermission="['system:role:edit']" type="primary" size="small" @click="handleAuthUser(scope.row)">已授权用户</el-button>
+                <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStatusChange(scope.row)">启用</el-button>
+                <el-button v-hasPermission="['system:role:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleStatusChange(scope.row)">停用</el-button>
 
               </div>
             </el-dropdown-menu>
@@ -665,7 +665,7 @@ export default {
       });
     },
     /** 查询投诉来源下拉树结构 */
-   async getcomplaintSourceTree() {
+    async getcomplaintSourceTree() {
       await this.$$api.complaintSource
           .listComplaintSourceTree({data: {status: 1}})
           .then(({res: response, err}) => {
@@ -719,7 +719,7 @@ export default {
     // 角色状态修改
     handleStatusChange(row) {
       let text = row.status === "1" ? "停用" : "启用";
-      let changeStatus=row.status === "0" ? "1" : "0";
+      let changeStatus = row.status === "0" ? "1" : "0";
       this.$$Dialog
           .confirm('确认要"' + text + '""' + row.roleName + '"角色吗？')
           .then(() => {
@@ -731,9 +731,9 @@ export default {
             this.getList();
             this.$$Toast.success(text + "成功");
           })
-          // .catch(function () {
-          //   row.status = row.status === "0" ? "1" : "0";
-          // });
+      // .catch(function () {
+      //   row.status = row.status === "0" ? "1" : "0";
+      // });
     },
     // 取消按钮
     cancel() {
@@ -850,9 +850,9 @@ export default {
       this.title = "添加角色";
     },
     /** 修改按钮操作 */
-   async handleUpdate(row) {
+    async handleUpdate(row) {
       this.reset();
-     await this.getcomplaintSourceTree()
+      await this.getcomplaintSourceTree()
       const roleId = row.roleId || this.ids;
       const roleMenu = this.getRoleMenuTreeselect(roleId);
       const srlRoleList = this.getsrlRoleListTree(roleId);
@@ -869,7 +869,7 @@ export default {
                 this.$refs.menu.setChecked(v, true, false);
               });
             });
-          }); 
+          });
           srlRoleList.then((res) => {
             let checkedKeys = res
             checkedKeys.forEach((v) => {

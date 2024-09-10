@@ -418,5 +418,14 @@ $main-color-5: rgba($main-color, 0.5);
   opacity: 0.5;
 }
 
+.v-modal {
+  overflow: hidden;
+}
 
+.el-scrollbar__thumb {
+  background-color: rgba(134, 134, 134, 0.5);
 
+  &:hover {
+    background-color: rgba(134, 134, 134, 0.8);
+  }
+}

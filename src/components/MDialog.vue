@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-bind.sync="$attrs" v-on="$listeners" ref="DialogRef" :top="top" :visible.sync="dialogVisibleModel" :close-on-click-modal="!1" destroy-on-close append-to-body>
+  <el-dialog v-bind.sync="$attrs" v-on="$listeners" v-use-draggable ref="DialogRef" :top="top" :visible.sync="dialogVisibleModel" :close-on-click-modal="!1" destroy-on-close append-to-body>
     <template v-if="onScreen">
       <div class="inner" :style="{height:height,padding:`0 0.2rem`}">
         <slot :DialogRef="DialogRef"></slot>
@@ -47,10 +47,12 @@ defineExpose({handleClose});
 <style lang="scss" scoped>
 ::v-deep(.el-dialog__header) {
   border-bottom: 1PX solid #eee;
+  cursor: move;
 }
 
 ::v-deep(.el-dialog__footer) {
   border-top: 1PX solid #eee;
+  cursor: move;
 }
 
 ::v-deep(.el-dialog__body) {

@@ -21,6 +21,7 @@ const isEditDescribe = computed(() => {
 function analysis() {
     props.root.vm.formData.requestParam = props.root.vm.formData.stagingrequest
     props.root.vm.formData.responseParam = props.root.vm.formData.stagingresponse
+    proxy.$$Toast({message: `参数已解析至下方列表`, type: 'success'});
 }
 function editDescribe() {
     props.root.vm.expandFormConfigItems[17].attrs.isEdit = false

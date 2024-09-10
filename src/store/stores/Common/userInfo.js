@@ -1,6 +1,9 @@
 //用户信息 公共store
 
 import Vue from "vue";
+import WaterMark from '@/plugins/WaterMark'
+
+const waterMark = new WaterMark();
 
 let store = {
   namespaced: true,
@@ -83,11 +86,17 @@ let store = {
     // 获取用户信息
     DO_GET_USERINFO({commit, state}) {
       return new Promise(async (resolve, reject) => {
+        console.log("beforeEach store userInfo--->", state.userInfo);
+        if (state.userInfo) {
+          waterMark.set({text: `${state.userInfo.userName}\n${Vue.prototype.$$dayjs().format('YYYY-MM-DD')}`}).init();
+          return resolve();
+        }
         const {res, err} = await Vue.prototype.$$api.login.getInfo();
         if (res) {
           commit('SET_ROLES', res.roles?.length ? res.roles : ['ROLE_DEFAULT']);
           commit('SET_PERMISSIONS', res.permissions);
           commit('SET_USER_INFO', res.user)
+          waterMark.set({text: `${state.userInfo.userName}\n${Vue.prototype.$$dayjs().format('YYYY-MM-DD')}`}).init();
           return resolve();
         }
         reject(err);
@@ -109,6 +118,7 @@ let store = {
       return new Promise(async (resolve, reject) => {
         const {res, err} = await Vue.prototype.$$api.login.logout();
         if (err) return reject();
+        waterMark.destroy();
         sessionStorage.clear();
         localStorage.clear();
         commit('storage/CLEAR_TABS', null, {root: !0});

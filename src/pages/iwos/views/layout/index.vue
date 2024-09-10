@@ -19,12 +19,10 @@
         </div>
       </div>
     </div>
-    <WaterMark></WaterMark>
   </div>
 </template>
 
 <script setup>
-import WaterMark from '@/components/WaterMark';
 import Header from '../../components/Header';
 import Navigation from '../../components/Navigation';
 import TabPanel from '../../components/TabPanel';

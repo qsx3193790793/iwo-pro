@@ -7,7 +7,7 @@ export default async ({vm, value = null}) => {
   const finder = vm.expandFormConfigItems.find(efci => efci.key === 'workorderStrictestScene');
   if (vm.formData.workorderStrictest == '1') {
     finder.isRequire = true;
-    return vm.formData.workorderStrictestScene = value?.workorderStrictestScene ?? null;
+    return vm.formData.workorderStrictestScene = value?.workorderStrictestScene ?? vm.formData.workorderStrictestScene ?? null;
   }
   finder.isRequire = false;
   vm.formData.workorderStrictestScene = value?.workorderStrictestScene ?? null;

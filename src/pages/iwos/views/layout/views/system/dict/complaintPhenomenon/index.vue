@@ -342,7 +342,7 @@ export default {
           {
             name: "节点层级链",
             key: "phenomChain",
-             width: '180'
+            width: '180'
           }
         ],
         options: {
@@ -365,26 +365,21 @@ export default {
                 return row.level === 3 && row.isProvinceCustom === 1
               },
               event: this.handleUpdate,
-            },  
-            {
-              label: "启用",
-              key: "start",
-              type: "primary",
-              permission: ['config:phenom:update'],
-              autoHidden: this.autoStartHidden,
-              event: this.handleStart,
             },
             {
-              label: "停用",
-              key: "end",
-              type: "danger",
-              permission: ['config:phenom:update'],
-              autoHidden: this.autoEndHidden,
-              event: this.handleEnd,
+              label: "详情",
+              key: "detail",
+              type: "success",
+              permission: ['config:phenom:detailList'],
+              event: this.handleDetail,
+              autoHidden: ({row}) => {
+                return row.isProvinceCustom === 1
+              },
             },
             {
               label: "更多",
               key: "more",
+              permission: ['config:phenom:update'],
               children: [
                 {
                   label: "删除",
@@ -397,14 +392,20 @@ export default {
                   event: this.handleDelete,
                 },
                 {
-                  label: "详情",
-                  key: "detail",
-                  type: "success",
-                  permission: ['config:phenom:detailList'],
-                  event: this.handleDetail,
-                  autoHidden: ({row}) => {
-                    return row.isProvinceCustom === 1
-                  },
+                  label: "启用",
+                  key: "start",
+                  type: "primary",
+                  permission: ['config:phenom:update'],
+                  autoHidden: this.autoStartHidden,
+                  event: this.handleStart,
+                },
+                {
+                  label: "停用",
+                  key: "end",
+                  type: "danger",
+                  permission: ['config:phenom:update'],
+                  autoHidden: this.autoEndHidden,
+                  event: this.handleEnd,
                 },
               ]
             },

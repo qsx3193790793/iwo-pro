@@ -64,7 +64,7 @@
                   :normalizer="normalizer"
               />
             </el-form-item>
-            
+
           </el-col>
         </el-row>
         <el-row :gutter="20">
@@ -268,7 +268,7 @@ const handleEnd = (row) => {
       });
 };
 /** 查询投诉来源下拉树结构 */
-const getSourceTree =async () => {
+const getSourceTree = async () => {
   await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}}).then(({res, err}) => {
     if (err) return;
     state.value.sourceTree = res?.list || [];
@@ -366,19 +366,19 @@ const handleSelectionChange = (selection) => {
   state.value.multiple = !selection.length;
 };
 /** 修改按钮操作 */
-const handleUpdate = async(row) => {
+const handleUpdate = async (row) => {
   reset();
- await getSourceTree();
+  await getSourceTree();
   proxy.$$api.appconfigmanage
       .appConfigDetail({appId: row.appId})
       .then(({res: response, err}) => {
         if (err) return;
-        let copyresponseData=JSON.parse(JSON.stringify(response))
-        if(copyresponseData.sourceCode){
-          let hasCodefalg=proxy.$$findNodeInTree(state.value.sourceTree,copyresponseData.sourceCode,'sourceCode')
-          if(!hasCodefalg){
+        let copyresponseData = JSON.parse(JSON.stringify(response))
+        if (copyresponseData.sourceCode) {
+          let hasCodefalg = proxy.$$findNodeInTree(state.value.sourceTree, copyresponseData.sourceCode, 'sourceCode')
+          if (!hasCodefalg) {
             // proxy.$$Toast.warning("原投诉来源编码为 "+response.sourceCode+' 的数据项已失效，请重新选择');
-            copyresponseData.sourceCode=null
+            copyresponseData.sourceCode = null
           }
         }
         state.value.form = copyresponseData;
@@ -421,7 +421,7 @@ const handleDelete = (row) => {
   } else {
     showText = row?.clientId
   }
-  proxy.$$Dialog  
+  proxy.$$Dialog
       .confirm('是否确认删除应用系统编码为"' + showText + '"的数据项？')
       .then(() => {
         let data = {
@@ -437,13 +437,13 @@ const handleDelete = (row) => {
       .catch(() => {
       });
 };
-const autoHandleHidden=(val) => {
-      if (val.row) {
-        return val.row.isProvinceCustom != "0" ? true : false;
-      } else {
-        return false;
-      }
-    }
+const autoHandleHidden = (val) => {
+  if (val.row) {
+    return val.row.isProvinceCustom != "0" ? true : false;
+  } else {
+    return false;
+  }
+}
 let state = ref({
   // 遮罩层
   loading: true,
@@ -455,7 +455,7 @@ let state = ref({
   // 选中数组
   ids: [],
   // 选中数组的编号合集
-  clientIds:[],
+  clientIds: [],
   // 非单个禁用
   single: true,
   // 非多个禁用
@@ -523,23 +523,29 @@ let state = ref({
           autoHidden: autoHandleHidden,
         },
         {
-          label: "启用",  
-          key: "start",
-          type: "primary",
+          label: "更多",
+          key: "more",
           permission: ['config:appInfo:edit'],
-          autoHidden: autoStartHidden,
-          event: handleStart,
-          autoHidden: autoHandleHidden,
+          children: [
+            {
+              label: "启用",
+              key: "start",
+              type: "primary",
+              permission: ['config:appInfo:edit'],
+              event: handleStart,
+              autoHidden: autoHandleHidden,
+            },
+            {
+              label: "停用",
+              key: "end",
+              type: "danger",
+              permission: ['config:appInfo:edit'],
+              event: handleEnd,
+              autoHidden: autoHandleHidden,
+            },
+          ]
         },
-        {
-          label: "停用",
-          key: "end",
-          type: "danger",
-          permission: ['config:appInfo:edit'],
-          autoHidden: autoEndHidden,
-          event: handleEnd,
-          autoHidden: autoHandleHidden,
-        },
+
       ],
     },
   },

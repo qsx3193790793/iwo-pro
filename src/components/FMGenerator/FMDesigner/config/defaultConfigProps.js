@@ -167,8 +167,8 @@ export const formConfigProps = () => [
       },
       handleValueKeys({vm}) {
         const events = useEvents();
-        return vm.formData.events?.filter(e => !!events[e])?.map(evLabel => ({
-          label: events[evLabel].label, options: (events[evLabel].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
+        return vm.formData.events?.filter(e => !!events[e])?.map(evKey=> ({
+          label: events[evKey].label, options: (events[evKey].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
         }));
       }
     },

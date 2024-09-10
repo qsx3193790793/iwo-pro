@@ -10,12 +10,12 @@
         <el-input class="queryItem" v-model="queryParams.createBy" placeholder="请输入操作人员" clearable maxlength="30"
                   @keyup.enter.native="handleQuery"/>
       </el-form-item>
-      <el-form-item label="类型" prop="noticeType">
+      <!-- <el-form-item label="类型" prop="noticeType">
         <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable class="queryItem">
           <el-option v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')" :key="dict.value"
                      :label="dict.label" :value="dict.value"/>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
         <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
@@ -44,11 +44,11 @@
       <el-table-column type="selection" width="55" align="center"/>
       <!-- <el-table-column label="序号" align="center" prop="noticeId" width="100"/> -->
       <el-table-column label="标题" align="center" prop="noticeTitle" :show-overflow-tooltip="true"/>
-      <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
+      <!-- <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_type', row.noticeType) }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="状态" align="center" prop="status" width="100">
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
@@ -100,17 +100,17 @@
     <el-dialog v-if="open" :title="title" :visible.sync="open" width="780px" append-to-body :close-on-click-modal="!1" destroy-on-close>
       <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
         <el-row>
-          <el-col :span="24">
+          <!-- <el-col :span="24">
             <el-form-item label="公告类型" prop="noticeType">
               <el-select v-model="form.noticeType" placeholder="请选择公告类型" style="width: 100%;" :disabled="isDetail">
                 <el-option v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_notice_type')" :key="dict.value"
                            :label="dict.label" :value="dict.value"></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="24">
             <el-form-item label="标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="30" :disabled="isDetail"/>
+              <el-input v-model="form.noticeTitle" placeholder="请输入标题" maxlength="100" :disabled="isDetail"/>
             </el-form-item>
           </el-col>
           <!-- <el-col :span="24">
@@ -210,9 +210,9 @@ export default {
         noticeTitle: [
           {required: true, message: "标题不能为空", trigger: "blur"}
         ],
-        noticeType: [
-          {required: true, message: "公告类型不能为空", trigger: "change"}
-        ],
+        // noticeType: [
+        //   {required: true, message: "公告类型不能为空", trigger: "change"}
+        // ],
         deptId: [
           {required: true, message: "接收机构不能为空", trigger: "change"}
         ],
@@ -250,7 +250,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      this.$$api.notice.listNotice({params: this.queryParams}).then(({res: response, err}) => {
+      this.$$api.notice.listNotice({params:{...this.queryParams,noticeType:1} }).then(({res: response, err}) => {
         if (err) return this.loading = false;
         this.noticeList = response.rows;
         this.total = response.total;
@@ -307,7 +307,7 @@ export default {
       this.form = {
         noticeId: undefined,
         noticeTitle: undefined,
-        noticeType: undefined,
+        // noticeType: undefined,
         noticeContent: undefined,
         deptId: undefined,
         recipientIds: undefined,
@@ -360,11 +360,11 @@ export default {
     /** 发布按钮 */
     handleRelease(row) {
       this.$$Dialog.confirm('是否确认发布公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
-        return this.$$api.notice.changeNoticeStatus({data: {noticeId: row.noticeId, status: 0}});
+        return this.$$api.notice.changeNoticeStatus({data: {noticeId: row.noticeId, status: 1}});
       }).then(({res: response, err}) => {
         if (err) return
         this.getList();
-        this.$$Toast.success("操作成功");
+        this.$$Toast.success("发布成功");
       }).catch(() => {
       });
     },
@@ -375,12 +375,14 @@ export default {
       }).then(({res: response, err}) => {
         if (err) return
         this.getList();
-        this.$$Toast.success("操作成功");
+        this.$$Toast.success("撤回成功");
       }).catch(() => {
       });
     },
     /** 提交按钮 */
     submitForm: function () {
+      console.log();
+      
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.recipientType == "1") {
@@ -388,14 +390,14 @@ export default {
           }
           if (this.form.noticeId != undefined) {
             console.log('this.$refs.editorRef.getText()', this.$refs.editorRef.getText());
-            this.$$api.notice.updateNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText()}}).then(({res: response, err}) => {
+            this.$$api.notice.updateNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(),noticeType:1}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.$$api.notice.addNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText()}}).then(({res: response, err}) => {
+            this.$$api.notice.addNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(),noticeType:1}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("新增成功");
               this.open = false;

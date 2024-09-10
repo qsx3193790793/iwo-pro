@@ -197,9 +197,9 @@ function formDataChange(formData) {
 const compFormConfig = computed(() => {
   const cId = proxy.$$store.getters['fmDesigner/GET_ACTIVE_COMP_ID'];
   const comp = finder(stage.value, cId);
+  const fieldsArray = proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray;//选择字段列表 没有就手输
   return comp ? {
-    formName: '',
-    fieldsArray: proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray,//选择字段列表 没有就手输
+    formName: '', fieldsArray,
     onLoad: async function ({vm}) {
       console.log('compFormConfig onLoad...', vm.reqQuery, vm.$attrs)
     },
@@ -209,11 +209,10 @@ const compFormConfig = computed(() => {
         items: comp['z_props'].sort((a, b) => (a.sort ?? 9999) - (b.sort ?? 9999)).map(p => {
           // 对字段名进行处理 如果是有列表的使用下拉
           if (p.key === 'key') {
-            const options = (proxy.$$getVariableType(props.fieldsArray) === '[object Function]' ? props.fieldsArray() : props.fieldsArray);
-            if (options?.length) return Object.assign(p, {
-              type: 'select', options: options.filter(o => o.type != 0),//字段名不允许public字段赋值
+            if (fieldsArray?.length) return Object.assign(p, {
+              type: 'select', options: fieldsArray.filter(o => o.type != 0),//字段名不允许public字段赋值
               onChange({vm}) {
-                const finder = options.find(o => o.value === vm.formData.key);
+                const finder = fieldsArray.find(o => o.value === vm.formData.key);
                 if (!finder) return;
                 vm.formData.name = finder?.originLabel ?? '输入标签名称';
               }

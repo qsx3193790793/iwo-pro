@@ -90,7 +90,7 @@
             {{ $store.getters['dictionaries/MATCH_LABEL']('yes_no', row.isProvinceCustom) }}
           </template>
           <template #status="{row}">
-              {{ $store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status) }}
+            {{ $store.getters['dictionaries/MATCH_LABEL']('reason_status_name', row.status) }}
           </template>
         </JsTable>
         <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40, 50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
@@ -382,6 +382,7 @@ export default {
             {
               label: "更多",
               key: "more",
+              permission: ['config:reason:delete', 'config:reason:update'],
               children: [
                 {
                   label: "删除",

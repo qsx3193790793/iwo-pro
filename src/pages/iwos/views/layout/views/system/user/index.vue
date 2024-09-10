@@ -135,7 +135,7 @@
           <el-table-column
               label="操作"
               align="center"
-              width="220"
+              width="260"
               class-name="small-padding fixed-width"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">

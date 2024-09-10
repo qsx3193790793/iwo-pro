@@ -77,7 +77,7 @@
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime"/>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['system:team:edit']">修改
               </el-button>

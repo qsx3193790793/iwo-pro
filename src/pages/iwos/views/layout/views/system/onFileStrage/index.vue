@@ -192,6 +192,7 @@ export default {
               type: "button",
               attrs: {type: ""},
               col: 1,
+              permission: ['config:fileStrage:list'],
               onClick: ({vm}) => {
                 vm.resetFormData();
                 this.resetQuery();
@@ -202,6 +203,7 @@ export default {
               type: "button",
               attrs: {type: "primary"},
               col: 1,
+              permission: ['config:fileStrage:list'],
               onClick: ({vm}) => {
                 this.getList();
               },
@@ -289,20 +291,27 @@ export default {
               },
             },
             {
-              label: "启用",
-              key: "start",
-              type: "primary",
+              label: "更多",
+              key: "more",
               permission: ['config:fileStrage:edit'],
-              autoHidden: this.autoStartHidden,
-              event: this.handleStart,
-            },
-            {
-              label: "停用",
-              key: "end",
-              type: "danger",
-              permission: ['config:fileStrage:edit'],
-              autoHidden: this.autoEndHidden,
-              event: this.handleEnd,
+              children: [
+                {
+                  label: "启用",
+                  key: "start",
+                  type: "primary",
+                  permission: ['config:fileStrage:edit'],
+                  autoHidden: this.autoStartHidden,
+                  event: this.handleStart,
+                },
+                {
+                  label: "停用",
+                  key: "end",
+                  type: "danger",
+                  permission: ['config:fileStrage:edit'],
+                  autoHidden: this.autoEndHidden,
+                  event: this.handleEnd,
+                },
+              ]
             },
           ],
         },

@@ -13,10 +13,10 @@
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
           >
-          <template slot="append">
+            <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
-          </template>
-        </el-input>
+            </template>
+          </el-input>
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
           <el-tree
@@ -340,20 +340,27 @@ export default {
               }
             },
             {
-              label: "启用",
-              key: "start",
-              type: "primary",
-              autoHidden: this.autoStartHidden,
+              label: "更多",
+              key: "more",
               permission: ['config:product:edit'],
-              event: this.handleStart,
-            },
-            {
-              label: "停用",
-              key: "end",
-              type: "danger",
-              autoHidden: this.autoEndHidden,
-              permission: ['config:product:edit'],
-              event: this.handleEnd,
+              children: [
+                {
+                  label: "启用",
+                  key: "start",
+                  type: "primary",
+                  autoHidden: this.autoStartHidden,
+                  permission: ['config:product:edit'],
+                  event: this.handleStart,
+                },
+                {
+                  label: "停用",
+                  key: "end",
+                  type: "danger",
+                  autoHidden: this.autoEndHidden,
+                  permission: ['config:product:edit'],
+                  event: this.handleEnd,
+                },
+              ]
             },
           ],
         },

@@ -83,9 +83,7 @@ export default ({customRoutes, routeContext, beforeEach, afterEach}) => {
       //   //没有token 看下url里有没有 有的话第一次进来
       //   if (urlParams.token) return toGetUserInfo(urlParams.token, next);
       if (!token) return next({name: 'Login'});
-      const userInfo = Vue.prototype.$$store.getters['user/GET_USER_INFO'];
-      console.log("beforeEach store userInfo--->", userInfo);
-      if (!userInfo) return Vue.prototype.$$store.dispatch('user/DO_GET_USERINFO').then(() => {
+      Vue.prototype.$$store.dispatch('user/DO_GET_USERINFO').then(() => {
         next();
       }).catch(err => onErrorHandler(err));
       next();

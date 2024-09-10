@@ -13,10 +13,10 @@
               prefix-icon="el-icon-search"
               style="margin-bottom: 20px"
           >
-          <template slot="append">
+            <template slot="append">
               <el-button type="primary" @click="handleCheckedTreeExpand">{{ isExpend ? '折叠' : '展开' }}</el-button>
             </template>
-        </el-input>
+          </el-input>
 
         </div>
         <div class="head-container nodeTree one-screen-fg1 search_tree">
@@ -46,7 +46,7 @@
             :columns="columns"
             @selectionChange="handleSelectionChange"
         >
-        <template #isProvinceCustom="{row}">
+          <template #isProvinceCustom="{row}">
             <div>{{ row.isProvinceCustom ? '是' : '否' }}</div>
           </template>
           <template #status="{ row }">
@@ -252,9 +252,9 @@ export default {
           isDisable: !1,
           isRequire: !1,
         },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
-        { col: 6, type: "divider-empty" },
+        {col: 6, type: "divider-empty"},
+        {col: 6, type: "divider-empty"},
+        {col: 6, type: "divider-empty"},
         {
           type: "buttons",
           align: "right",
@@ -274,7 +274,7 @@ export default {
             {
               btnName: "查询",
               type: "button",
-              permission:['config:source:list'],
+              permission: ['config:source:list'],
               attrs: {type: "primary"},
               col: 1,
               onClick: ({vm}) => {
@@ -284,7 +284,7 @@ export default {
             {
               btnName: "新增",
               type: "button",
-              permission:['config:source:add'],
+              permission: ['config:source:add'],
               attrs: {
                 type: "success", disabled: () => {
                   // addflag 这个字段前端遍历数组后添加的，用于判定只有省内数据，才可以新增
@@ -298,7 +298,7 @@ export default {
             },
             {
               btnName: '删除', type: 'button', attrs: {type: 'danger', disabled: () => !this.ids.length}, col: 1,
-              permission:['config:source:remove'],
+              permission: ['config:source:remove'],
               onClick: ({vm}) => {
                 this.handleDelete();
               }
@@ -349,7 +349,7 @@ export default {
               label: "修改",
               key: "edit",
               event: this.handleUpdate,
-              permission:['config:source:edit'],
+              permission: ['config:source:edit'],
               autoHidden: this.autoHandleHidden,
             },
             {
@@ -357,26 +357,33 @@ export default {
               key: "del",
               type: "danger",
               autoHidden: this.autoHandleHidden,
-              permission:['config:source:remove'],
+              permission: ['config:source:remove'],
               event: (val) => {
                 this.handleDelete(val)
               }
             },
             {
-              label: "启用",
-              key: "start",
-              type: "primary",
-              autoHidden: this.autoStartHidden,
-              permission:['config:source:edit'],
-              event: this.handleStart,
-            },
-            {
-              label: "停用",
-              key: "end",
-              type: "danger",
-              autoHidden: this.autoEndHidden,
-              permission:['config:source:edit'],
-              event: this.handleEnd,
+              label: "更多",
+              key: "more",
+              permission: ['config:source:edit'],
+              children: [
+                {
+                  label: "启用",
+                  key: "start",
+                  type: "primary",
+                  autoHidden: this.autoStartHidden,
+                  permission: ['config:source:edit'],
+                  event: this.handleStart,
+                },
+                {
+                  label: "停用",
+                  key: "end",
+                  type: "danger",
+                  autoHidden: this.autoEndHidden,
+                  permission: ['config:source:edit'],
+                  event: this.handleEnd,
+                },
+              ]
             },
           ],
         },
@@ -425,21 +432,21 @@ export default {
     },
     autoHandleHidden(val) {
       if (val.row) {
-        return  val.row.isProvinceCustom  != "0" ? true : false;
+        return val.row.isProvinceCustom != "0" ? true : false;
       } else {
         return false;
       }
     },
     autoStartHidden(val) {
       if (val.row) {
-        return (val.row.status == "0" && val.row.isProvinceCustom  != "0")? true : false;
+        return (val.row.status == "0" && val.row.isProvinceCustom != "0") ? true : false;
       } else {
         return false;
       }
     },
     autoEndHidden(val) {
       if (val.row) {
-        return (val.row.status == "1"  && val.row.isProvinceCustom  != "0")? true : false;
+        return (val.row.status == "1" && val.row.isProvinceCustom != "0") ? true : false;
       } else {
         return false;
       }
@@ -507,9 +514,9 @@ export default {
           .listComplaintSourceTree()
           .then(({res: response, err}) => {
             if (err) return;
-            response.list.forEach((ele,index)=>{
-              if(ele.sourceCode=='C100'){
-                this.addFlagToNestedObjects(ele,"addflag",true)
+            response.list.forEach((ele, index) => {
+              if (ele.sourceCode == 'C100') {
+                this.addFlagToNestedObjects(ele, "addflag", true)
               }
             })
             let data = [{
@@ -521,34 +528,34 @@ export default {
             }]
             this.deptOptions = data;
           });
-          
+
     },
     // 处理嵌套对象数组数据
-    addFlagToNestedObjects(data,targetKey,targetValue) {  
-        // 检查传入的是否为数组  
-        if (Array.isArray(data)) {  
-            // 遍历数组中的每个元素  
-            data.forEach(item => {  
-                // 如果元素是对象或数组，递归调用  
-                if (typeof item === 'object' && item !== null) {  
-                    // 直接给对象添加 targetKey 属性  
-                    item[targetKey] = targetValue;  
-                    // 如果对象中还包含数组或对象，继续递归  
-                    this.addFlagToNestedObjects(item,targetKey,targetValue);  
-                }  
-                // 如果元素不是对象或数组，则不做处理  
-            });  
-        } else if (typeof data === 'object' && data !== null) {  
-            // 如果直接传入的是一个对象，则也处理它  
-            data[targetKey] = targetValue;  
-            // 递归处理对象中的属性，以防属性值是数组或对象  
-            Object.values(data).forEach(value => {  
-              this.addFlagToNestedObjects(value,targetKey,targetValue);  
-            });  
-        }  
-        // 如果传入的不是数组或对象，则不执行任何操作  
-    },  
-  
+    addFlagToNestedObjects(data, targetKey, targetValue) {
+      // 检查传入的是否为数组
+      if (Array.isArray(data)) {
+        // 遍历数组中的每个元素
+        data.forEach(item => {
+          // 如果元素是对象或数组，递归调用
+          if (typeof item === 'object' && item !== null) {
+            // 直接给对象添加 targetKey 属性
+            item[targetKey] = targetValue;
+            // 如果对象中还包含数组或对象，继续递归
+            this.addFlagToNestedObjects(item, targetKey, targetValue);
+          }
+          // 如果元素不是对象或数组，则不做处理
+        });
+      } else if (typeof data === 'object' && data !== null) {
+        // 如果直接传入的是一个对象，则也处理它
+        data[targetKey] = targetValue;
+        // 递归处理对象中的属性，以防属性值是数组或对象
+        Object.values(data).forEach(value => {
+          this.addFlagToNestedObjects(value, targetKey, targetValue);
+        });
+      }
+      // 如果传入的不是数组或对象，则不执行任何操作
+    },
+
     // 筛选节点
     filterNode(value, data) {
       if (!value) {
@@ -564,7 +571,7 @@ export default {
       // if (data.level >= 3) return;
       this.$refs["queryForm"]?.resetFields();
       this.currentNode = data;
-      console.log( this.currentNode ,'-9998')
+      console.log(this.currentNode, '-9998')
       this.queryParams.pcode = data.sourceCode;
       this.handleQuery();
     },
@@ -632,7 +639,7 @@ export default {
       this.form.handleType = "add";
       this.getSourCode();
       this.getCurrentTreeNodeInfo(this.currentNode.sourceId);
-      this.form.level=this.currentNode.level
+      this.form.level = this.currentNode.level
       if (this.currentNode.level == 1) {
         this.form.twoSourceEdit = false;
       }
@@ -694,8 +701,8 @@ export default {
               sourceName,
               isProvinceCustom
             } = {...response};
-            if(this.form.handleType == "edit"){
-              this.form.customProvince = isProvinceCustom?true:false
+            if (this.form.handleType == "edit") {
+              this.form.customProvince = isProvinceCustom ? true : false
             }
             if (level == 3) {
               this.form.sourceName = sourceName;

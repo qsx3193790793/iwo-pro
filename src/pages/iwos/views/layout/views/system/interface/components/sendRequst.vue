@@ -32,6 +32,7 @@ async function testApi(){
      props.root.vm.formData.stagingrequest= replaceLabels(flattenObject(JSON.parse(props.root.vm.formData.requestJsonStr)),props.root.vm.formData.requestParam)      
     }
     props.root.vm.formData.stagingresponse= replaceLabels(flattenObject(res),props.root.vm.formData.responseParam)
+    proxy.$$Toast({message: `接口发送成功`, type: 'success'});
 }
 //保存label值
 function replaceLabels(arr1, arr2) {
