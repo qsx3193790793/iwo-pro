@@ -134,7 +134,7 @@ function onConfirm() {
       line-height: 28px;
       text-align: center;
       font-weight: bold;
-      color: #000;
+      color: $main-text;
     }
   }
 
@@ -153,7 +153,7 @@ function onConfirm() {
         font-size: 14px;
         line-height: 28px;
         text-align: center;
-        color: #000;
+        color: $main-text;
         cursor: pointer;
 
         &.active {

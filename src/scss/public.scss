@@ -17,14 +17,14 @@
 
 .upload-text {
   font-weight: bold;
-  color: #000;
+  color: $main-text;
 }
 
 .bigTitle {
   font-size: 16px;
   font-weight: bold;
   margin: 16px 0;
-  color: #000;
+  color: $main-text;
 }
 
 .main-title {
@@ -68,14 +68,14 @@
 .notice-content {
   font-size: 14px;
   line-height: 22px;
-  color: #000;
+  color: $main-text;
 }
 
 .formTitle {
   margin-top: 16px;
   font-size: 16px;
   font-weight: bold;
-  color: #000;
+  color: $main-text;
 }
 
 .text-ellipsis {
@@ -105,7 +105,7 @@
 .default-empty > .t, .default-no-more {
   text-align: center;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.49);
+  color: rgba($main-text, 0.49);
   line-height: 48px;
 }
 
@@ -158,7 +158,7 @@
       align-items: center;
       font-size: 16px;
       font-weight: 500;
-      color: #000000;
+      color: $main-text;
       flex-grow: 0;
       flex-shrink: 0;
       margin-bottom: 16px;
@@ -446,140 +446,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.free-schedule-time {
-  width: 100%;
-  overflow: hidden;
-
-  &.scroll > .items {
-    overflow: auto;
-    margin-right: 16px;
-
-    .item {
-      flex-grow: 0;
-      flex-shrink: 0;
-    }
-  }
-
-  & > span {
-    flex-grow: 0;
-    flex-shrink: 0;
-  }
-
-  & > .items {
-    flex-grow: 1;
-
-    & > .item {
-      position: relative;
-      display: flex;
-      align-items: center;
-      padding: 6px;
-      background: transparent;
-      border-radius: 4px;
-      border: 1PX solid var(transparent);
-      cursor: pointer;
-      //margin-bottom: 16px;
-      //padding-right: 16px;
-
-      & > [class*='icon-'] {
-        margin: 0 6px;
-        cursor: pointer;
-
-        &:before {
-          margin-right: 0;
-        }
-
-        &.close {
-          font-size: 14px;
-          color: $main-error !important;
-          transform: rotateZ(45deg);
-        }
-
-        &.bianji {
-          font-size: 18px;
-          color: $main-warn !important;
-          filter: drop-shadow(0 0 1px rgba(0, 0, 0, .2));
-        }
-      }
-
-      & > .colorName {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: var(--color);
-        min-width: 30px;
-        height: 30px;
-        border-radius: 4px;
-        font-size: 16px;
-        font-weight: 500;
-        color: #fff;
-        padding: 0 3px;
-      }
-
-      &.dark > .colorName {
-        color: #fff;
-      }
-
-      &.light > .colorName {
-        color: #282828;
-      }
-
-      & > .time {
-        font-size: 16px;
-        color: #7A7A7A;
-        font-weight: 500;
-        line-height: 19px;
-        margin-left: 12px;
-      }
-
-      &.active {
-        //padding: 12px;
-        background: var(--bg);
-        //border-radius: 4px;
-        border: 1PX solid var(--color);
-      }
-    }
-
-    &.item-size-3 {
-      display: flex;
-      flex-wrap: wrap;
-
-      & > .item {
-        margin-top: 10px;
-        margin-right: 16px;
-
-        &:nth-of-type(-n+3) {
-          margin-top: 0;
-        }
-
-        &:nth-of-type(3n) {
-          margin-right: 0;
-        }
-      }
-    }
-  }
-
-  &.add-view {
-    .items > .item {
-      padding: 0;
-      margin-bottom: 12px;
-    }
-  }
-
-  &.inline, &.inline > .items {
-    display: flex;
-    align-items: center;
-  }
-
-  &.inline > .items > .item {
-    margin-bottom: 0;
-    margin-right: 18px;
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
 }
 
 .link, .linker {
@@ -881,8 +747,9 @@
 .search_tree {
   //选中的背景色
   .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-    background-color: $tree-chance-background;
-    color: #ffffff !important;
+    // background-color: $tree-chance-background;
+    // color: #ffffff !important;
+    color: $tree-chance-background !important;
   }
 }
 

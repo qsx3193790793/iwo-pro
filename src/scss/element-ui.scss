@@ -35,11 +35,11 @@ $main-color-5: rgba($main-color, 0.5);
 }
 
 .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner::after {
-  border-color: #232323;
+  border-color: $main-text;
 }
 
 .el-radio__input.is-disabled.is-checked .el-radio__inner::after {
-  background-color: #232323;
+  background-color: $main-text;
 }
 
 .el-button--small:not(.el-button--text) {
@@ -60,7 +60,7 @@ $main-color-5: rgba($main-color, 0.5);
   th.el-table__cell > .cell {
     font-size: 14px;
     font-weight: bold;
-    color: rgb(13, 13, 15);
+    color: $main-text;
   }
 
   td.el-table__cell > .cell {
@@ -120,7 +120,7 @@ $main-color-5: rgba($main-color, 0.5);
 
   &.is-active {
     color: #fff;
-    background: $main-color;
+    background: $secondary-color;
   }
 }
 
@@ -132,7 +132,7 @@ $main-color-5: rgba($main-color, 0.5);
 .el-breadcrumb__inner {
   font-size: 16px;
   font-weight: 500;
-  color: #000000;
+  color: $main-text;
 }
 
 .demo-form-inline .el-input {
@@ -148,7 +148,7 @@ $main-color-5: rgba($main-color, 0.5);
 .el-drawer__title {
   font-size: 20px;
   font-weight: 600;
-  color: #151F30;
+  color: $main-text;
 }
 
 .el-drawer.rtl {
@@ -199,7 +199,7 @@ $main-color-5: rgba($main-color, 0.5);
   display: flex;
   align-items: center;
   font-size: 14px;
-  color: #21242B;
+  color: $main-text;
   //margin-bottom: 10px;
 }
 
@@ -390,7 +390,7 @@ $main-color-5: rgba($main-color, 0.5);
 .el-select-group__title {
   font-weight: bold;
   font-size: 16px;
-  color: #000;
+  color: $main-text;
 }
 
 .el-cascader .el-input .el-input__inner {
@@ -418,9 +418,6 @@ $main-color-5: rgba($main-color, 0.5);
   opacity: 0.5;
 }
 
-.v-modal {
-  overflow: hidden;
-}
 
 .el-scrollbar__thumb {
   background-color: rgba(134, 134, 134, 0.5);
@@ -428,4 +425,18 @@ $main-color-5: rgba($main-color, 0.5);
   &:hover {
     background-color: rgba(134, 134, 134, 0.8);
   }
+}
+
+.v-modal {
+  overflow: hidden;
+}
+
+.el-dialog__headerbtn .el-dialog__close, .el-message-box__headerbtn .el-message-box__close {
+  color: rgba($main-error, 0.75);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.el-dialog__headerbtn:focus .el-dialog__close, .el-dialog__headerbtn:hover .el-dialog__close, .el-message-box__headerbtn:focus .el-message-box__close, .el-message-box__headerbtn:hover .el-message-box__close {
+  color: rgba($main-error, 0.9);
 }

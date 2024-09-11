@@ -10,10 +10,12 @@ export const resFields = [
   {label: '争议渠道三级编码', value: 'path[2]'},
   {label: '争议渠道编码链', value: 'fullPath'},
 ];
-export default async ({vm, item, value}) => {
-  console.log(vm, item, value)
-  item.eventsFields.forEach(ef => {
-    const v = vm.$$lodash.get(value || {}, ef.value);
+export default async ({vm, item, eventsFields, value}) => {
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const v = vm.$$lodash.get(value || {}, valueKey);
     if (vm.$$isEmpty(v)) return;
     vm.formData[`${ef.label}`] = v;
   });

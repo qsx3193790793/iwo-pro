@@ -39,13 +39,12 @@ const router = {};
 const {proxy} = getCurrentInstance();
 
 function checkRoute() {
-
   const tab = {
     name: proxy.$route.meta.name,
     routeName: proxy.$route.name,
     query: proxy.$route.query,
     params: proxy.$route.params,
-    key: proxy.$route.meta.name,
+    key: `${proxy.$route.meta.name}${proxy.$route.meta.multiTab ? proxy.$$getUUID() : ''}`,//一个页面同时打开多个
     path: proxy.$route.path,
     closable: !0,//是否可关闭
     isActive: !0,//活动状态

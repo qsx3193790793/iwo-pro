@@ -3,7 +3,7 @@
     <div class="login_title">
       <img src="../../../../assets/images/login/logo.png" alt="" class="img">
     </div>
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+    <el-form ref="loginForm" size="large" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">智慧客服工单系统</h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="请输入账号" :maxlength="30">
@@ -172,19 +172,22 @@ export default {
 }
 
 .title {
-  margin: 30px auto 50px auto;
+  margin: 30px auto 70px auto;
   text-align: center;
   color: #707070;
   font-weight: 600;
+  font-size: 34px;
+  letter-spacing: 1px;
 }
 
 .login-form {
   margin-right: 200px;
   border-radius: 6px;
   // background: #ffffff;
-  width: 430px;
-  padding: 50px;
+  width: 600px;
+  padding: 40px 60px;
   background-image: linear-gradient(to bottom, #FFFFFF, #FFFFFF, #DFE7FC);
+  box-sizing: border-box;
 
   .el-input {
     height: 38px;
@@ -220,11 +223,11 @@ export default {
 
 .login-code {
   width: 33%;
-  height: 38px;
+  height: 40px;
 
   position: absolute;
-  right: 0px;
-  top: 0px;
+  right: 0;
+  top: 0;
 
   img {
     cursor: pointer;
@@ -246,6 +249,10 @@ export default {
 }
 
 .login-code-img {
-  height: 38px;
+  height: 40px;
+}
+
+::v-deep(.el-form-item.el-form-item--large) {
+  margin-bottom: 32px;
 }
 </style>

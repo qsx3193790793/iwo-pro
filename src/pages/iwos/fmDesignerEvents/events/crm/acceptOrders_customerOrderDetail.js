@@ -1,4 +1,3 @@
-
 export const key = 'acceptOrders_customerOrderDetail';
 export const label = '省内接口_订单详情查询';
 export const resFields = [
@@ -22,7 +21,7 @@ export const resFields = [
   {"label": "产品实例标识省份产品实例ID", "value": "ordProdInst.prodInstId"}
 ];
 
-export default async ({vm, item, value}) => {
+export default async ({vm, item, eventsFields, value}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning, item, value);
   // 未定位直接pass  formStatus不为新建时直接pass
@@ -34,11 +33,14 @@ export default async ({vm, item, value}) => {
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
-  console.log('eventsFields', vm, item?.eventsFields)
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
-  item?.eventsFields.forEach(ef => {
+  // 筛选事件相关字段赋值
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
     const r = res || {};
-    const v = vm.$$lodash.get(Object.assign({}, r, r.orderItems?.[0] || {}), ef.value);
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const v = vm.$$lodash.get(Object.assign({}, r, r.orderItems?.[0] || {}), valueKey);
     if (vm.$$isEmpty(v)) return;
     vm.formData[`${ef.label}`] = v;
   });

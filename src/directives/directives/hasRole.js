@@ -7,7 +7,8 @@
 import {store} from '@/store/stores/Common/userInfo'
 
 export default {
-  name: 'hasRole', mounted(el, binding, vnode) {
+  name: 'hasRole',
+  bind(el, binding, vnode) {
     if (!el) return;
     const roles = store.state.roles;
     const {value} = binding;

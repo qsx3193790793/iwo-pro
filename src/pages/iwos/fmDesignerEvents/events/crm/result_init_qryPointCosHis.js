@@ -1,4 +1,3 @@
-
 export const key = 'result_init_qryPointCosHis';
 export const label = '集团接口_积分消费历史列表结果赋值';
 export const resFields = [
@@ -21,14 +20,16 @@ export const resFields = [
   {label: '是否有兑换记录', value: 'status'},
   {label: '订单号', value: 'orderNbr'}
 ];
-export default async ({vm, item, value}) => {
+export default async ({vm, item, eventsFields, value}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
   if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
-  console.log('eventsFields', vm, item.eventsFields)
-  item.eventsFields.forEach(ef => {
-    const v = vm.$$lodash.get(value || {}, ef.value);
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const v = vm.$$lodash.get(value || {}, valueKey);
     if (vm.$$isEmpty(v)) return;
     vm.formData[`${ef.label}`] = v;
   });

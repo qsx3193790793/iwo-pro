@@ -178,7 +178,7 @@ watch(() => proxy.$route.params.detailWorkorderId, () => {
     detailWorkorderId.value = proxy.$route.params.detailWorkorderId;
     FormModelRef.value?.init();
   }
-})
+});
 
 onMounted(() => {
   if (proxy.$route.params.detailWorkorderId) {
@@ -207,7 +207,7 @@ export default {
   .main-title-1 {
     font-size: 0.18rem;
     font-weight: bold;
-    color: #353535;
+    color: $main-text;
     margin-bottom: 24px;
   }
 

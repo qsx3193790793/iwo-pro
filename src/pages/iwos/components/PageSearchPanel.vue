@@ -60,7 +60,7 @@ defineExpose({
   }
 
   ::v-deep(.el-form-item__label .slot-label) {
-    color: rgb(85, 92, 98);
+    color: $main-text;
   }
 
   ::v-deep(.el-collapse-item__content) {

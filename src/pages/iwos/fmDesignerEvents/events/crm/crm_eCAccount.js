@@ -1,4 +1,3 @@
-
 export const key = 'crm_eCAccount';
 export const label = '服务一致性_账户信息查询';
 export const resFields = [
@@ -10,10 +9,10 @@ export const resFields = [
   {"label": "客户标识", "value": "custId"}
 ];
 
-export default async ({vm, eventsFields}) => {
+export default async ({vm, item, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
-  if (!customPositioning|| vm.formStatus!=='create') return;
+  if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
   const {res, err} = await vm.$$api.crm.eCAccount({
     params: {
@@ -24,8 +23,11 @@ export default async ({vm, eventsFields}) => {
   });
   // if (err) return vm.$$Toast({message: `操作失败`, type: 'error'});
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
-  eventsFields.forEach(ef => {
-    const value = vm.$$lodash.get(res || {}, ef.value);
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const value = vm.$$lodash.get(res || {}, valueKey);
     if (vm.$$isEmpty(value)) return;
     vm.formData[`${ef.label}`] = value;
   });

@@ -119,7 +119,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="200" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['monitor:job:edit']">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)" v-hasPermission="['monitor:job:remove']">删除</el-button>
@@ -140,7 +140,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改定时任务对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="8rem">
       <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="120px">
         <el-row>
           <el-col :span="12">
@@ -173,7 +173,7 @@
                   <i class="el-icon-question"></i>
                 </el-tooltip>
               </span>
-              <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" maxlength="30"/>
+              <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" maxlength="200"/>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -223,14 +223,16 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
-
-    <el-dialog title="Cron表达式生成器" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar" :close-on-click-modal="!1">
+    </MDialog>
+    
+    <!-- <el-dialog title="" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar" :close-on-click-modal="!1"> -->
+      <MDialog  v-model="openCron" title="Cron表达式生成器" width="7rem" height="78vh">
       <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
-    </el-dialog>
+    </MDialog>
 
     <!-- 任务日志详细 -->
-    <el-dialog title="任务详情" :visible.sync="openView" width="700px" append-to-body :close-on-click-modal="!1">
+    
+    <MDialog  v-model="openView" title="任务详情" width="7rem">
       <el-form ref="form" :model="form" label-position="left" label-width="120px" size="small">
         <el-row>
           <el-col :span="12">
@@ -275,15 +277,15 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="openView = false">关 闭</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 import Crontab from './components/Crontab'
-
+import MDialog from '@/components/MDialog';
 export default {
-  components: {Crontab},
+  components: {Crontab,MDialog},
   name: "JobIndex",
   dicts: ['sys_job_group', 'sys_job_status'],
   data() {

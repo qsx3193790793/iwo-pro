@@ -135,7 +135,7 @@
           <el-table-column
               label="操作"
               align="center"
-              width="260"
+              width="180"
               class-name="small-padding fixed-width"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
@@ -162,7 +162,8 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body :close-on-click-modal="!1">
+    
+    <MDialog  v-model="open" :title="title" width="7rem">
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="90px">
         <el-row>
           <el-col :span="12">
@@ -279,10 +280,10 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
 
     <!-- 用户导入对话框 -->
-    <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="upload.open" :title="upload.title" width="4rem">
       <el-upload
           ref="upload"
           :limit="1"
@@ -310,10 +311,10 @@
         <el-button type="primary" @click="submitFileForm">确 定</el-button>
         <el-button @click="upload.open = false">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
 
     <!-- 分配角色 -->
-    <el-dialog title="已授权角色" :visible.sync="authRole.open" width="75vw" append-to-body :close-on-click-modal="!1" destroy-on-close>
+    <MDialog  v-model="authRole.open" title="已授权角色" width="75vw">
       <div class="one-screen" style="height: 50vh;">
         <h4 class="main-title one-screen-fg0">基本信息</h4>
         <el-form class="one-screen-fg0" ref="form" :model="authRole.form" label-width="80px">
@@ -354,18 +355,19 @@
         <el-button type="primary" @click="submitAuthRoleForm">确 定</el-button>
         <el-button @click="authRole.open=!1">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 import Treeselect from "@riophae/vue-treeselect";
+import MDialog from '@/components/MDialog';
 import apiPrefix from "@/api/apiPrefix.js";
 
 export default {
   name: "UserIndex",
   dicts: ['sys_normal_disable', 'sys_user_sex'],
-  components: {Treeselect},
+  components: {Treeselect,MDialog},
   data() {
     const complexPW = (rule, value, callback) => {
       if (this.$$validator.isPwd(value)) {

@@ -69,7 +69,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="7rem">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -129,7 +129,7 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
@@ -137,11 +137,11 @@
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
-
+import MDialog from '@/components/MDialog';
 export default {
   name: "ProductClassification",
   dicts: ['start_stop', 'yes_no'],
-  components: {Treeselect, JsTable, PageSearchPanel},
+  components: {Treeselect, JsTable, PageSearchPanel,MDialog},
   data() {
     return {
       // 遮罩层
@@ -286,10 +286,6 @@ export default {
         selection: true,
         props: [
           {
-            name: "节点层级链",
-            key: "productChain",
-          },
-          {
             name: "投诉产品编码",
             key: "productCode",
           },
@@ -317,6 +313,10 @@ export default {
             name: "更新时间",
             width: 160,
             key: "updatedTime",
+          },
+          {
+            name: "节点层级链",
+            key: "productChain",
           },
         ],
         options: {

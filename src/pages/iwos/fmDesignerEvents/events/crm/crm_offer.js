@@ -1,4 +1,3 @@
-
 export const key = 'crm_offer';
 export const label = '服务一致性_销售品信息查询';
 export const resFields = [
@@ -22,7 +21,7 @@ export const resFields = [
   // { "label": "最小数量", "value": "offerProdRels[0].offerProdRelRstrCfgs[0].minNum" },
   // { "label": "最大数量", "value": "offerProdRels[0].offerProdRelRstrCfgs[0].maxNum" }
 ];
-export default async ({vm, item, value}) => {
+export default async ({vm, item, eventsFields, value}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning, item, value);
   // 未定位直接pass
@@ -35,10 +34,12 @@ export default async ({vm, item, value}) => {
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
-  console.log('eventsFields', vm, item?.eventsFields)
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
-  item?.eventsFields.forEach(ef => {
-    const value = vm.$$lodash.get(res?.[0] || {}, ef.value);
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const value = vm.$$lodash.get(res?.[0] || {}, valueKey);
     if (vm.$$isEmpty(value)) return;
     vm.formData[`${ef.label}`] = value;
   });

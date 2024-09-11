@@ -103,7 +103,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="!1">
+    <MDialog v-model="open" :title="title" width="7rem" height="auto">
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="80px">
         <el-form-item label="字典名称" prop="dictName">
           <el-input v-model="form.dictName" placeholder="请输入字典名称" maxlength="30"/>
@@ -129,15 +129,17 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
+import MDialog from '@/components/MDialog';
 
 export default {
   name: "DictIndex",
   dicts: ['sys_normal_disable'],
+  components: {MDialog},
   data() {
     return {
       // 遮罩层

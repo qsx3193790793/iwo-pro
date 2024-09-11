@@ -1,4 +1,3 @@
-
 export const key = 'histryfaultOrder_queryHistryfaultOrder';
 export const label = '省内接口_故障历史查询';
 export const resFields = [
@@ -12,7 +11,7 @@ export const resFields = [
   {"label": "是否出现群障", "value": "isGroupFault"},
   {"label": "故障时间", "value": "faultDate"}
 ];
-export default async ({vm, eventsFields}) => {
+export default async ({vm, item, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning)
   // 未定位直接pass
@@ -25,10 +24,12 @@ export default async ({vm, eventsFields}) => {
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
-  console.log('eventsFields', eventsFields)
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
-  eventsFields.forEach(ef => {
-    const value = vm.$$lodash.get(res || {}, ef.value);
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const value = vm.$$lodash.get(res || {}, valueKey);
     if (vm.$$isEmpty(value)) return;
     vm.formData[`${ef.label}`] = value;
   });

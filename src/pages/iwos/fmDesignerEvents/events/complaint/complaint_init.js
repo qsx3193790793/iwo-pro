@@ -91,7 +91,7 @@ export default async ({vm, item}) => {
 
       // 归属地信息
       'lanId': lanIdInfo.lanid ?? null,
-      'phoneLocal': eCProductInfo.phoneLocal ?? null,
+      'phoneLocal': eCProductInfo?.phoneLocal ?? null,
 
       //基本客户信息
       'userStarLevel': custom.custLevel ?? null,

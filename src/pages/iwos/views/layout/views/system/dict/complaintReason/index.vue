@@ -31,7 +31,7 @@
                 placeholder="请输入投诉原因编码"
                 maxlength="30"
                 clearable
-                style="width: 200px"
+                class="queryItem"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -41,7 +41,7 @@
                 placeholder="请输入投诉原因名称"
                 clearable
                 maxlength="30"
-                style="width: 200px"
+                 class="queryItem"
                 @keyup.enter.native="handleQuery"
             />
           </el-form-item>
@@ -50,7 +50,7 @@
                 v-model="queryParams.isProvinceCustom"
                 placeholder="请选择是否省自定义"
                 clearable
-                style="width: 200px"
+                 class="queryItem"
             >
               <el-option
                   v-for="dict in $store.getters['dictionaries/GET_DICT']('yes_no')"
@@ -64,7 +64,7 @@
                 v-model="queryParams.status"
                 placeholder="请选择状态"
                 clearable
-                style="width: 130px"
+                class="queryItem"
             >
               <el-option
                   v-for="dict in $store.getters['dictionaries/GET_DICT']('reason_status_name')"
@@ -78,12 +78,15 @@
              /> -->
             </el-select>
           </el-form-item>
-          <el-form-item>
-            <el-button size="mini" @click="resetQuery">重置</el-button>
-            <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:reason:list']">查询</el-button>
-            <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd" v-hasPermission="['config:reason:add']">新增</el-button>
-            <!-- <el-button type="danger" size="mini" :disabled="!isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button> -->
-          </el-form-item>
+          <div class='queryBtns'>
+            <el-form-item>
+              <el-button size="mini" @click="resetQuery">重置</el-button>
+              <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:reason:list']">查询</el-button>
+              <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd" v-hasPermission="['config:reason:add']">新增</el-button>
+              <!-- <el-button type="danger" size="mini" :disabled="!isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:reason:delete']">删除</el-button> -->
+            </el-form-item>
+          </div>
+          
         </el-form>
         <JsTable class="one-screen-fg1" :dataSource="dataSource" :columns="columns" @selectionChange="handleSelectionChange">
           <template #isProvinceCustom="{row}">
@@ -98,7 +101,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="7rem">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px" label-position='left'>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -236,19 +239,20 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import JsTable from "@/components/js-table/index.vue";
+import MDialog from '@/components/MDialog';
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 
 export default {
   name: "ComplaintReason",
   dicts: ["reason_status_name", "yes_no"],
-  components: {Treeselect, PageSearchPanel, JsTable},
+  components: {Treeselect, PageSearchPanel, JsTable,MDialog},
   data() {
     return {
       // 遮罩层
@@ -810,5 +814,13 @@ export default {
 ::v-deep .component {
   display: flex;
   align-items: center;
+}
+.queryItem{
+  width: 240px
+}
+.one-screen{
+ .queryBtns{
+  float: right
+ }
 }
 </style>

@@ -80,7 +80,7 @@ const props = defineProps({
   align-items: center;
   font-size: 16px;
   font-weight: bold;
-  color: #353535;
+  color: $main-text;
   line-height: 2;
   &::before {
     content: "";

@@ -1,4 +1,3 @@
-
 export const key = 'crm_ECQueryBalance';
 export const label = '服务一致性_余额查询';
 export const resFields = [
@@ -31,7 +30,7 @@ export const resFields = [
   // {"label": "余额使用范围", "value": "accNbrDetail"},
   // {"label": "是否可提取", "value": "ifAllowDraw"}
 ];
-export default async ({vm, eventsFields}) => {
+export default async ({vm, item, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
   if (!customPositioning || vm.formStatus !== 'create') return;
@@ -45,9 +44,11 @@ export default async ({vm, eventsFields}) => {
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
-  console.log('eventsFields', vm, eventsFields)
-  eventsFields.forEach(ef => {
-    const v = vm.$$lodash.get(res?.accountInfoList?.[0] || {}, ef.value);
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const v = vm.$$lodash.get(res?.accountInfoList?.[0] || {}, valueKey);
     if (vm.$$isEmpty(v)) return;
     vm.formData[`${ef.label}`] = v;
   });

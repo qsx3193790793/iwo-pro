@@ -59,11 +59,12 @@
         </el-tabs>
       </div>
     </div>
-    <el-dialog v-if="dialogVisible" title="表单预览" :visible.sync="dialogVisible" width="90vw" :close-on-click-modal="!1" destroy-on-close append-to-body>
+    
+    <MDialog v-if="dialogVisible" v-model="dialogVisible" title="表单预览" width="90vw">
       <div class="fm-designer-view">
         <FormModel ref="FormConfigViewRef" :formConfig="formConfigView"></FormModel>
       </div>
-    </el-dialog>
+    </MDialog>
     <MDialog v-if="isQuoteTemplateShow&&quoteComponent" v-model="isQuoteTemplateShow" width="90vw" height="70vh" title="选择模板" onScreen>
       <component :is="quoteComponent" :is-quote="true" @onQuote="onQuote"></component>
     </MDialog>

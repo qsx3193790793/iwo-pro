@@ -3,7 +3,7 @@ let timer = null, isTrigger = null;
 
 export default {
   name: 'longPress',//长按
-  mounted(el, binding, vnode, oldVnode) {
+  bind(el, binding, vnode, oldVnode) {
     binding.start = e => {
       console.log('longPress active', e)
       if (e.type !== 'touchstart' && (e.button !== 0 || e.type === 'click')) return;
@@ -35,7 +35,7 @@ export default {
     el.addEventListener("touchcancel", binding.cancel, true);
     el.addEventListener("touchmove", binding.touchmove, false);
   },
-  beforeUnmount(el, binding, vnode, oldVnode) {
+  unbind(el, binding, vnode, oldVnode) {
     // 移除事件监听器
     el.removeEventListener("mousedown", binding.start, true);
     el.removeEventListener("touchstart", binding.start, true);

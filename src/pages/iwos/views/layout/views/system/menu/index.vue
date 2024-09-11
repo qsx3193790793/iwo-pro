@@ -82,7 +82,7 @@
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="220" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="small"
@@ -110,7 +110,7 @@
     </el-table>
 
     <!-- 添加或修改菜单对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="680px" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="6.8rem">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left">
         <el-row>
           <el-col :span="24">
@@ -286,18 +286,18 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import iconfontJson from '/public/static/css/iconfont/iconfont.json';
-
+import MDialog from '@/components/MDialog';
 export default {
   name: "MenuIndex",
   dicts: ['sys_show_hide', 'sys_normal_disable'],
-  components: {Treeselect},
+  components: {Treeselect,MDialog},
   data() {
     return {
       // 遮罩层

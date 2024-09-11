@@ -59,13 +59,8 @@
       </div>
     </div>
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog
-        title="归档"
-        :visible.sync="state.open"
-        width="6rem"
-        append-to-body
-        :close-on-click-modal="!1"
-    >
+   
+    <MDialog  v-model="state.open" title="归档" width="7rem">
       <el-form
           ref="FormRef"
           :model="state.form"
@@ -89,7 +84,7 @@
         <el-button type="primary" @click="submitForm">归 档</el-button>
         <!-- <el-button @click="cancel">取 消</el-button> -->
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
@@ -98,6 +93,7 @@ import dayjs from "dayjs";
 import {getCurrentInstance, ref, onBeforeMount} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
+import MDialog from '@/components/MDialog';
 import {onMounted} from "vue";
 
 const {proxy} = getCurrentInstance();
@@ -109,7 +105,7 @@ const FormRef = ref();
 // 归档归档
 const submitForm = () => {
   state.value.form.taskList = [];
-  let chanceData= selectData.value.length>0? selectData.value:currentRowData.value
+  let chanceData = selectData.value.length > 0 ? selectData.value : currentRowData.value
   FormRef.value.validate((valid) => {
     if (valid) {
       state.value.form.taskList = chanceData.map((ele) => {
@@ -132,7 +128,7 @@ const submitForm = () => {
     }
   });
 };
-let currentRowData=ref([])
+let currentRowData = ref([])
 let state = ref({
   open: false,
   form: {
@@ -188,16 +184,18 @@ let state = ref({
           label: '详情',
           key: 'detail',
           event: row => {
-            proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
+            window.open(`/iwos/window/${row.workorderId}?pageCode=ComplaintDetail&complaintAssetNum=${row.complaintAssetNum}&complaintWorksheetId=${row.complaintWorksheetId}`);
+
+            // proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum}})
           },
         },
         {
           label: '归档',
           key: 'onfile',
-          type:'success',
+          type: 'success',
           event: row => {
-            selectData.value=[]
-            currentRowData.value=[row]
+            selectData.value = []
+            currentRowData.value = [row]
             handleOnFile()
           },
         },
@@ -361,7 +359,7 @@ const formConfigItems = ref([
       {
         btnName: "归档",
         type: "button",
-        attrs: {type: "success",disabled:()=>selectData.value.length==0 },
+        attrs: {type: "success", disabled: () => selectData.value.length == 0},
         col: 1,
         permission: ['order:onFile:action'],
         onClick({vm}) {
@@ -371,13 +369,14 @@ const formConfigItems = ref([
     ],
   },
 ]);
-const handleOnFile=()=>{
-   // 通过异步的方式实现生成后的操作
-   setTimeout(() => {
-      FormRef.value?.resetFields();
-   }, 0);
-   state.value.open = true;
+const handleOnFile = () => {
+  // 通过异步的方式实现生成后的操作
+  setTimeout(() => {
+    FormRef.value?.resetFields();
+  }, 0);
+  state.value.open = true;
 }
+
 //投诉来源下拉菜单
 async function listComplaintSourceTree() {
   proxy.$$api.web.findSourceTree({data: {status: 1},}).then((res, err) => {

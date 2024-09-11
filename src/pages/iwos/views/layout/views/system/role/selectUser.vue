@@ -1,6 +1,7 @@
 <template>
   <!-- 授权用户 -->
-  <el-dialog title="选择用户" :visible.sync="visible" width="800px" top="5vh" append-to-body :close-on-click-modal="!1">
+  
+  <MDialog  v-model="visible" title="选择用户" width="8rem" top="5vh">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true">
       <el-form-item label="用户名称" prop="userName">
         <el-input
@@ -50,12 +51,14 @@
       <el-button type="primary" @click="handleSelectUser">确 定</el-button>
       <el-button @click="visible = false">取 消</el-button>
     </div>
-  </el-dialog>
+  </MDialog>
 </template>
 
 <script>
+import MDialog from '@/components/MDialog';
 export default {
   dicts: ['sys_normal_disable'],
+  components: {MDialog},
   props: {
     // 角色编号
     roleId: {

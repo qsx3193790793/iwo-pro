@@ -30,7 +30,7 @@
     />
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="7rem">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -53,17 +53,18 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 <script>
 import JsTable from "@/components/js-table/index.vue";
+import MDialog from '@/components/MDialog';
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 
 export default {
   name: "LabelDictionary",
   dicts: ["start_stop"],
-  components: {JsTable, PageSearchPanel},
+  components: {JsTable, PageSearchPanel,MDialog},
   data() {
     return {
       // 遮罩层

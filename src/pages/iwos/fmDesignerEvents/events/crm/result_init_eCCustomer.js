@@ -32,16 +32,17 @@ export const resFields = [
   {"label": "更新人", "value": "updatedBy"},
   {"label": "更新时间", "value": "updatedTime"}
 ];
-export default async ({vm, eventsFields}) => {
+export default async ({vm, item, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
   if (!customPositioning || vm.formStatus !== 'create') return;
   const {lanIdInfo, custom, accType, accNum} = customPositioning;
-  console.log('eventsFields', vm, eventsFields)
   vm.$nextTick(() => {
-    eventsFields.forEach(ef => {
-      const value = vm.$$lodash.get(custom || {}, ef.value);
-      console.log(`${ef.label}`, value, vm.$$isEmpty(value))
+    const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+    console.log('event call', key, fields);
+    fields.forEach(ef => {
+      const valueKey = ef.value.replace(`$${key}$`, '');
+      const value = vm.$$lodash.get(custom || {}, valueKey);
       if (vm.$$isEmpty(value)) return;
       vm.formData[`${ef.label}`] = value;
     });

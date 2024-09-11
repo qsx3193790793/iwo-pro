@@ -19,7 +19,7 @@ export default {name: 'Err404'}
     margin-top: 20px;
     text-align: center;
     font-size: 14px;
-    color: #5b5b5b;
+    color: $main-text;
     width: 100%;
     font-weight: 500;
   }

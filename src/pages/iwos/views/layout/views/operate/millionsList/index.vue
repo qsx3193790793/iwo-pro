@@ -11,72 +11,73 @@
         </JsTable>
         <div class="pagination-area">
           <el-pagination :current-page.sync="pageInfo.pageNum" :page-size.sync="pageInfo.pageSize"
-            :page-sizes="[15, 30, 40, 50]" background layout=" ->,total, sizes, prev, pager, next, jumper"
-            :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList" />
+                         :page-sizes="[15, 30, 40, 50]" background layout=" ->,total, sizes, prev, pager, next, jumper"
+                         :total="pageInfo.rowCount" @size-change="getList(1)" @current-change="getList"/>
         </div>
       </div>
     </template>
-    <div v-if="state.isShowAddDialog">
-      <el-dialog :visible="state.isShowAddDialog" ref="MDialogRef" width="40%" top="10vh" height="30vh" :close-on-click-modal="!1"
-        :title="`${addType === 'add' ? '新增' : '编辑'}地域百万用户数`" @close="isShowImportDialog(false)">
-        <div class="dialog-box">
-          <el-form ref="FormRef" :model="state.form" :rules="state.rules" label-width="auto">
-            <el-row :gutter="20">
-              <el-col :span="24">
-                <el-form-item label="地域" prop="providerCode">
-                  <!-- <el-input v-model="state.form.providerCode" placeholder="请输入"
-                    maxlength="50"></el-input> -->
-                  <el-cascader clearable v-if="addType === 'add'" v-model="state.form.providerCode"
-                    :props="props"></el-cascader>
-                  <template v-else>
-                    {{ state.form.providerCode }} </template>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="24">
-                <el-form-item label="年度-季度" prop="quarter">
-                  <template v-if="addType === 'add'">
+    <MDialog v-model="state.isShowAddDialog" ref="MDialogRef" width="40%" top="10vh" height="30vh" :title="`${addType === 'add' ? '新增' : '编辑'}地域百万用户数`" @close="isShowImportDialog(false)">
+      <div class="dialog-box">
+        <el-form ref="FormRef" :model="state.form" :rules="state.rules" label-width="auto">
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item label="地域" prop="providerCode">
+                <!-- <el-input v-model="state.form.providerCode" placeholder="请输入"
+                  maxlength="50"></el-input> -->
+                <el-cascader clearable v-if="addType === 'add'" v-model="state.form.providerCode"
+                             :props="props"></el-cascader>
+                <template v-else>
+                  {{ state.form.providerCode }}
+                </template>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item label="年度-季度" prop="quarter">
+                <template v-if="addType === 'add'">
 
-                    <el-select v-model="state.form.year" placeholder="请选择">
-                      <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
-                      </el-option>
-                    </el-select>
-                    <el-select :disabled="!state.form.year" v-model="state.form.quarter" placeholder="请选择"
-                      style="margin-left:10px">
-                      <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value">
-                      </el-option>
-                    </el-select>
-                  </template>
-                  <template v-else>
-                    {{ state.form.year }}-{{ getQuarterName(state.form.quarter) }} </template>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row :gutter="20">
-              <el-col :span="24">
-                <el-form-item label="用户数" prop="userNum">
-                  <el-input v-model="state.form.userNum" placeholder="请输入用户数" maxlength="50"></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-form>
+                  <el-select v-model="state.form.year" placeholder="请选择">
+                    <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+                  <el-select :disabled="!state.form.year" v-model="state.form.quarter" placeholder="请选择"
+                             style="margin-left:10px">
+                    <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+                </template>
+                <template v-else>
+                  {{ state.form.year }}-{{ getQuarterName(state.form.quarter) }}
+                </template>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-form-item label="用户数" prop="userNum">
+                <el-input v-model="state.form.userNum" placeholder="请输入用户数" maxlength="50"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
 
-        </div>
-        <template #footer>
-          <el-button type="primary" plain @click="submitForm">提交</el-button>
-          <el-button plain @click="isShowImportDialog(false)">关闭</el-button>
-        </template>
-      </el-dialog>
-    </div>
+      </div>
+      <template #footer>
+        <el-button type="primary" plain @click="submitForm">提交</el-button>
+        <el-button plain @click="isShowImportDialog(false)">关闭</el-button>
+      </template>
+    </MDialog>
   </div>
 </template>
 
 <script setup>
-import { getCurrentInstance, ref, onBeforeMount, onMounted, onActivated } from "vue";
+import MDialog from '@/components/MDialog';
+import {getCurrentInstance, ref, onBeforeMount, onMounted, onActivated} from "vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 import JsTable from "@/components/js-table/index.vue";
-const { proxy } = getCurrentInstance();
+
+const {proxy} = getCurrentInstance();
 const isShowImportDialog = (bl = true) => {//新增编辑弹窗
 
   if (!bl) {
@@ -95,13 +96,13 @@ const props = {
   checkStrictly: !0,
   lazy: true,
   lazyLoad(node, resolve) {
-    const { level } = node;
-    proxy.$$api.millionsUsers.getArea({ params: { code: node.value } }).then(res => {
+    const {level} = node;
+    proxy.$$api.millionsUsers.getArea({params: {code: node.value}}).then(res => {
       const nodes = proxy.$$formatCascaderTree(
-        res.res?.list || [],
-        "name",
-        "code",
-        "children"
+          res.res?.list || [],
+          "name",
+          "code",
+          "children"
       )
       const data = nodes.map(item => {
         return {
@@ -131,9 +132,9 @@ const options2 = [{
   value: '4',
   label: '第四季度'
 }]
-const getQuarterName=(val)=>{
- return options2.filter(res=>{
-    return res.value==val
+const getQuarterName = (val) => {
+  return options2.filter(res => {
+    return res.value == val
   })[0].label
 }
 const generateYears = () => {
@@ -153,37 +154,34 @@ const submitForm = () => {
   FormRef.value.validate((valid) => {
     if (valid) {
 
-      const { providerCode, year, quarter, userNum } = state.value.form;
+      const {providerCode, year, quarter, userNum} = state.value.form;
       const [providerCode1, cityCode, townCode] = providerCode || [];
 
       let formData = {}
       let url = ''
-      if(addType.value === 'add'){
-        url='insertUserNumber'
+      if (addType.value === 'add') {
+        url = 'insertUserNumber'
         formData = {
-        providerCode: providerCode1 || '',
-        cityCode: cityCode || '',
-        townCode: townCode || '',
-        year,
-        quarter,
-        userNum
-      };
-      }else{
-        url='updateUserNum'
+          providerCode: providerCode1 || '',
+          cityCode: cityCode || '',
+          townCode: townCode || '',
+          year,
+          quarter,
+          userNum
+        };
+      } else {
+        url = 'updateUserNum'
         formData = {
-          id: state.value.form.id||'',
+          id: state.value.form.id || '',
           userNum
         }
       }
 
-
-
-      proxy.$$api.millionsUsers[url]({ data: formData }).then(({res, err}) => {
-          proxy.$$Toast({ message: `操作成功`, type: 'success' })
-          getList(1)
-          isShowImportDialog(false)
+      proxy.$$api.millionsUsers[url]({data: formData}).then(({res, err}) => {
+        proxy.$$Toast({message: `操作成功`, type: 'success'})
+        getList(1)
+        isShowImportDialog(false)
       })
-
 
     }
   });
@@ -203,25 +201,24 @@ let state = ref({
   },
   rules: {
     providerCode: [
-      { required: true, message: "不能为空", trigger: "blur" },
+      {required: true, message: "不能为空", trigger: "blur"},
     ],
     quarter: [
-      { required: true, message: '请选择季度', trigger: 'change' }
+      {required: true, message: '请选择季度', trigger: 'change'}
     ],
     userNum: [
-      { required: true, message: "请输入", trigger: "blur" },
+      {required: true, message: "请输入", trigger: "blur"},
     ],
   },
   dataSource: [],
 });
 const handleDelete = (row) => {
-  proxy.$$Dialog.confirm(`是否确认删除该数据？`, '提示', { cancelButtonText: '取消', confirmButtonText: '确定', }).then(async () => {
+  proxy.$$Dialog.confirm(`是否确认删除该数据？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
 
-    const {res, err} = await proxy.$$api.millionsUsers.deleteUserNum({ params: { id: row.id } })
-
+    const {res, err} = await proxy.$$api.millionsUsers.deleteUserNum({params: {id: row.id}})
 
     if (err) return
-    proxy.$$Toast({ message: `操作成功`, type: 'success' });
+    proxy.$$Toast({message: `操作成功`, type: 'success'});
     getList()
 
   }).catch(proxy.$$emptyFn)
@@ -233,12 +230,12 @@ const addList = () => {//新增
 }
 const handleEdit = (row) => {//编辑
   state.value.form = {
-    id:row.id,
-            providerCode: `${row.provinceName}${row.cityName?'-'+row.cityName:''}${row.townName?'-'+row.townName:''}`,
-            quarter: row.quarter,
-            year: row.year,
-            userNum:row.userNum
-          }
+    id: row.id,
+    providerCode: `${row.provinceName}${row.cityName ? '-' + row.cityName : ''}${row.townName ? '-' + row.townName : ''}`,
+    quarter: row.quarter,
+    year: row.year,
+    userNum: row.userNum
+  }
   addType.value = 'edit'
   isShowImportDialog()
 }
@@ -302,9 +299,8 @@ const columns = ref({
   },
 });
 
-
 const PageSearchPanelRef = ref();
-const pageInfo = ref({ pageNum: 1, pageSize: 15, rowCount: 0 });
+const pageInfo = ref({pageNum: 1, pageSize: 15, rowCount: 0});
 
 const list = ref([]);
 
@@ -313,7 +309,7 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
 
   pageInfo.value.pageNum = pageNum;
   let queryParams = PageSearchPanelRef.value.getFormData();
-  const { providerCode } = queryParams
+  const {providerCode} = queryParams
   const [providerCode1, cityCode, townCode] = providerCode || [];
   queryParams = {
     providerCode: providerCode1,
@@ -321,13 +317,13 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
     townCode: townCode || '',
   }
   // 建单时间的取值
-  let { res } = await proxy.$$api.millionsUsers.getUserNum({
+  let {res} = await proxy.$$api.millionsUsers.getUserNum({
     params: Object.assign(
-      {
-        pageNum: pageInfo.value.pageNum,
-        pageSize: pageInfo.value.pageSize,
-      },
-      queryParams
+        {
+          pageNum: pageInfo.value.pageNum,
+          pageSize: pageInfo.value.pageSize,
+        },
+        queryParams
     ),
   });
   if (res) {
@@ -335,8 +331,6 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
     list.value = res.list;
   }
 };
-
-
 
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([
@@ -346,14 +340,16 @@ const formConfigItems = ref([
     value: "",
     col: 8,
     type: "cascader",
-    options: () => { return areaTreeData },
+    options: () => {
+      return areaTreeData
+    },
     attrs: {
       props: props
     },
     isDisable: !1,
     isRequire: !1,
   },
-  { col: 8, type: "divider-empty" },
+  {col: 8, type: "divider-empty"},
   {
     type: "buttons",
     align: "right",
@@ -363,9 +359,9 @@ const formConfigItems = ref([
       {
         btnName: "重置",
         type: "button",
-        attrs: { type: "" },
+        attrs: {type: ""},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           vm.resetFormData();
           getList(1);
         },
@@ -373,18 +369,18 @@ const formConfigItems = ref([
       {
         btnName: "查询",
         type: "button",
-        attrs: { type: "primary" },
+        attrs: {type: "primary"},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           getList(1);
         },
       },
       {
         btnName: "新增",
         type: "button",
-        attrs: { type: "success" },
+        attrs: {type: "success"},
         col: 1,
-        onClick({ vm }) {
+        onClick({vm}) {
           addType.value = 'add'
           isShowImportDialog()
         },
@@ -393,18 +389,19 @@ const formConfigItems = ref([
   },
 ]);
 
-
 let areaTreeData = []
+
 async function getAreaTree(code) {
-  proxy.$$api.millionsUsers.getArea({ params: { code: code } }).then(res => {
+  proxy.$$api.millionsUsers.getArea({params: {code: code}}).then(res => {
     areaTreeData = proxy.$$formatCascaderTree(
-      res.res?.list || [],
-      "name",
-      "code",
-      "children"
+        res.res?.list || [],
+        "name",
+        "code",
+        "children"
     )
   })
 }
+
 onMounted(() => {
   // getAreaTree()
   generateYears()

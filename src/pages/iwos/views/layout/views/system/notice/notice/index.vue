@@ -6,8 +6,8 @@
         <el-input class="queryItem" v-model="queryParams.noticeTitle" placeholder="请输入标题" clearable maxlength="30"
                   @keyup.enter.native="handleQuery"/>
       </el-form-item>
-      <el-form-item label="操作人员" prop="createBy">
-        <el-input class="queryItem" v-model="queryParams.createBy" placeholder="请输入操作人员" clearable maxlength="30"
+      <el-form-item label="创建人" prop="publisher">
+        <el-input class="queryItem" v-model="queryParams.publisher" placeholder="请输入创建人" clearable maxlength="30"
                   @keyup.enter.native="handleQuery"/>
       </el-form-item>
       <!-- <el-form-item label="类型" prop="noticeType">
@@ -18,7 +18,7 @@
       </el-form-item> -->
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:notice:query']">查询</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增</el-button>
         <!-- <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
                    v-hasPermission="['system:notice:edit']">修改
@@ -54,7 +54,7 @@
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="创建者" align="center" prop="publisher" width="100"/>
+      <el-table-column label="创建人" align="center" prop="publisher" width="100"/>
       <el-table-column label="发布部门" align="center" prop="publishDeptName" width="100"/>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template slot-scope="scope">
@@ -153,9 +153,10 @@
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer" v-if="!isDetail">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
+      <div slot="footer" class="dialog-footer" >
+          <el-button v-if="!isDetail" type="primary" @click="submitForm" >确 定</el-button>
+          <el-button v-if="!isDetail" @click="cancel">取 消</el-button>
+          <el-button v-if="isDetail" type="primary" @click="cancel">关 闭</el-button>
       </div>
     </el-dialog>
   </div>
@@ -203,7 +204,10 @@ export default {
         status: undefined
       },
       // 表单参数
-      form: {},
+      form: {
+        deptId:null,
+        noticeContent:''
+      },
       // noticeText:'',
       // 表单校验
       rules: {
@@ -214,7 +218,7 @@ export default {
         //   {required: true, message: "公告类型不能为空", trigger: "change"}
         // ],
         deptId: [
-          {required: true, message: "接收机构不能为空", trigger: "change"}
+          {required: true, message: "接收机构不能为空", trigger: "change",type:'array'}
         ],
         recipientIds: [
           {required: true, message: `接收班组不能为空`, trigger: "change"}
@@ -222,8 +226,16 @@ export default {
         recipientType: [
           {required: true, message: `接收者类型不能为空`, trigger: "change"}
         ],
-        noticeContent: [
-          {required: true, message: `接收者类型不能为空`, trigger: "change"}
+        noticeContent:[
+          {
+            validator: (rule, value, callback) => {
+              if (value === "<p><br></p>" || !value) {
+                callback(new Error('请输入内容'));
+              } else {
+                callback();
+              }
+            }, trigger: 'blur'
+          }
         ],
       }
     };
@@ -250,7 +262,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      this.$$api.notice.listNotice({params:{...this.queryParams,noticeType:1} }).then(({res: response, err}) => {
+      this.$$api.notice.listNotice({params: {...this.queryParams, noticeType: 1}}).then(({res: response, err}) => {
         if (err) return this.loading = false;
         this.noticeList = response.rows;
         this.total = response.total;
@@ -345,14 +357,14 @@ export default {
       this.isDetail = false
       this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
         if (err) return
-        this.form = response;
-        delete this.form.status
-        if (this.form.recipientType == 1) {
-          this.form.deptId = response.recipientIds
-        } else if (this.form.recipientType == 2) {
-          this.form.deptId = response.deptArr[0]
+        this.form = Object.assign(response,{
+         deptId :this.form.recipientType == 1? response.recipientIds : response.deptArr[0],
+         noticeContent : response.noticeContent
+        }) ;
+        if(this.form.recipientType == 2) {
           this.recipientOptions = response.teamList
         }
+        delete this.form.status
         this.open = true;
         this.title = "修改公告";
       });
@@ -381,8 +393,8 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function () {
-      console.log();
-      
+      console.log(this.form);
+
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.recipientType == "1") {
@@ -390,14 +402,14 @@ export default {
           }
           if (this.form.noticeId != undefined) {
             console.log('this.$refs.editorRef.getText()', this.$refs.editorRef.getText());
-            this.$$api.notice.updateNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(),noticeType:1}}).then(({res: response, err}) => {
+            this.$$api.notice.updateNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(), noticeType: 1}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.$$api.notice.addNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(),noticeType:1}}).then(({res: response, err}) => {
+            this.$$api.notice.addNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(), noticeType: 1}}).then(({res: response, err}) => {
               if (err) return
               this.$$Toast.success("新增成功");
               this.open = false;
@@ -410,7 +422,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const noticeIds = row.noticeId || this.ids
-      this.$$Dialog.confirm('是否确认删除公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
+      this.$$Dialog.confirm('是否确认删除选中的数据项？').then(() => {
         return this.$$api.notice.delNotice({noticeId: noticeIds});
       }).then(({res: response, err}) => {
         if (err) return

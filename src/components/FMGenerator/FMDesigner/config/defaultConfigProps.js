@@ -167,8 +167,8 @@ export const formConfigProps = () => [
       },
       handleValueKeys({vm}) {
         const events = useEvents();
-        return vm.formData.events?.filter(e => !!events[e])?.map(evKey=> ({
-          label: events[evKey].label, options: (events[evKey].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
+        return vm.formData.events?.filter(e => !!events[e])?.map(evKey => ({
+          label: events[evKey].label, options: (events[evKey].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: `$${evKey}$${rk.value}`}))//事件字段可能会出现重复 所以给value加上事件key前缀  如：$jfpt_pointsBasicInfo$name
         }));
       }
     },
@@ -234,8 +234,8 @@ const commonPropsMap = {
       formPlaceholder: '表单字段', toPlaceholder: '绑定事件字段',
       handleValueKeys({vm}) {
         const events = useEvents();
-        return vm.formData.events?.filter(e => !!events[e])?.map(evLabel => ({
-          label: events[evLabel].label, options: (events[evLabel].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: rk.value}))
+        return vm.formData.events?.filter(e => !!events[e])?.map(evKey => ({
+          label: events[evKey].label, options: (events[evKey].resFields || []).map(rk => ({label: `${rk.label}(${rk.value})`, value: `$${evKey}$${rk.value}`}))//事件字段可能会出现重复 所以给value加上事件key前缀  如：$jfpt_pointsBasicInfo$name
         }));
       },
       handleKeys({vm}) {

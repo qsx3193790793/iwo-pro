@@ -1,4 +1,3 @@
-
 export const key = 'crm_myProductOffer';
 export const label = '服务一致性_我的套餐';
 export const resFields = [
@@ -15,7 +14,7 @@ export const resFields = [
   // {"label": "角色", "value": "relatedProducts[0].role"},
   // {"label": "用户号码", "value": "relatedProducts[0].serialNumber"}
 ];
-export default async ({vm, eventsFields}) => {
+export default async ({vm, item, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   console.log('customPositioning', customPositioning)
   // 未定位直接pass
@@ -30,7 +29,6 @@ export default async ({vm, eventsFields}) => {
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
-  console.log('eventsFields', eventsFields)
   const r = (res?.list || []).find(tc => ['10', '11'].includes(tc.type)) || {};
   const main = Object.assign(r, {
     startDate: vm.$$dateFormatterYMDHMS(r?.startDate),
@@ -38,8 +36,11 @@ export default async ({vm, eventsFields}) => {
   });
 
   // 模板会字段统一会有前缀用来区分  '0': 'public' '1': 'scene'  '2': 'ext'  '3': 'comm'
-  eventsFields.forEach(ef => {
-    const value = vm.$$lodash.get(main, ef.value);
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const value = vm.$$lodash.get(main, valueKey);
     if (vm.$$isEmpty(value)) return;
     vm.formData[`${ef.label}`] = value;
   });

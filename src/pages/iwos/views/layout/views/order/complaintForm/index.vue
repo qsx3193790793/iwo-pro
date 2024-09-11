@@ -91,7 +91,8 @@ const columns = ref({
         label: '详情',
         key: 'detail',
         event: row => {
-          proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
+          window.open(`/iwos/window/${row.workorderId}?pageCode=ComplaintDetail&complaintAssetNum=${row.complaintAssetNum}&complaintWorksheetId=${row.complaintWorksheetId}`);
+          // proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
         },
       },
       // {

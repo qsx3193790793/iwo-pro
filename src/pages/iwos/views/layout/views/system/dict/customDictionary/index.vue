@@ -33,7 +33,7 @@
     />
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="6rem" append-to-body :close-on-click-modal="!1">
+    <MDialog :title="title" v-model="open" width="6rem">
       <el-form ref="form" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -82,7 +82,7 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
@@ -90,12 +90,12 @@
 import dayjs from 'dayjs'
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
-
+import MDialog from '@/components/MDialog';
 export default {
   name: "CustomDictionary",
   // dicts: ["sys_normal_disable"],
   dicts: ['start_stop'],
-  components: {JsTable, PageSearchPanel},
+  components: {JsTable, PageSearchPanel,MDialog},
   data() {
     return {
       // 遮罩层

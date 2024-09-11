@@ -23,13 +23,7 @@
     />
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog
-        :title="state.title"
-        :visible.sync="state.open"
-        width="6rem"
-        append-to-body
-        :close-on-click-modal="!1"
-    >
+    <MDialog  v-model="state.open" :title="state.title" width="6rem">
       <el-form
           ref="form"
           :model="state.form"
@@ -84,7 +78,7 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
@@ -92,6 +86,7 @@
 import JsTable from "@/components/js-table/index.vue";
 import Treeselect from "@riophae/vue-treeselect";
 import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
+import MDialog from '@/components/MDialog';
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
 const formConfigItems = ref([

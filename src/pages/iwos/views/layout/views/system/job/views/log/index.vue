@@ -93,7 +93,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 调度日志详细 -->
-    <el-dialog title="调度日志详情" :visible.sync="open" width="700px" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" title="调度日志详情" width="7rem">
       <el-form ref="form" :model="form" label-position="left" label-width="100px" size="small">
         <el-row>
           <el-col :span="12">
@@ -124,15 +124,16 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="open = false">关 闭</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
-
+import MDialog from '@/components/MDialog';
 export default {
   name: "JobLog",
   dicts: ['sys_common_status', 'sys_job_group'],
+  components: {MDialog},
   data() {
     return {
       // 遮罩层

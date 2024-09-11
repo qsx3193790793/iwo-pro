@@ -41,15 +41,13 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from '@/pages/iwos/components/PageSearchPanel.vue';
 import AddDialog from './components/AddDialog.vue';
 import { custTypeData, userStarLevelData } from './components/tagMock'
 export default {
   name: "Dict",
-  // dicts: ["sys_normal_disable"],
-  cusDicts: ['start_stop'],
+  dicts: ['start_stop'],
   components: { JsTable, PageSearchPanel, AddDialog },
   data() {
     const that = this

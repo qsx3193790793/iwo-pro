@@ -370,7 +370,7 @@ export default {
     padding: 0 20px;
 
     .searchParams_text {
-      color: #000000 !important;
+      color: $main-text !important;
       font-size: 17px;
       font-weight: 500;
       padding-right: 8px;
@@ -395,7 +395,7 @@ export default {
   border-bottom: 1px solid #e2e6f1;
 
   &:hover {
-    color: #000000;
+    color: $main-text;
   }
 }
 

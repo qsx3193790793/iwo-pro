@@ -81,12 +81,13 @@
             <template slot-scope="scope">
               <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['system:team:edit']">修改
               </el-button>
+              <el-button v-hasPermission="['system:team:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
+
               <el-dropdown size="small">
                 <el-button size="small" type="primary" style="margin-left:5px">更多<i class="el-icon-arrow-down el-icon--right"></i></el-button>
                 <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
                   <div class="inner">
                     <!-- <el-button v-hasPermission="['system:team:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button> -->
-                    <el-button v-hasPermission="['system:team:remove']" type="danger" size="small" @click="handleDelete(scope.row)">删除</el-button>
                     <!-- <el-button v-hasPermission="['system:team:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button> -->
                     <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
                     <el-button v-hasPermission="['system:team:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
@@ -102,7 +103,7 @@
     </div>
 
     <!-- 添加或修改班组对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body @close="handleType=''" :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="7rem" @handelClose="handleType=''">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" :disabled="handleType=='detail'">
         <el-form-item label="机构" prop="deptId">
           <treeselect v-model="form.deptId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属机构'" @select="handelDeptIdChange"/>
@@ -131,17 +132,17 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 // import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
 import Treeselect from "@riophae/vue-treeselect";
-
+import MDialog from '@/components/MDialog';
 export default {
   name: "TeamManage",
-  components: {Treeselect},
+  components: {Treeselect,MDialog},
   dicts: ['sys_normal_disable'],
   data() {
     return {

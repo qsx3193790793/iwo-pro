@@ -2,31 +2,41 @@
 
 export default {
   name: 'useDraggable',
-  bind(el) {
+  bind(el, binding) {
+    binding.uuid = el.getAttribute('data-uuid');
     const moveEl = el.querySelector('.el-dialog');
-    const move_header = el.querySelector('.el-dialog__header');
-    const move_footer = el.querySelector('.el-dialog__footer');
-    console.log('moveEl', moveEl, move_header, move_footer)
     let startPosition = {x: 0, y: 0};
-    let dialogPosition = {x: 0, y: 0};
-    let dragging = false;
+    let dialogOrgPosition = {x: 0, y: 0};
+    let dialogCurrPosition = {x: 0, y: 0};
+    let dragging = false, firstClick = true;
 
     function isMoveHandler(target) {
       const classes = target?.getAttribute('class');
-      return classes?.indexOf('el-dialog__header') >= 0 || classes?.indexOf('el-dialog__footer') >= 0;
+      if (classes?.indexOf('el-dialog__header') >= 0) return true;
+      return target.parentElement ? isMoveHandler(target.parentElement) : false;
     }
 
-    const handleMouseDown = (e) => {
+    function findUUID(target) {
+      const classes = target?.getAttribute('class');
+      if (classes?.indexOf('el-dialog__wrapper') >= 0) return target.getAttribute('data-uuid');
+      return target.parentElement ? findUUID(target.parentElement) : null;
+    }
+
+    binding.handleMouseDown = (e) => {
+      if (findUUID(e.target || e.srcElement) !== binding.uuid) return;//每个弹窗都需要赋予一个ID不然多个弹窗会一起移动
       if (!isMoveHandler(e.target || e.srcElement)) return;
       const rect = moveEl.getBoundingClientRect();
-      console.log('moveEle', rect);
+      if (firstClick) {
+        dialogOrgPosition = {x: rect.x, y: rect.y};
+        firstClick = false;//首次记录初始位置
+      }
       startPosition.x = e.clientX;
       startPosition.y = e.clientY;
-      dialogPosition.x = rect.x || 0;
-      dialogPosition.y = rect.y || 0;
+      dialogCurrPosition.x = rect.x || 0;
+      dialogCurrPosition.y = rect.y || 0;
 
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
 
       dragging = true;
 
@@ -38,25 +48,23 @@ export default {
       if (dragging) {
         const offsetX = e.clientX - startPosition.x;
         const offsetY = e.clientY - startPosition.y;
-        // moveEl.style.left = `${dialogPosition.x + offsetX}px`;
-        // moveEl.style.top = `${dialogPosition.y + offsetY}px`;
-        const deltaX = dialogPosition.x + offsetX;
-        const deltaY = dialogPosition.y + offsetY;
-        console.log(offsetX, offsetY, deltaX, deltaY)
+        const deltaX = dialogCurrPosition.x - dialogOrgPosition.x + offsetX;
+        const deltaY = dialogCurrPosition.y - dialogOrgPosition.y + offsetY;
         moveEl.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-        // startPosition.x = dialogPosition.x = deltaX;
-        // startPosition.y = dialogPosition.y = deltaY;
       }
     };
 
     const handleMouseUp = (e) => {
-
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
       dragging = false;
     };
 
-    el.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousedown', binding.handleMouseDown);
   },
+  unbind(el, binding, vnode, oldVnode) {
+    console.log('useDraggable unbind');
+    // 移除事件监听器
+    window.removeEventListener('mousedown', binding.handleMouseDown);
+  }
 };

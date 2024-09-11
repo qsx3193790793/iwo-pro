@@ -153,7 +153,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 操作日志详细 -->
-    <el-dialog title="操作日志详情" :visible.sync="open" width="800px" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" title="操作日志详情" width="8rem">
       <el-form ref="form" :model="form" label-position="left" label-width="100px" size="small">
         <el-row>
           <el-col :span="12">
@@ -196,14 +196,16 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="open = false">关 闭</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
+import MDialog from '@/components/MDialog';
 export default {
   name: "OperLogIndex",
   dicts: ['sys_oper_type', 'sys_common_status'],
+  components: {MDialog},
   data() {
     return {
       // 遮罩层
@@ -283,7 +285,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const operIds = row.operId || this.ids;
-      this.$$Dialog.confirm('是否确认删除日志编号为"' + operIds + '"的数据项？').then(() => {
+      this.$$Dialog.confirm('确认删除吗？').then(() => {
         return this.$$api.operlog.delOperlog({operId: operIds});
       }).then(({res, err}) => {
         if (err) return;

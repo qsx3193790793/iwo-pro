@@ -175,7 +175,7 @@
       <el-table-column
           label="操作"
           align="center"
-          width="260"
+          width="180"
           class-name="small-padding fixed-width"
       >
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
@@ -241,30 +241,45 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="7rem" height="65vh" @handelClose="reset">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" maxlength="30"/>
         </el-form-item>
-        <el-form-item prop="roleKey">
-          <span slot="label">
-            <el-tooltip
-                content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)"
-                placement="top"
-            >
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-            权限字符
-          </span>
-          <el-input v-model="form.roleKey" placeholder="请输入权限字符" maxlength="30"/>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item prop="roleKey">
+              <span slot="label">
+                <el-tooltip
+                    content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)"
+                    placement="top"
+                >
+                  <i class="el-icon-question"></i>
+                </el-tooltip>
+                权限字符
+              </span>
+              <el-input v-model="form.roleKey" placeholder="请输入权限字符" maxlength="30"/>
+            </el-form-item>
+          </el-col>
+          <!-- <el-col :span="9">
+            <el-form-item label="角色顺序" prop="roleSort">
+              <el-input-number
+                  v-model="form.roleSort"
+                  controls-position="right"
+                  :min="0"
+              />
+            </el-form-item>
+          </el-col> -->
+        </el-row>
+        <el-form-item label="备注">
+          <el-input
+              v-model="form.remark"
+              type="textarea"
+              placeholder="请输入内容"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="角色顺序" prop="roleSort">
-          <el-input-number
-              v-model="form.roleSort"
-              controls-position="right"
-              :min="0"
-          />
-        </el-form-item>
+        
+      
         <!-- <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio
@@ -275,89 +290,108 @@
             </el-radio>
           </el-radio-group>
         </el-form-item> -->
-        <el-form-item label="菜单权限">
-          <el-checkbox
-              v-model="menuExpand"
-              @change="handleCheckedTreeExpand($event, 'menu')"
-          >展开/折叠
-          </el-checkbox
-          >
-          <el-checkbox
-              v-model="menuNodeAll"
-              @change="handleCheckedTreeNodeAll($event, 'menu')"
-          >全选/全不选
-          </el-checkbox
-          >
-          <el-checkbox
-              v-model="form.menuCheckStrictly"
-              @change="handleCheckedTreeConnect($event, 'menu')"
-          >父子联动
-          </el-checkbox
-          >
-          <el-tree
-              class="tree-border"
-              :data="menuOptions"
-              show-checkbox
-              ref="menu"
-              node-key="id"
-              :check-strictly="!form.menuCheckStrictly"
-              empty-text="加载中，请稍候"
-              :props="defaultProps"
-          ></el-tree>
-        </el-form-item>
-        <el-form-item label="建单权限">
-          <el-checkbox
-              v-model="complaintSourceExpand"
-              @change="handleCheckedTreeExpand($event, 'complaintSource')"
-          >展开/折叠
-          </el-checkbox
-          >
-          <el-checkbox
-              v-model="complaintSourceNodeAll"
-              @change="handleCheckedTreeNodeAll($event, 'complaintSource')"
-          >全选/全不选
-          </el-checkbox
-          >
-          <el-checkbox
-              disabled
-              v-model="form.complaintSourceCheckStrictly"
-              @change="handleCheckedTreeConnect($event, 'complaintSource')"
-          >父子联动
-          </el-checkbox
-          >
-          <el-tree
-              class="tree-border"
-              :data="complaintSourceOptions"
-              show-checkbox
-              ref="complaintSource"
-              node-key="sourceCode"
-              :check-strictly="!form.complaintSourceCheckStrictly"
-              empty-text="加载中，请稍候"
-              :props="defaultComplaintSourceProps"
-          ></el-tree>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input
-              v-model="form.remark"
-              type="textarea"
-              placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="菜单权限" class="custom-form-item">
+              <el-checkbox
+                  v-model="menuNodeAll"
+                  @change="handleCheckedTreeNodeAll($event, 'menu')"
+              >全选/全不选
+              </el-checkbox
+              >
+              <el-checkbox
+                  v-model="form.menuCheckStrictly"
+                  @change="handleCheckedTreeConnect($event, 'menu')"
+              >父子联动
+              </el-checkbox
+              >
+              <div>
+                <el-input
+                  v-model="tree_menu"
+                  placeholder="请输入菜单权限"
+                  clearable
+                  size="small"
+                  maxlength="30"
+                  prefix-icon="el-icon-search"
+                  style="margin-bottom: 5px"
+              >
+                <template slot="append">
+                  <el-button type="primary" @click="tree_menu_isExpend=!tree_menu_isExpend;handleCheckedTreeExpand(tree_menu_isExpend,'menu')">{{ tree_menu_isExpend ? '折叠' : '展开' }}</el-button>
+                </template>
+              </el-input>
+              </div>
+              <div>
+                <el-tree
+                  class="tree-content tree-border"
+                  :data="menuOptions"
+                  :filter-node-method="filterMenuNode"
+                  show-checkbox
+                  ref="menu"
+                  node-key="id"
+                  :check-strictly="!form.menuCheckStrictly"
+                  empty-text="加载中，请稍候"
+                  :props="defaultProps"
+              ></el-tree>
+              </div>
+             
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="投诉来源" class="custom-form-item">
+              <el-checkbox
+                  v-model="complaintSourceNodeAll"
+                  @change="handleCheckedTreeNodeAll($event, 'complaintSource')"
+              >全选/全不选
+              </el-checkbox
+              >
+              <el-checkbox
+                  disabled
+                  v-model="form.complaintSourceCheckStrictly"
+                  @change="handleCheckedTreeConnect($event, 'complaintSource')"
+              >父子联动
+              </el-checkbox
+              >
+              <div>
+                <el-input
+                  v-model="tree_channel"
+                  placeholder="请输入投诉来源名称"
+                  clearable
+                  size="small"
+                  maxlength="30"
+                  prefix-icon="el-icon-search"
+                  style="margin-bottom: 5px"
+              >
+                <template slot="append">
+                  <el-button type="primary" @click="tree_channel_isExpend=!tree_channel_isExpend;handleCheckedTreeExpand(tree_channel_isExpend,'complaintSource')">{{ tree_channel_isExpend ? '折叠' : '展开' }}</el-button>
+                </template>
+              </el-input>
+              </div>
+              <el-tree
+                  class="tree-content tree-border"
+                  :data="complaintSourceOptions"
+                  :filter-node-method="filterChannelNode"
+                  show-checkbox
+                  ref="complaintSource"
+                  node-key="sourceCode"
+                  :check-strictly="!form.complaintSourceCheckStrictly"
+                  empty-text="加载中，请稍候"
+                  :props="defaultComplaintSourceProps"
+              ></el-tree>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        
+      
+       
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
 
     <!-- 分配角色数据权限对话框 -->
-    <el-dialog
-        :title="title"
-        :visible.sync="openDataScope"
-        width="500px"
-        append-to-body
-        :close-on-click-modal="!1"
-    >
+    <MDialog  v-model="openDataScope" :title="title" width="7rem">
       <el-form :model="form" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName" :disabled="true" maxlength="30"/>
@@ -395,7 +429,7 @@
           </el-checkbox
           >
           <el-tree
-              class="tree-border"
+              class="tree-border tree-content"
               :data="deptOptions"
               show-checkbox
               default-expand-all
@@ -411,10 +445,10 @@
         <el-button type="primary" @click="submitDataScope">确 定</el-button>
         <el-button @click="cancelDataScope">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
 
     <!-- 分配用户 -->
-    <el-dialog title="已授权用户" :visible.sync="authUser.open" width="75vw" append-to-body :close-on-click-modal="!1" destroy-on-close>
+    <MDialog  v-model="authUser.open" title="已授权用户" width="75vw">
       <div class="one-screen" style="height: 50vh;">
         <el-form class="one-screen-fg0" :model="authUser.queryParams" ref="queryAuthUserForm" size="small" :inline="true">
           <el-form-item label="用户账号" prop="userName">
@@ -474,7 +508,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="authUser.open=!1">取 消</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
 
     <select-user ref="selectUser" :roleId="authUser.queryParams.roleId" @ok="handleQuery"/>
 
@@ -483,11 +517,11 @@
 
 <script>
 import selectUser from "./selectUser";
-
+import MDialog from '@/components/MDialog';
 export default {
   name: "RoleIndex",
   dicts: ["sys_normal_disable"],
-  components: {selectUser},
+  components: {selectUser,MDialog},
   data() {
     return {
       authUser: {
@@ -511,6 +545,11 @@ export default {
           phonenumber: undefined
         }
       },
+      // 树的数据筛选
+      tree_menu:'',
+      tree_channel:'',
+      tree_menu_isExpend:false,
+      tree_channel_isExpend:false,
       // 遮罩层
       loading: false,
       // 选中数组
@@ -597,9 +636,9 @@ export default {
         roleKey: [
           {required: true, message: "权限字符不能为空", trigger: "blur"},
         ],
-        roleSort: [
-          {required: true, message: "角色顺序不能为空", trigger: "blur"},
-        ],
+        // roleSort: [
+        //   {required: true, message: "角色顺序不能为空", trigger: "blur"},
+        // ],
       },
     };
   },
@@ -607,7 +646,39 @@ export default {
     this.getList();
     this.$nextTick(() => this.$refs.table?.doLayout());
   },
+  watch: {
+    // 根据名称筛选菜单树
+    tree_menu(val) {
+      this.$refs.menu.filter(val);
+    },
+     // 根据名称筛选投诉来源树
+     tree_channel(val) {
+      console.log("---998",val)
+      this.$refs.complaintSource.filter(val);
+    },
+
+  },
   methods: {
+    // 筛选节点
+    filterMenuNode(value, data) {
+      if (!value) {
+        this.tree_menu_isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.menu, this.tree_menu_isExpend);
+        return true;
+      }
+      this.tree_menu_isExpend = true;
+      return data.label.indexOf(value) !== -1;
+    },
+    // 筛选节点
+    filterChannelNode(value, data) {
+      if (!value) {
+        this.tree_channel_isExpend = true;
+        this.$$treeExpandOrCollapse(this.$refs.complaintSource, this.tree_channel_isExpend);
+        return true;
+      }
+      this.tree_channel_isExpend = true;
+      return data.sourceName.indexOf(value) !== -1;
+    },
     handleBatchClick(type) {
       // 确认要"停用""上海管理员"角色吗？
       if (type == 'end') {
@@ -753,14 +824,18 @@ export default {
       (this.menuExpand = false),
           (this.menuNodeAll = false),
           (this.complaintSourceExpand = false),
+          (this.tree_menu_isExpend = false),
+          (this.tree_channel_isExpend = false),
           (this.complaintSourceNodeAll = false),
           (this.deptExpand = true),
           (this.deptNodeAll = false),
+          (this.menuOptions = []),
+          (this.complaintSourceOptions = []),
           (this.form = {
             roleId: undefined,
             roleName: undefined,
             roleKey: undefined,
-            roleSort: 0,
+            // roleSort: 0,
             status: "0",
             menuIds: [],
             deptIds: [],
@@ -804,22 +879,26 @@ export default {
     // },
     // 树权限（展开/折叠）
     handleCheckedTreeExpand(value, type) {
-      if (type == "menu") {
-        let treeList = this.menuOptions;
-        for (let i = 0; i < treeList.length; i++) {
-          this.$refs.menu.store.nodesMap[treeList[i].id].expanded = value;
-        }
-      } else if (type == "dept") {
-        let treeList = this.deptOptions;
-        for (let i = 0; i < treeList.length; i++) {
-          this.$refs.dept.store.nodesMap[treeList[i].id].expanded = value;
-        }
-      } else if (type == "complaintSource") {
-        let treeList = this.complaintSourceOptions;
-        for (let i = 0; i < treeList.length; i++) {
-          this.$refs.complaintSource.store.nodesMap[treeList[i].sourceCode].expanded = value;
-        }
-      }
+      // 新树数据
+      // if (type == "menu") {
+      //   let treeList = this.menuOptions;
+      //   for (let i = 0; i < treeList.length; i++) {
+      //     this.$refs.menu.store.nodesMap[treeList[i].id].expanded = value;
+      //   }
+      // } else if (type == "dept") {
+      //   let treeList = this.deptOptions;
+      //   for (let i = 0; i < treeList.length; i++) {
+      //     this.$refs.dept.store.nodesMap[treeList[i].id].expanded = value;
+      //   }
+      // } else if (type == "complaintSource") {
+      //   let treeList = this.complaintSourceOptions;
+      //   for (let i = 0; i < treeList.length; i++) {
+      //     this.$refs.complaintSource.store.nodesMap[treeList[i].sourceCode].expanded = value;
+      //   }
+      // }
+      // ruoyi数据根据不同的type处理展开
+      console.log(value,'----998')
+      Object.values(this.$refs[type].store.nodesMap).forEach(item=>item.expanded=value)
     },
     // 树权限（全选/全不选）
     handleCheckedTreeNodeAll(value, type) {
@@ -848,6 +927,7 @@ export default {
       this.getcomplaintSourceTree()
       this.open = true;
       this.title = "添加角色";
+      
     },
     /** 修改按钮操作 */
     async handleUpdate(row) {
@@ -931,6 +1011,8 @@ export default {
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
+              // 树的展开信息重置
+              this.reset()
             });
           } else {
             this.form.menuIds = this.getMenuAllCheckedKeys();
@@ -940,6 +1022,8 @@ export default {
               this.$$Toast.success("新增成功");
               this.open = false;
               this.getList();
+              // 树的展开信息重置
+              this.reset()
             });
           }
         } else {
@@ -1066,4 +1150,17 @@ export default {
 .dropdownBtn {
   margin-left: 6px
 }
+.custom-form-item{
+  display: flex;
+  flex-direction: column;
+  ::v-deep .el-form-item__content{
+    margin-left: 60px !important
+  }
+}
+.tree-content {  
+  max-height: 300px;  
+  min-height: 300px;  
+  overflow-y: auto;  
+  border: 1px solid #ccc;  
+}  
 </style>

@@ -1,4 +1,3 @@
-
 export const key = 'crm_eCProduct';
 export const label = '服务一致性_用户信息查询';
 export const resFields = [
@@ -22,7 +21,7 @@ export const resFields = [
   // {"label": "属性名称","value": "attributes[0].name"},
   // {"label": "属性值","value": "attributes[0].value"}
 ];
-export default async ({vm, eventsFields}) => {
+export default async ({vm,item, eventsFields}) => {
   const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
   // 未定位直接pass
   if (!customPositioning || vm.formStatus !== 'create') return;
@@ -40,9 +39,11 @@ export default async ({vm, eventsFields}) => {
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });
-  console.log('eventsFields', vm, eventsFields)
-  eventsFields.forEach(ef => {
-    const value = vm.$$lodash.get(res || {}, ef.value);
+  const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
+  console.log('event call', key, fields);
+  fields.forEach(ef => {
+    const valueKey = ef.value.replace(`$${key}$`, '');
+    const value = vm.$$lodash.get(res || {}, valueKey);
     if (vm.$$isEmpty(value)) return;
     vm.formData[`${ef.label}`] = value;
   });

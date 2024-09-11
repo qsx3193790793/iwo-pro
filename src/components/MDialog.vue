@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-bind.sync="$attrs" v-on="$listeners" v-use-draggable ref="DialogRef" :top="top" :visible.sync="dialogVisibleModel" :close-on-click-modal="!1" destroy-on-close append-to-body>
+  <el-dialog v-if="value" v-bind.sync="$attrs" v-on="$listeners" v-use-draggable :data-uuid="uuid" ref="DialogRef" :top="top" :visible.sync="dialogVisibleModel" :close-on-click-modal="!1" destroy-on-close append-to-body :show-close="showClose" @close="$emit('handelClose')" @open="$emit('handelOpen')">
     <template v-if="onScreen">
       <div class="inner" :style="{height:height,padding:`0 0.2rem`}">
         <slot :DialogRef="DialogRef"></slot>
@@ -8,6 +8,9 @@
     <ELScrollbar v-else class="inner" :style="{height:height}">
       <slot :DialogRef="DialogRef"></slot>
     </ELScrollbar>
+    <template #title>
+      <slot name="title" :DialogRef="DialogRef"></slot>
+    </template>
     <template #footer>
       <slot name="footer" :DialogRef="DialogRef"></slot>
     </template>
@@ -26,7 +29,11 @@ const props = defineProps({
   onScreen: {type: Boolean, default: false},
   height: {type: String, default: '60vh'},
   top: {type: String, default: '10vh'},
-})
+  showClose: {type: Boolean, default: true},
+
+});
+
+const uuid = proxy.$$getUUID();
 
 const dialogVisibleModel = computed({
   get: () => props.value,

@@ -18,8 +18,7 @@
         @current-change="getList"
       />
     </div>
-
-    <el-dialog :title="title" :visible.sync="open" width="10rem" append-to-body :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="10rem">
       <div class="detail_info">
         <!-- <div class="Image_area"> -->
           <!-- <el-image
@@ -46,17 +45,17 @@
       <div slot="footer" class="dialog-footer">
         <!-- <el-button @click="cancel">取 消</el-button> -->
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 import JsTable from "@/components/js-table/index.vue";
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
-
+import MDialog from '@/components/MDialog';
 export default {
   name: "intransitOrder",
-  components: { JsTable, PageSearchPanel },
+  components: { JsTable, PageSearchPanel,MDialog },
   data() {
     return {
       // 遮罩层

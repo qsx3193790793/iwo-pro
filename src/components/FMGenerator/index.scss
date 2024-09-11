@@ -304,12 +304,12 @@
   align-items: center;
   font-size: 16px;
   font-weight: bold;
-  color: #353535;
+  color: $main-text;
   width: 100%;
 
   .sub-title-name {
     font-size: 14px;
-    color: rgba(#353535, 0.8);
+    color: rgba($main-text, 0.8);
     margin-left: 8px;
   }
 

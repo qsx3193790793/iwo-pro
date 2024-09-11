@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="user-info-head" @click="editCropper()"><img v-bind:src="options.img" title="点击上传头像" class="img-circle img-lg"/></div>
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body @opened="modalOpened" @close="closeDialog" :close-on-click-modal="!1">
+    <MDialog  v-model="open" :title="title" width="8rem" @handelClose="closeDialog" @handelOpen="modalOpened">
       <el-row>
         <el-col :xs="24" :md="12" :style="{height: '350px'}">
           <vue-cropper
@@ -49,16 +49,16 @@
           <el-button type="primary" size="small" @click="uploadImg()">提 交</el-button>
         </el-col>
       </el-row>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 import {VueCropper} from "vue-cropper/src";
 import debounce from '@/plugins/debounce.js'
-
+import MDialog from '@/components/MDialog';
 export default {
-  components: {VueCropper},
+  components: {VueCropper,MDialog},
   data() {
     return {
       // 是否显示弹出层
@@ -175,7 +175,7 @@ export default {
   top: 0;
   bottom: 0;
   color: #eee;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba($main-text, 0.5);
   font-size: 24px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
