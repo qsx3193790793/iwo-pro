@@ -19,7 +19,7 @@
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
         <el-button type="primary" size="small" @click="handleQuery"
-          v-hasPermission="['system:notice:query']">查询</el-button>
+          v-hasPermission="['system:notice:list']">查询</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增</el-button>
         <!-- <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
                    v-hasPermission="['system:notice:edit']">修改
@@ -51,19 +51,19 @@
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_type', row.noticeType) }}
         </template>
 </el-table-column> -->
-      <el-table-column label="状态" align="center" prop="status" width="100">
+      <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="创建人" align="center" prop="publisher" width="100" />
-      <el-table-column label="发布部门" align="center" prop="publishDeptName" width="100" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="创建人" align="center" prop="publisher"/>
+      <el-table-column label="发布部门" align="center" prop="publishDeptName"/>
+      <el-table-column label="创建时间" align="center" prop="createTime">
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240px">
         <template slot-scope="scope">
           <el-button size="small" type="success" @click="handleRelease(scope.row)" v-if="scope.row.status != 1">发布
           </el-button>
@@ -84,7 +84,7 @@
               </el-dropdown-item>
               <el-dropdown-item style="margin-top: 4px;">
                 <el-button size="small" type="primary" @click="handleDetail(scope.row)"
-                  v-hasPermission="['system:notice:remove']">详情
+                  v-hasPermission="['system:notice:query']">详情
                 </el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -99,8 +99,8 @@
                    @current-change="getList"/>
 
     <!-- 添加或修改公告对话框 -->
-    <MDialog  v-model="open" :title="title" width="7.8rem">
-      <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
+    <MDialog  v-model="open" :title="title" width="12rem">
+      <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto" >
         <el-row>
           <!-- <el-col :span="24">
             <el-form-item label="公告类型" prop="noticeType">

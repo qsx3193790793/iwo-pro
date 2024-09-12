@@ -104,15 +104,18 @@
 
     <!-- 添加或修改班组对话框 -->
     <MDialog v-model="open" :title="title" width="7rem" @handelClose="handleType=''">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px" :disabled="handleType=='detail'">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" :disabled="handleType=='detail'" label-position="left"  >
         <el-form-item label="机构" prop="deptId">
           <treeselect v-model="form.deptId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属机构'" @select="handelDeptIdChange"/>
         </el-form-item>
-        <el-form-item label="上级班组">
+        <!-- <el-form-item label="上级班组">
           <treeselect v-model="form.parentId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="teamOptions" :normalizer="normalizer" :placeholder="handleType=='detail'?'':'选择上级班组'" @select="handelparentIdChange"/>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="班组名称" prop="teamName">
           <el-input v-model="form.teamName" :placeholder="handleType=='detail'?'':'请输入班组名称'" maxlength="30"/>
+        </el-form-item>
+        <el-form-item label="班组编码" prop="teamCode">
+          <el-input v-model="form.teamCode" :placeholder="handleType=='detail'?'':'请输入班组编码'" maxlength="30"/>
         </el-form-item>
         <el-form-item label="角色" prop="roleIds">
           <el-select v-model="form.roleIds" :placeholder="handleType=='detail'?'':'请选择角色'" style="width:100%" clearable multiple>
@@ -192,7 +195,7 @@ export default {
         pageSize: 15,
         teamName: null,
         deptId: null,
-        parentId: null,
+        // parentId: null,
         status: null,
       },
       // 表单参数
@@ -272,14 +275,14 @@ export default {
       this.$$api.team.getTeam({teamId: teamId}).then(({res: response, err}) => {
         if (err) return
         // this.form = response.data;
-        let {parentId, deptId, teamName, teamId, status, roleIds} = {...response}
-        if (deptId) {
-          this.getTeamTreeInfo(deptId)
-        }
-        if (parentId == '0') {
-          parentId = undefined
-        }
-        this.form = {parentId, deptId, teamName, teamId, status, roleIds}
+        let { deptId, teamName, teamId, status, roleIds, teamCode} = {...response}
+        // if (deptId) {
+        //   this.getTeamTreeInfo(deptId)
+        // }
+        // if (parentId == '0') {
+        //   parentId = undefined
+        // }
+        this.form = { deptId, teamName, teamId, status, roleIds, teamCode}
         this.roleOptions = response.roles
         this.open = true;
         this.title = "班组详情";
@@ -302,19 +305,19 @@ export default {
     },
     // 机构变动时清除选择的班组，班组名，角色，获取班组数据
     handelDeptIdChange(val) {
-      this.form.parentId = undefined
+      // this.form.parentId = undefined
       this.form.teamName = null
       this.form.roleIds = []
       this.roleOptions = []
-      this.getTeamTreeInfo(val.id)
+      // this.getTeamTreeInfo(val.id)
       this.getDeptRoleInfo(val.id)
     },
-    getTeamTreeInfo(deptId) {
-      this.$$api.team.getDeptTeamTree({deptId: deptId}).then(({res: response, err}) => {
-        if (err) return
-        this.teamOptions = this.$$handleTree(response.rows, "teamId");
-      });
-    },
+    // getTeamTreeInfo(deptId) {
+    //   this.$$api.team.getDeptTeamTree({deptId: deptId}).then(({res: response, err}) => {
+    //     if (err) return
+    //     this.teamOptions = this.$$handleTree(response.rows, "teamId");
+    //   });
+    // },
     getTeamRoleInfo(teamId) {
       this.$$api.team.getTeamRoleTree({orgId: teamId}).then(({res: response, err}) => {
         if (err) return
@@ -335,11 +338,11 @@ export default {
     },
 
     // 班组变动时，角色也动态获取
-    handelparentIdChange(val) {
-      this.roleOptions = []
-      this.form.roleIds = []
-      this.getTeamRoleInfo(val.teamId)
-    },
+    // handelparentIdChange(val) {
+    //   this.roleOptions = []
+    //   this.form.roleIds = []
+    //   this.getTeamRoleInfo(val.teamId)
+    // },
     /** 查询机构下拉树结构 */
     getDeptTree() {
       this.$$api.user.deptTreeSelect().then(({res, err}) => {
@@ -388,7 +391,7 @@ export default {
         teamName: null,
         teamDescribe: null,
         deptId: null,
-        parentId: null,
+        // parentId: null,
         roleIds: []
       };
       this.$$resetForm("form", this.$refs);
@@ -416,8 +419,8 @@ export default {
       this.reset();
       if (row != undefined && row.deptId) {
         this.form.deptId = row.deptId;
-        this.form.parentId = row.teamId;
-        this.getTeamTreeInfo(row.deptId)
+        // this.form.parentId = row.teamId;
+        // this.getTeamTreeInfo(row.deptId)
         await this.getDeptRoleInfo(row.deptId)
         await this.getTeamRoleInfo(row.teamId)
       }
@@ -434,14 +437,14 @@ export default {
       this.$$api.team.getTeam({teamId: teamId}).then(({res: response, err}) => {
         if (err) return
         // this.form = response.data;
-        let {parentId, deptId, teamName, teamDescribe, teamId, status, roleIds} = {...response}
-        if (deptId) {
-          this.getTeamTreeInfo(deptId)
-        }
-        if (parentId == '0') {
-          parentId = undefined
-        }
-        this.form = {parentId, deptId, teamName, teamDescribe, teamId, status, roleIds}
+        let { deptId, teamName, teamDescribe, teamId, status, roleIds, teamCode} = {...response}
+        // if (deptId) {
+        //   this.getTeamTreeInfo(deptId)
+        // }
+        // if (parentId == '0') {
+        //   parentId = undefined
+        // }
+        this.form = { deptId, teamName, teamDescribe, teamId, status, roleIds,teamCode}
         this.roleOptions = response.roles
         this.open = true;
         this.title = "修改班组";

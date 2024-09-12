@@ -18,7 +18,7 @@
       </el-form-item> -->
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:notice:query']">查询</el-button>
+        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:notice:list']">查询</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增</el-button>
         <!-- <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
                    v-hasPermission="['system:notice:edit']">修改
@@ -49,19 +49,19 @@
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_type', row.noticeType) }}
         </template>
       </el-table-column> -->
-      <el-table-column label="状态" align="center" prop="status" width="100">
+      <el-table-column label="状态" align="center" prop="status" >
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="创建人" align="center" prop="publisher" width="100"/>
-      <el-table-column label="发布部门" align="center" prop="publishDeptName" width="100"/>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="创建人" align="center" prop="publisher" />
+      <el-table-column label="发布部门" align="center" prop="publishDeptName" />
+      <el-table-column label="创建时间" align="center" prop="createTime" >
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" >
         <template slot-scope="scope">
           <el-button size="small" type="success" @click="handleRelease(scope.row)" v-if="scope.row.status != 1">发布
           </el-button>
@@ -82,7 +82,7 @@
               </el-dropdown-item>
               <el-dropdown-item style="margin-top: 4px;">
                 <el-button size="small" type="primary" @click="handleDetail(scope.row)"
-                           v-hasPermission="['system:notice:remove']">详情
+                           v-hasPermission="['system:notice:query']">详情
                 </el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -97,7 +97,7 @@
                    @current-change="getList"/>
 
     <!-- 添加或修改公告对话框 -->
-    <el-dialog v-if="open" :title="title" :visible.sync="open" width="780px" append-to-body :close-on-click-modal="!1" destroy-on-close>
+    <MDialog  v-model="open" :title="title" width="12rem">
       <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
         <el-row>
           <!-- <el-col :span="24">
@@ -151,6 +151,11 @@
               <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDetail"/>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label="附件" prop="attIds">
+              <FileUploader v-model="form.attIds" :attachments="attachments"  :hasEdit="isDetail"  ></FileUploader>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer" >
@@ -158,18 +163,19 @@
           <el-button v-if="!isDetail" @click="cancel">取 消</el-button>
           <el-button v-if="isDetail" type="primary" @click="cancel">关 闭</el-button>
       </div>
-    </el-dialog>
+    </MDialog>
   </div>
 </template>
 
 <script>
 import Editor from '@/components/Editor.vue';
 import Treeselect from "@riophae/vue-treeselect";
-
+import MDialog from '@/components/MDialog';
+import FileUploader from '../upload/FileUploader.vue';
 export default {
   name: "NoticeIndex",
   dicts: ['sys_notice_status', 'sys_notice_type', 'notice_recipient_type'],
-  components: {Editor, Treeselect},
+  components: {Editor, Treeselect, FileUploader,MDialog},
   // cusDicts: ['notice_recipient_type'],
   data() {
     return {
@@ -185,6 +191,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      //选中行中的附件列表
+      attachments:[],
       // 公告表格数据
       noticeList: [],
       // 弹出层标题
@@ -206,7 +214,8 @@ export default {
       // 表单参数
       form: {
         deptId:null,
-        noticeContent:''
+        noticeContent:'',
+        attIds:[]
       },
       // noticeText:'',
       // 表单校验
@@ -320,6 +329,7 @@ export default {
         noticeId: undefined,
         noticeTitle: undefined,
         // noticeType: undefined,
+        attIds: undefined,
         noticeContent: undefined,
         deptId: undefined,
         recipientIds: undefined,
@@ -357,9 +367,11 @@ export default {
       this.isDetail = false
       this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
         if (err) return
+        this.attachments = response.attachments
         this.form = Object.assign(response,{
          deptId :this.form.recipientType == 1? response.recipientIds : response.deptArr[0],
-         noticeContent : response.noticeContent
+         noticeContent : response.noticeContent,
+         attIds: response?.attachments.map(item=>item.attId) || []
         }) ;
         if(this.form.recipientType == 2) {
           this.recipientOptions = response.teamList
@@ -443,6 +455,7 @@ export default {
       this.form.isDetail = true
       this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
         if (err) return
+        this.attachments = response.attachments
         this.form = response;
         if (this.form.recipientType == 1) {
           this.form.deptId = response.recipientIds

@@ -47,6 +47,10 @@ let columns = ref({
       key: 'workorderType',
     },
     {
+      name: '产品',
+      key: 'productName',
+    },
+    {
       name: '模板名称',
       key: 'templateName',
       width: 200
@@ -124,7 +128,12 @@ const list = ref([]);
 const getList = async (pageNum = pageInfo.value.pageNum) => {
   pageInfo.value.pageNum = pageNum;
   const formData = PageSearchPanelRef.value.getFormData();
-  const {res, err} = await proxy.$$api.template.list({params: Object.assign(proxy.$$formatELDateTimeRange(formData.timeRange, ['startTime', 'endTime']), pageInfo.value, formData, {statusName: '上架'})});
+  const sceneCode = [
+    formData.phenomenonCode?.[2] || formData.phenomenonCode?.[1] || formData.phenomenonCode?.[0],
+    formData.productCode?.[0],
+    formData.complaintSourceCode?.[2] || formData.complaintSourceCode?.[1] || formData.complaintSourceCode?.[0],
+  ].filter(v => !!v).join(':');
+  const {res, err} = await proxy.$$api.template.list({params: Object.assign(proxy.$$formatELDateTimeRange(formData.timeRange, ['startTime', 'endTime']), pageInfo.value, formData, {statusName: '上架'} , {sceneCode:sceneCode})});
   if (err) return;
   pageInfo.value.rowCount = Number(res?.total ?? pageInfo.value.rowCount);
   list.value = res?.rows || [];
@@ -135,28 +144,35 @@ const formConfigItems = ref([
   {name: '工单类型', key: 'workorderType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_work_order_type'), isDisable: !1, isRequire: !1},
   {name: '模板名称', key: 'templateName', value: '', placeholder: '', col: 6, type: 'input', isDisable: !1, isRequire: !1},
   {name: '模板大类', key: 'bigType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_big_type'), isDisable: !1, isRequire: !1},
-  {name: '模板小类', key: 'smallType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !1},
+  {name: '模板小类', key: 'smallType', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('template_small_type'), isDisable: !1, isRequire: !1,
+  onChange({vm}) {
+    vm.formData.phenomenonCode = ''
+    vm.formData.productCode = ''
+    vm.formData.complaintSourceCode = ''
+   },
+  },
+  {
+    name: '投诉现象' , key: 'phenomenonCode', value: [], col: 6, type: 'cascader', isDisable: ({vm})=> !(vm.formData.smallType === 'TPL0100')  , isRequire: !1,
+    options: ({vm}) =>  proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree'),
+  },
+  {
+    name: '产品', key: 'productCode', value: [], col: 6, type: 'cascader', isDisable:({vm}) => !(vm.formData.smallType === 'TPL0100') , isRequire: !1,
+    options: ({vm}) => proxy.$store.getters['dictionaries/GET_DICT']('complaint_product_tree_level_1'),
+  },
+  {
+    name: '投诉来源', key: 'complaintSourceCode', value: [], col: 6, type: 'cascader', isDisable: ({vm}) => !(vm.formData.smallType === 'TPL0101'), isRequire: !1,
+    options: ({vm}) =>  proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'),
+  },
+ 
   {
     name: '省', key: 'provinceCode', value: '', col: 6, type: 'select', options: () => proxy.$store.getters['dictionaries/GET_DICT']('base_province_code'), isDisable: !1, isRequire: !1,
     isShow() {
       return proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000';//集团账号
     }
   },
-  {
-    name: '投诉现象', key: 'sceneLevelCode', value: [], col: 6, type: 'cascader', isDisable: !1, isRequire: !0,
-    options: ({vm}) => proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree'),
-  },
-  {
-    name: '产品', key: 'productCode', value: [], col: 6, type: 'cascader', isDisable: !1, isRequire: !1,
-    options: ({vm}) => proxy.$store.getters['dictionaries/GET_DICT']('complaint_product_tree_level_1'),
-  },
-  {
-    name: '投诉来源', key: 'sceneLevelCode', value: [], col: 6, type: 'cascader', isDisable: !1, isRequire: !0,
-    options: ({vm}) => proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'),
-  },
   {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
   {
-    type: 'buttons', align: 'right', verticalAlign: 'top', col: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000' ? 12 : 18, items: [
+    type: 'buttons', align: 'right', verticalAlign: 'top', col: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000' ? 12 :18, items: [
       {
         btnName: '重置', type: 'button', attrs: {type: ''}, col: 1,
         onClick({vm}) {
@@ -179,7 +195,7 @@ async function listComplaintPhenomenonTree() {
   if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree')?.length) return;
   const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree({params: {status: 1}});
   if (err) return;
-  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree((res?.phenomList || []).map(r => (r.phenomList = null, r)), 'phenomName', 'phenomCode', 'phenomList')});
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree(res?.phenomList || [], 'phenomName', 'phenomCode', 'phenomList')});
 }
 
 //产品下拉菜单
@@ -195,7 +211,7 @@ async function listProductTree() {
 async function listComplaintSourceTree() {
   const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
   if (err) return;
-  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree((res?.list || []).map(r => (r.children = null, r)), 'sourceName', 'sourceCode', 'children')});
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree(res?.list || [], 'sourceName', 'sourceCode', 'children')});
 }
 
 onMounted(() => {

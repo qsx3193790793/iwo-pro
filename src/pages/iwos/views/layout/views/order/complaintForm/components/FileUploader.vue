@@ -114,6 +114,10 @@ export default {
       if (err) return this.$message({message: err?.message || '附件删除失败', type: 'error'});
       this.$message({message: '附件删除成功', type: 'success'})
       this.fileData = this.fileData.filter(item => item.attId !== row.attId)
+       //更新表单附件ids
+       this.root.vm.initFormData({
+        workOrderAttachmentIdList: this.fileData.map(item => item.attId)
+      });
     }
   },
   created() {
