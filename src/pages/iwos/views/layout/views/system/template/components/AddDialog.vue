@@ -152,30 +152,53 @@ const onRollback = DialogRef => {
 }
 
 //编辑保存
+async function onSave(DialogRef, formData, formContentRes) {
+  const {res, err} = await proxy.$$api.template[props.pkid ? 'update' : 'create']({
+    data: Object.assign({}, formData, {
+      fieldList: formData.fieldList.map(fl => fl.fieldId),
+      formContent: JSON.stringify(formContentRes.json),
+      // 场景编码：工单类型：大类：小类：现象或来源末级:产品编码(111:1111:111:10001:2010)
+      sceneCode: [
+        formData.workorderType,
+        formData.bigType,
+        formData.smallType,
+        formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0],
+        formData.productCode?.[0]
+      ].filter(v => !!v).join(':') || null,
+    })
+  });
+  if (err) return proxy.$$Toast({message: res?.msg || `操作失败`, type: 'error'});
+  emitter('success');
+  FormModelRef.value?.resetFormData();
+  DialogRef?.handleClose();
+  return proxy.$$Toast({message: `操作成功`, type: 'success'});
+}
+
 const onSubmit = DialogRef => {
   FormModelRef.value?.validator(
-      formData => {
-        console.log('onSubmit formData', DialogRef, formData)
-        proxy.$$Dialog.confirm(`你确定要保存吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
-          const {res, err} = await proxy.$$api.template[props.pkid ? 'update' : 'create']({
-            data: Object.assign({}, formData, {
-              fieldList: formData.fieldList.map(fl => fl.fieldId),
-              formContent: JSON.stringify(FMDesignerRef.value.getJson()),
-              // 场景编码：工单类型：大类：小类：现象或来源末级:产品编码(111:1111:111:10001:2010)
-              sceneCode: [
-                formData.workorderType,
-                formData.bigType,
-                formData.smallType,
-                formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0],
-                formData.productCode?.[0]
-              ].filter(v => !!v).join(':') || null,
-            })
+      async formData => {
+        const formContentRes = FMDesignerRef.value.getJson();
+        if (formContentRes.isError) return tabActive.value = '表单设计';
+        if (!props.pkid) {
+          const {res: resCheck, err: errCheck} = await proxy.$$api.template.createCheck({
+            bigType: formData.bigType,
+            workorderType: formData.workorderType,
+            sceneCode: [
+              formData.workorderType,
+              formData.bigType,
+              formData.smallType,
+              formData.sceneLevelCode?.[2] || formData.sceneLevelCode?.[1] || formData.sceneLevelCode?.[0],
+              formData.productCode?.[0]
+            ].filter(v => !!v).join(':') || null,
           });
-          if (err) return proxy.$$Toast({message: res?.msg || `操作失败`, type: 'error'});
-          emitter('success');
-          FormModelRef.value?.resetFormData();
-          DialogRef?.handleClose();
-          return proxy.$$Toast({message: `操作成功`, type: 'success'});
+          if (resCheck.value) {
+            const c = await proxy.$$Dialog.confirm('当前模板已经存在，是否要重新创建？', '提示').catch(proxy.$$emptyFn);
+            if (c === 'confirm') onSave(DialogRef, formData, formContentRes);
+            return;
+          }
+        }
+        proxy.$$Dialog.confirm(`你确定要保存吗？`, '提示', {cancelButtonText: '取消', confirmButtonText: '确定',}).then(async () => {
+          onSave(DialogRef, formData, formContentRes);
         }).catch(proxy.$$emptyFn);
       }
   );
@@ -222,7 +245,7 @@ const formConfig = ref({
 
             //详情查看用
             if (props.isDetail) {
-              detailFormConfig.value = parseFormModel(JSON.parse(res.formTemplateConfig.formContent));
+              detailFormConfig.value = parseFormModel(JSON.parse(res.formTemplateConfig.formContent), true);
             }
           }
         }
@@ -261,8 +284,11 @@ const formConfig = ref({
           attrs: {props: {checkStrictly: !0}},
           onChange({vm}) {
             getSceneForm(vm);
-            const {path: developChannelLevelPath, pathLabels: developChannelLevelPathLabels} = vm.$refs.sceneLevelCode?.[0]?.getCheckedNodes()?.[0] || {};
-            vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = `${vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'}-${developChannelLevelPathLabels.join('-')}`
+            vm.$nextTick(() => {
+              const {path: developChannelLevelPath, pathLabels: developChannelLevelPathLabels} = vm.$refs.sceneLevelCode?.[0]?.getCheckedNodes()?.[0] || {};
+              if (!developChannelLevelPathLabels?.length) return;
+              vm.formData.templateName = vm.formData.formName = vm.formData.templateDesc = `${vm.formData.smallType === 'TPL0100' ? '投诉现象' : '投诉来源'}-${developChannelLevelPathLabels.join('-')}`
+            });
           },
           isShow({vm}) {
             return ['TPL0100', 'TPL0101'].includes(vm.formData.smallType);

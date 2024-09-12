@@ -71,11 +71,11 @@ const columns = ref({
       key: 'statusName',
     },
     {
-      name: '更新人',
+      name: '上架人',
       key: 'updatedBy',
     },
     {
-      name: '更新时间',
+      name: '上架时间',
       key: 'updatedTime',
       width: 160
     },

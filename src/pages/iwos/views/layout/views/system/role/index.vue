@@ -175,7 +175,7 @@
       <el-table-column
           label="操作"
           align="center"
-          width="180"
+          width="240"
           class-name="small-padding fixed-width"
       >
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
@@ -241,7 +241,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改角色配置对话框 -->
-    <MDialog  v-model="open" :title="title" width="7rem" height="65vh" @handelClose="reset">
+    <MDialog v-model="open" :title="title" width="7rem" height="65vh" @handelClose="reset">
       <el-form ref="form" :model="form" :rules="rules" label-width="100px" label-position="left">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" maxlength="30"/>
@@ -278,8 +278,8 @@
               placeholder="请输入内容"
           ></el-input>
         </el-form-item>
-        
-      
+
+
         <!-- <el-form-item label="状态">
           <el-radio-group v-model="form.status">
             <el-radio
@@ -307,33 +307,33 @@
               >
               <div>
                 <el-input
-                  v-model="tree_menu"
-                  placeholder="请输入菜单权限"
-                  clearable
-                  size="small"
-                  maxlength="30"
-                  prefix-icon="el-icon-search"
-                  style="margin-bottom: 5px"
-              >
-                <template slot="append">
-                  <el-button type="primary" @click="tree_menu_isExpend=!tree_menu_isExpend;handleCheckedTreeExpand(tree_menu_isExpend,'menu')">{{ tree_menu_isExpend ? '折叠' : '展开' }}</el-button>
-                </template>
-              </el-input>
+                    v-model="tree_menu"
+                    placeholder="请输入菜单权限"
+                    clearable
+                    size="small"
+                    maxlength="30"
+                    prefix-icon="el-icon-search"
+                    style="margin-bottom: 5px"
+                >
+                  <template slot="append">
+                    <el-button type="primary" @click="tree_menu_isExpend=!tree_menu_isExpend;handleCheckedTreeExpand(tree_menu_isExpend,'menu')">{{ tree_menu_isExpend ? '折叠' : '展开' }}</el-button>
+                  </template>
+                </el-input>
               </div>
               <div>
                 <el-tree
-                  class="tree-content tree-border"
-                  :data="menuOptions"
-                  :filter-node-method="filterMenuNode"
-                  show-checkbox
-                  ref="menu"
-                  node-key="id"
-                  :check-strictly="!form.menuCheckStrictly"
-                  empty-text="加载中，请稍候"
-                  :props="defaultProps"
-              ></el-tree>
+                    class="tree-content tree-border"
+                    :data="menuOptions"
+                    :filter-node-method="filterMenuNode"
+                    show-checkbox
+                    ref="menu"
+                    node-key="id"
+                    :check-strictly="!form.menuCheckStrictly"
+                    empty-text="加载中，请稍候"
+                    :props="defaultProps"
+                ></el-tree>
               </div>
-             
+
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -353,18 +353,18 @@
               >
               <div>
                 <el-input
-                  v-model="tree_channel"
-                  placeholder="请输入投诉来源名称"
-                  clearable
-                  size="small"
-                  maxlength="30"
-                  prefix-icon="el-icon-search"
-                  style="margin-bottom: 5px"
-              >
-                <template slot="append">
-                  <el-button type="primary" @click="tree_channel_isExpend=!tree_channel_isExpend;handleCheckedTreeExpand(tree_channel_isExpend,'complaintSource')">{{ tree_channel_isExpend ? '折叠' : '展开' }}</el-button>
-                </template>
-              </el-input>
+                    v-model="tree_channel"
+                    placeholder="请输入投诉来源名称"
+                    clearable
+                    size="small"
+                    maxlength="30"
+                    prefix-icon="el-icon-search"
+                    style="margin-bottom: 5px"
+                >
+                  <template slot="append">
+                    <el-button type="primary" @click="tree_channel_isExpend=!tree_channel_isExpend;handleCheckedTreeExpand(tree_channel_isExpend,'complaintSource')">{{ tree_channel_isExpend ? '折叠' : '展开' }}</el-button>
+                  </template>
+                </el-input>
               </div>
               <el-tree
                   class="tree-content tree-border"
@@ -380,9 +380,8 @@
             </el-form-item>
           </el-col>
         </el-row>
-        
-      
-       
+
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -391,7 +390,7 @@
     </MDialog>
 
     <!-- 分配角色数据权限对话框 -->
-    <MDialog  v-model="openDataScope" :title="title" width="7rem">
+    <MDialog v-model="openDataScope" :title="title" width="7rem">
       <el-form :model="form" label-width="80px" label-position="left">
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName" :disabled="true" maxlength="30"/>
@@ -448,7 +447,7 @@
     </MDialog>
 
     <!-- 分配用户 -->
-    <MDialog  v-model="authUser.open" title="已授权用户" width="75vw">
+    <MDialog v-model="authUser.open" title="已授权用户" width="75vw">
       <div class="one-screen" style="height: 50vh;">
         <el-form class="one-screen-fg0" :model="authUser.queryParams" ref="queryAuthUserForm" size="small" :inline="true">
           <el-form-item label="用户账号" prop="userName">
@@ -518,10 +517,11 @@
 <script>
 import selectUser from "./selectUser";
 import MDialog from '@/components/MDialog';
+
 export default {
   name: "RoleIndex",
   dicts: ["sys_normal_disable"],
-  components: {selectUser,MDialog},
+  components: {selectUser, MDialog},
   data() {
     return {
       authUser: {
@@ -546,10 +546,10 @@ export default {
         }
       },
       // 树的数据筛选
-      tree_menu:'',
-      tree_channel:'',
-      tree_menu_isExpend:false,
-      tree_channel_isExpend:false,
+      tree_menu: '',
+      tree_channel: '',
+      tree_menu_isExpend: false,
+      tree_channel_isExpend: false,
       // 遮罩层
       loading: false,
       // 选中数组
@@ -651,9 +651,9 @@ export default {
     tree_menu(val) {
       this.$refs.menu.filter(val);
     },
-     // 根据名称筛选投诉来源树
-     tree_channel(val) {
-      console.log("---998",val)
+    // 根据名称筛选投诉来源树
+    tree_channel(val) {
+      console.log("---998", val)
       this.$refs.complaintSource.filter(val);
     },
 
@@ -897,8 +897,8 @@ export default {
       //   }
       // }
       // ruoyi数据根据不同的type处理展开
-      console.log(value,'----998')
-      Object.values(this.$refs[type].store.nodesMap).forEach(item=>item.expanded=value)
+      console.log(value, '----998')
+      Object.values(this.$refs[type].store.nodesMap).forEach(item => item.expanded = value)
     },
     // 树权限（全选/全不选）
     handleCheckedTreeNodeAll(value, type) {
@@ -927,7 +927,7 @@ export default {
       this.getcomplaintSourceTree()
       this.open = true;
       this.title = "添加角色";
-      
+
     },
     /** 修改按钮操作 */
     async handleUpdate(row) {
@@ -1150,17 +1150,20 @@ export default {
 .dropdownBtn {
   margin-left: 6px
 }
-.custom-form-item{
+
+.custom-form-item {
   display: flex;
   flex-direction: column;
-  ::v-deep .el-form-item__content{
+
+  ::v-deep .el-form-item__content {
     margin-left: 60px !important
   }
 }
-.tree-content {  
-  max-height: 300px;  
-  min-height: 300px;  
-  overflow-y: auto;  
-  border: 1px solid #ccc;  
-}  
+
+.tree-content {
+  max-height: 300px;
+  min-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+}
 </style>

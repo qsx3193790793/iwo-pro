@@ -78,6 +78,7 @@ watch(() => props.value, () => {
 function onFocus() {
   QuillInst.value.focus();
   range.value = QuillInst.value.getSelection(true);
+  console.log('onFocus', range.value?.length)
 }
 
 function blur() {
@@ -89,7 +90,8 @@ function blur() {
   });
   html = html.match(/<p>.*?<\/p>/g)?.map(t => {
     return t.replace(/<p>|<\/p>/g, '');
-  }).join('\n').replace(/<br>/g, '\n');
+  });
+  html = html.join('\n').replace(/<br>/g, '');
   proxy.$emit("input", html);
 }
 
@@ -105,6 +107,10 @@ function init() {
   QuillInst.value.enable(false);//解决富文本自动聚焦
   setTimeout(() => QuillInst.value.enable(true), 200);
   QuillInst.value.pasteHTML(currentContent.value = compiler2Html());
+  QuillInst.value.on('text-change', function (delta, oldDelta, source) {
+    //删除事件更新选区长度 选区删除后长度不更新导致问题
+    if (delta?.ops?.some(op => op.delete) && range.value) range.value.length = 0;
+  });
   QuillInst.value.root.addEventListener('blur', blur);
   QuillInst.value.root.addEventListener('paste', (e) => {
     e.preventDefault();
@@ -131,11 +137,13 @@ defineExpose({
   },
   insert(v) {
     QuillInst.value.focus();
-    console.log('insert', range.value)
-    const d = new Delta().retain(range.value?.index || 0).delete(range.value?.length || 0).insert({TPCTag: v});
-    QuillInst.value.updateContents(d);
-    QuillInst.value.setSelection(range.value?.index || 0, 0);
-    if (range.value) range.value.length = 0;
+    nextTick(() => {
+      console.log('insert', range.value?.index, range.value?.length, QuillInst.value.getContents());
+      const d = new Delta().retain(range.value?.index || 0).delete(range.value?.length || 0).insert({TPCTag: v});
+      QuillInst.value.updateContents(d);
+      // QuillInst.value.setSelection(range.value?.length || 0, 0);
+      if (range.value) range.value.length = 0;
+    });
   }
 });
 

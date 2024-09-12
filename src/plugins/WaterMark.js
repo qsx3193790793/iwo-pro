@@ -11,7 +11,7 @@ class WaterMark {
     this.text = opts.text || '请添加水\n印文字';
     this.fontSize = opts.fontSize || 18;
     this.gap = opts.gap || 2.9;
-    this.color = opts.color || 'rgba(131,131,131,0.5)';
+    this.color = opts.color || 'rgba(210,210,210,0.5)';
     this.destroy();
     return this;
   }

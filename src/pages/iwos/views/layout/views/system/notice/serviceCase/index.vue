@@ -155,11 +155,11 @@
               <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDetail" />
             </el-form-item>
           </el-col>
-          <!-- <el-col :span="24">
-            <el-form-item label="附件" prop="attId">
-              <FileUploader ></FileUploader>
+          <el-col :span="24">
+            <el-form-item label="附件" prop="attIds">
+              <FileUploader v-model="form.attIds" ></FileUploader>
             </el-form-item>
-          </el-col> -->
+          </el-col>
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer" v-if="!isDetail">
@@ -215,7 +215,8 @@ export default {
       // 表单参数
       form: {
         deptId: null,
-        noticeContent: ''
+        noticeContent: '',
+        attIds:[]
       },
       // noticeText:'',
       // 表单校验
@@ -329,6 +330,7 @@ export default {
         noticeId: undefined,
         noticeTitle: undefined,
         // noticeType: undefined,
+        attIds: undefined,
         noticeContent: undefined,
         deptId: undefined,
         recipientIds: undefined,
@@ -368,7 +370,8 @@ export default {
         if (err) return
         this.form = Object.assign(response, {
           deptId: this.form.recipientType == 1 ? response.recipientIds : response.deptArr[0],
-          noticeContent: response.noticeContent
+          noticeContent: response.noticeContent,
+          attIds: response.attIds
         });
         if (this.form.recipientType == 2) {
           this.recipientOptions = response.teamList

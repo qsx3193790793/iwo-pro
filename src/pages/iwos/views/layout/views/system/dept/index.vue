@@ -75,7 +75,7 @@
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="240" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
               size="small"
@@ -90,7 +90,7 @@
             <el-dropdown-menu slot="dropdown" class="table-dropdown-menu">
               <div class="inner">
                 <!-- <el-button v-hasPermission="['system:dept:add']" type="success" size="small" @click="handleAdd(scope.row)">新增</el-button> -->
-                
+
                 <!-- <el-button v-hasPermission="['system:dept:query']" type="primary" size="small" @click="handleDetail(scope.row)">详情</el-button> -->
                 <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='1'" type="danger" size="small" @click="handleEnd(scope.row)">停用</el-button>
                 <el-button v-hasPermission="['system:dept:edit']" v-show="scope.row.status=='0'" type="primary" size="small" @click="handleStart(scope.row)">启用</el-button>
@@ -119,7 +119,7 @@
     </el-table>
 
     <!-- 添加或修改机构对话框 -->
-    <MDialog  v-model="open" :title="title" width="7rem" @handelClose="handleType='';deptParentId=null">
+    <MDialog v-model="open" :title="title" width="7rem" @handelClose="handleType='';deptParentId=null">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="left" :disabled="handleType=='detail'">
         <el-row>
           <el-col :span="24" v-if="form.parentId != 0">
@@ -215,11 +215,12 @@
 <script>
 import Treeselect from "@riophae/vue-treeselect";
 import MDialog from '@/components/MDialog';
+
 export default {
   name: "DeptIndex",
   dicts: ['sys_normal_disable', 'base_province_code'],
   // cusDicts: ['base_province_code'],
-  components: {Treeselect,MDialog},
+  components: {Treeselect, MDialog},
   data() {
     return {
       // 新增编辑选机构时所选机构的父级id

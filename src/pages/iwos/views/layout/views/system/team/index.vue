@@ -77,7 +77,7 @@
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createTime"/>
-          <el-table-column label="操作" align="center" width="180" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" width="240" class-name="small-padding fixed-width">
             <template slot-scope="scope">
               <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-hasPermission="['system:team:edit']">修改
               </el-button>
@@ -103,7 +103,7 @@
     </div>
 
     <!-- 添加或修改班组对话框 -->
-    <MDialog  v-model="open" :title="title" width="7rem" @handelClose="handleType=''">
+    <MDialog v-model="open" :title="title" width="7rem" @handelClose="handleType=''">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" :disabled="handleType=='detail'">
         <el-form-item label="机构" prop="deptId">
           <treeselect v-model="form.deptId" :disabled="handleType=='detail'" noOptionsText="暂无数据" :options="deptOptions" :show-count="true" :placeholder="handleType=='detail'?'':'请选择归属机构'" @select="handelDeptIdChange"/>
@@ -140,9 +140,10 @@
 // import { listTeam, getTeam, delTeam, addTeam, updateTeam } from "@/api/system/team";
 import Treeselect from "@riophae/vue-treeselect";
 import MDialog from '@/components/MDialog';
+
 export default {
   name: "TeamManage",
-  components: {Treeselect,MDialog},
+  components: {Treeselect, MDialog},
   dicts: ['sys_normal_disable'],
   data() {
     return {
@@ -453,12 +454,12 @@ export default {
       that.$refs["form"].validate(valid => {
         if (valid) {
           if (that.form.teamId != null) {
-              that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
-                if (err) return
-                that.$$Toast.success("修改成功");
-                that.open = false;
-                that.getList();
-              });
+            that.$$api.team.updateTeam({data: that.form}).then(({res: response, err}) => {
+              if (err) return
+              that.$$Toast.success("修改成功");
+              that.open = false;
+              that.getList();
+            });
           } else {
             that.$$api.team.addTeam({data: that.form}).then(({res: response, err}) => {
               if (err) return

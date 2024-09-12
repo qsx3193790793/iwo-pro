@@ -135,7 +135,7 @@
           <el-table-column
               label="操作"
               align="center"
-              width="180"
+              width="240"
               class-name="small-padding fixed-width"
           >
             <template slot-scope="scope" v-if="scope.row.userId !== 1">
@@ -162,7 +162,7 @@
     </div>
 
     <!-- 添加或修改用户配置对话框 -->
-    
+
     <MDialog  v-model="open" :title="title" width="7rem">
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="90px">
         <el-row>

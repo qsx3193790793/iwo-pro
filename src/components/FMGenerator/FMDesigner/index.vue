@@ -59,7 +59,7 @@
         </el-tabs>
       </div>
     </div>
-    
+
     <MDialog v-if="dialogVisible" v-model="dialogVisible" title="表单预览" width="90vw">
       <div class="fm-designer-view">
         <FormModel ref="FormConfigViewRef" :formConfig="formConfigView"></FormModel>
@@ -262,17 +262,20 @@ const formConfig = computed(() => {
 
 function getJson() {
   const errMsg = stageValidator(stage.value);
+  console.log(errMsg)
   if (errMsg) {
     proxy.$$store.commit('fmDesigner/SET_ACTIVE_COMP_ID', errMsg.cId);
-    return proxy.$$Toast.error(`[${errMsg.name}]配置中[${errMsg.title}]未填写，请检查`)
+    proxy.$$Toast.error(`[${errMsg.name}]配置中[${errMsg.title}]未填写，请检查`);
+    return errMsg;
   }
-  return parseJson(stage.value, z_formConfigProps.value);
+  return {isError: false, json: parseJson(stage.value, z_formConfigProps.value)};
 }
 
 function onSave() {
-  const json = getJson();
-  console.log('onSave', json);
-  proxy.$emit('onSave', json);
+  const res = getJson();
+  if (res.isError) return;
+  console.log('onSave', res.json);
+  proxy.$emit('onSave', res.json);
 }
 
 //加载json

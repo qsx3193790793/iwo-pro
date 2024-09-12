@@ -117,13 +117,13 @@ export const stageValidator = arr => {
         const zp = arr[i].z_props[zpi];
         if (zp.isRequire && ((Object.prototype.toString.call(zp.value) === '[object Array]' && !zp.value.length) || $$isEmpty(zp.value))) {
           const zpf = getProps(arr[i].z_props);
-          return {cId: arr[i].cId, name: zpf.name, title: zp.name};
+          return {cId: arr[i].cId, name: zpf.name, title: zp.name, isError: true};
         }
       }
     }
     if (arr[i].children?.length) {
-      const cid = stageValidator(arr[i].children);
-      if (cid) return cid;
+      const err = stageValidator(arr[i].children);
+      if (err) return err;
     }
   }
   return null;

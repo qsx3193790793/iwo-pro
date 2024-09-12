@@ -342,7 +342,7 @@ export default {
       this.$refs['Form']?.validate((valid, object) => {
         if (valid) return cb?.(this.getFormData(), this);
         err?.(valid, object);
-        this.$$Toast({message: `表单验证不通过，请检查`, type: 'error'});
+        !err && this.$$Toast({message: `表单验证不通过，请检查`, type: 'error'});
         //定位到第一个错误点
         this.collapseActive = this.resultItems.map((fci, i) => fci.name || `${i}`);//全部展开 避免收起的板块无法定位
         this.$nextTick(() => {

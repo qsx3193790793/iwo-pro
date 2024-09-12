@@ -12,7 +12,7 @@ export default {
 
     function isMoveHandler(target) {
       const classes = target?.getAttribute('class');
-      if (classes?.indexOf('el-dialog__header') >= 0) return true;
+      if (classes?.indexOf('el-dialog__header') >= 0 || classes?.indexOf('el-dialog__footer') >= 0) return true;
       return target.parentElement ? isMoveHandler(target.parentElement) : false;
     }
 
