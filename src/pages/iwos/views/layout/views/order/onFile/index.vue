@@ -59,8 +59,8 @@
       </div>
     </div>
     <!-- 添加或修改用户配置对话框 -->
-   
-    <MDialog  v-model="state.open" title="归档" width="7rem">
+
+    <MDialog v-model="state.open" title="归档" width="7rem" height="auto">
       <el-form
           ref="FormRef"
           :model="state.form"

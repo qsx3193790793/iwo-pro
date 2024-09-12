@@ -263,7 +263,7 @@ async function getInfo({isForce, from}) {
         !proxy.$$isEmpty(iRes?.m_netAge) ? `网龄${iRes.m_netAge}年` : null,
         !proxy.$$isEmpty(iRes?.custAge) ? `${iRes.custAge}岁` : null,
         iRes?.cityFlagName ?? null,
-        iRes?.isGovernment === '是' ? "关键政企客户" : null,
+        iRes?.isGovernment === '是' ? "政企关键人" : null,
         iRes?.custTypeName ? `${iRes.custTypeName}客户` : null,
       ];
 

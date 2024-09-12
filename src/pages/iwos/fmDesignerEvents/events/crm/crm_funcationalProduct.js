@@ -6,7 +6,8 @@ export default async ({vm, item}) => {
   const {res, err} = await vm.$$api.crm.funcationalProduct({
     params: {
       serialNumber: '19921594353',
-      lanId: '8310100'
+      lanId: '8310100',
+      prodClass: 'accType',
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': '' ?? ''}
   });

@@ -109,7 +109,7 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="状态">
-              <el-radio v-model="form.status" label="1">正常</el-radio>
+              <el-radio v-model="form.status" label="1">启用</el-radio>
               <el-radio v-model="form.status" label="0">停用</el-radio>
             </el-form-item>
           </el-col>

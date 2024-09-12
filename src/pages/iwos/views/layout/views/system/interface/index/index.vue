@@ -132,6 +132,15 @@ let columns = ref({
         autoHidden: autoEndHidden,
         event: handleEnd,
       },
+      {
+        label: '删除',
+        key: 'delete',
+        type:'danger',
+        permission: ['config:interfaceInfo:remove'],
+        event: (row) => {
+          handleDel(row)
+        },
+      },
     ],
   },
 })
@@ -215,7 +224,7 @@ function handleDel(row) {
   proxy.$$Dialog.confirm('确认删除选中的数据吗？', '提示').then(async () => {
     const interfaceIds = selectionList.value.map(item => {
       return item.interfaceId
-    }).join(',')
+    }).join(',') || row.interfaceId
     const {res, err} = await proxy.$$api.interface.delete({data: {status: 2}, interfaceIds});
     if (err) return;
     getList(1);

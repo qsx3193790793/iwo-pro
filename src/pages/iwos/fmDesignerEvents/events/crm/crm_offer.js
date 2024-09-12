@@ -30,7 +30,8 @@ export default async ({vm, item, eventsFields, value}) => {
   const {res, err} = await vm.$$api.crm.offer({
     params: {
       offerNbr: value.offerNbr,
-      provinceId: lanIdInfo.lanid
+      provinceId: lanIdInfo.lanid,
+      prodClass: accType,
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
   });

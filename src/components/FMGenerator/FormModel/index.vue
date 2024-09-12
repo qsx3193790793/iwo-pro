@@ -313,7 +313,6 @@ export default {
       appendItems.forEach(v => (v.items || []).forEach(vi => {
         vi.key && this.$set(this.formData, vi.key, vi.value ?? null);
       }));
-      console.log('setAppendItems', this.appendItems, appendItems, this);
     },
     removeAllAppendItems() {
       this.removeAppendItems(Object.keys(this.appendItems));
@@ -335,7 +334,6 @@ export default {
       appendItems.forEach(v => (v.items || []).forEach(vi => {
         if (vi.key) delete this.formData[vi.key]
       }));
-      console.log('removeAppendItems', this.appendItems, appendItems, this);
     },
     validator(cb, err) {
       console.log('validator', this.formData, this.getFormData());

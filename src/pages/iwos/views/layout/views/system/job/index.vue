@@ -224,14 +224,14 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </MDialog>
-    
+
     <!-- <el-dialog title="" :visible.sync="openCron" append-to-body destroy-on-close class="scrollbar" :close-on-click-modal="!1"> -->
       <MDialog  v-model="openCron" title="Cron表达式生成器" width="7rem" height="78vh">
       <crontab @hide="openCron=false" @fill="crontabFill" :expression="expression"></crontab>
     </MDialog>
 
     <!-- 任务日志详细 -->
-    
+
     <MDialog  v-model="openView" title="任务详情" width="7rem">
       <el-form ref="form" :model="form" label-position="left" label-width="120px" size="small">
         <el-row>
@@ -254,7 +254,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="任务状态：">
-              <div v-if="form.status == 0">正常</div>
+              <div v-if="form.status == 0">启用</div>
               <div v-else-if="form.status == 1">暂停</div>
             </el-form-item>
           </el-col>

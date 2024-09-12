@@ -19,6 +19,7 @@ export default async ({vm, item, eventsFields}) => {
     data: {
       accNum: accNum,//   手机号码
       lanId: lanIdInfo.lanid,//  本地网标识
+      prodClass: accType,
       status: 1
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}

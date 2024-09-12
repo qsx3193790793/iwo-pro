@@ -2,28 +2,25 @@
   <div class="ComplaintDetail">
     <ELScrollbar class="base-info public-background">
       <div class="main-title-1">用户信息</div>
-      <!-- <div class="cusName">{{ userInfo.custName }}</div> -->
       <div class="user-msg">
-        <div class="avatar" :title="userInfo.custName">
-          <div>{{ userInfo.custName || '客户姓名' }}</div>
+        <div class="avatar" :title="pageCacheDate.userInfo.custName">
+          <div>{{ pageCacheDate.userInfo.custName || '客户姓名' }}</div>
         </div>
         <div style="font-size: 0.15rem;">
-          <div><b>投诉号码：</b>{{ userInfo.complaintAssetNum }}</div>
-          <el-rate v-model="userInfo.custLevel" class="rate" disabled-void-color="#C6D1DE" :max="7" score-template="{value}星用户" show-score disabled></el-rate>
-          <div><b>号码归属地：</b>{{ userInfo.phoneLocal }}</div>
+          <div><b>投诉号码：</b>{{ pageCacheDate.userInfo.complaintAssetNum }}</div>
+          <el-rate v-model="pageCacheDate.userInfo.custLevel" class="rate" disabled-void-color="#C6D1DE" :max="7" score-template="{value}星用户" show-score disabled></el-rate>
+          <div><b>号码归属地：</b>{{ pageCacheDate.userInfo.phoneLocal }}</div>
         </div>
       </div>
       <template v-for="item in tagList1">
         <el-tag v-if="item.value" style="margin:0 0.2rem 0.1rem 0;" :key="item.label" type="warning" size="medium" color="#f49e47" effect="dark"> {{ item.value }}</el-tag>
       </template>
       <br/>
-      <!-- <TextLine labelColor="#a7abb4" labelWidth="1.36rem" :list="textLineList1" style="font-size:0.14rem;margin: 15px 0;"></TextLine> -->
       <div class="tag-body" :style=" `border: 2px solid ${item.color}`" v-for="item in evaluateTagList" :key="item.label">
         <div class="tag-name" :style="`color:${item.color}`">{{ item.label }}</div>
         <div class="tag-number" :style="`background-color: ${item.color};`">{{ item.value || '0' }}</div>
       </div>
       <el-divider></el-divider>
-      <!-- <UserTag class="UserTag" :userProfile="userProfile"></UserTag> -->
       <div class="main-title-1">工单基本信息</div>
       <TextLine labelWidth="1.36rem" :list="textLineList2" style="font-size:0.14rem;" labelColor="#a7abb4"></TextLine>
       <el-divider></el-divider>
@@ -62,130 +59,105 @@ import {parseFormModel} from "@/components/FMGenerator/FMDesigner/config/index";
 import template from "@/pages/iwos/fmDesignerComps/template/投诉单详情模板.js";
 
 const {proxy} = getCurrentInstance();
-const FormModelRef = ref();
-const formConfig = ref();
-const detailWorkorderId = ref(null);
 
-const formData = ref({});
-const userInfo = ref({
-  custName: '客户姓名', custLevel: 0,
+const FormModelRef = ref();
+
+const formConfig = ref();
+
+const pageCache = ref({});//页面缓存 此页面会被多次tab打开 记录缓存
+
+const pageCacheDate = computed(() => pageCache.value[proxy.$route.query.cacheId] ?? {
+  formInst: null,
+  formData: {},
+  userInfo: {custName: '客户姓名', custLevel: 0}
 });
 
-async function onFormLoaded(v) {
-  formData.value = v;
-  if (!proxy.$$lodash.get(formData.value, 'complaintAssetNum')) return;
-  //没有存性别和生日
-  const {res, err} = await proxy.$$api.crm.queryCommonCustInfo({
-    loading: !1, data: {
-      accNumber: proxy.$$lodash.get(formData.value, 'complaintAssetNum'),
-      lanId: proxy.$$lodash.get(formData.value, 'lanId'),
-    },
-    headers: {'complaintWorksheetId': proxy.$$lodash.get(formData.value, 'complaintWorksheetId') ?? '', 'complaintAssetNum': proxy.$$lodash.get(formData.value, 'complaintAssetNum') ?? ''}
-  });
-  userInfo.value = {
-    custName: proxy.$$lodash.get(formData.value, 'custName'),
-    custLevel: proxy.$$lodash.get(formData.value, 'userStarLevel') ?? 0,
-    gender: res?.gender,
-    birthdayFlag: res?.birth ? proxy.$$dayjs(proxy.$$dateFormatterYMD(proxy.$$dayjs())).isSame(res.birth) : false,
-    complaintAssetNum: proxy.$$lodash.get(formData.value, 'complaintAssetNum'),
-    phoneLocal: proxy.$$lodash.get(formData.value, 'phoneLocal')
-  }
-}
-
-// const userProfile = computed(() => {
-//   const importantCustomer = proxy.$$lodash.get(formData.value, 'complaint.importantCustomer');
-//   const netAge = proxy.$$lodash.get(formData.value, 'complaint.netAge');
-//   const custAge = proxy.$$lodash.get(formData.value, 'complaint.custAge');
-//   const cityFlag = proxy.$$lodash.get(formData.value, 'complaint.cityFlag');
-//   const governmentEnterprisekeyPerson = proxy.$$lodash.get(formData.value, 'complaint.governmentEnterprisekeyPerson');
-//   const custType = proxy.$$lodash.get(formData.value, 'complaint.custType');
-
-//   return {
-//     gender: userInfo.value?.gender,
-//     birthdayFlag: userInfo.value?.birthdayFlag,
-//     tagList: [
-//       importantCustomer == '1' ? '重要客户' : null,
-//       !proxy.$$isEmpty(netAge) ? `网龄${netAge}年` : null,
-//       !proxy.$$isEmpty(custAge) ? `${custAge}岁` : null,
-//       cityFlag && proxy.$store.getters["dictionaries/MATCH_LABEL"]("cus_city", cityFlag),
-//       governmentEnterprisekeyPerson == '1' ? '关键政企客户' : null,
-//       custType ? `${proxy.$store.getters["dictionaries/MATCH_LABEL"]("customer_strategy_grouping", custType)}` : null,
-//     ]
-//   }
-// });
 const tagList1 = computed(() => {
-  const importantCustomer = proxy.$$lodash.get(formData.value, 'importantCustomer');
-  const netAge = proxy.$$lodash.get(formData.value, 'netAge');
-  const custAge = proxy.$$lodash.get(formData.value, 'custAge');
-  const cityFlag = proxy.$$lodash.get(formData.value, 'cityFlag');
-  const governmentEnterprisekeyPerson = proxy.$$lodash.get(formData.value, 'governmentEnterprisekeyPerson');
-  // const phoneLocal = proxy.$$lodash.get(formData.value, 'phoneLocal');
+  const importantCustomer = proxy.$$lodash.get(pageCacheDate.value.formData, 'importantCustomer');
+  const netAge = proxy.$$lodash.get(pageCacheDate.value.formData, 'netAge');
+  const custAge = proxy.$$lodash.get(pageCacheDate.value.formData, 'custAge');
+  const cityFlag = proxy.$$lodash.get(pageCacheDate.value.formData, 'cityFlag');
+  const governmentEnterprisekeyPerson = proxy.$$lodash.get(pageCacheDate.value.formData, 'governmentEnterprisekeyPerson');
+  // const phoneLocal = proxy.$$lodash.get(pageCacheDate.value.formData, 'phoneLocal');
 
   return [
     // {label: '归属地：', value: phoneLocal ? `归属地：${phoneLocal}` : null},
-    {label: '网龄', value: !proxy.$$isEmpty(netAge) ? `网龄${netAge}年` : null},
-    {label: '城市', value: cityFlag ? proxy.$store.getters["dictionaries/MATCH_LABEL"]("cus_city", cityFlag) : null},
     {label: '重要客户', value: importantCustomer == '1' ? '重要客户' : null},
-    {label: '关键政企客户', value: governmentEnterprisekeyPerson == '1' ? '关键政企客户' : null},
+    {label: '网龄', value: !proxy.$$isEmpty(netAge) ? `网龄${netAge}年` : null},
     {label: '年龄', value: !proxy.$$isEmpty(custAge) ? `${custAge}岁` : null},
+    {label: '城市', value: cityFlag ? proxy.$store.getters["dictionaries/MATCH_LABEL"]("cus_city", cityFlag) : null},
+    {label: '政企关键人', value: governmentEnterprisekeyPerson == '1' ? '政企关键人' : null},
+    {label: '客户类型', value: pageCacheDate.value.userInfo?.custTypeName ?? null},
   ]
 })
+
+async function onFormLoaded(formInst, formData) {
+  pageCacheDate.value.formInst = formInst;
+  pageCacheDate.value.formData = formData;
+  if (!proxy.$$lodash.get(pageCacheDate.value.formData, 'complaintAssetNum')) return;
+  //没有存性别和生日
+  const {res, err} = await proxy.$$api.crm.queryCommonCustInfo({
+    loading: !1, data: {
+      accNumber: proxy.$$lodash.get(pageCacheDate.value.formData, 'complaintAssetNum'),
+      lanId: proxy.$$lodash.get(pageCacheDate.value.formData, 'lanId'),
+    },
+    headers: {'complaintWorksheetId': proxy.$$lodash.get(pageCacheDate.value.formData, 'complaintWorksheetId') ?? '', 'complaintAssetNum': proxy.$$lodash.get(pageCacheDate.value.formData, 'complaintAssetNum') ?? ''}
+  });
+  pageCacheDate.value.userInfo = {
+    custName: proxy.$$lodash.get(pageCacheDate.value.formData, 'custName'),
+    custLevel: proxy.$$lodash.get(pageCacheDate.value.formData, 'userStarLevel') ?? 0,
+    gender: res?.gender,
+    birthdayFlag: res?.birth ? proxy.$$dayjs(proxy.$$dateFormatterYMD(proxy.$$dayjs())).isSame(res.birth) : false,
+    complaintAssetNum: proxy.$$lodash.get(pageCacheDate.value.formData, 'complaintAssetNum'),
+    phoneLocal: proxy.$$lodash.get(pageCacheDate.value.formData, 'phoneLocal'),
+    custTypeName: res?.custTypeName && `${res?.custTypeName}客户`
+  }
+}
+
 const evaluateTagList = computed(() => [
-  {label: '30天满意评价', value: proxy.$$lodash.get(formData.value, 'satisfactionEstima30days'), color: '#68b14e'},
-  {label: '30天不满意评价', value: proxy.$$lodash.get(formData.value, 'dissatisfactionEstima30days'), color: '#d86ca0'},
-  {label: '30天重复投诉', value: proxy.$$lodash.get(formData.value, 'recmplntTimes30days'), color: '#6e84fe'},
-  {label: '30天越级投诉', value: proxy.$$lodash.get(formData.value, 'croscmplntTimes30days'), color: '#956ec8'},
+  {label: '30天满意评价', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'satisfactionEstima30days'), color: '#68b14e'},
+  {label: '30天不满意评价', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'dissatisfactionEstima30days'), color: '#d86ca0'},
+  {label: '30天重复投诉', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'recmplntTimes30days'), color: '#6e84fe'},
+  {label: '30天越级投诉', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'croscmplntTimes30days'), color: '#956ec8'},
 ])
-// const textLineList1 = computed(() => [
-//   // {label: '号码归属地：', value: proxy.$$lodash.get(formData.value, 'complaint.phoneLocal')},
-//   // {label: '工单满意：', value: proxy.$$lodash.get(formData.value, 'complaint.satisfactionEstima30days')},
-//   // {label: '工单不满意：', value: proxy.$$lodash.get(formData.value, 'complaint.dissatisfactionEstima30days')},
-//   // {label: '重复投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.recmplntTimes30days')},
-//   // {label: '越级投诉：', value: proxy.$$lodash.get(formData.value, 'complaint.croscmplntTimes30days')},
-//   // {label: '退费记录：', value: proxy.$$lodash.get(formData.value, 'complaint.refundRecords90days')},
-//   {label: '业务号码：', value: proxy.$$lodash.get(formData.value, 'complaintAssetNum')},
-//   {label: '主叫号码：', value: proxy.$$lodash.get(formData.value, 'callerNo')},
-//   {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'contactPhone1')},
-//   {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'contactPhone2')},
-// ]);
 
 const textLineList2 = computed(() => [
   {label: '工单类型：', value: '投诉单'},
   {label: '工单受理渠道：', value: '集约工单门户'},
-  {label: '集团工单编号：', value: proxy.$$lodash.get(formData.value, 'complaintWorksheetId')},
-  {label: '统一投诉编码：', value: proxy.$$lodash.get(formData.value, 'unifiedComplaintCode')},
-  {label: '呼叫流水号：', value: proxy.$$lodash.get(formData.value, 'callId')},
-  {label: '主叫号码：', value: proxy.$$lodash.get(formData.value, 'callerNo')},
-  {label: '受理工号：', value: proxy.$$lodash.get(formData.value, 'createStaff')},
-  {label: '受理员工姓名：', value: proxy.$$lodash.get(formData.value, 'opStaffName')},
-  {label: '受理部门：', value: proxy.$$lodash.get(formData.value, 'opOrgName')},
-  {label: '创建时间：', value: proxy.$$lodash.get(formData.value, 'createTime')},
-  {label: '联系电话1：', value: proxy.$$lodash.get(formData.value, 'contactPhone1')},
-  {label: '联系电话2：', value: proxy.$$lodash.get(formData.value, 'contactPhone2')},
-
-  // {label: '申诉工单编号：', value: proxy.$$lodash.get(formData.value, 'appealWorksheetId')},
-  // {label: '省内工单编号：', value: proxy.$$lodash.get(formData.value, 'worksheetId')},
-  // {label: '录音流水号：', value: proxy.$$lodash.get(formData.value, 'recordingId')},
-  // {label: '申诉日期：', value: proxy.$$lodash.get(formData.value, 'appealDate')},
-  // {label: '申诉用户姓名：', value: proxy.$$lodash.get(formData.value, 'appealUserName')},
-  // {label: '建单时间：', value: proxy.$$lodash.get(formData.value, 'provinceOrderCreateTime')},
+  {label: '集团工单编号：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'complaintWorksheetId')},
+  {label: '统一投诉编码：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'unifiedComplaintCode')},
+  {label: '呼叫流水号：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'callId')},
+  {label: '主叫号码：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'callerNo')},
+  {label: '受理工号：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'createStaff')},
+  {label: '受理员工姓名：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'opStaffName')},
+  {label: '受理部门：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'opOrgName')},
+  {label: '创建时间：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'createTime')},
+  {label: '联系电话1：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'contactPhone1')},
+  {label: '联系电话2：', value: proxy.$$lodash.get(pageCacheDate.value.formData, 'contactPhone2')},
 ]);
 
-watch(() => proxy.$route.params.detailWorkorderId, () => {
-  console.log('watch detail', proxy.$route.params.detailWorkorderId, detailWorkorderId.value)
-  if (proxy.$route.params.detailWorkorderId) {
-    if (detailWorkorderId.value === proxy.$route.params.detailWorkorderId) return;
-    detailWorkorderId.value = proxy.$route.params.detailWorkorderId;
-    FormModelRef.value?.init();
+function checkCache() {
+  //检查缓存
+  const cacheId = proxy.$route.query.cacheId;
+  if (pageCache.value[cacheId]) {
+    console.log('in cacheId', pageCacheDate.value);
+    return
   }
-});
+  pageCache.value[cacheId] = {
+    formInst: {},
+    formData: {},
+    userInfo: {custName: '客户姓名', custLevel: 0}
+  }
 
-onMounted(() => {
   if (proxy.$route.params.detailWorkorderId) {
-    detailWorkorderId.value = proxy.$route.params.detailWorkorderId;
     formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
   }
-});
+}
+
+watch(() => proxy.$route.params.detailWorkorderId, checkCache);
+
+onMounted(checkCache);
+
 </script>
 <script>
 export default {

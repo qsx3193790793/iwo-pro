@@ -165,10 +165,10 @@ export default async ({vm, item}) => {
       developChannelLevel: [res.developChannelLevel1Code, res.developChannelLevel2Code, res.developChannelLevel3Code].filter(v => !!v),
       productLevel: [res.productLevel1Code, res.productLevel2Code].filter(v => !!v),
     }));
-    vm.$emit('onFormLoaded', vm.getFormData());
     const complaintAssistVoListValue = complaintAssistVoList.reduce((t, c) => ((t[`${c.fieldType == '0' ? '' : getTypePrefix(c.fieldType)}${c.fieldName}`] = c.fieldValue ?? null), t), {});
     await vm.expandFormConfigItems.find(efci => efci.key === 'complaintPhenomenonLevel')?.onChange({vm, value: complaintAssistVoListValue});
     await vm.expandFormConfigItems.find(efci => efci.key === 'askSourceSrlChain')?.onChange({vm, value: complaintAssistVoListValue});
     vm.expandFormConfigItems.find(efci => efci.key === 'workorderStrictest')?.onChange({vm, value: {workorderStrictestScene: vm.formData.workorderStrictestScene}});
+    vm.$emit('onFormLoaded', vm, vm.getFormData());
   }
 }

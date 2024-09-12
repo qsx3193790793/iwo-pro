@@ -39,12 +39,13 @@ const router = {};
 const {proxy} = getCurrentInstance();
 
 function checkRoute() {
+  const cacheId = proxy.$route.meta.multiTab ? (proxy.$route.query?.cacheId || '') : '';//一个页面同时打开多个
   const tab = {
     name: proxy.$route.meta.name,
     routeName: proxy.$route.name,
-    query: proxy.$route.query,
+    query: Object.assign(proxy.$route.query, cacheId ? {cacheId} : {}),
     params: proxy.$route.params,
-    key: `${proxy.$route.meta.name}${proxy.$route.meta.multiTab ? proxy.$$getUUID() : ''}`,//一个页面同时打开多个
+    key: `${proxy.$route.meta.name}${cacheId}`,
     path: proxy.$route.path,
     closable: !0,//是否可关闭
     isActive: !0,//活动状态

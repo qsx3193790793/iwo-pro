@@ -7,6 +7,7 @@ export default async ({vm, item}) => {
     params: {
       serialNumber: '18019010053',
       lanId: '8310100',
+      prodClass: 'accType',
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': '18019010053' ?? ''}
   });

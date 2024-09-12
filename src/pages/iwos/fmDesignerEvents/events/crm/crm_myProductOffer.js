@@ -24,6 +24,7 @@ export default async ({vm, item, eventsFields}) => {
     params: {
       serialNumber: accNum,//号码
       lanId: lanIdInfo.lanid,//  本地网标识
+      prodClass: accType,
       custId: '',//客户ID
       account: '',//账号
     },

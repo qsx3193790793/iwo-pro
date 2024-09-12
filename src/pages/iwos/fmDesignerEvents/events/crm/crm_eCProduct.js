@@ -34,7 +34,7 @@ export default async ({vm,item, eventsFields}) => {
       serialNumber: accNum,//号码
       bussinessNbr: '',//账户合同号
       account: '',//账号
-      prodClass: '',//接入产品产品大类
+      prodClass: accType,
       iccid: '',//ICCID
     },
     headers: {'complaintWorksheetId': vm.formData.complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}

@@ -33,7 +33,7 @@
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
         <el-button type="primary" size="small" v-hasPermission="['system:dict:list']" @click="handleQuery">查询</el-button>
-        <el-button type="primary" size="small" @click="handleAdd" v-hasPermission="['system:dict:add']">新增</el-button>
+        <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:dict:add']">新增</el-button>
         <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:dict:remove']">删除</el-button>
         <el-button type="warning" size="small" @click="handleExport" v-hasPermission="['system:dict:export']">导出
         </el-button>
@@ -72,7 +72,7 @@
     <el-pagination class="one-screen-fg0" :current-page.sync="queryParams.pageNum" :page-size.sync="queryParams.pageSize" :page-sizes="[15, 30, 40,50]" background layout=" ->,total, sizes, prev, pager, next, jumper" :total="total" @size-change="getList" @current-change="getList"/>
 
     <!-- 添加或修改参数配置对话框 -->
-    <MDialog  v-model="open" :title="title" width="7rem">
+    <MDialog v-model="open" :title="title" width="7rem">
       <el-form ref="form" :model="form" :rules="rules" label-position="left" label-width="80px">
         <el-form-item label="字典类型">
           <el-input v-model="form.dictType" :disabled="true" maxlength="30"/>
@@ -123,10 +123,11 @@
 
 <script>
 import MDialog from '@/components/MDialog';
+
 export default {
   name: "Data",
   dicts: ['sys_normal_disable'],
-  components: { MDialog },
+  components: {MDialog},
   data() {
     return {
       // 遮罩层
