@@ -21,6 +21,7 @@
       </div>
     </div>
     <AddDialog v-if="isShowAddDialog" v-model="isShowAddDialog" :pkid="select_pkid" destroyOnClose isDetail type="发布" @success="getList(1)"></AddDialog>
+    <AddDialog v-if="isShowDetailDialog" v-model="isShowDetailDialog" :pkid="select_pkid" destroyOnClose isDetail type="详情" @success="getList(1)"></AddDialog>
   </div>
 </template>
 
@@ -32,7 +33,7 @@ import AddDialog from '../components/AddDialog';
 import {onMounted} from "vue"
 
 const {proxy} = getCurrentInstance();
-
+const isShowDetailDialog = ref(false)
 let columns = ref({
   props: [
     {
@@ -109,6 +110,15 @@ let columns = ref({
           isShowAddDialog.value = !0;
         },
       },
+      {
+       label: '详情',
+       key: 'detail', 
+       permission: ['system:template:detail'],
+       event: (row) => {
+         select_pkid.value = {templateId: row.templateId, versionId: row.versionId};
+         isShowDetailDialog.value = !0;
+       },
+      },
     ],
   },
 })
@@ -144,6 +154,18 @@ const formConfigItems = ref([
       return proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000';//集团账号
     }
   },
+  {
+    name: '投诉现象', key: 'sceneLevelCode', value: [], col: 6, type: 'cascader', isDisable: !1, isRequire: !0,
+    options: ({vm}) =>  proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree'),
+  },
+  {
+    name: '产品', key: 'productCode', value: [], col: 6, type: 'cascader', isDisable: !1, isRequire: !1,
+    options: ({vm}) => proxy.$store.getters['dictionaries/GET_DICT']('complaint_product_tree_level_1'),
+  },
+  {
+    name: '投诉来源', key: 'sceneLevelCode', value: [], col: 6, type: 'cascader', isDisable: !1, isRequire: !0,
+    options: ({vm}) =>  proxy.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'),
+  },
   {name: '创建时间', key: 'timeRange', value: '', col: 6, type: 'dateRangePicker', isDisable: !1, isRequire: !1},
   {
     type: 'buttons', align: 'right', verticalAlign: 'top', col: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'] === '8100000' ? 12 : 18, items: [
@@ -164,8 +186,32 @@ const formConfigItems = ref([
   }
 ]);
 
+//投诉现象下拉菜单
+async function listComplaintPhenomenonTree() {
+  if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_phenomenon_tree')?.length) return;
+  const {res, err} = await proxy.$$api.complaintPhenomenon.listComplaintPhenomenonTree({params: {status: 1}});
+  if (err) return;
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_phenomenon_tree: proxy.$$formatCascaderTree((res?.phenomList || []).map(r => (r.phenomList = null, r)), 'phenomName', 'phenomCode', 'phenomList')});
+}
+//产品下拉菜单
+async function listProductTree() {
+  if (proxy.$store.getters['dictionaries/GET_DICT']('complaint_product_tree_level_1')?.length) return;
+  const {res, err} = await proxy.$$api.productClassification.listProductTree({params: {status: 1}});
+  if (err) return;
+  // 只需要一级即可
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_product_tree_level_1: proxy.$$formatCascaderTree((res?.list || []).map(r => (r.children = null, r)), 'productName', 'productCode', 'children')});
+}
+//投诉来源下拉菜单
+async function listComplaintSourceTree() {
+  const {res, err} = await proxy.$$api.complaintSource.listComplaintSourceTree({data: {status: 1}});
+  if (err) return;
+  proxy.$store.commit('dictionaries/SET_DICTIONARIES', {complaint_source_tree_by_uid: proxy.$$formatCascaderTree((res?.list || []).map(r => (r.children = null, r)), 'sourceName', 'sourceCode', 'children')});
+}
 onMounted(() => {
   getList(1)
+  listComplaintPhenomenonTree()
+  listProductTree()
+  listComplaintSourceTree()
 })
 
 

@@ -119,7 +119,8 @@ const getList = async (pageNum = pageInfo.value.pageNum) => {
 const selectionList = ref([]);
 
 function handleDel(row) {
-  proxy.$$Dialog.confirm('确认删除记录吗？', '提示').then(async () => {
+  const tip = selectionList.value.some(item => item.isProvinceCustom == 0 ) ? '确认删除记录吗？本次只删除省自定数据，非省自定无法删除！' : '确认删除记录吗？'
+  proxy.$$Dialog.confirm(tip, '提示').then(async () => {
     const {res, err} = await proxy.$$api.modelFields.delTFieldConfig({fieldIds: row ? row.fieldId : selectionList.value.map(v => v.fieldId)});
     if (err) return;
     selectionList.value = [];
