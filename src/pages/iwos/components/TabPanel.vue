@@ -29,7 +29,8 @@ const tabs = computed(() => proxy.$store.getters['storage/GET_ACTIVE_TABS']);
 
 function handlerClick(key) {
   const finder = tabs.value[key.index]
-  proxy.$$router.push({name: finder.routeName, query: finder?.query, params: finder?.params});
+  proxy.$store.commit('storage/CHANGE_TAB', finder);
+  // proxy.$$router.push({name: finder.routeName, query: finder?.query, params: finder?.params});
 }
 
 function handleCollapse() {

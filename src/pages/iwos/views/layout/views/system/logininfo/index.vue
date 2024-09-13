@@ -7,7 +7,7 @@
             maxlength="30"
             placeholder="请输入地址"
             clearable
-             class="queryItem"
+            class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -17,7 +17,7 @@
             maxlength="30"
             placeholder="请输入用户名称"
             clearable
-             class="queryItem"
+            class="queryItem"
             @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -26,7 +26,7 @@
             v-model="queryParams.status"
             placeholder="登录状态"
             clearable
-             class="queryItem"
+            class="queryItem"
         >
           <el-option
               v-for="dict in $store.getters['dictionaries/GET_DICT']('sys_common_status')"
@@ -49,8 +49,8 @@
         ></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button  size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary"  size="small" @click="handleQuery">查询</el-button>
+        <el-button size="small" @click="resetQuery">重置</el-button>
+        <el-button type="primary" size="small" @click="handleQuery">查询</el-button>
         <el-button
             type="danger"
             plain
@@ -107,14 +107,14 @@
       <el-table-column type="selection" width="55" align="center"/>
       <!-- <el-table-column label="访问编号" align="center" prop="infoId"/> -->
       <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']"/>
-      <el-table-column label="地址" align="center" prop="ipaddr"  :show-overflow-tooltip="true"/>
-      <el-table-column label="登录状态" align="center" prop="status" >
+      <el-table-column label="地址" align="center" prop="ipaddr" :show-overflow-tooltip="true"/>
+      <el-table-column label="登录状态" align="center" prop="status">
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_common_status', row.status) }}
         </template>
       </el-table-column>
       <el-table-column label="描述" align="center" prop="msg" :show-overflow-tooltip="true"/>
-      <el-table-column label="访问时间" align="center" prop="accessTime" sortable="custom" :sort-orders="['descending', 'ascending']" >
+      <el-table-column label="访问时间" align="center" prop="accessTime" sortable="custom" :sort-orders="['descending', 'ascending']">
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.accessTime) }}</span>
         </template>
@@ -206,7 +206,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const infoIds = row.infoId || this.ids;
-      this.$$Dialog.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项？').then(() => {
+      this.$$Dialog.confirm('确认删除吗？').then(() => {
         return this.$$api.logininfor.delLogininfor({infoId: infoIds});
       }).then(({res, err}) => {
         if (err) return;

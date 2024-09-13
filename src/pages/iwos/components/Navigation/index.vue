@@ -39,16 +39,19 @@ const router = {};
 const {proxy} = getCurrentInstance();
 
 function checkRoute() {
-  const cacheId = proxy.$route.meta.multiTab ? (proxy.$route.query?.cacheId || '') : '';//一个页面同时打开多个
-  const tab = {
+  const tabId = proxy.$route.query.tabId;
+  const finderTab = tabId ? proxy.$store.getters['storage/GET_TAB_BY_ID'](tabId) : null;
+  const tab = finderTab || {
     name: proxy.$route.meta.name,
     routeName: proxy.$route.name,
-    query: Object.assign(proxy.$route.query, cacheId ? {cacheId} : {}),
+    query: proxy.$route.query,
     params: proxy.$route.params,
-    key: `${proxy.$route.meta.name}${cacheId}`,
+    key: proxy.$route.meta.name + tabId,
     path: proxy.$route.path,
     closable: !0,//是否可关闭
     isActive: !0,//活动状态
+    isMultiTab: proxy.$route.meta.isMultiTab,//多开标签
+    tabId: proxy.$route.query.tabId
   };
   console.log('checkRoute', proxy.$route, tab);
   proxy.$$store.commit('storage/ADD_TAB', tab);
@@ -57,7 +60,7 @@ function checkRoute() {
 function handleSelect(name) {
   const finder = proxy.$$router.getRoutes().find(r => r.name === name);
   if (!finder) return proxy.$$Toast.error('访问页面不存在');
-  proxy.$$router.push({name: name});
+  proxy.$$router.push({name: name, query: {tabId: finder.meta.isMultiTab ? proxy.$$getUUID() : ''}});
 }
 
 const navigation = ref([]);
@@ -71,6 +74,8 @@ function handlerSecNavChange(v) {
   const finder = proxy.$$router.getRoutes().find(r => r.name === v.name);
   if (!finder) return proxy.$$Toast.error('访问页面不存在');
   proxy.$$router.push({name: v.name});
+  proxy.$$router.push({name: v.name, query: {tabId: finder.meta.isMultiTab ? proxy.$$getUUID() : ''}});
+
 }
 
 function triggerNav() {

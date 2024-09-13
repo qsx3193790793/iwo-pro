@@ -24,11 +24,16 @@ let store = {
       state.navSetting = Object.assign({}, state.navSetting, payload);
     },
     ADD_TAB(state, payload) {
-      const finder = state.activeTabs.find(at => at.key === payload.key);
+      const finder = payload.tabId ? state.activeTabs.find(at => at.tabId === payload.tabId) : state.activeTabs.find(at => at.key === payload.key);
       //刷标记未非活动
       this.commit('storage/SET_TABS_ACTIVE_STATUS', !1);
       //如果存在 激活标签 不存在 添加标签
       finder ? Object.assign(finder, {isActive: !0}) : state.activeTabs.push(payload);
+    },
+    CHANGE_TAB(state, payload) {
+      const finder = state.activeTabs.find(at => at.key === payload.key && at.multiId === payload.multiId);//找到坐标
+      finder.isActive = !0;
+      Vue.prototype.$$router.replace({name: finder.routeName, query: finder.query, params: finder.params});
     },
     REMOVE_TAB(state, payload) {
       const finder = state.activeTabs.find(at => at.key === payload);//找到坐标
@@ -69,6 +74,8 @@ let store = {
   getters: {
     GET_STORAGE_BY_KEY: state => key => state.storage[key] || null,
     GET_ACTIVE_TABS: state => state.activeTabs || null,
+    GET_TAB_BY_ID: state => tabId => state.activeTabs.find(at => at.tabId === tabId),
+    GET_MULTI_TABS: state => state.activeTabs.filter(at => at.isMultiTab),
     GET_ACTIVE_TAB_KEY: state => state.activeTabs.find(at => at.isActive)?.key,
     GET_NAV_SETTING_IS_COLLAPSE: state => state.navSetting.isCollapse,
     GET_NAV_SETTING_CAN_COLLAPSE: state => state.navSetting.canCollapse,

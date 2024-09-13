@@ -8,7 +8,12 @@
         <div class="layout">
           <!--          <ELScrollbar>-->
           <keep-alive :include="alivePage">
-            <router-view :key="$route.name"></router-view>
+            <router-view v-if="!$route.meta.isMultiTab" :data-mid="$route.query?.tabId" :multiId="$route.query?.tabId" :key="$route.name"></router-view>
+            <template v-else>
+              <template v-for="v in multiPages">
+                <router-view v-if="v.tabId===$route.query.tabId" :data-mid="v.tabId" :multiId="v.tabId" :key="$route.name+v.tabId"></router-view>
+              </template>
+            </template>
           </keep-alive>
           <!--            <router-view v-slot="{ Component }">-->
           <!--              <keep-alive :include="alivePage">-->
@@ -26,11 +31,17 @@
 import Header from '../../components/Header';
 import Navigation from '../../components/Navigation';
 import TabPanel from '../../components/TabPanel';
-import {watchEffect, computed, getCurrentInstance} from 'vue';
+import {ref, watchEffect, computed, getCurrentInstance, watch} from 'vue';
 
 const {proxy} = getCurrentInstance();
 
 const alivePage = computed(() => proxy.$$store.getters['keepAlive/GET_ALIVE_PAGE']);
+
+const multiPages = computed(() => proxy.$$store.getters['storage/GET_MULTI_TABS'])
+
+watch(() => proxy.$route.query?.tabId, () => {
+  console.log('watch tabId', proxy.$route.query?.tabId);
+});
 
 watchEffect(() => {
   console.log('alivePage', alivePage.value, proxy.$route.name);

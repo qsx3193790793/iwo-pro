@@ -1,5 +1,5 @@
 import useEvents from "./events";
-import {$$dayjs} from "@/utils";
+import {$$dayjs, $$isEmpty} from "@/utils";
 
 //选项字典获取渲染
 function dictReqCompiler(type, dictType) {
@@ -129,7 +129,7 @@ export const selectCompiler = (j, isView) => {
 export const inputCompiler = (j, isView) => {
   if (!['FMInput'].includes(j.name)) return {};
   return {
-    value: j.z_props.value ?? ((j.z_props.isDisable && j.z_props.isRequire) ? '无' : null),
+    value: $$isEmpty(j.z_props.value) ? ((j.z_props.isDisable && j.z_props.isRequire) ? '无' : null) : j.z_props.value,
     //值变化时触发
     onChange: baseOnChange(j, isView)
   }
@@ -199,10 +199,9 @@ export const customizationCompsCompiler = (j, isView) => {
     'FMDingDanSelector', 'FMOrderSalesSelector', 'FMPointCosHisSelector', 'FMDisputeChannelSelector'
   ].includes(j.name)) return {};
   const events = useEvents();
-  console.log('value', j.z_props, j.z_props.name, j.z_props.isDisable, j.z_props.isRequire, j.z_props.value ?? ((j.z_props.isDisable && j.z_props.isRequire) ? '无' : null))
   return {
     // 选项
-    value: j.z_props.value ?? ((j.z_props.isDisable && j.z_props.isRequire) ? '无' : null),
+    value: $$isEmpty(j.z_props.value) ? (j.z_props.isRequire ? '无' : null) : j.z_props.value,
     options: j.name === 'FMDisputeChannelSelector' ? events[j.z_props['optionsEvent']]?.fn : null,
     attrs: j.name === 'FMDisputeChannelSelector' ? {props: {checkStrictly: j.z_props['checkStrictly']}} : null,
     emitter({vm, item}) {

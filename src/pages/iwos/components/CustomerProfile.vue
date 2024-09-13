@@ -172,9 +172,17 @@ async function queryPendingWorkOrderByAssetNum(accNum) {
   }
   return true;
 }
+function areFirstThreeCharsSame(str1, str2) {  
+  // 确保两个字符串都有足够的长度  
+  if (str1.length < 3 || str2.length < 3) {  
+    return false; // 或者根据你的需求返回相应的值  
+  }  
+  // 使用substring或slice方法获取两个字符串的前三位，并进行比较  
+  return str1.substring(0, 3) === str2.substring(0, 3);  
+  // 或者使用 slice 方法：return str1.slice(0, 3) === str2.slice(0, 3);  
+} 
 
 async function getInfo({isForce, from}) {
-
   // 如果在详情内重新查询 那么重新重置表单数据初始化 并保持complaintWorksheetId不变
   if (from === '手动' && proxy.$route.params.workorderId && accNum.value) return proxy.$router.replace({
     name: 'ComplaintCreate', query: {
@@ -186,9 +194,18 @@ async function getInfo({isForce, from}) {
   if (!complaintWorksheetId.value) return;//1.必须先获取集团工单编号
 
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
-
   if (!(await queryPendingWorkOrderByAssetNum(accNum.value))) return;//2.查询在途单
-
+  //下面两行代码清除页面的输入项  state.value = reset(); proxy.$emit('reset');
+  proxy.$store.commit('storage/SET_STORAGE', {
+        key: 'customPositioning', value: {
+          complaintWorksheetId:complaintWorksheetId.value, accType: accType.value, accNum: accNum.value,
+          eCProductInfo: {}, lanIdInfo: {}, custom: {
+            custName:"未知客户"
+          }, redirectInfo: null
+        }
+      });
+  state.value = reset();
+  proxy.$emit('reset');
   //3.H码查询 移动设备才需要调用H码查询，其他没有
   let res = null, err = null;
   if (accType.value === '12') {
@@ -198,7 +215,15 @@ async function getInfo({isForce, from}) {
     });
     res = R?.res;
     err = R?.err;
+    let sameProvinceFlag= areFirstThreeCharsSame(res.lanid,proxy.$store.getters['user/GET_USER_PROVINCE_CODE'])
+    //  归属地不是同一个省份
+    if(!sameProvinceFlag)  {
+      proxy.$$Dialog.confirm(`${accNum.value}非本省号码，是否继续新建投诉单`, '提示', {showCancelButton: false}).catch(proxy.$$emptyFn);
+      proxy.$emit('change');//变化通知 详情时不触发
+      return
+    }
   }
+
   if (!res) res = {//如果H码查询失败 或者没有结果 那么把坐席归属省填入
     lanid: proxy.$store.getters['user/GET_USER_PROVINCE_CODE'],
     provinceCode: proxy.$store.getters['user/GET_USER_PROVINCE_CODE']

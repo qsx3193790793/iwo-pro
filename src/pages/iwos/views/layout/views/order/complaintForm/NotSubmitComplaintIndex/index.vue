@@ -153,7 +153,7 @@ const columns = ref({
         event: row => {
           // window.open(`/iwos/window/${row.workorderId}?pageCode=ComplaintDetail&complaintAssetNum=${row.complaintAssetNum}&complaintWorksheetId=${row.complaintWorksheetId}`);
 
-          proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
+          proxy.$router.push({name: 'ComplaintDetail', params: {detailWorkorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId, tabId: proxy.$$getUUID()}})
         },
       },
       {
