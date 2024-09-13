@@ -1,6 +1,6 @@
 <template>
   <div class="js-table">
-    <el-table ref="tableView" :data="dataSource" :row-class-name="tableRowClassName" @selection-change="handleSelectionChange" row-key="id" height="100%" stripe border>
+    <el-table ref="tableView" :data="dataSource" :row-class-name="tableRowClassName" @selection-change="handleSelectionChange" row-key="id" height="100%" stripe border @header-dragend="headerDragend">
       <!-- 添加复选框 -->
       <el-table-column v-if="columns.selection" align="center" type="selection" width="55"></el-table-column>
       <el-table-column v-if="columns.index" align="center" type="index" width="55"></el-table-column>
@@ -125,6 +125,11 @@ const handleSelectionChange = (val) => {
   emit("selectionChange", multipleSelection.value);
   // this.$bus.$emit('tableSelectionChangeEvent', arr)
 };
+
+//拖动表头滚动条消失，重新布局
+function headerDragend(){
+  nextTick(() => tableView.value?.doLayout())
+}
 
 watchEffect(() => {
   console.log('table onMounted', props.dataSource)

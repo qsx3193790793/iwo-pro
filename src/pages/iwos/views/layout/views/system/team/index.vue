@@ -70,6 +70,7 @@
 
         <el-table v-if="refreshTable" v-loading="loading" class="one-screen-fg1" height="100%" ref="table" :data="teamList" row-key="teamId" :default-expand-all="isExpandAll" :tree-props="{children: 'children', hasChildren: 'hasChildren'}" border>
           <el-table-column label="班组名称" align="center" prop="teamName"/>
+          <el-table-column label="班组编码" align="center" prop="teamCode"/>
           <el-table-column label="所属机构" align="center" prop="dept.deptName"/>
           <el-table-column label="状态" align="center" prop="status">
             <template slot-scope="{row}">

@@ -87,7 +87,7 @@ export default {
     async fileUpload(e) {
       if (!this.attachDesc.trim()) return this.$message({message: `请输入附件描述`, type: 'error'});
       if (e.file.size > 20971520) return this.$message({message: `只能上传小于20M大小的文件`, type: 'error'});
-      const fileType = e.file.name.match(/\.([^.]+)$/)[1]
+      const fileType = e.file.name.match(/\.([^.]+)$/) ? e.file.name.match(/\.([^.]+)$/)[1] : ''
       if (!this.acceptNames.includes(fileType)) return this.$message({message: `只能上传[${this.acceptNames.join(',')}]格式文件`, type: 'error'});
       const formdata = new FormData()
       formdata.append('attachFile', e.file)
