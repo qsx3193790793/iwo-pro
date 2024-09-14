@@ -1,9 +1,7 @@
-
-
 export const key = "complaint_completed";
 export const label = "投诉单_办结";
 
-export default ({ vm, item }) => {
+export default ({vm, item}) => {
   const formData = vm.getFormData();
   console.log("complaint_submit", formData);
   const data = {
@@ -19,7 +17,7 @@ export default ({ vm, item }) => {
       // 办结时间
       worksheetFinishTime: vm.$$dayjs().format("YYYY-MM-DD HH:mm:ss"),
       isOvertime: 0,
-      complaintInfo:formData.complaintInfo,
+      complaintInfo: formData.complaintInfo,
       complaintPhenomenonType: 1,
       complaintPhenomenonName: "移动业务-业务生效",
       custType: "1100",
@@ -51,13 +49,14 @@ export default ({ vm, item }) => {
     },
   };
   (async function () {
-    let { res, err } =
+    let {res, err} =
       await vm.$$api.complaint.temporaryCompletedComplaintWorkOrder({
         data: data,
       });
     // if (err) return vm.$$Toast({ message: `办结失败`, type: "error" });
     if (res) {
-      return vm.$$Toast({ message: `办结成功`, type: "success" });
+      vm.$$Toast({message: `办结成功`, type: "success"});
+      return vm.$store.commit('storage/REMOVE_TAB', vm.$route.query.tabId);
     }
   })();
 };

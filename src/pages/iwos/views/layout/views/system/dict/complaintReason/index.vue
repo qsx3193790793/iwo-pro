@@ -295,7 +295,7 @@ export default {
       treeReasonName: undefined,
       //是否展示五级原因
       showForthItem: true,
-      cuurrentNodeData: {},
+      currentNodeData: {},
       // 表单参数
       form: {},
       defaultProps: {
@@ -354,16 +354,19 @@ export default {
         ],
         options: {
           btns: [
-            // {
-            //   label: "新增",
-            //   key: "add",
-            //   type: "success",
-            //   permission:['config:reason:add'],
-            //   autoHidden: ({row}) => {
-            //     return row.level === 3 || row.level === 4
-            //   },
-            //   event: this.handleAdd,
-            // },
+            {
+              label: "新增",
+              key: "add",
+              type: "success",
+              permission:['config:reason:add'],
+              autoHidden: ({row}) => {
+                return row.level === 3 || row.level === 4
+              },
+              event:(row)=>{
+                this.currentNodeData = row
+                this.handleAdd()
+              } 
+            },
             {
               label: "编辑",
               key: "edit",
@@ -374,20 +377,20 @@ export default {
               event: this.handleUpdate,
             },
             {
-              label: "详情",
-              key: "detail",
-              type: "success",
-              permission: ['config:reason:detailList'],
-              autoHidden: ({row}) => {
-                return row.level === 4 || row.level === 5
-              },
-              event: this.handleDetail,
-            },
-            {
               label: "更多",
               key: "more",
               permission: ['config:reason:delete', 'config:reason:update'],
               children: [
+                {
+                  label: "详情",
+                  key: "detail",
+                  type: "success",
+                  permission: ['config:reason:detailList'],
+                  autoHidden: ({row}) => {
+                    return row.level === 4 || row.level === 5
+                  },
+                  event: this.handleDetail,
+                },
                 {
                   label: "删除",
                   key: "del",
@@ -548,8 +551,7 @@ export default {
     // 节点单击事件
     handleNodeClick(data, node) {
       this.isAllowAdd = data.level === 3 || data.level === 4
-      this.cuurrentNodeData = data
-      console.log('cuurrentNodeData', this.cuurrentNodeData);
+      this.currentNodeData = data
       if (node.childNodes?.length <= 0) return this.dataSource = []
       this.queryParams.pcode = data.reasonCode
 
@@ -624,13 +626,13 @@ export default {
     handleAdd() {
       this.reset();
       this.title = "新增投诉原因";
-      this.showForthItem = this.cuurrentNodeData.level === 3 ? false : true
-      this.superiorCode = this.cuurrentNodeData.reasonCode
+      this.showForthItem = this.currentNodeData.level === 3 ? false : true
+      this.superiorCode = this.currentNodeData.reasonCode
       this.$$api.complaintReason
-          .getComplaintReasonCode({params: {pcode: this.cuurrentNodeData.reasonCode}}).then(({res: response, err}) => {
+          .getComplaintReasonCode({params: {pcode: this.currentNodeData.reasonCode}}).then(({res: response, err}) => {
         if (err) return;
-        const treeData = this.findAncestorsInMultipleTrees(this.complaintReasonTreeOptions, this.cuurrentNodeData.reasonCode, 'reasonCode', 'reasonName', 'reasonList')
-        if (this.cuurrentNodeData.level === 3) {
+        const treeData = this.findAncestorsInMultipleTrees(this.complaintReasonTreeOptions, this.currentNodeData.reasonCode, 'reasonCode', 'reasonName', 'reasonList')
+        if (this.currentNodeData.level === 3) {
           const formData = {
             reasonCode: response.reasonCode,
             isProvinceCustom: '1',
@@ -638,11 +640,11 @@ export default {
             firstReasonName: treeData[1].reasonName,
             secondReasonCode: treeData[0].reasonCode,
             secondReasonName: treeData[0].reasonName,
-            thirdReasonCode: this.cuurrentNodeData.reasonCode,
-            thirdReasonName: this.cuurrentNodeData.reasonName,
+            thirdReasonCode: this.currentNodeData.reasonCode,
+            thirdReasonName: this.currentNodeData.reasonName,
           }
           this.form = formData
-        } else if (this.cuurrentNodeData.level === 4) {
+        } else if (this.currentNodeData.level === 4) {
           const formData = {
             reasonCode: response.reasonCode,
             isProvinceCustom: '1',
@@ -652,8 +654,8 @@ export default {
             secondReasonName: treeData[1].reasonName,
             thirdReasonCode: treeData[0].reasonCode,
             thirdReasonName: treeData[0].reasonName,
-            fourthReasonCode: this.cuurrentNodeData.reasonCode,
-            fourthReasonName: this.cuurrentNodeData.reasonName,
+            fourthReasonCode: this.currentNodeData.reasonCode,
+            fourthReasonName: this.currentNodeData.reasonName,
           }
           this.form = formData
         }

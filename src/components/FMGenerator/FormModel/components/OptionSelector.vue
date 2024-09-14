@@ -7,11 +7,11 @@
         <div class="btn add" title="增加数据" @click="$emit('input', [].concat(value || [], [{label: '', value: ''}]))">+</div>
       </div>
       <div v-for="(v,i) in value" :key="i" class="item">
-        <el-select v-if="getKeys?.length" v-model="v.label" placeholder="请选择" style="width: 50%;" filterable clearable>
+        <el-select v-if="getKeys?.length" v-model="v.label" placeholder="请选择" style="width: 50%;" :allow-create="formAllowCreate" filterable clearable>
           <el-option v-for="(vv,ii) in getKeys" v-bind="vv" :key="ii"></el-option>
         </el-select>
         <el-input v-else v-model="v.label" placeholder="请输入" style="width: 50%;"></el-input>
-        <el-select v-if="getValueKeys?.filter(vk=>vk?.options?.length)?.length" v-model="v.value" placeholder="请选择" style="width: 50%;" filterable clearable>
+        <el-select v-if="getValueKeys?.filter(vk=>vk?.options?.length)?.length" v-model="v.value" placeholder="请选择" style="width: 50%;" :allow-create="toAllowCreate" filterable clearable>
           <el-option-group v-for="(vv,ii) in getValueKeys" v-bind="vv" :key="ii">
             <el-option v-for="(vvv,iii) in vv.options" v-bind="vvv" :key="iii"></el-option>
           </el-option-group>
@@ -33,6 +33,8 @@ const props = defineProps({
   value: {type: Array, default: null},
   formPlaceholder: {type: String, default: '名称'},
   toPlaceholder: {type: String, default: '值'},
+  toAllowCreate: {type: Boolean, default: false},
+  formAllowCreate: {type: Boolean, default: false},
 });
 
 const getKeys = computed(() => {

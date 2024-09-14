@@ -122,6 +122,7 @@ let store = {
         sessionStorage.clear();
         localStorage.clear();
         commit('storage/CLEAR_TABS', null, {root: !0});
+        commit('dictionaries/RESET_ALL_DICTIONARIES', null, {root: !0});
         dispatch('keepAlive/REMOVE_ALL_ALIVE_PAGE', null, {root: !0});
         Vue.prototype.$$router.replace({name: 'Login'});
         return resolve();

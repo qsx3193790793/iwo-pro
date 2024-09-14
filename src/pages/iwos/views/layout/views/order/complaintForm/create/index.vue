@@ -6,7 +6,7 @@
     <ELScrollbar class="one-screen-fg1 public-background create-order-container">
       <!--      <div class="create-order-header">投诉单</div>-->
       <div class="create-order-form">
-        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" @reset="onFormModelReset">
+        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" @reset="onFormModelReset" :rootParams="rootParams">
           <template #ext="{root}">
             <FileUploader ref="FileUploaderRef" :root="root"></FileUploader>
           </template>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import {getCurrentInstance, onMounted, ref} from "vue";
+import {getCurrentInstance, onMounted, ref, nextTick} from "vue";
 import FileUploader from "../components/FileUploader";
 import CustomerProfile from "../../../../../../components/CustomerProfile.vue";
 import FormModel from "@/components/FMGenerator/FormModel";
@@ -29,15 +29,18 @@ const CustomerProfileRef = ref();
 const FormModelRef = ref();
 const FileUploaderRef = ref();
 const formConfig = ref();
+const rootParams = ref(null);//设备号定位数据
 
-function change() {
-  reset();
-  FormModelRef.value?.init();
+//接收开始init
+function change(v) {
+  // reset();
+  rootParams.value = v;
+  nextTick(() => FormModelRef.value?.init());
 }
 
 function reset() {
-  FormModelRef.value?.removeAllAppendItems();
-  FormModelRef.value?.resetFormData();
+  rootParams.value = null;
+  formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
   FileUploaderRef.value?.reset();
 }
 

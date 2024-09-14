@@ -19,9 +19,6 @@
 
 <script>
 import Quill from "quill";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
 import apiPrefix from "@/api/apiPrefix.js";
 
 export default {
@@ -74,7 +71,7 @@ export default {
           // 工具栏配置
           toolbar: [
             ["bold", "italic", "underline", "strike"],       // 加粗 斜体 下划线 删除线
-            ["blockquote", "code-block"],                    // 引用  代码块
+            // ["blockquote", "code-block"],                    // 引用  代码块
             [{list: "ordered"}, {list: "bullet"}],       // 有序、无序列表
             [{indent: "-1"}, {indent: "+1"}],            // 缩进
             [{size: ["small", false, "large", "huge"]}],   // 字体大小
@@ -82,7 +79,7 @@ export default {
             [{color: []}, {background: []}],             // 字体颜色、字体背景颜色
             [{align: []}],                                 // 对齐方式
             ["clean"],                                       // 清除文本格式
-            ["link", "image", "video"]                       // 链接、图片、视频
+            // ["link", "image", "video"]                       // 链接、图片、视频
           ],
         },
         placeholder: "请输入内容",

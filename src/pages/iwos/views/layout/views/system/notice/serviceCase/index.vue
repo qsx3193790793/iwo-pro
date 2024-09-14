@@ -245,7 +245,8 @@ export default {
                 callback();
               }
             }, trigger: 'blur'
-          }
+          },
+          { required: true, message: `内容不能为空`, trigger: "change" }
         ],
       }
     };
@@ -369,11 +370,12 @@ export default {
       this.$$api.notice.getNotice({ noticeId: noticeId }).then(({ res: response, err }) => {
         if (err) return
         this.form = Object.assign(response, {
-          deptId: this.form.recipientType == 1 ? response.recipientIds : response.deptArr[0],
+          deptId: response.recipientType == 1 ? response.recipientIds : response.deptArr[0],
           noticeContent: response.noticeContent,
           attIds: response.attIds
         });
-        if (this.form.recipientType == 2) {
+       
+        if (response.recipientType == 2) {
           this.recipientOptions = response.teamList
         }
         delete this.form.status

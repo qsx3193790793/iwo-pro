@@ -15,11 +15,8 @@ export const resFields = [
   // {"label": "用户号码", "value": "relatedProducts[0].serialNumber"}
 ];
 export default async ({vm, item, eventsFields}) => {
-  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  console.log('customPositioning', customPositioning)
-  // 未定位直接pass
-  if (!customPositioning || vm.formStatus !== 'create') return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  if (!vm.rootParams || vm.formStatus !== 'create') return;
+  const {lanIdInfo, accType, accNum} = vm.rootParams;
   const {res, err} = await vm.$$api.crm.myProductOffer({
     params: {
       serialNumber: accNum,//号码

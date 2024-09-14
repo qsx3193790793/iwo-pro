@@ -60,8 +60,7 @@ function confirm(row) {
 
 // 列表请求
 const getList = async (page = pageInfo.value.page) => {
-  const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  const {complaintWorksheetId, accNum} = customPositioning;
+  const {lanIdInfo, accType, accNum, complaintWorksheetId} = vm.rootParams || {};
   pageInfo.value.page = page;
   const formData = PageSearchPanelRef.value.getFormData();
   const {res, err} = await proxy.$$api.crm.getGisAddressList({

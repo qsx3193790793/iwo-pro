@@ -101,7 +101,7 @@
             <el-form-item>
             <el-button size="mini" @click="resetQuery">重置</el-button>
             <el-button type="primary" size="mini" @click="handleQuery" v-hasPermission="['config:phenom:list']">查询</el-button>
-            <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd(selectRow)" v-hasPermission="['config:phenom:add']">新增</el-button>
+            <el-button type="success" size="mini" :disabled="!isAllowAdd " @click="handleAdd" v-hasPermission="['config:phenom:add']">新增</el-button>
             <!-- <el-button type="danger" size="mini" :disabled="isAllowDelet" @click="handleDelete(selectRow)" v-hasPermission="['config:phenom:update']">删除</el-button> -->
           </el-form-item>
           </div>  
@@ -351,16 +351,19 @@ export default {
         ],
         options: {
           btns: [
-            // {
-            //   label: "新增",
-            //   key: "add",
-            //   type: "success",
-            //   permission: ['config:phenom:add'],
-            //   autoHidden: ({row}) => {
-            //     return row.level === 2 && row.isProvinceCustom === 1
-            //   },
-            //   event: this.handleAdd,
-            // },
+            {
+              label: "新增",
+              key: "add",
+              type: "success",
+              permission: ['config:phenom:add'],
+              autoHidden: ({row}) => {
+                return row.level === 2 &&  row.phenomName == '省自定'
+              },
+              event:(row)=>{
+                this.currentNodeData = row
+                this.handleAdd()
+              } 
+            },
             {
               label: "修改",
               key: "edit",
@@ -370,21 +373,22 @@ export default {
               },
               event: this.handleUpdate,
             },
-            {
-              label: "详情",
-              key: "detail",
-              type: "success",
-              permission: ['config:phenom:detailList'],
-              event: this.handleDetail,
-              autoHidden: ({row}) => {
-                return row.isProvinceCustom === 1
-              },
-            },
+           
             {
               label: "更多",
               key: "more",
               permission: ['config:phenom:update'],
               children: [
+                {
+                  label: "详情",
+                  key: "detail",
+                  type: "success",
+                  permission: ['config:phenom:detailList'],
+                  event: this.handleDetail,
+                  autoHidden: ({row}) => {
+                    return row.isProvinceCustom === 1
+                  },
+                },
                 {
                   label: "删除",
                   key: "del",

@@ -13,6 +13,8 @@ const apis = {
   updStatusappConfig: {url: `${apiPrefix('config')}/tAppInfo/updStatus`, method: 'put'},
   //查询应用系统详情
   appConfigDetail: {url: (args) =>`${apiPrefix('config')}/tAppInfo/getAppInfoById/${args?.appId || ''}`, method: 'get'},
+   //查询应用系统编号
+   getClientId: {url: (args) =>`${apiPrefix('config')}/tAppInfo/generateClientId`, method: 'get'},
 
 };
 

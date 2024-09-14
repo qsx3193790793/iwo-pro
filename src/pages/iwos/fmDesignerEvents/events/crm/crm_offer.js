@@ -22,11 +22,8 @@ export const resFields = [
   // { "label": "最大数量", "value": "offerProdRels[0].offerProdRelRstrCfgs[0].maxNum" }
 ];
 export default async ({vm, item, eventsFields, value}) => {
-  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  console.log('customPositioning', customPositioning, item, value);
-  // 未定位直接pass
-  if (!customPositioning || vm.formStatus !== 'create') return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  if (!vm.rootParams || vm.formStatus !== 'create') return;
+  const {lanIdInfo, accType, accNum} = vm.rootParams;
   const {res, err} = await vm.$$api.crm.offer({
     params: {
       offerNbr: value.offerNbr,

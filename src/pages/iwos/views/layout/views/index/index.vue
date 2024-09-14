@@ -29,7 +29,7 @@
                       <div class="text-ellipsis">{{ item.publisher + '-' + item.publishDeptName }}</div>
                     </el-tooltip>
                   </div>
-                  <div style="flex: 1;text-align: right;"> {{ item.createTime }}</div>
+                  <div style="flex: 1;text-align: right;"> {{ item.updateTime }}</div>
                 </div>
               </el-card>
             </el-col>
@@ -59,7 +59,7 @@
                   </div> -->
                   <div>
                     <div style="margin-bottom: 5px;">{{ item.publisher + '-' + item.publishDeptName }}</div>
-                    <div>{{ item.createTime }}</div>
+                    <div>{{ item.updateTime }}</div>
                   </div>
                 </div>
                 <div style="width: 85%;">

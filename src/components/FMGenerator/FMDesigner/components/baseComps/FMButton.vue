@@ -62,7 +62,7 @@ export default {
     {
       sort: 12.1, name: '绑定入参', key: 'interfaceReqParams', value: [], type: 'component', component: 'OptionSelector', isRequire: !1, col: 24,
       attrs: {
-        formPlaceholder: '入参字段', toPlaceholder: '绑定表单字段',
+        formPlaceholder: '入参字段', toPlaceholder: '绑定表单字段', toAllowCreate: true,
         handleValueKeys({vm}) {
           return [
             {

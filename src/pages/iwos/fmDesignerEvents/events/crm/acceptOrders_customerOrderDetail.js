@@ -22,11 +22,12 @@ export const resFields = [
 ];
 
 export default async ({vm, item, eventsFields, value}) => {
-  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  console.log('customPositioning', customPositioning, item, value);
-  // 未定位直接pass  formStatus不为新建时直接pass
-  if (!customPositioning || vm.formStatus !== 'create') return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  if (!vm.rootParams || vm.formStatus !== 'create') return;
+  const {lanIdInfo, accType, accNum} = vm.rootParams;
+  // const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
+  // // 未定位直接pass  formStatus不为新建时直接pass
+  // if (!customPositioning || vm.formStatus !== 'create') return;
+  // const {lanIdInfo, custom, accType, accNum} = customPositioning;
   const {res, err} = await vm.$$api.crm.customerOrderDetail({
     data: {
       orderId: value.orderId || value.provCustOrderId, lanId: lanIdInfo.lanid, prodClass: accType

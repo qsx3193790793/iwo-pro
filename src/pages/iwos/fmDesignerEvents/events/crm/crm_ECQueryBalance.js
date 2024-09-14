@@ -31,10 +31,8 @@ export const resFields = [
   // {"label": "是否可提取", "value": "ifAllowDraw"}
 ];
 export default async ({vm, item, eventsFields}) => {
-  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  // 未定位直接pass
-  if (!customPositioning || vm.formStatus !== 'create') return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  if (!vm.rootParams || vm.formStatus !== 'create') return;
+  const {lanIdInfo, accType, accNum} = vm.rootParams;
   const {res, err} = await vm.$$api.crm.ECQueryBalance({
     // params: {provinceId: '8130000'},
     data: {

@@ -42,7 +42,7 @@
     <ELScrollbar class="create-order-container public-background">
       <!--      <div   class="create-order-header">投诉单</div>-->
       <div class="create-order-form">
-        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" formStatus="view" @onFormLoaded="onFormLoaded">
+        <FormModel v-if="formConfig" ref="FormModelRef" :formConfig="formConfig" formStatus="view" @onFormLoaded="onFormLoaded" :rootParams="rootParams">
           <template #ext="{root}">
             <FileUploader :root="root"></FileUploader>
           </template>
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, onMounted, ref, nextTick} from "vue";
 import TextLine from "@/components/TextLine.vue";
 import FileUploader from "../components/FileUploader";
 import FormModel from "@/components/FMGenerator/FormModel";
@@ -64,7 +64,8 @@ import template from "@/pages/iwos/fmDesignerComps/template/投诉单详情模�
 const {proxy} = getCurrentInstance();
 const FormModelRef = ref();
 const formConfig = ref();
-const detailWorkorderId = ref(null);
+const workorderId = ref(null);
+const rootParams = ref(null);
 
 const formData = ref({});
 const userInfo = ref({
@@ -187,8 +188,9 @@ const textLineList2 = computed(() => [
 
 onMounted(() => {
   if (proxy.$route.params.detailWorkorderId) {
-    detailWorkorderId.value = proxy.$route.params.detailWorkorderId;
-    formConfig.value = parseFormModel(proxy.$$deepmerge(template.json));
+    workorderId.value = proxy.$route.params.detailWorkorderId;
+    rootParams.value = {workorderId};
+    nextTick(() => formConfig.value = parseFormModel(proxy.$$deepmerge(template.json)));
   }
 });
 </script>

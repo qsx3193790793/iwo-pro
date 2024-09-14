@@ -24,7 +24,8 @@ let store = {
       state.navSetting = Object.assign({}, state.navSetting, payload);
     },
     ADD_TAB(state, payload) {
-      const finder = payload.tabId ? state.activeTabs.find(at => at.tabId === payload.tabId) : state.activeTabs.find(at => at.key === payload.key);
+      const finder = state.activeTabs.find(at => at.key === payload.key || (at.tabId && (at.tabId === payload.tabId)));
+      console.log('ADD_TAB', payload, payload.tabId, finder)
       //刷标记未非活动
       this.commit('storage/SET_TABS_ACTIVE_STATUS', !1);
       //如果存在 激活标签 不存在 添加标签
@@ -36,8 +37,8 @@ let store = {
       Vue.prototype.$$router.replace({name: finder.routeName, query: finder.query, params: finder.params});
     },
     REMOVE_TAB(state, payload) {
-      const finder = state.activeTabs.find(at => at.key === payload);//找到坐标
-      const finderIndex = state.activeTabs.findIndex(at => at.key === payload);//找到坐标
+      const finder = state.activeTabs.find(at => at.key === payload || (at.tabId && (at.tabId === payload)));//找到坐标
+      const finderIndex = state.activeTabs.findIndex(at => at.key === payload || (at.tabId && (at.tabId === payload)));//找到坐标
       const isActive = state.activeTabs[finderIndex]?.isActive || !1;//记录是否是活动标签
       this.dispatch('keepAlive/REMOVE_ALIVE_PAGE', [finder.routeName]);
       state.activeTabs.splice(finderIndex, 1);//删除
@@ -50,6 +51,7 @@ let store = {
     CLEAR_TABS(state, payload) {
       state.activeTabs.splice(1, state.activeTabs.length);
       const tab = state.activeTabs[0];
+      this.dispatch('keepAlive/REMOVE_ALL_ALIVE_PAGE');
       if (!tab.isActive) {
         tab.isActive = !0;
         Vue.prototype.$$router.replace({name: tab.routeName, query: tab.query, params: tab.params});

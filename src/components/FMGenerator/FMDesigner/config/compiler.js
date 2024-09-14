@@ -41,8 +41,10 @@ export const interfaceCompiler = async ({vm, value, item, opts}) => {
     data: {
       interfaceCode: opts.interfaceCode,
       requestParam: JSON.stringify((opts.interfaceReqParams || []).reduce((t, c) => {
-        // 目前模板配置三类型取值 $public$开头-通用字段  $ext$开头-扩展字段 其他默认场景字段
-        if (c.value.startsWith('$public$')) vm.$$lodash.set(t, c.label, formData[c.value.replace('$public$', '')]);
+        // 目前模板配置三类型取值  $public$开头-通用字段  $ext$开头-扩展字段 其他默认场景字段
+        // 'public',scene', 'ext', 'comm' 如果不在$$开头则为手填固定值
+        if (['$public$', '$scene$', '$ext$', '$comm$'].filter(k => c.value.startsWith(k)) <= 0) vm.$$lodash.set(t, c.label, c.value);
+        else if (c.value.startsWith('$public$')) vm.$$lodash.set(t, c.label, formData[c.value.replace('$public$', '')]);
         else vm.$$lodash.set(t, c.label, formData[c.value]);
         return t;
       }, {}))

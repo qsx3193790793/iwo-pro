@@ -14,11 +14,8 @@ export const resFields = [
   {"label": "产品实例标识省份产品实例ID", "value": "prodInstId"}
 ];
 export default async ({vm, item, eventsFields, value}) => {
-  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  console.log('result_init_customerOrderDetail', customPositioning)
-  // 未定位直接pass
-  if (!customPositioning || vm.formStatus !== 'create') return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  if (!vm.rootParams || vm.formStatus !== 'create') return;
+  const {lanIdInfo, accType, accNum} = vm.rootParams;
   const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
   console.log('event call', key, fields);
   fields.forEach(ef => {

@@ -1,14 +1,14 @@
 <template>
   <div class="app-container one-screen">
     <el-form class="one-screen-fg0" :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
-             label-width="68px">
+      label-width="68px">
       <el-form-item label="标题" prop="noticeTitle">
         <el-input class="queryItem" v-model="queryParams.noticeTitle" placeholder="请输入标题" clearable maxlength="30"
-                  @keyup.enter.native="handleQuery"/>
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="创建人" prop="publisher">
-        <el-input class="queryItem" v-model="queryParams.publisher" placeholder="请输入创建人" clearable maxlength="30"
-                  @keyup.enter.native="handleQuery"/>
+        <el-input class="queryItem" v-model="queryParams.publisher" placeholder="创建人" clearable maxlength="30"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <!-- <el-form-item label="类型" prop="noticeType">
         <el-select v-model="queryParams.noticeType" placeholder="公告类型" clearable class="queryItem">
@@ -18,12 +18,14 @@
       </el-form-item> -->
       <el-form-item>
         <el-button size="small" @click="resetQuery">重置</el-button>
-        <el-button type="primary" size="small" @click="handleQuery" v-hasPermission="['system:notice:list']">查询</el-button>
+        <el-button type="primary" size="small" @click="handleQuery"
+          v-hasPermission="['system:notice:list']">查询</el-button>
         <el-button type="success" size="small" @click="handleAdd" v-hasPermission="['system:notice:add']">新增</el-button>
         <!-- <el-button type="success" size="small" :disabled="single" @click="handleUpdate"
                    v-hasPermission="['system:notice:edit']">修改
         </el-button> -->
-        <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete" v-hasPermission="['system:notice:remove']">删除</el-button>
+        <el-button type="danger" size="small" :disabled="multiple" @click="handleDelete"
+          v-hasPermission="['system:notice:remove']">删除</el-button>
       </el-form-item>
     </el-form>
 
@@ -40,35 +42,35 @@
     </el-row> -->
 
     <el-table v-loading="loading" class="one-screen-fg1" height="100%" :data="noticeList" border
-              @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
+      @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" align="center" />
       <!-- <el-table-column label="序号" align="center" prop="noticeId" width="100"/> -->
-      <el-table-column label="标题" align="center" prop="noticeTitle" :show-overflow-tooltip="true"/>
+      <el-table-column label="标题" align="center" prop="noticeTitle" :show-overflow-tooltip="true" />
       <!-- <el-table-column label="公告类型" align="center" prop="noticeType" width="100">
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_type', row.noticeType) }}
         </template>
-      </el-table-column> -->
-      <el-table-column label="状态" align="center" prop="status" >
+</el-table-column> -->
+      <el-table-column label="状态" align="center" prop="status">
         <template slot-scope="{row}">
           {{ $store.getters['dictionaries/MATCH_LABEL']('sys_notice_status', row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="创建人" align="center" prop="publisher" />
-      <el-table-column label="发布部门" align="center" prop="publishDeptName" />
-      <el-table-column label="创建时间" align="center" prop="createTime" >
+      <el-table-column label="创建人" align="center" prop="publisher"/>
+      <el-table-column label="发布部门" align="center" prop="publishDeptName"/>
+      <el-table-column label="创建时间" align="center" prop="createTime">
         <template slot-scope="scope">
           <span>{{ $$dateFormatterYMDHMS(scope.row.createTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" >
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="240px">
         <template slot-scope="scope">
           <el-button size="small" type="success" @click="handleRelease(scope.row)" v-if="scope.row.status != 1">发布
           </el-button>
           <el-button size="small" type="danger" @click="handleRetract(scope.row)" v-if="scope.row.status == 1">撤回
           </el-button>
           <el-button size="small" type="primary" @click="handleUpdate(scope.row)" v-if="scope.row.status != 1"
-                     v-hasPermission="['system:notice:edit']">修改
+            v-hasPermission="['system:notice:edit']">修改
           </el-button>
           <el-dropdown style="margin-left: 4px;" trigger="click" placement="bottom">
             <el-button type="primary">
@@ -77,12 +79,12 @@
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item>
                 <el-button size="small" type="danger" @click="handleDelete(scope.row)"
-                           v-hasPermission="['system:notice:remove']">删除
+                  v-hasPermission="['system:notice:remove']">删除
                 </el-button>
               </el-dropdown-item>
               <el-dropdown-item style="margin-top: 4px;">
                 <el-button size="small" type="primary" @click="handleDetail(scope.row)"
-                           v-hasPermission="['system:notice:query']">详情
+                  v-hasPermission="['system:notice:query']">详情
                 </el-button>
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -98,7 +100,7 @@
 
     <!-- 添加或修改公告对话框 -->
     <MDialog  v-model="open" :title="title" width="12rem">
-      <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto">
+      <el-form ref="form" :model="form" label-position="left" :rules="rules" label-width="auto" >
         <el-row>
           <!-- <el-col :span="24">
             <el-form-item label="公告类型" prop="noticeType">
@@ -128,8 +130,8 @@
           <el-col :span="24">
             <el-form-item label="接收者类型" prop="recipientType">
               <el-radio-group v-model="form.recipientType" @change="recipientTypeChange" :disabled="isDetail">
-                <el-radio v-for="dict in $store.getters['dictionaries/GET_DICT']('notice_recipient_type')" :key="dict.value"
-                          :label="dict.value">{{ dict.label }}
+                <el-radio v-for="dict in $store.getters['dictionaries/GET_DICT']('notice_recipient_type')"
+                  :key="dict.value" :label="dict.value">{{ dict.label }}
                 </el-radio>
               </el-radio-group>
             </el-form-item>
@@ -137,31 +139,32 @@
           <el-col :span="12">
             <el-form-item label="接收机构" prop="deptId">
               <treeselect v-model="form.deptId" :multiple="form.recipientType == '1'" :options="deptOptions"
-                          :show-count="true" placeholder="请选择机构" noOptionsText="暂无数据" @select="handelDeptIdChange" :disabled="isDetail"/>
+                :show-count="true" placeholder="请选择机构" noOptionsText="暂无数据" @select="handelDeptIdChange"
+                :disabled="isDetail" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.recipientType != '1'">
             <el-form-item :label="`接收${recipientLabel}`" prop="recipientIds">
               <treeselect v-model="form.recipientIds" noOptionsText="该机构下无数据" :multiple="true" :normalizer="normalizer"
-                          :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`" :disabled="isDetail"/>
+                :options="recipientOptions" :show-count="true" :placeholder="`请选择${recipientLabel}`"
+                :disabled="isDetail" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="内容" prop="noticeContent">
-              <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDetail"/>
+              <Editor v-model="form.noticeContent" ref="editorRef" :min-height="192" :readOnly="isDetail" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="附件" prop="attIds">
-              <FileUploader v-model="form.attIds" :attachments="attachments"  :hasEdit="isDetail"  ></FileUploader>
+              <FileUploader v-model="form.attIds" ></FileUploader>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer" >
-          <el-button v-if="!isDetail" type="primary" @click="submitForm" >确 定</el-button>
-          <el-button v-if="!isDetail" @click="cancel">取 消</el-button>
-          <el-button v-if="isDetail" type="primary" @click="cancel">关 闭</el-button>
+      <div slot="footer" class="dialog-footer" v-if="!isDetail">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
       </div>
     </MDialog>
   </div>
@@ -173,9 +176,9 @@ import Treeselect from "@riophae/vue-treeselect";
 import MDialog from '@/components/MDialog';
 import FileUploader from '../upload/FileUploader.vue';
 export default {
-  name: "NoticeIndex",
+  name: "ServiceCase",
   dicts: ['sys_notice_status', 'sys_notice_type', 'notice_recipient_type'],
-  components: {Editor, Treeselect, FileUploader,MDialog},
+  components: { Editor, Treeselect,MDialog,FileUploader },
   // cusDicts: ['notice_recipient_type'],
   data() {
     return {
@@ -191,8 +194,6 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      //选中行中的附件列表
-      attachments:[],
       // 公告表格数据
       noticeList: [],
       // 弹出层标题
@@ -213,29 +214,29 @@ export default {
       },
       // 表单参数
       form: {
-        deptId:null,
-        noticeContent:'',
+        deptId: null,
+        noticeContent: '',
         attIds:[]
       },
       // noticeText:'',
       // 表单校验
       rules: {
         noticeTitle: [
-          {required: true, message: "标题不能为空", trigger: "blur"}
+          { required: true, message: "标题不能为空", trigger: "blur" }
         ],
         // noticeType: [
         //   {required: true, message: "公告类型不能为空", trigger: "change"}
         // ],
         deptId: [
-          {required: true, message: "接收机构不能为空", trigger: "change",type:'array'}
+          { required: true, message: "接收机构不能为空", trigger: "change" }
         ],
         recipientIds: [
-          {required: true, message: `接收班组不能为空`, trigger: "change"}
+          { required: true, message: `接收班组不能为空`, trigger: "change" }
         ],
         recipientType: [
-          {required: true, message: `接收者类型不能为空`, trigger: "change"}
+          { required: true, message: `接收者类型不能为空`, trigger: "change" }
         ],
-        noticeContent:[
+        noticeContent: [
           {
             validator: (rule, value, callback) => {
               if (value === "<p><br></p>" || !value) {
@@ -244,7 +245,9 @@ export default {
                 callback();
               }
             }, trigger: 'blur'
-          }
+          },
+          { required: true, message: `内容不能为空`, trigger: "change" }
+
         ],
       }
     };
@@ -260,8 +263,8 @@ export default {
           return '机构'
         case '2':
           return '班组'
-          // case '3':
-          //   return '人员'
+        // case '3':
+        //   return '人员'
         default:
           return '机构'
       }
@@ -271,7 +274,7 @@ export default {
     /** 查询公告列表 */
     getList() {
       this.loading = true;
-      this.$$api.notice.listNotice({params: {...this.queryParams, noticeType: 1}}).then(({res: response, err}) => {
+      this.$$api.notice.listNotice({ params: { ...this.queryParams, noticeType: 1 } }).then(({ res: response, err }) => {
         if (err) return this.loading = false;
         this.noticeList = response.rows;
         this.total = response.total;
@@ -287,14 +290,14 @@ export default {
     },
     //查询机构树
     getDeptTree() {
-      this.$$api.user.deptTreeSelect().then(({res, err}) => {
+      this.$$api.user.deptTreeSelect().then(({ res, err }) => {
         if (err) return;
         this.deptOptions = res?.list || [];
       });
     },
-    handelDeptIdChange({id}) {
+    handelDeptIdChange({ id }) {
       if (this.form.recipientType == '2') {
-        this.$$api.team.getDeptTeamTree({deptId: id}).then(({res, err}) => {
+        this.$$api.team.getDeptTeamTree({ deptId: id }).then(({ res, err }) => {
           if (err) return;
           this.form.recipientIds = []
           this.recipientOptions = res?.rows || [];
@@ -365,15 +368,14 @@ export default {
       this.reset();
       const noticeId = row.noticeId || this.ids
       this.isDetail = false
-      this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
+      this.$$api.notice.getNotice({ noticeId: noticeId }).then(({ res: response, err }) => {
         if (err) return
-        this.attachments = response.attachments
-        this.form = Object.assign(response,{
-         deptId :this.form.recipientType == 1? response.recipientIds : response.deptArr[0],
-         noticeContent : response.noticeContent,
-         attIds: response?.attachments.map(item=>item.attId) || []
-        }) ;
-        if(this.form.recipientType == 2) {
+        this.form = Object.assign(response, {
+          deptId: response.recipientType == 1 ? response.recipientIds : response.deptArr[0],
+          noticeContent: response.noticeContent,
+          attIds: response.attIds
+        });
+        if (response.recipientType == 2) {
           this.recipientOptions = response.teamList
         }
         delete this.form.status
@@ -384,8 +386,8 @@ export default {
     /** 发布按钮 */
     handleRelease(row) {
       this.$$Dialog.confirm('是否确认发布公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
-        return this.$$api.notice.changeNoticeStatus({data: {noticeId: row.noticeId, status: 1}});
-      }).then(({res: response, err}) => {
+        return this.$$api.notice.changeNoticeStatus({ data: { noticeId: row.noticeId, status: 1 } });
+      }).then(({ res: response, err }) => {
         if (err) return
         this.getList();
         this.$$Toast.success("发布成功");
@@ -395,8 +397,8 @@ export default {
     /** 撤回按钮 */
     handleRetract(row) {
       this.$$Dialog.confirm('是否确认撤回公告标题为"' + row.noticeTitle + '"的数据项？').then(() => {
-        return this.$$api.notice.changeNoticeStatus({data: {noticeId: row.noticeId, status: 2}});
-      }).then(({res: response, err}) => {
+        return this.$$api.notice.changeNoticeStatus({ data: { noticeId: row.noticeId, status: 2 } });
+      }).then(({ res: response, err }) => {
         if (err) return
         this.getList();
         this.$$Toast.success("撤回成功");
@@ -405,7 +407,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function () {
-      console.log(this.form);
+      console.log('this.form', this.form);
 
       this.$refs["form"].validate(valid => {
         if (valid) {
@@ -414,14 +416,14 @@ export default {
           }
           if (this.form.noticeId != undefined) {
             console.log('this.$refs.editorRef.getText()', this.$refs.editorRef.getText());
-            this.$$api.notice.updateNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(), noticeType: 1}}).then(({res: response, err}) => {
+            this.$$api.notice.updateNotice({ data: { ...this.form, noticeText: this.$refs.editorRef.getText(), noticeType: 1 } }).then(({ res: response, err }) => {
               if (err) return
               this.$$Toast.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            this.$$api.notice.addNotice({data: {...this.form, noticeText: this.$refs.editorRef.getText(), noticeType: 1}}).then(({res: response, err}) => {
+            this.$$api.notice.addNotice({ data: { ...this.form, noticeText: this.$refs.editorRef.getText(), noticeType: 1 } }).then(({ res: response, err }) => {
               if (err) return
               this.$$Toast.success("新增成功");
               this.open = false;
@@ -435,8 +437,8 @@ export default {
     handleDelete(row) {
       const noticeIds = row.noticeId || this.ids
       this.$$Dialog.confirm('是否确认删除选中的数据项？').then(() => {
-        return this.$$api.notice.delNotice({noticeId: noticeIds});
-      }).then(({res: response, err}) => {
+        return this.$$api.notice.delNotice({ noticeId: noticeIds });
+      }).then(({ res: response, err }) => {
         if (err) return
         this.getList();
         this.$$Toast.success("删除成功");
@@ -453,9 +455,8 @@ export default {
       this.isDetail = true
       const noticeId = row.noticeId || this.ids
       this.form.isDetail = true
-      this.$$api.notice.getNotice({noticeId: noticeId}).then(({res: response, err}) => {
+      this.$$api.notice.getNotice({ noticeId: noticeId }).then(({ res: response, err }) => {
         if (err) return
-        this.attachments = response.attachments
         this.form = response;
         if (this.form.recipientType == 1) {
           this.form.deptId = response.recipientIds

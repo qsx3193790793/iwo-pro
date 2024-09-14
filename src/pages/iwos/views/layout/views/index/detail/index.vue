@@ -8,7 +8,7 @@
                     <span>发布日期: <span style="font-weight: bold;color: #333f5b;"> {{ detailData.updateTime }}</span></span>
                 </div>
             </span>
-      <div style="padding:10px 0;height: 15vh;overflow: scroll;" v-html="detailData.noticeContent"></div>
+      <div class="ql-editor" style="padding:10px 0;height: 15vh;overflow: scroll;" v-html="detailData.noticeContent"></div>
       <span slot="footer">
                 <el-button type="primary" @click="dialogVisible = false">知道了</el-button>
             </span>

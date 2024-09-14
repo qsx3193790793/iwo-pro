@@ -47,7 +47,7 @@ export default {
               "events": [],
               "eventsFields": [],
               "type": "FMCascader",
-              "optionsEvent": "",
+              "optionsEvent": "complaint_hNumber_tree",
               "checkStrictly": true,
               "valueType": "array"
             },

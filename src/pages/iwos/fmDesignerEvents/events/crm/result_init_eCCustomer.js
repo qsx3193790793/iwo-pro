@@ -33,10 +33,8 @@ export const resFields = [
   {"label": "更新时间", "value": "updatedTime"}
 ];
 export default async ({vm, item, eventsFields}) => {
-  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  // 未定位直接pass
-  if (!customPositioning || vm.formStatus !== 'create') return;
-  const {lanIdInfo, custom, accType, accNum} = customPositioning;
+  if (!vm.rootParams || vm.formStatus !== 'create') return;
+  const {lanIdInfo, accType, accNum, custom} = vm.rootParams;
   vm.$nextTick(() => {
     const fields = (eventsFields || item?.eventsFields || []).filter(ef => ef.value.startsWith(`$${key}$`));
     console.log('event call', key, fields);

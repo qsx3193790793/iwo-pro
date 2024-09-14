@@ -358,7 +358,7 @@ $main-color-5: rgba($main-color, 0.5);
 }
 
 .el-input.is-disabled .el-input__inner, .is-disabled .el-textarea__inner {
-  color: #5b5b5b !important;
+  color: $main-text !important;
 }
 
 .el-radio-button__orig-radio:checked + .el-radio-button__inner {
@@ -366,7 +366,7 @@ $main-color-5: rgba($main-color, 0.5);
 }
 
 .el-radio-button__orig-radio:disabled:checked + .el-radio-button__inner {
-  color: #5b5b5b;
+  color: $main-text;
   background-color: rgba($main-color, 0.2);
 }
 
@@ -440,3 +440,4 @@ $main-color-5: rgba($main-color, 0.5);
 .el-dialog__headerbtn:focus .el-dialog__close, .el-dialog__headerbtn:hover .el-dialog__close, .el-message-box__headerbtn:focus .el-message-box__close, .el-message-box__headerbtn:hover .el-message-box__close {
   color: rgba($main-error, 0.9);
 }
+

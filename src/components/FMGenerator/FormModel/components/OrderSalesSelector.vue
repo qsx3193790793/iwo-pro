@@ -66,9 +66,8 @@ function open() {
 
 // 列表请求
 const getList = async () => {
-  const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  if (!customPositioning) return;
-  const {lanIdInfo, complaintWorksheetId, accType, accNum} = customPositioning;
+  if (!props.root?.vm?.rootParams) return;
+  const {lanIdInfo, complaintWorksheetId, accType, accNum} = props.root.vm?.rootParams || {};
   const bindKeys = proxy.root.item.reqFields?.[0];
   const formData = proxy.root.vm.getFormData();
   const orderId = proxy.$$lodash.get(formData, bindKeys.value);

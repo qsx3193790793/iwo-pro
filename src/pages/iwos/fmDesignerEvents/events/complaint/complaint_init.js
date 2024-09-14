@@ -5,87 +5,98 @@ export const key = 'complaint_init';
 export const label = '投诉单_初始化';
 
 export default async ({vm, item}) => {
-  const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
+  console.log('complaint_init', vm.rootParams);
+  if (!vm.rootParams) return;
+  const {workorderId, redirectInfo, lanIdInfo, custom, complaintWorksheetId, accType, accNum, phoneLocal, sourceCountUserPicuture} = vm.rootParams;
 
-  if (!vm.$route.params.workorderId && !vm.$route.params.detailWorkorderId) { // 新建
-    const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
+  // const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
 
-    // 未定位直接pass
-    if (!customPositioning) return;
-    const {lanIdInfo, custom, complaintWorksheetId, accNum, redirectInfo, eCProductInfo} = customPositioning;
+  if (!workorderId) { // 新建
+    // const customPositioning = vm.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
+    //
+    // // 未定位直接pass
+    // if (!customPositioning) return;
+    // const {lanIdInfo, custom, complaintWorksheetId, accNum, redirectInfo, eCProductInfo} = customPositioning;
 
-    if (lanIdInfo?.lanid) {
-      //申告地
-      vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: vm.$store.getters['user/GET_USER_PROVINCE_CODE']}}).then(({res, err}) => {
-        const tree = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
-        vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = tree;
-        vm.formData.problemLanIdChain = vm.$$findTreePath({tree, value: lanIdInfo.lanid});
-      });
-    }
+    // if (lanIdInfo?.lanid) {
+    //申告地
+    // vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: vm.$store.getters['user/GET_USER_PROVINCE_CODE']}}).then(({res, err}) => {
+    //   const tree = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
+    //   vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain').options = tree;
+    //   vm.formData.problemLanIdChain = vm.$$findTreePath({tree, value: lanIdInfo.lanid});
+    // });
+    // }
 
     vm.removeAppendItems(['complaint_scene_form']);//清除模板
 
     // 工单类型：投诉单：BUS0001，查询单：BUS0002
     // 模板大类：建单模板：TPL0001，结案模板：TPL0002
     // 模板小类：投诉现象：TPL0100，投诉来源：TPL0101，通用模板：TPL0102
-   
-      const [R1, R2, R3, R4] = await Promise.allSettled([
-        // 工单画像
-        vm.$$api.crm.sourceCountUserPicuture({
-          isErrDialog: !1, loading: !1,
-          headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
-        }),
-        // 省内接口_设备产品信息查询
-        vm.$$api.crm.devCustInfo({
-          isErrDialog: !1, loading: !1, data: {accNum, lanId: lanIdInfo.lanid},
-          headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
-        }),
-        //获取统一投诉编码
-        vm.$$api.srv.getUnifyComplaintCode({
-          isErrDialog: !1, loading: !1, data: {complaintPhone: accNum, custName: custom.custName, complaintWorksheetId},
-          headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
-        }),
-        // 拉取通用模板
-        (process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? vm.$$api.template.formMock : vm.$$api.complaint.formCommon)({
-          isErrDialog: !1, loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
-          headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
-        }),
-      ]);
-       // 工单画像 // 省内接口_设备产品信息查询
-      console.log(R1, R2, R3, R4);
-      const {res, err} = R1,  {res: idRes, err: idErr} = R3.value, {res: pbtRes, err: pbtErr} = R4.value;
-      let {res: dciRes, err: dciErr} = R2.value
-      if (idErr) return vm.$$Dialog.confirm('统一投诉编码获取失败', '提示', {showCancelButton: false}).catch(vm.$$emptyFn);
 
-      //通用模板 sort在第一板块之后 0.1 .... 不到1
-      if (pbtRes?.formContent) {
-        const provinceCommFormModel = parseFormModel(JSON.parse(pbtRes.formContent));
-        vm.setAppendItems([{key: 'complaint_province_comm_form', items: provinceCommFormModel.items.map((it, i) => ((it.sort = (0.1 * i)), it))}]);
-      }
-      // 如果查询不到用户信息，就清空之前所有的输入项
-      if(Object.keys(lanIdInfo).length==0 ){
-        dciRes={}
-      }
-      // 未知用户  作为 查不到用户信息时的默认传参
-      const NoSameProvincefalg=custom.custName=='未知客户'
-      
+    //获取统一投诉编码
+    const {res: uccRes, err: uccErr} = await vm.$$api.srv.getUnifyComplaintCode({
+      isErrDialog: !1, loading: !1, data: {complaintPhone: accNum, custName: custom.custName, complaintWorksheetId},
+      headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
+    });
+
+    if (err || !uccRes?.unifiedComplaintCode) return vm.$$Dialog.confirm('统一投诉编码获取失败', '提示', {showCancelButton: false}).catch(vm.$$emptyFn);
+
+    const [R1, R2] = await Promise.allSettled([
+      // // 工单画像
+      // vm.$$api.crm.sourceCountUserPicuture({
+      //   isErrDialog: !1, loading: !1,
+      //   headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
+      // }),
+      // 省内接口_设备产品信息查询
+      vm.$$api.crm.devCustInfo({
+        isErrDialog: !1, loading: !1, data: {accNum, lanId: lanIdInfo.lanid},
+        headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
+      }),
+      //获取统一投诉编码
+      // vm.$$api.srv.getUnifyComplaintCode({
+      //   isErrDialog: !1, loading: !1, data: {complaintPhone: accNum, custName: custom.custName, complaintWorksheetId},
+      //   headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
+      // }),
+      // 拉取通用模板
+      (process.env.VUE_APP_TEMPLATE_FORM_IS_MOCK === 'true' ? vm.$$api.template.formMock : vm.$$api.complaint.formCommon)({
+        isErrDialog: !1, loading: false, sceneCode: ['BUS0001', 'TPL0001', 'TPL0102'].join(':'), bigType: 'TPL0001', workorderType: 'BUS0001',
+        headers: {'complaintWorksheetId': complaintWorksheetId ?? '', 'complaintAssetNum': accNum ?? ''}
+      }),
+    ]);
+
+    const {res: devCustInfoRes} = R1.value, {res: formCommonRes} = R2.value;
+
+    //通用模板初始化 sort在第一板块之后 0.1 .... 不到1
+    if (formCommonRes?.formContent) {
+      const provinceCommFormModel = parseFormModel(JSON.parse(formCommonRes.formContent));
+      vm.setAppendItems([{key: 'complaint_province_comm_form', items: provinceCommFormModel.items.map((it, i) => ((it.sort = (0.1 * i)), it))}]);
+    }
+
+    // // 如果查询不到用户信息，就清空之前所有的输入项
+    // if (Object.keys(lanIdInfo).length == 0) {
+    //   dciRes = {}
+    // }
+    // 未知用户  作为 查不到用户信息时的默认传参
+    // const NoSameProvincefalg = custom.custName == '未知客户'
+
     vm.initFormData({
       // 投诉编码
-      'unifiedComplaintCode': idRes?.unifiedComplaintCode,
+      'unifiedComplaintCode': uccRes?.unifiedComplaintCode,
       // 集团工单编号
       'complaintWorksheetId': complaintWorksheetId,
 
       //来源默认省内投诉-10000号语音
-      'askSourceSrlChain':NoSameProvincefalg?'': vm.$$findTreePath({tree: vm.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'), value: 'C10001'}),
+      'askSourceSrlChain': vm.$$findTreePath({tree: vm.$store.getters['dictionaries/GET_DICT']('complaint_source_tree_by_uid'), value: 'C10001'}),
 
       // 设备产品信息查询  发展渠道
-      'developChannel': dciRes?.channelName ?? null,
-      'developChannelCode': dciRes?.channelNbr ?? null,
-      'controlChannel': dciRes?.controlOrgName ?? null,
+      'developChannel': devCustInfoRes?.channelName ?? null,
+      'developChannelCode': devCustInfoRes?.channelNbr ?? null,
+      'controlChannel': devCustInfoRes?.controlOrgName ?? null,
 
       //主叫号码 呼叫流水
       'callerNo': redirectInfo?.callerNum ?? null,
       'callId': redirectInfo?.callId ?? null,
+
       //现象 产品 渠道
       'complaintPhenomenonLevel': [redirectInfo?.phenomenonLevel1Code, redirectInfo?.phenomenonLevel2Code, redirectInfo?.phenomenonLevel3Code].filter(v => !!v),
       'productLevel': [redirectInfo?.prodLevel1Code, redirectInfo?.prodLevel2Code, redirectInfo?.prodLevel3Code].filter(v => !!v),
@@ -96,28 +107,31 @@ export default async ({vm, item}) => {
 
       // 归属地信息
       'lanId': lanIdInfo.lanid ?? null,
-      'phoneLocal': eCProductInfo?.phoneLocal ?? null,
+      'phoneLocal': phoneLocal ?? null,
+
+      // 申告地
+      'problemLanIdChain': vm.$$findTreePath({tree: vm.$store.getters['dictionaries/GET_DICT']('complaint_hNumber_tree'), value: lanIdInfo.lanid}),
 
       //基本客户信息
-      'userStarLevel':NoSameProvincefalg?'': custom.custLevel ?? null,
-      'upgradeTrend': NoSameProvincefalg?'': custom.complaintLevelUp ?? '无',
-      'contactPhone1': NoSameProvincefalg?'': accNum ?? null,
-      'complaintAssetNum': NoSameProvincefalg?'': accNum ?? null,
-      'appealUserName': NoSameProvincefalg?'': custom.custName ?? null,
-      'custName':NoSameProvincefalg?'':  custom.custName ?? null,
-      'netAge': NoSameProvincefalg?'': custom.m_netAge ?? null,
-      'importantCustomer': NoSameProvincefalg?'':({'是': '1', '否': '0'})[custom.isImportant] ?? null,
-      'custAge': NoSameProvincefalg?'': custom.custAge ?? null,
-      'cityFlag':NoSameProvincefalg?'':  custom.cityFlag ?? null,
-      'governmentEnterprisekeyPerson':NoSameProvincefalg?'': ({'是': '1', '否': '0'})[custom.isGovernment] ?? null,
-      'custType': NoSameProvincefalg?'': custom.custType ?? null,
+      'contactPhone1': accNum ?? null,
+      'complaintAssetNum': accNum ?? null,
+      'userStarLevel': custom?.custLevel ?? null,
+      'upgradeTrend': custom?.complaintLevelUp ?? '无',
+      'appealUserName': custom?.custName ?? null,
+      'custName': custom?.custName ?? null,
+      'netAge': custom?.m_netAge ?? null,
+      'importantCustomer': ({'是': '1', '否': '0'})[custom?.isImportant] ?? null,
+      'custAge': custom?.custAge ?? null,
+      'cityFlag': custom?.cityFlag ?? null,
+      'governmentEnterprisekeyPerson': ({'是': '1', '否': '0'})[custom?.isGovernment] ?? null,
+      'custType': custom?.custType ?? null,
 
       //工单画像
-      'recmplntTimes30days': res?.repeatedComplaintsThirtyDays ?? null,
-      'croscmplntTimes30days': res?.complaintsExceedingLevelThirtyDays ?? null,
-      'refundRecords90days': res?.ninetyDaysRefundRecord ?? null,
-      'satisfactionEstima30days': res?.thirtyDaysOrderSatisfied ?? null,
-      'dissatisfactionEstima30days': res?.thirtyDaysOrderDissatisfied ?? null,
+      'recmplntTimes30days': sourceCountUserPicuture?.repeatedComplaintsThirtyDays ?? null,
+      'croscmplntTimes30days': sourceCountUserPicuture?.complaintsExceedingLevelThirtyDays ?? null,
+      'refundRecords90days': sourceCountUserPicuture?.ninetyDaysRefundRecord ?? null,
+      'satisfactionEstima30days': sourceCountUserPicuture?.thirtyDaysOrderSatisfied ?? null,
+      'dissatisfactionEstima30days': sourceCountUserPicuture?.thirtyDaysOrderDissatisfied ?? null,
     });
 
     //触发现象事件
@@ -128,7 +142,7 @@ export default async ({vm, item}) => {
   //以下 详情进入
   const [R1, R2] = await Promise.all([
     vm.$$api.complaint.complaintWorkOrderDetail({
-      loading: !1, workorderId: vm.$route.params.workorderId || vm.$route.params.detailWorkorderId,//详情和新建分开 避免keepalive污染
+      loading: !1, workorderId,//详情和新建分开 避免keepalive污染
       headers: {'complaintWorksheetId': vm.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': vm.$route.query.complaintAssetNum ?? ''}
     }),
     // 拉取通用模板
@@ -141,11 +155,11 @@ export default async ({vm, item}) => {
   const {res, err} = R1, {res: pbtRes, err: pbtErr} = R2;
 
   if (res) {
-    //申告地
-    const problemLanIdChainFinder = vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain');
-    problemLanIdChainFinder && vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: res.lanId}}).then(({res, err}) => {
-      problemLanIdChainFinder.options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
-    });
+    // //申告地
+    // const problemLanIdChainFinder = vm.expandFormConfigItems.find(efci => efci.key === 'problemLanIdChain');
+    // problemLanIdChainFinder && vm.$$api.crm.getHNumberTree({loading: false, params: {provinceCode: res.lanId}}).then(({res, err}) => {
+    //   problemLanIdChainFinder.options = vm.$$formatCascaderTree((res?.children ? [res] : []), 'name', 'lanid', 'children');
+    // });
 
     //当unifiedComplaintCode为空时 获取统一投诉编码  为了导入用 导入时没有unifiedComplaintCode所以帮他获取下
     let unifiedComplaintCode = res.unifiedComplaintCode ?? null;

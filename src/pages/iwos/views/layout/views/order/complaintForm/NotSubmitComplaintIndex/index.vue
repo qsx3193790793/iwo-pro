@@ -144,7 +144,7 @@ const columns = ref({
         key: 'edit',
         autoHidden: ({row}) => row.statusCd === 'C100001',
         event: row => {
-          proxy.$router.push({name: 'ComplaintCreate', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId}})
+          proxy.$router.push({name: 'ComplaintCreate', params: {workorderId: row.workorderId}, query: {complaintAssetNum: row.complaintAssetNum, complaintWorksheetId: row.complaintWorksheetId, tabId: proxy.$$getUUID()}})
         },
       },
       {
@@ -327,7 +327,7 @@ const formConfigItems = ref([
         permission: ['order:complaint:list'],
         onClick({vm}) {
           console.time('open');
-          proxy.$router.push({name: 'ComplaintCreate'})
+          proxy.$router.push({name: 'ComplaintCreate', query: {tabId: proxy.$$getUUID()}})
         },
       },
       {

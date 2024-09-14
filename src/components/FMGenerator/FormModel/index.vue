@@ -185,7 +185,7 @@ export default {
     Cascader, Slider, Alert, InputNumber, Checkbox, RadioButton, CheckboxGroup, CheckboxButton, Icon, Input, Button, Collapse, CollapseItem, Form, FormItem, Col, Row, RadioGroup, Radio, DatePicker, Select, OptionGroup, Option, Autocomplete
   },
   props: {
-    root: {type: Object, default: () => ({})},//顶层数据
+    rootParams: {type: Object, default: null},//顶层数据
     formConfig: {type: Object, default: () => ({})},
     fixedWidth: {type: String, default: '45%'},
     formStatus: {type: String, default: 'create'},//表单运行状态 create=新增 edit=编辑 view=查看=表单禁用

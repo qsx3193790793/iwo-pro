@@ -23,7 +23,7 @@
     />
 
     <!-- 添加或修改参数配置对话框 -->
-    <MDialog  v-model="state.open" :title="state.title" width="6rem">
+    <MDialog v-model="state.open" :title="state.title" width="6rem">
       <el-form
           ref="form"
           :model="state.form"
@@ -37,6 +37,17 @@
                   v-model="state.form.appName"
                   placeholder="请输入"
                   maxlength="30"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="应用系统编号" prop="clientId">
+              <el-input
+                  v-model="state.form.clientId"
+                  placeholder="请输入"
+                  maxlength="100"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -85,7 +96,7 @@
 <script setup>
 import JsTable from "@/components/js-table/index.vue";
 import Treeselect from "@riophae/vue-treeselect";
-import {computed, getCurrentInstance, onMounted, ref, watch} from "vue";
+import {computed, getCurrentInstance, onMounted, ref, watch, nextTick} from "vue";
 import MDialog from '@/components/MDialog';
 import PageSearchPanel from "@/pages/iwos/components/PageSearchPanel.vue";
 //查询条件 展开截取前7个+最后按钮组 保证按钮组在最后一个
@@ -175,7 +186,7 @@ const formConfigItems = ref([
         permission: ['config:appInfo:add'],
         col: 1,
         onClick({vm}) {
-          handleAdd();
+          handleAdd({vm});
         },
       },
       {
@@ -331,6 +342,7 @@ const reset = () => {
     appName: undefined,
     appDesc: undefined,
     sourceCode: undefined,
+    clientId: undefined
   };
   form.value?.resetFields();
 };
@@ -346,12 +358,17 @@ const resetQuery = () => {
   handleQuery();
 };
 /** 新增按钮操作 */
-const handleAdd = () => {
+const handleAdd = (vm) => {
   reset();
-  state.value.form.dictType = state.value.currentType;
-  state.value.open = true;
-  state.value.title = "应用系统管理维护";
-  getSourceTree();
+  proxy.$$api.appconfigmanage.getClientId().then(({res: response, err}) => {
+    if (err) return
+    state.value.form.dictType = state.value.currentType;
+    state.value.form.clientId = response.value
+    state.value.open = true;
+    state.value.title = "应用系统管理维护";
+    getSourceTree();
+  })
+
 };
 // 多选框选中数据
 const handleSelectionChange = (selection) => {
@@ -566,6 +583,9 @@ let state = ref({
     sourceCode: [
       {required: true, message: "投诉来源不能为空", trigger: "blur"},
     ],
+    clientId: [
+      {required: true, message: "应用系统编号不能为空", trigger: "blur"},
+    ]
   },
 });
 </script>

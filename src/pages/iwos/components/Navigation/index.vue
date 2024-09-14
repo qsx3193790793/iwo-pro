@@ -39,7 +39,7 @@ const router = {};
 const {proxy} = getCurrentInstance();
 
 function checkRoute() {
-  const tabId = proxy.$route.query.tabId;
+  const tabId = proxy.$route.query.tabId || '';
   const finderTab = tabId ? proxy.$store.getters['storage/GET_TAB_BY_ID'](tabId) : null;
   const tab = finderTab || {
     name: proxy.$route.meta.name,
@@ -99,6 +99,11 @@ onBeforeMount(() => {
 });
 
 watch(() => proxy.$route.name, () => {
+  triggerNav();
+  checkRoute();
+});
+
+watch(() => proxy.$route.query?.tabId, () => {
   triggerNav();
   checkRoute();
 });

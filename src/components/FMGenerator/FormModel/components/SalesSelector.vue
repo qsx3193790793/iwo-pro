@@ -103,9 +103,8 @@ const StaffSelectorSearchFormItems = [
 ];
 
 function init() {
-  const customPositioning = proxy.$store.getters['storage/GET_STORAGE_BY_KEY']('customPositioning');
-  if (!customPositioning) return;
-  const {lanIdInfo, complaintWorksheetId, accType, accNum} = customPositioning;
+  if (!props.root?.vm?.rootParams) return;
+  const {lanIdInfo, complaintWorksheetId, accType, accNum} = props.root.vm?.rootParams || {};
   PageSearchPanelRef.value.initFormData({
     accNum, lanId: lanIdInfo.lanid, prodClass: accType, complaintWorksheetId
   });

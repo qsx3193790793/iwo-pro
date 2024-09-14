@@ -84,9 +84,9 @@ import {getTypePrefix} from "@/pages/iwos/views/layout/views/system/template/con
 
 const {proxy} = getCurrentInstance();
 const collapseHead = ref(['1']);
-const accNum = ref('');
-const accType = ref('12');
-const redirectInfo = ref(null);
+const accNum = ref('');//设备号
+const accType = ref('12');//设备类型
+const redirectInfo = ref(null);//单点过来的数据
 
 function reset() {
   return {
@@ -172,55 +172,61 @@ async function queryPendingWorkOrderByAssetNum(accNum) {
   }
   return true;
 }
-function areFirstThreeCharsSame(str1, str2) {  
-  // 确保两个字符串都有足够的长度  
-  if (str1.length < 3 || str2.length < 3) {  
-    return false; // 或者根据你的需求返回相应的值  
-  }  
-  // 使用substring或slice方法获取两个字符串的前三位，并进行比较  
-  return str1.substring(0, 3) === str2.substring(0, 3);  
-  // 或者使用 slice 方法：return str1.slice(0, 3) === str2.slice(0, 3);  
-} 
+
+function areFirstThreeCharsSame(str1, str2) {
+  // 确保两个字符串都有足够的长度
+  if (str1.length < 3 || str2.length < 3) {
+    return false; // 或者根据你的需求返回相应的值
+  }
+  // 使用substring或slice方法获取两个字符串的前三位，并进行比较
+  return str1.substring(0, 3) === str2.substring(0, 3);
+  // 或者使用 slice 方法：return str1.slice(0, 3) === str2.slice(0, 3);
+}
 
 async function getInfo({isForce, from}) {
   // 如果在详情内重新查询 那么重新重置表单数据初始化 并保持complaintWorksheetId不变
-  if (from === '手动' && proxy.$route.params.workorderId && accNum.value) return proxy.$router.replace({
-    name: 'ComplaintCreate', query: {
-      accNum: accNum.value,
-      complaintWorksheetId: complaintWorksheetId.value,
-    }
-  });
+  if (from === '手动' && proxy.$route.params.workorderId && accNum.value && complaintWorksheetId.value) return getInfo({isForce, from: '自动'})
+  // if (from === '手动' && proxy.$route.params.workorderId && accNum.value) return proxy.$router.replace({
+  //   name: 'ComplaintCreate', query: {
+  //     accNum: accNum.value,
+  //     complaintWorksheetId: complaintWorksheetId.value,
+  //   }
+  // });
 
   if (!complaintWorksheetId.value) return;//1.必须先获取集团工单编号
 
   if (!accNum.value) return proxy.$$Toast({message: `请先输入设备号`, type: 'error'});
-  if (!(await queryPendingWorkOrderByAssetNum(accNum.value))) return;//2.查询在途单
-  //下面两行代码清除页面的输入项  state.value = reset(); proxy.$emit('reset');
-  proxy.$store.commit('storage/SET_STORAGE', {
-        key: 'customPositioning', value: {
-          complaintWorksheetId:complaintWorksheetId.value, accType: accType.value, accNum: accNum.value,
-          eCProductInfo: {}, lanIdInfo: {}, custom: {
-            custName:"未知客户"
-          }, redirectInfo: null
-        }
-      });
-  state.value = reset();
-  proxy.$emit('reset');
+
+  //2.查询在途单
+  if (!(await queryPendingWorkOrderByAssetNum(accNum.value))) return;
+
+  // 点击查询首先初始化数据  state.value = reset(); proxy.$emit('reset');
+  state.value = reset(), proxy.$emit('reset');
+
   //3.H码查询 移动设备才需要调用H码查询，其他没有
-  let res = null, err = null;
+  let res = null, err = null, sameProvinceFlag = false;
   if (accType.value === '12') {
     const R = await proxy.$$api.crm.getHNumber({
       params: {segment: accNum.value},
       headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
     });
-    res = R?.res;
-    err = R?.err;
-    let sameProvinceFlag= areFirstThreeCharsSame(res.lanid,proxy.$store.getters['user/GET_USER_PROVINCE_CODE'])
+    res = R?.res, err = R?.err;
+    sameProvinceFlag = areFirstThreeCharsSame(res.lanid, proxy.$store.getters['user/GET_USER_PROVINCE_CODE'])
     //  归属地不是同一个省份
-    if(!sameProvinceFlag)  {
-      proxy.$$Dialog.confirm(`${accNum.value}非本省号码，是否继续新建投诉单`, '提示', {showCancelButton: false}).catch(proxy.$$emptyFn);
-      proxy.$emit('change');//变化通知 详情时不触发
-      return
+    if (!sameProvinceFlag) {
+      const c = await proxy.$$Dialog.confirm(`${accNum.value}非本省号码，是否继续新建投诉单`, '提示', {showCancelButton: false}).catch(proxy.$$emptyFn);
+      if (c !== 'confirm') return;//非确认则不继续
+      // //本地缓存的数据初始化
+      // proxy.$store.commit('storage/SET_STORAGE', {
+      //   key: 'customPositioning', value: {
+      //     complaintWorksheetId: complaintWorksheetId.value, accType: accType.value, accNum: accNum.value,
+      //     eCProductInfo: {}, lanIdInfo: res, custom: {
+      //       custName: "未知客户"
+      //     }, redirectInfo: null
+      //   }
+      // });
+      // proxy.$emit('change');//变化通知 详情时不触发
+      // return;
     }
   }
 
@@ -229,29 +235,51 @@ async function getInfo({isForce, from}) {
     provinceCode: proxy.$store.getters['user/GET_USER_PROVINCE_CODE']
   };
 
+  //开始建单
   if (res) {
-    const [R1, R2, R3] = await Promise.all([
-      proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({
-        data: {accNumber: accNum.value, lanId: res.lanid},
+
+    //获取用户信息和工单画像 报错不弹窗可继续建单 isErrDialog=false
+    //非本省掉过接口调用
+    const [R1, R2] = await Promise.allSettled([
+      sameProvinceFlag ? proxy.$$api.crm[isForce ? 'queryForceCustInfo' : 'queryCommonCustInfo']({
+        isErrDialog: false, data: {accNumber: accNum.value, lanId: res.lanid},
         headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
-      }),
-      proxy.$$api.crm.sourceCountUserPicuture({
-        params: {complaintAssetNum: accNum.value},
+      }) : {res: {custName: '未知客户'}},
+      sameProvinceFlag ? proxy.$$api.crm.sourceCountUserPicuture({
+        isErrDialog: false, params: {complaintAssetNum: accNum.value},
         headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
-      }),
-      proxy.$$api.crm.eCProduct({
-        params: {lanId: res.lanid, serialNumber: accNum.value, prodClass: accType.value},
-        headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
-      })
+      }) : {res: {}},
+      // proxy.$$api.crm.eCProduct({
+      //   params: {lanId: res.lanid, serialNumber: accNum.value, prodClass: accType.value},
+      //   headers: {'complaintWorksheetId': complaintWorksheetId.value ?? '', 'complaintAssetNum': accNum.value ?? ''}
+      // })
     ]);
 
-    const {res: ecpRes, err: ecpErr} = {res: R3?.res?.list?.[0], err: R3?.err};//设备信息
-    if (ecpRes) {
-      ecpRes.phoneLocal = [ecpRes.province, ecpRes.city].join('-');
-      state.value.userInfo.phoneLocal = ecpRes.phoneLocal || '-';
-    }
+    // 通过ecproduct接口获取归属地的逻辑暂时废弃，采用HNumber码接口的值
+    // const {res: ecpRes, err: ecpErr} = {res: R3?.res?.list?.[0], err: R3?.err};//设备信息
+    // console.log('----------------------------9980',ecpRes)
+    // if (ecpRes) {
+    //   ecpRes.phoneLocal = [ecpRes.province, ecpRes.city].join('-');
+    //   state.value.userInfo.phoneLocal = ecpRes.phoneLocal || '-';
+    // }
 
-    const {res: scupRes, err: scupErr} = R2;
+    // 归属地赋值
+    if (sameProvinceFlag) state.value.userInfo.phoneLocal = res.oneLevel && res.threeLevel ? [res.oneLevel, res.threeLevel].join('-') : '-';
+
+    let {res: iRes, err: iErr} = R1.value ?? {}, {res: scupRes, err: scupErr} = R2.value ?? {};
+
+    //信息调用完成 通知建单开始初始化init
+    proxy.$emit('change', from !== '修改'
+        ? {
+          workorderId: proxy.$route.params.workorderId,
+          complaintWorksheetId: complaintWorksheetId.value, accType: accType.value, accNum: accNum.value,
+          phoneLocal: sameProvinceFlag ? state.value.userInfo.phoneLocal : '', redirectInfo: redirectInfo.value,
+          lanIdInfo: res || {}, custom: iRes, sourceCountUserPicuture: scupRes
+        }
+        : {workorderId: proxy.$route.params.workorderId}
+    );
+
+    // 工单画像赋值
     if (scupRes) {
       state.value.userInfo.repeatedComplaintsThirtyDays = scupRes?.repeatedComplaintsThirtyDays ?? '-';
       state.value.userInfo.complaintsExceedingLevelThirtyDays = scupRes?.complaintsExceedingLevelThirtyDays ?? '-';
@@ -260,21 +288,23 @@ async function getInfo({isForce, from}) {
       state.value.userInfo.thirtyDaysOrderDissatisfied = scupRes?.thirtyDaysOrderDissatisfied ?? '-';
     }
 
-    const {res: iRes, err: iErr} = R1;
+    // 用户信息赋值
     if (iRes) {
-      //带m_自己算的 和接口区分开
+
+      //带m_自己算的 和接口区分开 网龄
       iRes.m_netAge = iRes?.netAccess ? proxy.$$dayjs().diff(iRes.netAccess, 'year') : null;
 
       // 存储定位后数据 后续用
-      proxy.$store.commit('storage/SET_STORAGE', {
-        key: 'customPositioning', value: {
-          complaintWorksheetId: complaintWorksheetId.value, accType: accType.value, accNum: accNum.value,
-          eCProductInfo: ecpRes, lanIdInfo: res, custom: iRes, redirectInfo: redirectInfo.value
-        }
-      });
+      // proxy.$store.commit('storage/SET_STORAGE', {
+      //   key: 'customPositioning', value: {
+      //     complaintWorksheetId: complaintWorksheetId.value, accType: accType.value, accNum: accNum.value,
+      //     eCProductInfo: {phoneLocal: state.value.userInfo.phoneLocal}, lanIdInfo: res, custom: iRes, redirectInfo: redirectInfo.value
+      //   }
+      // });
 
-      if (from !== '详情') proxy.$emit('change');//变化通知 详情时不触发
+      // if (from !== '详情') proxy.$emit('change');//变化通知 详情时不触发
 
+      //客户基本信息
       state.value.userInfo.complaintLevelUp = iRes?.complaintLevelUp ?? '-';
       state.value.userInfo.custLevel = parseInt(iRes?.custLevel ?? '0') ?? 0;
       state.value.userInfo.custName = iRes?.custName || '-';
@@ -283,6 +313,7 @@ async function getInfo({isForce, from}) {
       // iRes.birth = '2022-09-07'
       state.value.userProfile.birthdayFlag = iRes?.birth ? proxy.$$dayjs(proxy.$$dateFormatterYMD(proxy.$$dayjs())).isSame(iRes.birth) : false;
 
+      //客户画像
       state.value.userProfile.tagList = [
         iRes?.isImportant === '是' ? "重要客户" : null,
         !proxy.$$isEmpty(iRes?.m_netAge) ? `网龄${iRes.m_netAge}年` : null,
@@ -292,11 +323,10 @@ async function getInfo({isForce, from}) {
         iRes?.custTypeName ? `${iRes.custTypeName}客户` : null,
       ];
 
-      console.log("获取用户详情", res);
-      return;
+      // console.log("获取用户详情", res);
     }
   }
-  state.value = reset();
+  // state.value = reset();
 }
 
 async function getDetail() {
@@ -304,9 +334,10 @@ async function getDetail() {
   if (proxy.$route.query.complaintAssetNum && proxy.$route.query.complaintWorksheetId) {
     accNum.value = proxy.$route.query.complaintAssetNum;
     complaintWorksheetId.value = proxy.$route.query.complaintWorksheetId;
-    return getInfo({from: '详情'});
+    return getInfo({from: '修改'});
   }
-  //查询详情
+
+  //查询详情 为了获取complaintWorksheetId
   const {res, err} = await proxy.$$api.complaint.complaintWorkOrderDetail({
     workorderId: proxy.$route.params.workorderId,
     headers: {'complaintWorksheetId': proxy.$route.query.complaintWorksheetId ?? '', 'complaintAssetNum': proxy.$route.query.complaintAssetNum ?? ''}
@@ -314,43 +345,44 @@ async function getDetail() {
   if (res) {
     accNum.value = res?.complaintAssetNum;
     complaintWorksheetId.value = res?.complaintWorksheetId;
-    getInfo({from: '详情'});
+    getInfo({from: '修改'});
   }
 }
 
-watch(() => proxy.$route.params.workorderId, () => {
-  state.value = reset();
-  proxy.$emit('reset');
-  if (proxy.$route.params.workorderId) return getDetail();
-
-  //有进入设备号
-  if (proxy.$route.query.accNum) {
-    accNum.value = proxy.$route.query.accNum;
-    getComplaintWorksheetId(() => getInfo({from: '手动'}));
-  }
-});
+// watch(() => proxy.$route.params.workorderId, () => {
+//   state.value = reset();
+//   proxy.$emit('reset');
+//   if (proxy.$route.params.workorderId) return getDetail();
+//
+//   //有进入设备号
+//   if (proxy.$route.query.accNum) {
+//     accNum.value = proxy.$route.query.accNum;
+//     getComplaintWorksheetId(() => getInfo({from: '手动'}));
+//   }
+// });
 
 //重置
-const resetId = ref('');
-watch(() => proxy.$route.query.reset, () => {
-  if (resetId.value === proxy.$route.query.reset) return;
-  state.value = reset();
-  accNum.value = null;
-  proxy.$emit('reset');
-  getComplaintWorksheetId();
-});
+// const resetId = ref('');
+// watch(() => proxy.$route.query.reset, () => {
+//   if (resetId.value === proxy.$route.query.reset) return;
+//   state.value = reset();
+//   accNum.value = null;
+//   proxy.$emit('reset');
+//   getComplaintWorksheetId();
+// });
 
 onBeforeMount(() => {
-  proxy.$store.commit('storage/REMOVE_STORAGE', ['customPositioning']);
+  // proxy.$store.commit('storage/REMOVE_STORAGE', ['customPositioning']);
 
-  if (proxy.$route.params.workorderId) return getDetail();
+  if (proxy.$route.params.workorderId) return getDetail();//有工单号查详情
 
-  //有进入设备号
+  //有进入设备号 走建单流程 查信息
   if (proxy.$route.query.accNum) {
     accNum.value = proxy.$route.query.accNum;
     return getComplaintWorksheetId(() => getInfo({from: '手动'}));
   }
 
+  //单点进入
   if (proxy.$route.query.p) {
     try {
       redirectInfo.value = JSON.parse(decodeURIComponent(proxy.$route.query.p || null));
@@ -363,8 +395,12 @@ onBeforeMount(() => {
     }
     return;
   }
+
+  // 新建进入
   getComplaintWorksheetId();
 });
+
+defineExpose({reset})
 
 </script>
 <script>
